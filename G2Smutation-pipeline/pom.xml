@@ -5,8 +5,8 @@
   <packaging>jar</packaging>
 
   <parent>
-    <groupId>org.cbioportal.pdb_annotation</groupId>
-    <artifactId>pdb_annotation</artifactId>
+    <groupId>org.cbioportal.G2Smutation</groupId>
+    <artifactId>G2Smutation</artifactId>
     <version>0.1.0</version>
   </parent>
   <dependencies>

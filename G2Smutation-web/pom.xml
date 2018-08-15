@@ -83,7 +83,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <start-class>org.cbioportal.pdb_annotation.web.Application</start-class>
+        <start-class>org.cbioportal.G2Smutation.web.Application</start-class>
     </properties>
 
 
