@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.cbioportal.pdb_annotation</groupId>
-    <artifactId>pdb_annotation</artifactId>
+    <groupId>org.cbioportal.G2Smutation</groupId>
+    <artifactId>G2Smutation</artifactId>
     <packaging>pom</packaging>
-    <name>PDB Annotation Master</name>
+    <name>G2Smutation Master</name>
     <version>0.1.0</version>
     <description>master maven module</description>
-    <url>https://github.com/cBioPortal/pdb-annotation/</url>
+    <url>https://github.com/cBioPortal/G2Smutation/</url>
 
     <modules>
       <module>G2Smutation-pipeline</module>
