@@ -9,10 +9,9 @@
     <url>https://github.com/cBioPortal/pdb-annotation/</url>
 
     <modules>
-      <module>pdb</module>
-      <module>pdb-alignment-pipeline</module>
-      <module>pdb-alignment-api</module>
-      <module>pdb-alignment-web</module>
+      <module>G2Smutation-pipeline</module>
+      <module>G2Smutation-api</module>
+      <module>G2Smutation-web</module>
     </modules>
 
     <!-- inherit defaults from spring boot -->
