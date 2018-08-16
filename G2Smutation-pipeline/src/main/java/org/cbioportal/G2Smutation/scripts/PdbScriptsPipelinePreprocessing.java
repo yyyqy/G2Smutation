@@ -223,6 +223,24 @@ public class PdbScriptsPipelinePreprocessing {
             return inputStr + "_1" + " " + accMap.get(inputStr);
         }
     }
+    
+    /**
+     * parsing fasta names: UniprotID and Acc, only choose HUMAN
+     * 
+     *
+     * @param inputStr
+     * @param accMap
+     * @return
+     */
+    String getUniqueSeqIDUniprotHUMAN(String inputStr, HashMap<String, String> accMap) {
+        String tmpArray[] = inputStr.trim().split("-");
+        if (tmpArray.length == 2) {
+            return tmpArray[0] + "_" + tmpArray[1] + " " + accMap.get(tmpArray[0]);
+        } else {
+            return inputStr + "_1" + " " + accMap.get(inputStr);
+        }
+        //TODO
+    }
 
     /**
      * 
@@ -314,6 +332,26 @@ public class PdbScriptsPipelinePreprocessing {
             log.error(ex.getMessage());
             ex.printStackTrace();
         }
+        return outHm;
+    }
+    
+    /**
+     * 
+     * Similar with preprocessUniqSeqUniprot
+     * For Uniprot deal with redundancy,combine the name together, split with
+     * ";"
+     * It could also deal with different isoform
+     * 
+     * But only choose uniprot with _HUMAN
+     * @author Baoxin Liu
+     * 
+     * @param infilename
+     * @param outHm
+     * @return
+     */
+    HashMap<String, String> preprocessUniqSeqUniprotHuman(String infilename, HashMap<String, String> accMap,
+            HashMap<String, String> outHm) {
+        //TODO Hint: use getUniqueSeqIDUniprotHUMAN
         return outHm;
     }
 

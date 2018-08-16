@@ -140,7 +140,10 @@ public class CommandProcessUtil {
                 break;
             case "blastp":
                 log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
-                pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2)));
+                // original: has limitation 50 
+                //pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2)));
+                // No limit in alignments
+                pb = new ProcessBuilder(makeBlastPCommandNoseqlimit(paralist.get(0), paralist.get(1), paralist.get(2)));
                 break;
             case "mysql":
                 log.info("[MYSQL] Running mysql command insert " + paralist.get(0) + "...");
@@ -263,6 +266,40 @@ public class CommandProcessUtil {
         list.add(ReadConfig.blastParaEvalue);
         list.add("-max_target_seqs");
         list.add(ReadConfig.blastParaMaxTargetSeqs);
+        list.add("-num_threads");
+        list.add(ReadConfig.blastParaThreads);
+        list.add("-outfmt");
+        list.add("5");
+        list.add("-out");
+        list.add(outFilename);
+        return list;
+    }
+    
+    /**
+     * The differnce between Function makeBlastPCommandNoseqlimit and makeBlastPCommand is this function does not have any limitation of -max_target_seqs
+     * We choose to use this to preserve all the possible alignments
+     * 
+     * Helper Function for building the following command : blastp -db
+     * pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue
+     * 1e-60 -max_target_seqs 500 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
+     * 
+     *
+     * @return A List of command arguments for the processbuilder
+     */
+    private List<String> makeBlastPCommandNoseqlimit(String queryFilename, String outFilename, String dbFilename) {
+        List<String> list = new ArrayList<String>();
+        list.add(ReadConfig.blastp);
+        list.add("-db");
+        list.add(dbFilename);
+        list.add("-query");
+        list.add(queryFilename);
+        list.add("-word_size");
+        list.add(ReadConfig.blastParaWordSize);
+        list.add("-evalue");
+        list.add(ReadConfig.blastParaEvalue);
+//        No limitation in max_target_seqs
+//        list.add("-max_target_seqs");
+//        list.add(ReadConfig.blastParaMaxTargetSeqs);
         list.add("-num_threads");
         list.add(ReadConfig.blastParaThreads);
         list.add("-outfmt");

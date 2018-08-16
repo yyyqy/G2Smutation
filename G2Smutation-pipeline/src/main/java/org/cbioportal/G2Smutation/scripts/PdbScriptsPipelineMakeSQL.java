@@ -205,15 +205,6 @@ public class PdbScriptsPipelineMakeSQL {
                 for (Hit hit : hits.getHit()) {
                     results.addAll(parseSingleAlignment(querytext, hit, count));
                     count = results.size() + 1;
-
-                    // No need anymore
-                    // TODO: need number
-                    /*
-                     * if (count % sql_insert_output_interval == 0) { // Once
-                     * get the criteria, output contents to the SQL // file
-                     * genereateSQLstatementsSmallMem(results, pdbHm, count,
-                     * outputfile); count+=results.size(); results.clear(); }
-                     */
                 }
             }
             // output remaining contents to the SQL file

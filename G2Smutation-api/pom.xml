@@ -6,10 +6,10 @@
     <version>0.1.0</version>
   </parent>
 
-  <artifactId>pdb-alignment-api</artifactId>
+  <artifactId>G2Smutation-api</artifactId>
   <version>0.1.0</version>
-  <name>PDB annotation alignment api</name>
-  <description>PDB annotation API</description>
+  <name>G2Smutation api</name>
+  <description>G2Smutation API</description>
 
   <dependencies>
   	<dependency>

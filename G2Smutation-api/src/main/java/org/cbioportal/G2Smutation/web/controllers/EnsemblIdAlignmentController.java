@@ -6,7 +6,7 @@ import org.cbioportal.G2Smutation.web.domain.AlignmentRepository;
 import org.cbioportal.G2Smutation.web.domain.EnsemblRepository;
 import org.cbioportal.G2Smutation.web.domain.GeneSequenceRepository;
 import org.cbioportal.G2Smutation.web.models.Alignment;
-import org.cbioportal.pG2Smutation.web.models.Ensembl;
+import org.cbioportal.G2Smutation.web.models.Ensembl;
 import org.cbioportal.G2Smutation.web.models.Residue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

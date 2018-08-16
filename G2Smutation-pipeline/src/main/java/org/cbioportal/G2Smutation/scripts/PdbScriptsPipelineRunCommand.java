@@ -78,6 +78,7 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
 
+        
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -92,8 +93,8 @@ public class PdbScriptsPipelineRunCommand {
         //       ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         
         //Choice 2/3: Sync all the pdb in java code
-        // pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace
-        // + ReadConfig.pdbSeqresDownloadFile);
+//         pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace
+//         + ReadConfig.pdbSeqresDownloadFile);
         
         //Choice 3/3: Parsing all the pdb from pdbRepo
         pu.initSequencefromAll(ReadConfig.pdbRepo, ReadConfig.workspace +
@@ -166,6 +167,7 @@ public class PdbScriptsPipelineRunCommand {
                 .getUniProtAccHm(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
 
         HashMap<String, String> uniqSeqHm = new HashMap<String, String>();
+        //TODO preprocessUniqSeqUniprotHuman
         uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, accHm,
                 uniqSeqHm);
         // uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace +
@@ -206,8 +208,8 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
-
         
+        /*
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
 
         // Step 7:
@@ -221,6 +223,8 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
         cu.runCommand("mysql", paralist);
+        
+        /*
 
         // Step 9:
         log.info("********************[STEP 9]********************");
@@ -242,7 +246,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
-        }
+        }*/
 
         // Step 11:
         log.info("********************[STEP 11]********************");

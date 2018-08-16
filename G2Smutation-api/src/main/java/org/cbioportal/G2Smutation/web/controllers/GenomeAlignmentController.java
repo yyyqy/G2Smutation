@@ -1,10 +1,10 @@
 package org.cbioportal.G2Smutation.web.controllers;
 
-import io.swagger.G2Smutation.Api;
-import io.swagger.G2Smutation.ApiOperation;
-import io.swagger.G2Smutation.ApiParam;
-import io.swagger.G2Smutation.ApiResponse;
-import io.swagger.G2Smutation.ApiResponses;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.util.ArrayList;
 import java.util.List;
 

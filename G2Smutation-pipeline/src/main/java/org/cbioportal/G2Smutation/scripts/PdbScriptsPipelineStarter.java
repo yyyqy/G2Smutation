@@ -32,11 +32,12 @@ public class PdbScriptsPipelineStarter {
 
         // Check arguments
         if (args.length != 1) {
-            System.out.println("Usage:\n" + "Initiate the database" + "java -jar pdb-alignment-pipeline init\n" + "or\n"
+            System.out.println("Usage:\n" + "Initiate the pipeline" + "java -jar G2Smutation-pipeline-0.1.0.jar init\n" + "or\n"
                     + "Update the database weekly, user could deploy and change the settings in application.approperties\n"
-                    + "java -jar pdb-alignment-pipeline updateweekly\n" + "or\n"
+                    + "java -jar ls"
+                    + "eline updateweekly\n" + "or\n"
                     + "update for update immediately , users should use CRON or other scheduling mechanisms to run the updates\n"
-                    + "java -jar pdb-alignment-pipeline update\n");
+                    + "java -jar G2Smutation-pipeline-0.1.0.jar update\n");
             System.exit(0);
         }
         long startTime = System.currentTimeMillis();
