@@ -287,8 +287,8 @@ public class PdbScriptsPipelineMakeSQL {
      * @return generated SQL statements
      */
     public String makeTable_mutation_insert(MutationRecord mr) {
-        String str = "INSERT INTO `mutation_entry` (`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
-                + mr.getSeqId() + "','" + mr.getSeqName() + "'," + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "'," + mr.getPdbResidueIndex() + ",'"
+        String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
+                + mr.getSeqId() + "_" + mr.getSeqResidueIndex() + "','" + mr.getSeqId() + "','" + mr.getSeqName() + "'," + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "'," + mr.getPdbResidueIndex() + ",'"
                 + mr.getPdbResidueName() + "'," + mr.getAlignmentId() + ");\n";
         return str;
     }

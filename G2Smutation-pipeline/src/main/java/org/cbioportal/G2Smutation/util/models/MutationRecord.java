@@ -2,6 +2,7 @@ package org.cbioportal.G2Smutation.util.models;
 
 public class MutationRecord {   
     
+    private String mutationNo;
     //Inner seqId
     private int seqId;
     
@@ -86,6 +87,14 @@ public class MutationRecord {
 
     public void setAlignmentId(int alignmentId) {
         this.alignmentId = alignmentId;
+    }
+
+    public String getMutationNo() {
+        return mutationNo;
+    }
+
+    public void setMutationNo(String mutation_No) {
+        this.mutationNo = mutation_No;
     }
     
 
