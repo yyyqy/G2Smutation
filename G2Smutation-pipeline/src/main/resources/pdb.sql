@@ -1,16 +1,17 @@
 --
--- database `G2Smutation`
+-- database `g2smutation`
 --
 drop table IF EXISTS pdb_seq_alignment;
 drop table IF EXISTS uniprot_entry;
 drop table IF EXISTS ensembl_entry;
 drop table IF EXISTS pdb_entry;
 drop table IF EXISTS seq_entry;
+drop table IF EXISTS mutation_entry;
 drop table IF EXISTS update_record;
 
 CREATE TABLE `seq_entry`(
     `SEQ_ID` int(255) NOT NULL,
-    `SEQENCE` VARCHAR(8191),
+    `SEQENCE` text,
     PRIMARY KEY(`SEQ_ID`)
 );
 CREATE TABLE `uniprot_entry`(
@@ -64,7 +65,22 @@ CREATE TABLE `pdb_seq_alignment` (
   FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
   FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`)
 );
-
+CREATE TABLE `mutation_entry` (
+  `MUTATION_ID` int NOT NULL AUTO_INCREMENT,
+  `SEQ_ID` int(255) NOT NULL,
+  `SEQ_NAME` text,
+  `SEQ_INDEX` int NOT NULL,
+  `SEQ_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `PDB_NO` VARCHAR(12) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `PDB_INDEX` int NOT NULL,
+  `PDB_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `ALIGNMENT_ID` int NOT NULL,
+  PRIMARY KEY(`MUTATION_ID`),
+  KEY(`SEQ_ID`,`PDB_NO`,`ALIGNMENT_ID`),
+  FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`),
+  FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
+  FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
+);
 CREATE TABLE `update_record` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `UPDATE_DATE` DATE,

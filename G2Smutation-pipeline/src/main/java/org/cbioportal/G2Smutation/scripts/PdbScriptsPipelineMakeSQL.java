@@ -3,7 +3,10 @@ package org.cbioportal.G2Smutation.scripts;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
@@ -17,6 +20,7 @@ import org.cbioportal.G2Smutation.util.blast.Hit;
 import org.cbioportal.G2Smutation.util.blast.Hsp;
 import org.cbioportal.G2Smutation.util.blast.Iteration;
 import org.cbioportal.G2Smutation.util.blast.IterationHits;
+import org.cbioportal.G2Smutation.util.models.MutationRecord;
 
 /**
  * SQL Insert statements Generation
@@ -82,15 +86,20 @@ public class PdbScriptsPipelineMakeSQL {
             if (this.seqFileCount == -1) {
                 parseblastresultsSmallMem();
             } else {
+                //Usually use this, save memory and time
                 HashMap<String, String> pdbHm = new HashMap<String, String>();
                 for (int i = 0; i < this.seqFileCount; i++) {
+                    log.info("[Parsing] Read blast results on " + i + "th xml file");
                     parseblastresultsSmallMem(i, pdbHm);
                 }
             }
         } else {
             // test for small datasets: single input, single sql generated in
             // one time
-            List<BlastResult> outresults = parseblastresultsSingle(currentDir);
+            // TODO 
+            //Does not work for mutation list
+            MutationAlignmentResult outresults = new MutationAlignmentResult();
+            outresults.setAlignmentList(parseblastresultsSingle(currentDir));
             generateSQLstatementsSingle(outresults, currentDir);
         }
     }
@@ -127,7 +136,10 @@ public class PdbScriptsPipelineMakeSQL {
         } else {
             // test for small datasets: single input, single sql generated in
             // one time
-            List<BlastResult> outresults = parseblastresultsSingle(currentDir);
+            //TODO
+            //Does not work for mutationlist
+            MutationAlignmentResult outresults = new MutationAlignmentResult();
+            outresults.setAlignmentList(parseblastresultsSingle(currentDir));
             generateSQLstatementsSingle(outresults, currentDir);
         }
     }
@@ -195,20 +207,34 @@ public class PdbScriptsPipelineMakeSQL {
             Unmarshaller u = jc.createUnmarshaller();
             u.setSchema(null);
             BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
-            List<BlastResult> results = new ArrayList<BlastResult>();
+            List<BlastResult> alignmentList = new ArrayList<BlastResult>();
+            List<MutationRecord> mutationList = new ArrayList<MutationRecord>();
+            MutationAlignmentResult maresult = new MutationAlignmentResult();
             BlastOutputIterations iterations = blast.getBlastOutputIterations();
             log.info("[BLAST] Start parsing results...");
             int sql_insert_output_interval = Integer.parseInt(this.sqlInsertOutputInterval);
+            int sequence_count = 0;
             for (Iteration iteration : iterations.getIteration()) {
                 String querytext = iteration.getIterationQueryDef();
+                //log.info(querytext);
+                //querytext example: 8;C1F9K2_1 OBG_ACIC5
                 IterationHits hits = iteration.getIterationHits();
-                for (Hit hit : hits.getHit()) {
-                    results.addAll(parseSingleAlignment(querytext, hit, count));
-                    count = results.size() + 1;
+                if(!hits.getHit().isEmpty()){
+                    sequence_count++;
                 }
+                for (Hit hit : hits.getHit()) {
+                    MutationAlignmentResult mar = parseSingleAlignment(querytext, hit, count);
+                    alignmentList.addAll(mar.getAlignmentList());
+                    mutationList.addAll(mar.getMutationList());
+                    count = alignmentList.size() + 1;
+                }               
             }
+            maresult.setAlignmentList(alignmentList);
+            maresult.setMutationList(mutationList);
+            log.info("[BLAST] " + sequence_count + " sequences have blast results");
             // output remaining contents to the SQL file
-            genereateSQLstatementsSmallMem(results, pdbHm, count, outputfile);
+            // Not output now
+            genereateSQLstatementsSmallMem(maresult, pdbHm, count, outputfile);
 
         } catch (Exception ex) {
             log.error("[BLAST] Error Parsing BLAST Result");
@@ -236,12 +262,12 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
-     * generate SQL insert text to Table pdb_ensembl_alignment
+     * generate SQL insert text to Table pdb_seq_alignment
      * 
      * @param br
      * @return generated SQL statements
      */
-    public String makeTable_pdb_ensembl_insert(BlastResult br) {
+    public String makeTable_pdb_seq_insert(BlastResult br) {
         String[] strarrayQ = br.getQseqid().split(";");
         String pdbNo = br.getSseqid().split("\\s+")[0];
         String[] strarrayS = pdbNo.split("_");
@@ -251,6 +277,19 @@ public class PdbScriptsPipelineMakeSQL {
                 + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
                 + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
                 + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
+        return str;
+    }
+    
+    /**
+     * generate SQL insert text to Table mutation_entry
+     * 
+     * @param br
+     * @return generated SQL statements
+     */
+    public String makeTable_mutation_insert(MutationRecord mr) {
+        String str = "INSERT INTO `mutation_entry` (`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
+                + mr.getSeqId() + "','" + mr.getSeqName() + "'," + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "'," + mr.getPdbResidueIndex() + ",'"
+                + mr.getPdbResidueName() + "'," + mr.getAlignmentId() + ");\n";
         return str;
     }
 
@@ -304,7 +343,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param br
      * @return generated SQL statements
      */
-    public String makeTable_pdb_ensembl_insert_Update(BlastResult br) {
+    public String makeTable_pdb_seq_insert_Update(BlastResult br) {
         String[] strarrayQ = br.getQseqid().split(";");
         String pdbNo = br.getSseqid().split("\\s+")[0];
         String[] strarrayS = pdbNo.split("_");
@@ -337,7 +376,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outresults
      *            List<BlastResult>
      */
-    public void generateSQLstatementsSingle(List<BlastResult> results, String currentDir) {
+    public void generateSQLstatementsSingle(MutationAlignmentResult results, String currentDir) {
         try {
             log.info("[SHELL] Start Write insert.sql File...");
             File file = new File(currentDir + this.sqlInsertFile);
@@ -359,13 +398,15 @@ public class PdbScriptsPipelineMakeSQL {
      * Parse multiple list of String blast results to multiple input SQL
      * statements
      * 
-     * @param List<BlastResult>
-     *            results
+     * @param MutationAlignmentResult results
+     *          List<MutationRecord>
+     *          List<BlastResult>
+     *            
      * @param pdbHm
      * @param count
      * @param outputfile
      */
-    public void genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap<String, String> pdbHm, long count,
+    public void genereateSQLstatementsSmallMem(MutationAlignmentResult results, HashMap<String, String> pdbHm, long count,
             File outputfile) {
         try {
             log.info("[SHELL] Start Write insert.sql File from Alignment " + count + "...");
@@ -391,12 +432,14 @@ public class PdbScriptsPipelineMakeSQL {
      * @param pdbHm
      * @return
      */
-    public List<String> makeSQLText(List<BlastResult> results, HashMap<String, String> pdbHm) {
+    public List<String> makeSQLText(MutationAlignmentResult results, HashMap<String, String> pdbHm) {
         List<String> outputlist = new ArrayList<String>();
         // Add transaction
         outputlist.add("SET autocommit = 0;");
         outputlist.add("start transaction;");
-        for (BlastResult br : results) {
+        //First generate alignments SQL files
+        List<BlastResult> al = results.getAlignmentList();
+        for (BlastResult br : al) {
             if (pdbHm.containsKey(br.getSseqid())) {
                 // do nothing
             } else {
@@ -405,12 +448,23 @@ public class PdbScriptsPipelineMakeSQL {
             }
             // If it is update, then call function
             if (this.updateTag) {
-                outputlist.add(makeTable_pdb_ensembl_insert_Update(br));
+                outputlist.add(makeTable_pdb_seq_insert_Update(br));
                 // If it is init, generate INSERT statements
             } else {
-                outputlist.add(makeTable_pdb_ensembl_insert(br));
+                outputlist.add(makeTable_pdb_seq_insert(br));
             }
-
+        }
+        //Then generate mutation SQL files
+        List<MutationRecord> ml = results.getMutationList();
+        for (MutationRecord mr: ml) {         
+            // If it is update, then call function
+            if (this.updateTag) {
+                //TODO
+                //outputlist.add(makeTable_mutation_insert_Update(mr));
+                // If it is init, generate INSERT statements
+            } else {
+                outputlist.add(makeTable_mutation_insert(mr));
+            }
         }
         outputlist.add("commit;");
         return outputlist;
@@ -437,7 +491,8 @@ public class PdbScriptsPipelineMakeSQL {
                 String querytext = iteration.getIterationQueryDef();
                 IterationHits hits = iteration.getIterationHits();
                 for (Hit hit : hits.getHit()) {
-                    results.addAll(parseSingleAlignment(querytext, hit, count));
+                    MutationAlignmentResult mar = parseSingleAlignment(querytext, hit, count);
+                    results.addAll(mar.getAlignmentList());
                     count = results.size() + 1;
                 }
             }
@@ -453,16 +508,33 @@ public class PdbScriptsPipelineMakeSQL {
 
     /**
      * Parse XML structure into Object BlastResult
+     * Core function
+     *
      * 
-     * @param querytext
+     * @param querytext e.g. 13;P11532_7 DMD_HUMAN;ENSP00000367974.4 ENSG00000198947.15 ENST00000378702.8
      * @param hit
-     * @param count
+     * @param count // number of alignment, it is the alignmentId
      * @return
      */
-    public List<BlastResult> parseSingleAlignment(String querytext, Hit hit, int count) {
+    public MutationAlignmentResult parseSingleAlignment(String querytext, Hit hit, int count) {
 
-        List<BlastResult> resultList = new ArrayList<BlastResult>();
+        //TODO Different criteria
+        List<BlastResult> alignmentList = new ArrayList<BlastResult>();
+        List<MutationRecord> mutationList = new ArrayList<MutationRecord>();
 
+        /*
+        //HashMap for mutation
+        //Key: IndexofInputProtein
+        //Value: tmpHashMap
+        //tmpHashMap
+        //Key: ResidueName
+        //Value: PDBname_Chain1 index1 alignmentId1;PDBname_Chain2 index2 alignmentId2;...
+        HashMap<Integer,HashMap<String,String>> mutationHm = new HashMap<Integer,HashMap<String,String>>();
+        
+        //HashMap for residue Name, accompany with mutationHm
+        HashMap<Integer,String> inputResidueNameHm = new HashMap<Integer,String>();
+        */
+        
         List<Hsp> tmplist = hit.getHitHsps().getHsp();
         for (Hsp tmp : tmplist) {
             BlastResult br = new BlastResult(count);
@@ -479,11 +551,117 @@ public class PdbScriptsPipelineMakeSQL {
             br.seq_align = tmp.getHspQseq();
             br.pdb_align = tmp.getHspHseq();
             br.midline_align = tmp.getHspMidline();
+            
+            
+            
+            /*alignment.setSeqId(querytext.split("\\s+")[0]);
+            alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
+            alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]);
+            alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
+            alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
+            alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);*/
+            
+            /*
+            //Original solution: Include all the blast results
             resultList.add(br);
             count++;
+            */
+            //Add filter: Only choose best alignment
+            Double alignlen = Double.parseDouble(tmp.getHspAlignLen());
+            if(isFilterAlignHighQuality(br,alignlen)){
+                for(int i=0; i<br.midline_align.length(); i++){
+                    String residueAlign = br.midline_align.substring(i, i+1);
+                    String residue = br.pdb_align.substring(i, i+1);
+                    //if we have point mutation here:
+                    //Criteria: either space and + are mismatch, and no X as the linker
+                    if((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")){
+                        //log.info("*"+residueAlign+"&"+residue+"@");
+                        int correctProteinIndex = br.qStart + i ;
+                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) - 1 + br.sStart + (i- br.qStart);
+                        String pdbNO = br.sseqid.split("\\s+")[0]; 
+                        /*
+                        if(mutationHm.containsKey(correctProteinIndex)){
+                            HashMap<String,String> tmpHm = (HashMap<String,String>)mutationHm.get(correctProteinIndex);
+                            if(tmpHm.containsKey(residue)){
+                                String tmpstr = tmpHm.get(residue);
+                                tmpHm.put(residue, tmpstr + pdbNO + " " + correctPDBIndex + " " + count + ";");
+                            }else{
+                                tmpHm.put(residue, pdbNO + " " + correctPDBIndex + " " + count + ";");
+                            }
+                            mutationHm.put(correctProteinIndex, tmpHm);
+                        }else{
+                            HashMap<String,String> tmpHm = new HashMap<String,String>();
+                            tmpHm.put(residue, pdbNO + " " + correctPDBIndex + " " + count + ";");
+                            mutationHm.put(correctProteinIndex, tmpHm);
+                        }
+                        inputResidueNameHm.put(correctProteinIndex, br.seq_align.substring(i,i+1));
+                        */
+                        MutationRecord mr = new MutationRecord();
+                        
+                        mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
+                        mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
+                        mr.setSeqResidueIndex(correctProteinIndex);
+                        mr.setSeqResidueName(br.seq_align.substring(i,i+1));
+                        mr.setPdbNo(pdbNO);
+                        mr.setPdbResidueIndex(correctPDBIndex);
+                        mr.setPdbResidueName(br.pdb_align.substring(i,i+1));
+                        mr.setAlignmentId(count);
+                        
+                        mutationList.add(mr);                     
+                   }                   
+                }
+                alignmentList.add(br);
+                count++;                
+            }           
         }
+        
+        /*
+        //enumerate the hashmap
+        for (Map.Entry<Integer, HashMap<String,String>> entry: mutationHm.entrySet()){
+            int proteinResidueIndex = entry.getKey();
+            HashMap<String, String> tmpHm = (HashMap<String, String>)entry.getValue();            
+            for (Map.Entry<String, String> tentry : tmpHm.entrySet()) {
+                String pdbResidueName = tentry.getKey();
+                String tmpstr = tentry.getValue();
+                String[] tmpstrArray = tmpstr.split(";");
+                for (int i = 0; i < tmpstrArray.length; i++) {
+                    MutationRecord mr = new MutationRecord();
+                    String[] ttstrArray = tmpstrArray[i].split("\\s+");
+                    mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
+                    mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
+                    mr.setSeqResidueIndex(proteinResidueIndex);
+                    mr.setSeqResidueName(inputResidueNameHm.get(proteinResidueIndex));
+                    mr.setPdbNo(ttstrArray[0]);
+                    mr.setPdbResidueIndex(Integer.parseInt(ttstrArray[1]));
+                    mr.setAlignmentId(Integer.parseInt(ttstrArray[2]));
+                    mr.setPdbResidueName(pdbResidueName);
+                    mutationList.add(mr);
+                }
+            }
+            
+        }
+        */
 
-        return resultList;
+        MutationAlignmentResult result = new MutationAlignmentResult();
+        result.setAlignmentList(alignmentList);
+        result.setMutationList(mutationList);
+        
+        return result;
+    }
+    
+    /**
+     * Check whether the alignment itself has high quality, define the condition here
+     *  
+     * @param br
+     * @param alignlen
+     * @return
+     */
+    boolean isFilterAlignHighQuality(BlastResult br, Double alignlen){
+        //Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.90
+        if(br.identp-br.ident<=Integer.parseInt(ReadConfig.alignFilterDiff) && br.identp/alignlen>=Double.parseDouble(ReadConfig.alignFilterRatio))
+            return true;
+        else
+            return false; 
     }
 
     /**
@@ -514,5 +692,27 @@ public class PdbScriptsPipelineMakeSQL {
             log.error(ex.getMessage());
             ex.printStackTrace();
         }
+    }
+}
+
+/**
+ * Used for store mutation and alignment list for generating sql 
+ * @author wangjue
+ *
+ */
+class MutationAlignmentResult{
+    List<BlastResult> alignmentList;
+    List<MutationRecord> mutationList;
+    public List<BlastResult> getAlignmentList() {
+        return alignmentList;
+    }
+    public void setAlignmentList(List<BlastResult> alignmentList) {
+        this.alignmentList = alignmentList;
+    }
+    public List<MutationRecord> getMutationList() {
+        return mutationList;
+    }
+    public void setMutationList(List<MutationRecord> mutationList) {
+        this.mutationList = mutationList;
     }
 }

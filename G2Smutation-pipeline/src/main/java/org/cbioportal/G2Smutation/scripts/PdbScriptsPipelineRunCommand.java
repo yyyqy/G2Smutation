@@ -78,7 +78,7 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
 
-        
+        /*
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -190,6 +190,8 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
+
+        this.seqFileCount = 57;
         // Step 6:
         log.info("********************[STEP 6]********************");
         log.info("[Blast] blastp ensembl genes against pdb (Warning: This step takes time)");
@@ -208,23 +210,24 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
+        */
         
-        /*
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
+        this.seqFileCount = 57;
 
+        /*
         // Step 7:
         log.info("********************[STEP 7]********************");
         log.info("[PrepareSQL] Parse results and output as input sql statments");
         parseprocess.parse2sql(false, ReadConfig.workspace, this.seqFileCount);
 
+        */
         // Step 8:
         log.info("********************[STEP 8]********************");
         log.info("[SQL] Create data schema");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
         cu.runCommand("mysql", paralist);
-        
-        /*
 
         // Step 9:
         log.info("********************[STEP 9]********************");
@@ -246,7 +249,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
-        }*/
+        }
 
         // Step 11:
         log.info("********************[STEP 11]********************");

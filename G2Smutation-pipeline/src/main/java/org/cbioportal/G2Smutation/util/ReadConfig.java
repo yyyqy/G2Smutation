@@ -71,6 +71,8 @@ public class ReadConfig {
     public static String updateObsolete;
     public static String pdbFastaService;
     public static String mysqlMaxAllowedPacket;
+    public static String alignFilterDiff;
+    public static String alignFilterRatio;
     public static String saveSpaceTag;
 
     public static boolean isPositiveInteger(String str) {
@@ -154,6 +156,8 @@ public class ReadConfig {
             ReadConfig.updateObsolete = prop.getProperty("update.obsolete").trim();
             ReadConfig.pdbFastaService = prop.getProperty("pdb.fastaService").trim();
             ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet").trim();
+            ReadConfig.alignFilterDiff = prop.getProperty("align.filter.diff").trim();
+            ReadConfig.alignFilterRatio = prop.getProperty("align.filter.ratio").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
