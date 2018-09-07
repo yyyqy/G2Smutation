@@ -227,19 +227,30 @@ public class PdbScriptsPipelinePreprocessing {
     /**
      * parsing fasta names: UniprotID and Acc, only choose HUMAN
      * 
+     *@author Baoxin Liu
      *
      * @param inputStr
      * @param accMap
      * @return
      */
-    String getUniqueSeqIDUniprotHUMAN(String inputStr, HashMap<String, String> accMap) {
+    String getUniqueSeqIDUniprotHUMAN(String inputStr,
+            HashMap<String, String> accMap) {
         String tmpArray[] = inputStr.trim().split("-");
         if (tmpArray.length == 2) {
-            return tmpArray[0] + "_" + tmpArray[1] + " " + accMap.get(tmpArray[0]);
+            String human[] = accMap.get(tmpArray[0]).split("_");
+            if (human[1].equals("HUMAN")) {
+                return tmpArray[0] + "_" + tmpArray[1] + " "
+                        + accMap.get(tmpArray[0]);
+            } else
+                return "";
         } else {
-            return inputStr + "_1" + " " + accMap.get(inputStr);
+            String human[] = accMap.get(inputStr).split("_");
+            if (human[1].equals("HUMAN")) {
+                return inputStr + "_1" + " " + accMap.get(inputStr);
+            } else
+                return "";
         }
-        //TODO
+
     }
 
     /**
@@ -349,10 +360,39 @@ public class PdbScriptsPipelinePreprocessing {
      * @param outHm
      * @return
      */
-    HashMap<String, String> preprocessUniqSeqUniprotHuman(String infilename, HashMap<String, String> accMap,
-            HashMap<String, String> outHm) {
-        //TODO Hint: use getUniqueSeqIDUniprotHUMAN
+    HashMap<String, String> preprocessUniqSeqUniprotHuman(String infilename,
+            HashMap<String, String> accMap, HashMap<String, String> outHm) {
+        try {
+            LinkedHashMap<String, ProteinSequence> originalHm = FastaReaderHelper
+                    .readFastaProteinSequence(new File(infilename));
+
+            for (Entry<String, ProteinSequence> entry : originalHm.entrySet()) {
+                if (outHm.containsKey(entry.getValue().getSequenceAsString())) {
+                    String tmpStr = outHm
+                            .get(entry.getValue().getSequenceAsString());
+                    if (getUniqueSeqIDUniprotHUMAN(entry.getKey(),
+                            accMap) != "") {
+                        tmpStr = tmpStr + ";" + getUniqueSeqIDUniprotHUMAN(
+                                entry.getKey(), accMap);
+                        outHm.put(entry.getValue().getSequenceAsString(),
+                                tmpStr);
+                        tmpStr = "";
+                    }
+                } else {
+                    if (getUniqueSeqIDUniprotHUMAN(entry.getKey(),
+                            accMap) != "") {
+                        outHm.put(entry.getValue().getSequenceAsString(),
+                                getUniqueSeqIDUniprotHUMAN(entry.getKey(),
+                                        accMap));
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
         return outHm;
+
     }
 
     /**

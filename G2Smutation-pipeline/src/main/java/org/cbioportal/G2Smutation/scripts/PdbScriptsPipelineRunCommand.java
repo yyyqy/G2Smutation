@@ -78,7 +78,7 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
 
-        /*
+        
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -167,12 +167,11 @@ public class PdbScriptsPipelineRunCommand {
                 .getUniProtAccHm(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
 
         HashMap<String, String> uniqSeqHm = new HashMap<String, String>();
-        //TODO preprocessUniqSeqUniprotHuman
-        uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, accHm,
+        uniqSeqHm = preprocess.preprocessUniqSeqUniprotHuman(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, accHm,
                 uniqSeqHm);
         // uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace +
         // ReadConfig.tremblDownloadFile,uniqSeqHm);
-        uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.isoformDownloadFile, accHm,
+        uniqSeqHm = preprocess.preprocessUniqSeqUniprotHuman(ReadConfig.workspace + ReadConfig.isoformDownloadFile, accHm,
                 uniqSeqHm);
 
         uniqSeqHm = preprocess.preprocessUniqSeqEnsembl(ReadConfig.workspace + ReadConfig.ensemblDownloadFile,
@@ -210,10 +209,10 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
-        */
+        
         
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
-        this.seqFileCount = 57;
+        //this.seqFileCount = 57;
 
         
         // Step 7:
