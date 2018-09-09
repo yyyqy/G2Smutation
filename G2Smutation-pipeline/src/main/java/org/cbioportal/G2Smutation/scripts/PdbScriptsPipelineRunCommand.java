@@ -79,6 +79,7 @@ public class PdbScriptsPipelineRunCommand {
         ArrayList<String> paralist = new ArrayList<String>();
 
         
+        /*
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -93,10 +94,10 @@ public class PdbScriptsPipelineRunCommand {
         //       ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         
         //Choice 2/3: Sync all the pdb in java code
-//         pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace
+//         pu.initSequencefromFolder(ReadConfig.pdbRepo,ReadConfig.workspace
 //         + ReadConfig.pdbSeqresDownloadFile);
         
-        //Choice 3/3: Parsing all the pdb from pdbRepo
+        //Choice 3/3: Sync and Parsing all the pdb from pdbRepo
         pu.initSequencefromAll(ReadConfig.pdbRepo, ReadConfig.workspace +
                 ReadConfig.pdbSeqresDownloadFile);
 
@@ -107,6 +108,7 @@ public class PdbScriptsPipelineRunCommand {
         preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile,
                 ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
 
+        
         log.info("********************[STEP 3]********************");
         log.info("[Download] Download and unzip Ensembl, Uniprot and Isoform");
         paralist = new ArrayList<String>();
@@ -167,12 +169,20 @@ public class PdbScriptsPipelineRunCommand {
                 .getUniProtAccHm(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
 
         HashMap<String, String> uniqSeqHm = new HashMap<String, String>();
+        //Here we only choose HUMAN sequeunces in Uniprot, otherwise use function preprocessUniqSeqUniprot instead
         uniqSeqHm = preprocess.preprocessUniqSeqUniprotHuman(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, accHm,
                 uniqSeqHm);
+        //uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, accHm,
+        //        uniqSeqHm);
+        
+        // Trembl, not used anymore
         // uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace +
         // ReadConfig.tremblDownloadFile,uniqSeqHm);
+        
         uniqSeqHm = preprocess.preprocessUniqSeqUniprotHuman(ReadConfig.workspace + ReadConfig.isoformDownloadFile, accHm,
                 uniqSeqHm);
+        //uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.isoformDownloadFile, accHm,
+        //        uniqSeqHm);
 
         uniqSeqHm = preprocess.preprocessUniqSeqEnsembl(ReadConfig.workspace + ReadConfig.ensemblDownloadFile,
                 uniqSeqHm);
@@ -190,7 +200,7 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("makeblastdb", paralist);
 
 
-        this.seqFileCount = 57;
+        //this.seqFileCount = 57;
         // Step 6:
         log.info("********************[STEP 6]********************");
         log.info("[Blast] blastp ensembl genes against pdb (Warning: This step takes time)");
@@ -209,11 +219,10 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
-        
+        */
         
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
-        //this.seqFileCount = 57;
-
+        this.seqFileCount = 10;
         
         // Step 7:
         log.info("********************[STEP 7]********************");

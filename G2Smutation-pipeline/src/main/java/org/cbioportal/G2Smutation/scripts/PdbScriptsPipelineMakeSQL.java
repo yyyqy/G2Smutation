@@ -577,7 +577,10 @@ public class PdbScriptsPipelineMakeSQL {
                     if((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")){
                         //log.info("*"+residueAlign+"&"+residue+"@");
                         int correctProteinIndex = br.qStart + i ;
-                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) - 1 + br.sStart + (i- br.qStart);
+                        /*
+                         * Example here: Seq ID: 13, hitPDB: 1eg14_A_1; q: 7-239. s:29-260, PDB: 47-306
+                         */
+                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart + i - 1;
                         String pdbNO = br.sseqid.split("\\s+")[0]; 
                         /*
                         if(mutationHm.containsKey(correctProteinIndex)){
@@ -657,8 +660,10 @@ public class PdbScriptsPipelineMakeSQL {
      * @return
      */
     boolean isFilterAlignHighQuality(BlastResult br, Double alignlen){
-        //Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.90
-        if(br.identp-br.ident<=Integer.parseInt(ReadConfig.alignFilterDiff) && br.identp/alignlen>=Double.parseDouble(ReadConfig.alignFilterRatio))
+        //Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.95 //old
+        //if(br.identy-br.identp<=Integer.parseInt(ReadConfig.alignFilterDiff) && br.identp/alignlen>=Double.parseDouble(ReadConfig.alignFilterRatio))
+        //Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.95
+        if(alignlen-br.identp<=Integer.parseInt(ReadConfig.alignFilterDiff) && br.identp/alignlen>=Double.parseDouble(ReadConfig.alignFilterRatio))
             return true;
         else
             return false; 
