@@ -10,7 +10,6 @@
 
     <modules>
       <module>G2Smutation-pipeline</module>
-      <module>G2Smutation-api</module>
       <module>G2Smutation-web</module>
     </modules>
 
