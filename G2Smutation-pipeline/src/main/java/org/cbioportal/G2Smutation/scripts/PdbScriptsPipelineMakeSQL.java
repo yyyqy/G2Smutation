@@ -568,25 +568,29 @@ public class PdbScriptsPipelineMakeSQL {
             */
             //Add filter: Only choose best alignment
             Double alignlen = Double.parseDouble(tmp.getHspAlignLen());
-            int gapCount;
-            //count "-"
+            //count "-" in genSequence
+            int seqGapCount = 0;
+            //int pdbGapCount = 0;
             if(isFilterAlignHighQuality(br,alignlen)){
             	for(int i=0; i<br.midline_align.length(); i++){
                     String residueAlign = br.midline_align.substring(i, i+1);
                     String residue = br.pdb_align.substring(i, i+1);
-                    //String residueQuery = br.seq_align.substring(i, i+1);
-                    //i is the order number of genesswq
-                    //j is the order number of the Hsp_qseq in .xml
+                    String residueQuery = br.seq_align.substring(i, i+1);
+                    //if there is a "-" in genSequence, seqGapCount +1
+                    if(residueQuery.equals("-")) {
+                    	seqGapCount++;
+                    	continue;
+                    }
                     //if we have point mutation here:
                     //Criteria: either space and + are mismatch, and no X as the linker
                     if((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")){
                         //log.info("*"+residueAlign+"&"+residue+"@");
-                    	gapCount = checkGapinBlastResults(i, br);
-                        int correctProteinIndex = br.qStart + i ;
+                    	
+                        int correctProteinIndex = br.qStart + i -seqGapCount;
                         /*
                          * Example here: Seq ID: 13, hitPDB: 1eg14_A_1; q: 7-239. s:29-260, PDB: 47-306
                          */
-                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i + gapCount;
+                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i;
                         String pdbNO = br.sseqid.split("\\s+")[0]; 
                         /*
                         if(mutationHm.containsKey(correctProteinIndex)){
@@ -658,15 +662,17 @@ public class PdbScriptsPipelineMakeSQL {
         return result;
     }
     
+    /*
     private int checkGapinBlastResults(int i, BlastResult br) {
-		int j = 0;
-		while(br.seq_align.substring(i, i+1) == "-") {
-			i++;
-			j++;
+		int j = i;
+		if(br.seq_align.substring(j-1, j) != "-") {
+			while(br.seq_align.substring(j, j+1) == "-") {
+				j++;
+			}
 		}
-		return j;
+		return j-i;
 	}
-
+	*/
 	/**
      * Check whether the alignment itself has high quality, define the condition here
      *  
