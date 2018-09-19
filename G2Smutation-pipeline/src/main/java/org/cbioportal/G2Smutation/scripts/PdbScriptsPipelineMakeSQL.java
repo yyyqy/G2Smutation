@@ -570,7 +570,8 @@ public class PdbScriptsPipelineMakeSQL {
             Double alignlen = Double.parseDouble(tmp.getHspAlignLen());
             //count "-" in genSequence
             int seqGapCount = 0;
-            //int pdbGapCount = 0;
+            //count "-" in pdbSequence
+            int pdbGapCount = 0;
             if(isFilterAlignHighQuality(br,alignlen)){
             	for(int i=0; i<br.midline_align.length(); i++){
                     String residueAlign = br.midline_align.substring(i, i+1);
@@ -581,8 +582,9 @@ public class PdbScriptsPipelineMakeSQL {
                     	seqGapCount++;
                     	continue;
                     }
-                  //if there is a "-" in pdbSequence, skip
+                  //if there is a "-" in pdbSequence, pdbGapCount+1
                     if(residue.equals("-")) {
+                    	pdbGapCount++;
                     	continue;
                     }
                     //if we have point mutation here:
@@ -594,7 +596,7 @@ public class PdbScriptsPipelineMakeSQL {
                         /*
                          * Example here: Seq ID: 13, hitPDB: 1eg14_A_1; q: 7-239. s:29-260, PDB: 47-306
                          */
-                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i;
+                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i -pdbGapCount;
                         String pdbNO = br.sseqid.split("\\s+")[0]; 
                         /*
                         if(mutationHm.containsKey(correctProteinIndex)){
