@@ -581,6 +581,10 @@ public class PdbScriptsPipelineMakeSQL {
                     	seqGapCount++;
                     	continue;
                     }
+                  //if there is a "-" in pdbSequence, skip
+                    if(residue.equals("-")) {
+                    	continue;
+                    }
                     //if we have point mutation here:
                     //Criteria: either space and + are mismatch, and no X as the linker
                     if((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")){
