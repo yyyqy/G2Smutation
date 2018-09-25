@@ -71,8 +71,11 @@ public class ReadConfig {
     public static String updateObsolete;
     public static String pdbFastaService;
     public static String mysqlMaxAllowedPacket;
-    public static String alignFilterDiff;
+    public static String alignFilterDiffT;
+    public static String alignFilterDiffP;
     public static String alignFilterRatio;
+    public static String alignFilterStatsSQL;
+    public static String alignFilterStatsResult;
     public static String saveSpaceTag;
 
     public static boolean isPositiveInteger(String str) {
@@ -156,8 +159,11 @@ public class ReadConfig {
             ReadConfig.updateObsolete = prop.getProperty("update.obsolete").trim();
             ReadConfig.pdbFastaService = prop.getProperty("pdb.fastaService").trim();
             ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet").trim();
-            ReadConfig.alignFilterDiff = prop.getProperty("align.filter.diff").trim();
+            ReadConfig.alignFilterDiffT = prop.getProperty("align.filter.diffT").trim();
+            ReadConfig.alignFilterDiffP = prop.getProperty("align.filter.diffP").trim();
             ReadConfig.alignFilterRatio = prop.getProperty("align.filter.ratio").trim();
+            ReadConfig.alignFilterStatsSQL = prop.getProperty("align.filter.stats.sql").trim();
+            ReadConfig.alignFilterStatsResult = prop.getProperty("align.filter.stats.result").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
@@ -625,6 +631,46 @@ public class ReadConfig {
 
     public static void setDbHost(String dbHost) {
         ReadConfig.dbHost = dbHost;
+    }
+
+    public static String getAlignFilterDiffT() {
+        return alignFilterDiffT;
+    }
+
+    public static void setAlignFilterDiffT(String alignFilterDiffT) {
+        ReadConfig.alignFilterDiffT = alignFilterDiffT;
+    }
+
+    public static String getAlignFilterDiffP() {
+        return alignFilterDiffP;
+    }
+
+    public static void setAlignFilterDiffP(String alignFilterDiffP) {
+        ReadConfig.alignFilterDiffP = alignFilterDiffP;
+    }
+
+    public static String getAlignFilterRatio() {
+        return alignFilterRatio;
+    }
+
+    public static void setAlignFilterRatio(String alignFilterRatio) {
+        ReadConfig.alignFilterRatio = alignFilterRatio;
+    }
+
+    public static String getAlignFilterStatsSQL() {
+        return alignFilterStatsSQL;
+    }
+
+    public static void setAlignFilterStatsSQL(String alignFilterStatsSQL) {
+        ReadConfig.alignFilterStatsSQL = alignFilterStatsSQL;
+    }
+
+    public static String getAlignFilterStatsResult() {
+        return alignFilterStatsResult;
+    }
+
+    public static void setAlignFilterStatsResult(String alignFilterStatsResult) {
+        ReadConfig.alignFilterStatsResult = alignFilterStatsResult;
     }
 
 }

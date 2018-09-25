@@ -42,6 +42,8 @@ public class PdbScriptsPipelineMakeSQL {
     private String insertSequenceSQL;
     private boolean updateTag;// if update, then true;
 
+    private int testcase;// use for test cases
+
     /**
      * 
      * Constructor
@@ -58,6 +60,25 @@ public class PdbScriptsPipelineMakeSQL {
         this.sqlDeleteFile = ReadConfig.sqlDeleteFile;
         this.insertSequenceSQL = ReadConfig.insertSequenceSQL;
         this.updateTag = app.isUpdateTag();
+    }
+
+    /**
+     * 
+     * Constructor for test
+     * 
+     * @param app
+     */
+    PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, int testcase) {
+        this.db = app.getDb();
+        this.matches = app.getMatches();
+        this.seqFileCount = app.getSeqFileCount();
+        this.workspace = ReadConfig.workspace;
+        this.sqlInsertFile = ReadConfig.sqlInsertFile;
+        this.sqlInsertOutputInterval = ReadConfig.sqlInsertOutputInterval;
+        this.sqlDeleteFile = ReadConfig.sqlDeleteFile;
+        this.insertSequenceSQL = ReadConfig.insertSequenceSQL;
+        this.updateTag = app.isUpdateTag();
+        this.testcase = testcase;
     }
 
     /**
@@ -86,7 +107,7 @@ public class PdbScriptsPipelineMakeSQL {
             if (this.seqFileCount == -1) {
                 parseblastresultsSmallMem();
             } else {
-                //Usually use this, save memory and time
+                // Usually use this, save memory and time
                 HashMap<String, String> pdbHm = new HashMap<String, String>();
                 for (int i = 0; i < this.seqFileCount; i++) {
                     log.info("[Parsing] Read blast results on " + i + "th xml file");
@@ -96,8 +117,8 @@ public class PdbScriptsPipelineMakeSQL {
         } else {
             // test for small datasets: single input, single sql generated in
             // one time
-            // TODO 
-            //Does not work for mutation list
+            // TODO
+            // Does not work for mutation list
             MutationAlignmentResult outresults = new MutationAlignmentResult();
             outresults.setAlignmentList(parseblastresultsSingle(currentDir));
             generateSQLstatementsSingle(outresults, currentDir);
@@ -136,8 +157,8 @@ public class PdbScriptsPipelineMakeSQL {
         } else {
             // test for small datasets: single input, single sql generated in
             // one time
-            //TODO
-            //Does not work for mutationlist
+            // TODO
+            // Does not work for mutationlist
             MutationAlignmentResult outresults = new MutationAlignmentResult();
             outresults.setAlignmentList(parseblastresultsSingle(currentDir));
             generateSQLstatementsSingle(outresults, currentDir);
@@ -216,10 +237,10 @@ public class PdbScriptsPipelineMakeSQL {
             int sequence_count = 0;
             for (Iteration iteration : iterations.getIteration()) {
                 String querytext = iteration.getIterationQueryDef();
-                //log.info(querytext);
-                //querytext example: 8;C1F9K2_1 OBG_ACIC5
+                // log.info(querytext);
+                // querytext example: 8;C1F9K2_1 OBG_ACIC5
                 IterationHits hits = iteration.getIterationHits();
-                if(!hits.getHit().isEmpty()){
+                if (!hits.getHit().isEmpty()) {
                     sequence_count++;
                 }
                 for (Hit hit : hits.getHit()) {
@@ -227,7 +248,7 @@ public class PdbScriptsPipelineMakeSQL {
                     alignmentList.addAll(mar.getAlignmentList());
                     mutationList.addAll(mar.getMutationList());
                     count = alignmentList.size() + 1;
-                }               
+                }
             }
             maresult.setAlignmentList(alignmentList);
             maresult.setMutationList(mutationList);
@@ -279,7 +300,7 @@ public class PdbScriptsPipelineMakeSQL {
                 + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
         return str;
     }
-    
+
     /**
      * generate SQL insert text to Table mutation_entry
      * 
@@ -288,8 +309,9 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public String makeTable_mutation_insert(MutationRecord mr) {
         String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
-                + mr.getSeqId() + "_" + mr.getSeqResidueIndex() + "','" + mr.getSeqId() + "','" + mr.getSeqName() + "'," + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "'," + mr.getPdbResidueIndex() + ",'"
-                + mr.getPdbResidueName() + "'," + mr.getAlignmentId() + ");\n";
+                + mr.getSeqId() + "_" + mr.getSeqResidueIndex() + "','" + mr.getSeqId() + "','" + mr.getSeqName() + "',"
+                + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "',"
+                + mr.getPdbResidueIndex() + ",'" + mr.getPdbResidueName() + "'," + mr.getAlignmentId() + ");\n";
         return str;
     }
 
@@ -398,16 +420,15 @@ public class PdbScriptsPipelineMakeSQL {
      * Parse multiple list of String blast results to multiple input SQL
      * statements
      * 
-     * @param MutationAlignmentResult results
-     *          List<MutationRecord>
-     *          List<BlastResult>
-     *            
+     * @param MutationAlignmentResult
+     *            results List<MutationRecord> List<BlastResult>
+     * 
      * @param pdbHm
      * @param count
      * @param outputfile
      */
-    public void genereateSQLstatementsSmallMem(MutationAlignmentResult results, HashMap<String, String> pdbHm, long count,
-            File outputfile) {
+    public void genereateSQLstatementsSmallMem(MutationAlignmentResult results, HashMap<String, String> pdbHm,
+            long count, File outputfile) {
         try {
             log.info("[SHELL] Start Write insert.sql File from Alignment " + count + "...");
             if (count == 1) {
@@ -437,7 +458,7 @@ public class PdbScriptsPipelineMakeSQL {
         // Add transaction
         outputlist.add("SET autocommit = 0;");
         outputlist.add("start transaction;");
-        //First generate alignments SQL files
+        // First generate alignments SQL files
         List<BlastResult> al = results.getAlignmentList();
         for (BlastResult br : al) {
             if (pdbHm.containsKey(br.getSseqid())) {
@@ -454,13 +475,13 @@ public class PdbScriptsPipelineMakeSQL {
                 outputlist.add(makeTable_pdb_seq_insert(br));
             }
         }
-        //Then generate mutation SQL files
+        // Then generate mutation SQL files
         List<MutationRecord> ml = results.getMutationList();
-        for (MutationRecord mr: ml) {         
+        for (MutationRecord mr : ml) {
             // If it is update, then call function
             if (this.updateTag) {
-                //TODO
-                //outputlist.add(makeTable_mutation_insert_Update(mr));
+                // TODO
+                // outputlist.add(makeTable_mutation_insert_Update(mr));
                 // If it is init, generate INSERT statements
             } else {
                 outputlist.add(makeTable_mutation_insert(mr));
@@ -507,34 +528,35 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
-     * Parse XML structure into Object BlastResult
-     * Core function
+     * Parse XML structure into Object BlastResult Core function
      *
      * 
-     * @param querytext e.g. 13;P11532_7 DMD_HUMAN;ENSP00000367974.4 ENSG00000198947.15 ENST00000378702.8
+     * @param querytext
+     *            e.g. 13;P11532_7 DMD_HUMAN;ENSP00000367974.4
+     *            ENSG00000198947.15 ENST00000378702.8
      * @param hit
-     * @param count // number of alignment, it is the alignmentId
+     * @param count
+     *            // number of alignment, it is the alignmentId
      * @return
      */
     public MutationAlignmentResult parseSingleAlignment(String querytext, Hit hit, int count) {
 
-        //TODO Different criteria
+        // TODO Different criteria
         List<BlastResult> alignmentList = new ArrayList<BlastResult>();
         List<MutationRecord> mutationList = new ArrayList<MutationRecord>();
 
         /*
-        //HashMap for mutation
-        //Key: IndexofInputProtein
-        //Value: tmpHashMap
-        //tmpHashMap
-        //Key: ResidueName
-        //Value: PDBname_Chain1 index1 alignmentId1;PDBname_Chain2 index2 alignmentId2;...
-        HashMap<Integer,HashMap<String,String>> mutationHm = new HashMap<Integer,HashMap<String,String>>();
-        
-        //HashMap for residue Name, accompany with mutationHm
-        HashMap<Integer,String> inputResidueNameHm = new HashMap<Integer,String>();
-        */
-        
+         * //HashMap for mutation //Key: IndexofInputProtein //Value: tmpHashMap
+         * //tmpHashMap //Key: ResidueName //Value: PDBname_Chain1 index1
+         * alignmentId1;PDBname_Chain2 index2 alignmentId2;...
+         * HashMap<Integer,HashMap<String,String>> mutationHm = new
+         * HashMap<Integer,HashMap<String,String>>();
+         * 
+         * //HashMap for residue Name, accompany with mutationHm
+         * HashMap<Integer,String> inputResidueNameHm = new
+         * HashMap<Integer,String>();
+         */
+
         List<Hsp> tmplist = hit.getHitHsps().getHsp();
         for (Hsp tmp : tmplist) {
             BlastResult br = new BlastResult(count);
@@ -551,149 +573,507 @@ public class PdbScriptsPipelineMakeSQL {
             br.seq_align = tmp.getHspQseq();
             br.pdb_align = tmp.getHspHseq();
             br.midline_align = tmp.getHspMidline();
-            
-            
-            
-            /*alignment.setSeqId(querytext.split("\\s+")[0]);
-            alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
-            alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]);
-            alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
-            alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
-            alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);*/
-            
+
             /*
-            //Original solution: Include all the blast results
-            resultList.add(br);
-            count++;
-            */
-            //Add filter: Only choose best alignment
+             * alignment.setSeqId(querytext.split("\\s+")[0]);
+             * alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
+             * alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]
+             * );
+             * alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]
+             * );
+             * alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2
+             * ]); alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);
+             */
+
+            /*
+             * //Original solution: Include all the blast results
+             * resultList.add(br); count++;
+             */
+            // Add filter: Only choose best alignment
             Double alignlen = Double.parseDouble(tmp.getHspAlignLen());
-            //count "-" in genSequence
+            // count "-" in genSequence
             int seqGapCount = 0;
-            //count "-" in pdbSequence
+            // count "-" in pdbSequence
             int pdbGapCount = 0;
-            if(isFilterAlignHighQuality(br,alignlen)){
-            	for(int i=0; i<br.midline_align.length(); i++){
-                    String residueAlign = br.midline_align.substring(i, i+1);
-                    String residue = br.pdb_align.substring(i, i+1);
-                    String residueQuery = br.seq_align.substring(i, i+1);
-                    //if there is a "-" in genSequence, seqGapCount +1
-                    if(residueQuery.equals("-")) {
-                    	seqGapCount++;
-                    	continue;
+            // if(isFilterAlignHighQuality(br,alignlen)){
+            if (isFilterAlignHighQuality(br, alignlen, testcase)) {
+                for (int i = 0; i < br.midline_align.length(); i++) {
+                    String residueAlign = br.midline_align.substring(i, i + 1);
+                    String residue = br.pdb_align.substring(i, i + 1);
+                    String residueQuery = br.seq_align.substring(i, i + 1);
+                    // if there is a "-" in genSequence, seqGapCount +1
+                    if (residueQuery.equals("-")) {
+                        seqGapCount++;
+                        continue;
                     }
-                  //if there is a "-" in pdbSequence, pdbGapCount+1
-                    if(residue.equals("-")) {
-                    	pdbGapCount++;
-                    	continue;
+                    // if there is a "-" in pdbSequence, pdbGapCount+1
+                    if (residue.equals("-")) {
+                        pdbGapCount++;
+                        continue;
                     }
-                    //if we have point mutation here:
-                    //Criteria: either space and + are mismatch, and no X as the linker
-                    if((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")){
-                        //log.info("*"+residueAlign+"&"+residue+"@");
-                    	
-                        int correctProteinIndex = br.qStart + i -seqGapCount;
+                    // if we have point mutation here:
+                    // Criteria: either space and + are mismatch, and no X as
+                    // the linker
+                    if ((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")) {
+                        // log.info("*"+residueAlign+"&"+residue+"@");
+
+                        int correctProteinIndex = br.qStart + i - seqGapCount;
                         /*
-                         * Example here: Seq ID: 13, hitPDB: 1eg14_A_1; q: 7-239. s:29-260, PDB: 47-306
+                         * Example here: Seq ID: 13, hitPDB: 1eg14_A_1; q:
+                         * 7-239. s:29-260, PDB: 47-306
                          */
-                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i -pdbGapCount;
-                        String pdbNO = br.sseqid.split("\\s+")[0]; 
+                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i
+                                - pdbGapCount;
+                        String pdbNO = br.sseqid.split("\\s+")[0];
                         /*
-                        if(mutationHm.containsKey(correctProteinIndex)){
-                            HashMap<String,String> tmpHm = (HashMap<String,String>)mutationHm.get(correctProteinIndex);
-                            if(tmpHm.containsKey(residue)){
-                                String tmpstr = tmpHm.get(residue);
-                                tmpHm.put(residue, tmpstr + pdbNO + " " + correctPDBIndex + " " + count + ";");
-                            }else{
-                                tmpHm.put(residue, pdbNO + " " + correctPDBIndex + " " + count + ";");
-                            }
-                            mutationHm.put(correctProteinIndex, tmpHm);
-                        }else{
-                            HashMap<String,String> tmpHm = new HashMap<String,String>();
-                            tmpHm.put(residue, pdbNO + " " + correctPDBIndex + " " + count + ";");
-                            mutationHm.put(correctProteinIndex, tmpHm);
-                        }
-                        inputResidueNameHm.put(correctProteinIndex, br.seq_align.substring(i,i+1));
-                        */
+                         * if(mutationHm.containsKey(correctProteinIndex)){
+                         * HashMap<String,String> tmpHm =
+                         * (HashMap<String,String>)mutationHm.get(
+                         * correctProteinIndex); if(tmpHm.containsKey(residue)){
+                         * String tmpstr = tmpHm.get(residue);
+                         * tmpHm.put(residue, tmpstr + pdbNO + " " +
+                         * correctPDBIndex + " " + count + ";"); }else{
+                         * tmpHm.put(residue, pdbNO + " " + correctPDBIndex +
+                         * " " + count + ";"); }
+                         * mutationHm.put(correctProteinIndex, tmpHm); }else{
+                         * HashMap<String,String> tmpHm = new
+                         * HashMap<String,String>(); tmpHm.put(residue, pdbNO +
+                         * " " + correctPDBIndex + " " + count + ";");
+                         * mutationHm.put(correctProteinIndex, tmpHm); }
+                         * inputResidueNameHm.put(correctProteinIndex,
+                         * br.seq_align.substring(i,i+1));
+                         */
                         MutationRecord mr = new MutationRecord();
-                        
+
                         mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
                         mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
                         mr.setSeqResidueIndex(correctProteinIndex);
-                        mr.setSeqResidueName(br.seq_align.substring(i,i+1));
+                        mr.setSeqResidueName(br.seq_align.substring(i, i + 1));
                         mr.setPdbNo(pdbNO);
                         mr.setPdbResidueIndex(correctPDBIndex);
-                        mr.setPdbResidueName(br.pdb_align.substring(i,i+1));
+                        mr.setPdbResidueName(br.pdb_align.substring(i, i + 1));
                         mr.setAlignmentId(count);
-                        
-                        mutationList.add(mr);                     
-                   }                   
+
+                        mutationList.add(mr);
+                    }
                 }
                 alignmentList.add(br);
-                count++;                
-            }           
-        }
-        
-        /*
-        //enumerate the hashmap
-        for (Map.Entry<Integer, HashMap<String,String>> entry: mutationHm.entrySet()){
-            int proteinResidueIndex = entry.getKey();
-            HashMap<String, String> tmpHm = (HashMap<String, String>)entry.getValue();            
-            for (Map.Entry<String, String> tentry : tmpHm.entrySet()) {
-                String pdbResidueName = tentry.getKey();
-                String tmpstr = tentry.getValue();
-                String[] tmpstrArray = tmpstr.split(";");
-                for (int i = 0; i < tmpstrArray.length; i++) {
-                    MutationRecord mr = new MutationRecord();
-                    String[] ttstrArray = tmpstrArray[i].split("\\s+");
-                    mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
-                    mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
-                    mr.setSeqResidueIndex(proteinResidueIndex);
-                    mr.setSeqResidueName(inputResidueNameHm.get(proteinResidueIndex));
-                    mr.setPdbNo(ttstrArray[0]);
-                    mr.setPdbResidueIndex(Integer.parseInt(ttstrArray[1]));
-                    mr.setAlignmentId(Integer.parseInt(ttstrArray[2]));
-                    mr.setPdbResidueName(pdbResidueName);
-                    mutationList.add(mr);
-                }
+                count++;
             }
-            
         }
-        */
+
+        /*
+         * //enumerate the hashmap for (Map.Entry<Integer,
+         * HashMap<String,String>> entry: mutationHm.entrySet()){ int
+         * proteinResidueIndex = entry.getKey(); HashMap<String, String> tmpHm =
+         * (HashMap<String, String>)entry.getValue(); for (Map.Entry<String,
+         * String> tentry : tmpHm.entrySet()) { String pdbResidueName =
+         * tentry.getKey(); String tmpstr = tentry.getValue(); String[]
+         * tmpstrArray = tmpstr.split(";"); for (int i = 0; i <
+         * tmpstrArray.length; i++) { MutationRecord mr = new MutationRecord();
+         * String[] ttstrArray = tmpstrArray[i].split("\\s+");
+         * mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
+         * mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
+         * mr.setSeqResidueIndex(proteinResidueIndex);
+         * mr.setSeqResidueName(inputResidueNameHm.get(proteinResidueIndex));
+         * mr.setPdbNo(ttstrArray[0]);
+         * mr.setPdbResidueIndex(Integer.parseInt(ttstrArray[1]));
+         * mr.setAlignmentId(Integer.parseInt(ttstrArray[2]));
+         * mr.setPdbResidueName(pdbResidueName); mutationList.add(mr); } }
+         * 
+         * }
+         */
 
         MutationAlignmentResult result = new MutationAlignmentResult();
         result.setAlignmentList(alignmentList);
         result.setMutationList(mutationList);
-        
+
         return result;
     }
-    
+
     /*
-    private int checkGapinBlastResults(int i, BlastResult br) {
-		int j = i;
-		if(br.seq_align.substring(j-1, j) != "-") {
-			while(br.seq_align.substring(j, j+1) == "-") {
-				j++;
-			}
-		}
-		return j-i;
-	}
-	*/
-	/**
-     * Check whether the alignment itself has high quality, define the condition here
-     *  
+     * private int checkGapinBlastResults(int i, BlastResult br) { int j = i;
+     * if(br.seq_align.substring(j-1, j) != "-") {
+     * while(br.seq_align.substring(j, j+1) == "-") { j++; } } return j-i; }
+     */
+    /**
+     * Check whether the alignment itself has high quality, define the condition
+     * here
+     * 
      * @param br
      * @param alignlen
      * @return
      */
-    boolean isFilterAlignHighQuality(BlastResult br, Double alignlen){
-        //Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.95 //old
-        //if(br.identy-br.identp<=Integer.parseInt(ReadConfig.alignFilterDiff) && br.identp/alignlen>=Double.parseDouble(ReadConfig.alignFilterRatio))
-        //Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.95
-        if(alignlen-br.identp<=Integer.parseInt(ReadConfig.alignFilterDiff) && br.identp/alignlen>=Double.parseDouble(ReadConfig.alignFilterRatio))
+    boolean isFilterAlignHighQuality(BlastResult br, Double alignlen) {
+        // Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.95
+        // //old
+        // if(br.identy-br.identp<=Integer.parseInt(ReadConfig.alignFilterDiff)
+        // &&
+        // br.identp/alignlen>=Double.parseDouble(ReadConfig.alignFilterRatio))
+        // Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.95
+        if (alignlen - br.identp <= Integer.parseInt(ReadConfig.alignFilterDiffT)
+                && br.identp / alignlen >= Double.parseDouble(ReadConfig.alignFilterRatio))
             return true;
         else
-            return false; 
+            return false;
+    }
+
+    /**
+     * Qualitytest 2: ratio of identp/len >= 0.90/0.95/1.00
+     * 
+     * @param br
+     * @param alignlen
+     * @param cases
+     * @return
+     */
+    boolean isQuality2(BlastResult br, Double alignlen, int cases) {
+        boolean testcase = false;
+        switch (cases) {
+        case 1:
+            testcase = br.identp / alignlen >= 0.90;
+            break;
+        case 2:
+            testcase = br.identp / alignlen >= 0.95;
+            break;
+        case 3:
+            testcase = br.identp / alignlen >= 1.00;
+            break;
+        default:
+            break;
+        }
+        return testcase;
+    }
+
+    /**
+     * Qualitytest 3: len-identp<=10/5
+     * 
+     * @param br
+     * @param alignlen
+     * @param cases
+     * @return
+     */
+    boolean isQuality3(BlastResult br, Double alignlen, int cases) {
+        boolean testcase = false;
+        switch (cases) {
+        case 1:
+            testcase = alignlen - br.identp <= 10;
+            break;
+        case 2:
+            testcase = alignlen - br.identp <= 5;
+            break;
+        default:
+            break;
+        }
+        return testcase;
+    }
+
+    /**
+     * Qualitytest 4: len-identy<=10/5
+     * 
+     * @param br
+     * @param alignlen
+     * @param cases
+     * @return
+     */
+    boolean isQuality4(BlastResult br, Double alignlen, int cases) {
+        boolean testcase = false;
+        switch (cases) {
+        case 1:
+            testcase = alignlen - br.ident <= 10;
+            break;
+        case 2:
+            testcase = alignlen - br.ident <= 5;
+            break;
+        default:
+            break;
+        }
+        return testcase;
+    }
+
+    /**
+     * Check whether the alignment itself has high quality, define the condition
+     * here, this function is for test
+     * 
+     * - 2 3 (1-3) 
+     * - 3 2 (4-5) 
+     * - 4 2 (6-7) 
+     * - 2&&(3&&4) 3*2*2 (8-19) 
+     * - 2&&(3||4) 3*2*2 (20-31) 
+     * - 2&&3 3*2 (32-37) 
+     * - 2&&4 3*2 (38-43) 
+     * - 2||(3&&4) 3*2*2 (44-55) 
+     * - 2||3||4 3*2*2 (56-67) 
+     * - 2||3 3*2 (68-73) 
+     * - 2||4 3*2 (74-79)
+     * 
+     * @param br
+     * @param alignlen
+     * @return
+     */
+    boolean isFilterAlignHighQuality(BlastResult br, Double alignlen, int cases) {
+        boolean testcase = false;
+        switch (cases) {
+        case 1:
+            testcase = isQuality2(br, alignlen, 1);
+            break;
+        case 2:
+            testcase = isQuality2(br, alignlen, 2);
+            break;
+        case 3:
+            testcase = isQuality2(br, alignlen, 3);
+            break;
+        case 4:
+            testcase = isQuality3(br, alignlen, 1);
+            break;
+        case 5:
+            testcase = isQuality3(br, alignlen, 2);
+            break;
+        case 6:
+            testcase = isQuality4(br, alignlen, 1);
+            break;
+        case 7:
+            testcase = isQuality4(br, alignlen, 2);
+            break;
+
+        case 8:
+            testcase = isQuality2(br, alignlen, 1) && isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 1);
+            break;
+        case 9:
+            testcase = isQuality2(br, alignlen, 1) && isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 2);
+            break;
+        case 10:
+            testcase = isQuality2(br, alignlen, 1) && isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 1);
+            break;
+        case 11:
+            testcase = isQuality2(br, alignlen, 1) && isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 2);
+            break;
+        case 12:
+            testcase = isQuality2(br, alignlen, 2) && isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 1);
+            break;
+        case 13:
+            testcase = isQuality2(br, alignlen, 2) && isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 2);
+            break;
+        case 14:
+            testcase = isQuality2(br, alignlen, 2) && isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 1);
+            break;
+        case 15:
+            testcase = isQuality2(br, alignlen, 2) && isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 2);
+            break;
+        case 16:
+            testcase = isQuality2(br, alignlen, 3) && isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 1);
+            break;
+        case 17:
+            testcase = isQuality2(br, alignlen, 3) && isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 2);
+            break;
+        case 18:
+            testcase = isQuality2(br, alignlen, 3) && isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 1);
+            break;
+        case 19:
+            testcase = isQuality2(br, alignlen, 3) && isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 2);
+            break;
+
+        case 20:
+            testcase = isQuality2(br, alignlen, 1) && (isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 1));
+            break;
+        case 21:
+            testcase = isQuality2(br, alignlen, 1) && (isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 2));
+            break;
+        case 22:
+            testcase = isQuality2(br, alignlen, 1) && (isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 1));
+            break;
+        case 23:
+            testcase = isQuality2(br, alignlen, 1) && (isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 2));
+            break;
+        case 24:
+            testcase = isQuality2(br, alignlen, 2) && (isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 1));
+            break;
+        case 25:
+            testcase = isQuality2(br, alignlen, 2) && (isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 2));
+            break;
+        case 26:
+            testcase = isQuality2(br, alignlen, 2) && (isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 1));
+            break;
+        case 27:
+            testcase = isQuality2(br, alignlen, 2) && (isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 2));
+            break;
+        case 28:
+            testcase = isQuality2(br, alignlen, 3) && (isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 1));
+            break;
+        case 29:
+            testcase = isQuality2(br, alignlen, 3) && (isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 2));
+            break;
+        case 30:
+            testcase = isQuality2(br, alignlen, 3) && (isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 1));
+            break;
+        case 31:
+            testcase = isQuality2(br, alignlen, 3) && (isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 2));
+            break;
+
+        case 32:
+            testcase = isQuality2(br, alignlen, 1) && isQuality3(br, alignlen, 1);
+            break;
+        case 33:
+            testcase = isQuality2(br, alignlen, 1) && isQuality3(br, alignlen, 2);
+            break;
+        case 34:
+            testcase = isQuality2(br, alignlen, 2) && isQuality3(br, alignlen, 1);
+            break;
+        case 35:
+            testcase = isQuality2(br, alignlen, 2) && isQuality3(br, alignlen, 2);
+            break;
+        case 36:
+            testcase = isQuality2(br, alignlen, 3) && isQuality3(br, alignlen, 1);
+            break;
+        case 37:
+            testcase = isQuality2(br, alignlen, 3) && isQuality3(br, alignlen, 2);
+            break;
+
+        case 38:
+            testcase = isQuality2(br, alignlen, 1) && isQuality4(br, alignlen, 1);
+            break;
+        case 39:
+            testcase = isQuality2(br, alignlen, 1) && isQuality4(br, alignlen, 2);
+            break;
+        case 40:
+            testcase = isQuality2(br, alignlen, 2) && isQuality4(br, alignlen, 1);
+            break;
+        case 41:
+            testcase = isQuality2(br, alignlen, 2) && isQuality4(br, alignlen, 2);
+            break;
+        case 42:
+            testcase = isQuality2(br, alignlen, 3) && isQuality4(br, alignlen, 1);
+            break;
+        case 43:
+            testcase = isQuality2(br, alignlen, 3) && isQuality4(br, alignlen, 2);
+            break;
+
+        case 44:
+            testcase = isQuality2(br, alignlen, 1) || (isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 1));
+            break;
+        case 45:
+            testcase = isQuality2(br, alignlen, 1) || (isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 2));
+            break;
+        case 46:
+            testcase = isQuality2(br, alignlen, 1) || (isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 1));
+            break;
+        case 47:
+            testcase = isQuality2(br, alignlen, 1) || (isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 2));
+            break;
+        case 48:
+            testcase = isQuality2(br, alignlen, 2) || (isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 1));
+            break;
+        case 49:
+            testcase = isQuality2(br, alignlen, 2) || (isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 2));
+            break;
+        case 50:
+            testcase = isQuality2(br, alignlen, 2) || (isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 1));
+            break;
+        case 51:
+            testcase = isQuality2(br, alignlen, 2) || (isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 2));
+            break;
+        case 52:
+            testcase = isQuality2(br, alignlen, 3) || (isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 1));
+            break;
+        case 53:
+            testcase = isQuality2(br, alignlen, 3) || (isQuality3(br, alignlen, 1) && isQuality4(br, alignlen, 2));
+            break;
+        case 54:
+            testcase = isQuality2(br, alignlen, 3) || (isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 1));
+            break;
+        case 55:
+            testcase = isQuality2(br, alignlen, 3) || (isQuality3(br, alignlen, 2) && isQuality4(br, alignlen, 2));
+            break;
+
+        case 56:
+            testcase = isQuality2(br, alignlen, 1) || isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 1);
+            break;
+        case 57:
+            testcase = isQuality2(br, alignlen, 1) || isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 2);
+            break;
+        case 58:
+            testcase = isQuality2(br, alignlen, 1) || isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 1);
+            break;
+        case 59:
+            testcase = isQuality2(br, alignlen, 1) || isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 2);
+            break;
+        case 60:
+            testcase = isQuality2(br, alignlen, 2) || isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 1);
+            break;
+        case 61:
+            testcase = isQuality2(br, alignlen, 2) || isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 2);
+            break;
+        case 62:
+            testcase = isQuality2(br, alignlen, 2) || isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 1);
+            break;
+        case 63:
+            testcase = isQuality2(br, alignlen, 2) || isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 2);
+            break;
+        case 64:
+            testcase = isQuality2(br, alignlen, 3) || isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 1);
+            break;
+        case 65:
+            testcase = isQuality2(br, alignlen, 3) || isQuality3(br, alignlen, 1) || isQuality4(br, alignlen, 2);
+            break;
+        case 66:
+            testcase = isQuality2(br, alignlen, 3) || isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 1);
+            break;
+        case 67:
+            testcase = isQuality2(br, alignlen, 3) || isQuality3(br, alignlen, 2) || isQuality4(br, alignlen, 2);
+            break;
+
+        case 68:
+            testcase = isQuality2(br, alignlen, 1) || isQuality3(br, alignlen, 1);
+            break;
+        case 69:
+            testcase = isQuality2(br, alignlen, 1) || isQuality3(br, alignlen, 2);
+            break;
+        case 70:
+            testcase = isQuality2(br, alignlen, 2) || isQuality3(br, alignlen, 1);
+            break;
+        case 71:
+            testcase = isQuality2(br, alignlen, 2) || isQuality3(br, alignlen, 2);
+            break;
+        case 72:
+            testcase = isQuality2(br, alignlen, 3) || isQuality3(br, alignlen, 1);
+            break;
+        case 73:
+            testcase = isQuality2(br, alignlen, 3) || isQuality3(br, alignlen, 2);
+            break;
+
+        case 74:
+            testcase = isQuality2(br, alignlen, 1) || isQuality4(br, alignlen, 1);
+            break;
+        case 75:
+            testcase = isQuality2(br, alignlen, 1) || isQuality4(br, alignlen, 2);
+            break;
+        case 76:
+            testcase = isQuality2(br, alignlen, 2) || isQuality4(br, alignlen, 1);
+            break;
+        case 77:
+            testcase = isQuality2(br, alignlen, 2) || isQuality4(br, alignlen, 2);
+            break;
+        case 78:
+            testcase = isQuality2(br, alignlen, 3) || isQuality4(br, alignlen, 1);
+            break;
+        case 79:
+            testcase = isQuality2(br, alignlen, 3) || isQuality4(br, alignlen, 2);
+            break;
+
+        default:
+            break;
+        }
+
+        // Hsp_positive-Hsp_identity<=10 && Hsp_positive/Hsp_align-len>=0.95
+        // //old
+        // if(br.identy-br.identp<=Integer.parseInt(ReadConfig.alignFilterDiff)
+        // &&
+        // br.identp/alignlen>=Double.parseDouble(ReadConfig.alignFilterRatio))
+
+        // output result true or false
+        if (testcase)
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -728,22 +1108,27 @@ public class PdbScriptsPipelineMakeSQL {
 }
 
 /**
- * Used for store mutation and alignment list for generating sql 
+ * Used for store mutation and alignment list for generating sql
+ * 
  * @author wangjue
  *
  */
-class MutationAlignmentResult{
+class MutationAlignmentResult {
     List<BlastResult> alignmentList;
     List<MutationRecord> mutationList;
+
     public List<BlastResult> getAlignmentList() {
         return alignmentList;
     }
+
     public void setAlignmentList(List<BlastResult> alignmentList) {
         this.alignmentList = alignmentList;
     }
+
     public List<MutationRecord> getMutationList() {
         return mutationList;
     }
+
     public void setMutationList(List<MutationRecord> mutationList) {
         this.mutationList = mutationList;
     }

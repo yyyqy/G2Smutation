@@ -21,6 +21,7 @@ public class PdbScriptsPipelineStarter {
     public static final String INITIALIZE_DATABASE_COMMAND = "init";
     public static final String WEEKLY_UPDATE_COMMAND = "updateweekly";
     public static final String IMMEDIATE_UPDATE_COMMAND = "update";
+    public static final String STATISTICS_COMMAND = "stats";
 
     /**
      * main function, run the commands
@@ -32,12 +33,12 @@ public class PdbScriptsPipelineStarter {
 
         // Check arguments
         if (args.length != 1) {
-            System.out.println("Usage:\n" + "Initiate the pipeline" + "java -jar G2Smutation-pipeline-0.1.0.jar init\n" + "or\n"
-                    + "Update the database weekly, user could deploy and change the settings in application.approperties\n"
-                    + "java -jar ls"
-                    + "eline updateweekly\n" + "or\n"
-                    + "update for update immediately , users should use CRON or other scheduling mechanisms to run the updates\n"
-                    + "java -jar G2Smutation-pipeline-0.1.0.jar update\n");
+            System.out.println(
+                    "Usage:\n" + "Initiate the pipeline" + "java -jar G2Smutation-pipeline-0.1.0.jar init\n" + "or\n"
+                            + "Update the database weekly, user could deploy and change the settings in application.approperties\n"
+                            + "java -jar ls" + "eline updateweekly\n" + "or\n"
+                            + "update for update immediately , users should use CRON or other scheduling mechanisms to run the updates\n"
+                            + "java -jar G2Smutation-pipeline-0.1.0.jar update\n");
             System.exit(0);
         }
         long startTime = System.currentTimeMillis();
@@ -76,6 +77,13 @@ public class PdbScriptsPipelineStarter {
             log.info("[Pipeline] Run Pipleline update immediately");
             app = new PdbScriptsPipelineRunCommand();
             app.runUpdatePDB();
+            break;
+        case STATISTICS_COMMAND:
+            // hidden commands;
+            // Used to generate summaries of different thresholds
+            log.info("[Pipeline] Run Statistics");
+            app = new PdbScriptsPipelineRunCommand();
+            app.runStatistics();
             break;
         default:
             System.out.println("The argument should be " + INITIALIZE_DATABASE_COMMAND + ", " + WEEKLY_UPDATE_COMMAND

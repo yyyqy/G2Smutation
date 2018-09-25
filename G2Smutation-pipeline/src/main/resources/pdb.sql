@@ -1,6 +1,7 @@
 --
 -- database `g2smutation`
 --
+SET FOREIGN_KEY_CHECKS = 0;
 drop table IF EXISTS pdb_seq_alignment;
 drop table IF EXISTS uniprot_entry;
 drop table IF EXISTS ensembl_entry;
@@ -8,6 +9,7 @@ drop table IF EXISTS pdb_entry;
 drop table IF EXISTS seq_entry;
 drop table IF EXISTS mutation_entry;
 drop table IF EXISTS update_record;
+SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE `seq_entry`(
     `SEQ_ID` int(255) NOT NULL,
