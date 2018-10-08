@@ -545,7 +545,7 @@ public class PdbScriptsPipelineRunCommand {
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
-
+        /*
         //Test for thresholds
         // https://github.com/juexinwang/G2Smutation/issues/14
         for (int testcount = 1; testcount <= 79; testcount++) {
@@ -613,6 +613,14 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.alignFilterStatsResult + "." + testcount);
             cu.runCommand("releaseTag", paralist);
 
+        }
+        */
+        //Analyze the mutation amount and rate
+        log.info("********************Statistics Result********************");
+        for (int testcount = 29; testcount <= 79; testcount++) {
+        	PdbScriptsPipelineMakeSQL compareprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
+        	compareprocess.compareMutation(testcount);
+        	
         }
 
     }
