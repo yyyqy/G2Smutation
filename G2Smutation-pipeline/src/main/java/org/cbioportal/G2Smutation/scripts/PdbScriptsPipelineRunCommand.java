@@ -617,7 +617,7 @@ public class PdbScriptsPipelineRunCommand {
         */
         //Analyze the mutation amount and rate
         log.info("********************Statistics Result********************");
-        for (int testcount = 29; testcount <= 79; testcount++) {
+        for (int testcount = 1; testcount <= 79; testcount++) {
         	PdbScriptsPipelineMakeSQL compareprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
         	compareprocess.compareMutation(testcount);
         	
