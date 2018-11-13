@@ -1,11 +1,16 @@
 package org.cbioportal.G2Smutation.scripts;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -308,7 +313,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @return generated SQL statements
      */
     public String makeTable_mutation_insert(MutationRecord mr) {
-        String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
+       String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
                 + mr.getSeqId() + "_" + mr.getSeqResidueIndex() + "','" + mr.getSeqId() + "','" + mr.getSeqName() + "',"
                 + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "',"
                 + mr.getPdbResidueIndex() + ",'" + mr.getPdbResidueName() + "'," + mr.getAlignmentId() + ");\n";
@@ -1106,6 +1111,144 @@ public class PdbScriptsPipelineMakeSQL {
         }
     }
     
+
+    public HashMap<String, String> BuildSNPHM(HashMap<String, String> SNPHM) {
+    	try {
+    		// open "SNP3D_PDB_GRCH37" file
+    		String SNPfilepwd = new String(ReadConfig.workspace + "SNP3D_PDB_GRCH37");
+    		File SNPfile = new File(SNPfilepwd);
+    		List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
+    		int SNPNum = SNPfilelines.size()-1;
+    		List<String> SNPMutationPos = new ArrayList<String>();
+    		List<String> SNPid = new ArrayList<String>();
+    		// Build SNP HashMap
+    		for (int i = 1; i <= SNPNum; i++) {
+    			SNPid.add(SNPfilelines.get(i).split("\\s+")[2]);
+    			SNPMutationPos.add(SNPfilelines.get(i).split("\\s+")[9] + "_" + SNPfilelines.get(i).split("\\s+")[10] + "_" + SNPfilelines.get(i).split("\\s+")[12]);
+    			if (SNPHM.containsKey(SNPMutationPos.get(i-1))) {
+    				String SNPTempValue = SNPHM.get(SNPMutationPos.get(i-1)) + ";" + SNPid.get(i-1);
+    				SNPHM.put(SNPMutationPos.get(i-1), SNPTempValue);
+    			}
+    			else {
+    				SNPHM.put(SNPMutationPos.get(i-1), SNPid.get(i-1));
+    			}
+    		}  		
+    	} catch (Exception ex) {
+    		log.error(ex.getMessage());
+            ex.printStackTrace();
+    	}
+    	return SNPHM;
+    }
+    
+    public HashMap<String, String> BuildOutputHM(HashMap<String, String> OutputSNPHM) {
+    	try {
+    		// open "SNP3D_PDB_GRCH37" file
+    		String SNPfilepwd = new String(ReadConfig.workspace + "SNP3D_PDB_GRCH37");
+    		File SNPfile = new File(SNPfilepwd);
+    		List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
+    		int SNPNum = SNPfilelines.size()-1;
+    		List<String> SNPid = new ArrayList<String>();
+    		// Build Output HashMap
+    		for (int i = 1; i <= SNPNum; i++) {
+    			SNPid.add(SNPfilelines.get(i).split("\\s+")[2]);
+    			// log.info(SNPid.get(i-1));
+    			OutputSNPHM.put(SNPid.get(i-1), SNPfilelines.get(i));
+    		}  		
+    	} catch (Exception ex) {
+    		log.error(ex.getMessage());
+            ex.printStackTrace();
+    	}
+    	return OutputSNPHM;
+    }
+    
+    public void compareMutation(int testcount) {
+    	try {
+    		log.info("********************The statistics result of the "+ testcount +"th case********************");
+    		
+    		// Output the mutation number of each mutationresult file
+    		String pdbfilepwd = new String(ReadConfig.workspace + ReadConfig.alignFilterStatsResult + "." + testcount);
+    		File pdbfile = new File(pdbfilepwd);
+    		List<String> pdbfilelines = FileUtils.readLines(pdbfile, StandardCharsets.UTF_8.name());
+    		int mutationline = pdbfilelines.size() - 1;
+    		
+    		// Compare each mutation to the SNP_PDB file 		
+    		List<String> pdbMutationNo = new ArrayList<String>();
+    		List<String> pdbMutationPos = new ArrayList<String>();
+    		HashMap<String, String> pdbMutationHM = new HashMap<String, String>();
+    		HashMap<String, String> SNPHM = new HashMap<String, String>();
+    		HashMap<String, String> OutputSNPHM = new HashMap<String, String>();
+    		List<String> outputSNPSeq = new ArrayList<String>();
+    		
+    		SNPHM = BuildSNPHM(SNPHM);
+    		OutputSNPHM = BuildOutputHM(OutputSNPHM);
+    		
+    		for (int i = 1; i <= mutationline; i++) {
+    			pdbMutationNo.add(pdbfilelines.get(i).split("\\s+")[0]);
+    			pdbMutationPos.add(transferPdblines(pdbfilelines.get(i)));
+    			if(SNPHM.containsKey(pdbMutationPos.get(i-1))) {
+    				pdbMutationHM.put(pdbMutationNo.get(i-1), SNPHM.get(pdbMutationPos.get(i-1)));
+    				for(int j = 0; j < pdbMutationHM.get(pdbMutationNo.get(i-1)).split(";").length; j++) {
+    					outputSNPSeq.add(OutputSNPHM.get(pdbMutationHM.get(pdbMutationNo.get(i-1)).split(";")[j]));
+    				}
+    			}
+    		}
+    		pdbMutationNo = removeStringListDupli(pdbMutationNo);
+    		double pdbMutationNum = pdbMutationNo.size();
+    		double matchNum = pdbMutationHM.size();
+    		log.info("[Statistic]There are totally " + pdbMutationNum + " mutation");
+    		log.info("[Statistic]The matching num is " + matchNum);
+    		double matchRate = matchNum / pdbMutationNum;
+    		log.info("[Statistic]The matching rate is " + matchRate);
+    		
+    		// output result to "analyzefile.txt"
+    		File analyzefile = new File(ReadConfig.workspace + "analyzefile.txt");
+    		if (!analyzefile.exists()) {
+    			FileUtils.touch(analyzefile);
+    		}
+    		List<String> analyzefilelines = new ArrayList<>();
+    		analyzefilelines.add("mutationresult" + testcount +": ");
+    		analyzefilelines.add("MutationNum under threshold: " + pdbMutationNum);
+    		analyzefilelines.add("MutationNum Matched: " + matchNum);
+    		analyzefilelines.add("MatchRate: " + matchRate);
+    		analyzefilelines.add(" ");
+    		FileUtils.writeLines(analyzefile, StandardCharsets.UTF_8.name(), analyzefilelines, true);
+    		
+    		// output SNP information to "SNPresult.txt.testcount"
+    		File SNPResultFile = new File(ReadConfig.workspace + "snpresult.txt" + "." + testcount);
+    		if (!SNPResultFile.exists()) {
+    			FileUtils.touch(SNPResultFile);
+    		}
+    		List<String> outputTitle = new ArrayList<String>();
+    		outputTitle.add("chr	pos	snp_id	master_acc	master_gi	master_pos	master_res	master_var	pdb_gi	pdb	pdb_chain	pdb_res	pdb_pos	blast_ident	clinsig");
+    		FileUtils.writeLines(SNPResultFile, StandardCharsets.UTF_8.name(), outputTitle);
+    		if (!outputSNPSeq.isEmpty()) {
+    			outputSNPSeq = removeStringListDupli(outputSNPSeq);
+    			FileUtils.writeLines(SNPResultFile, StandardCharsets.UTF_8.name(), outputSNPSeq, true);
+    		}
+	
+    	} catch (Exception ex) {
+    		log.error(ex.getMessage());
+            ex.printStackTrace();
+    	}
+    }
+    
+    public static List<String> removeStringListDupli(List<String> stringList) {
+        Set<String> set = new LinkedHashSet<>();
+        set.addAll(stringList);
+
+        stringList.clear();
+
+        stringList.addAll(set);
+        return stringList;
+    }
+
+    public String transferPdblines(String line) {
+    	String transline = new String();
+    	transline = line.split("\\s+")[1].substring(0, 7).toUpperCase() + line.split("\\s+")[2]; 	
+		return transline;
+    }
+    
+
     
     /*
      * String str =
@@ -1146,6 +1289,7 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
+
 }
 
 /**

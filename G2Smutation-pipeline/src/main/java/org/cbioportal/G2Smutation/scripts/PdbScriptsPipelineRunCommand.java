@@ -1,5 +1,6 @@
 package org.cbioportal.G2Smutation.scripts;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,6 +27,7 @@ public class PdbScriptsPipelineRunCommand {
     private int matches;
     private int seqFileCount;
     private boolean updateTag;
+    private int rsSqlCount;
 
     /**
      * Constructor
@@ -82,7 +84,7 @@ public class PdbScriptsPipelineRunCommand {
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
-        log.info("********************[STEP 1]********************");
+/*        log.info("********************[STEP 1]********************");
         log.info("Download PDB and parse to sequences");
         log.info(
                 "[Download] A cloned copy of whole PDB will be downloaded and parse to sequences, unziped and parsing to get the PDB sequences");
@@ -226,14 +228,14 @@ public class PdbScriptsPipelineRunCommand {
         log.info("********************[STEP 7]********************");
         log.info("[PrepareSQL] Parse results and output as input sql statments");
         parseprocess.parse2sql(false, ReadConfig.workspace, this.seqFileCount);
-
+*/
         // Step 8:
         log.info("********************[STEP 8]********************");
         log.info("[SQL] Create data schema");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
         cu.runCommand("mysql", paralist);
-
+/*
         // Step 9:
         log.info("********************[STEP 9]********************");
         log.info("[SQL] Import gene sequence SQL statements into the database");
@@ -255,7 +257,8 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
         }
-*/
+<<<<<<< HEAD
+ */       
         // Step 11:
         log.info("********************[STEP 11]********************");
         log.info("[SQL] Find Mutation Info, Output and Generate Mutation SQL Injection Table)");
@@ -272,6 +275,21 @@ public class PdbScriptsPipelineRunCommand {
         
         // Step 12:
         log.info("********************[STEP 12]********************");
+        log.info("[PrepareSQL] Call url and output as input rs sql statments");
+        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
+        rsSqlCount = generateSQLfile.generateRsSQLfile();
+        
+        // Step 13:
+        log.info("********************[STEP 13]********************");
+        log.info("[SQL] Import RS INSERT SQL statements into the database (Warning: This step takes time)");
+        for (int i = 0; i <= rsSqlCount; i++) {
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+            cu.runCommand("mysql", paralist);
+        }
+        
+        // Step 14:
+        log.info("********************[STEP 14]********************");
         log.info("[FileSystem] Clean Up");
         /*
          * if(ReadConfig.saveSpaceTag.equals("true")){ log.info(
@@ -560,7 +578,7 @@ public class PdbScriptsPipelineRunCommand {
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
-
+        /*
         //Test for thresholds
         // https://github.com/juexinwang/G2Smutation/issues/14
         for (int testcount = 3; testcount <= 79; testcount++) {
@@ -629,7 +647,16 @@ public class PdbScriptsPipelineRunCommand {
             cu.runCommand("releaseTag", paralist);
 
         }
-
+        */
+        //Analyze the mutation amount and rate
+        log.info("********************Statistics Result********************");
+//        for (int testcount = 1; testcount <= 79; testcount++) {
+//        	PdbScriptsPipelineMakeSQL compareprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
+//        	compareprocess.compareMutation(testcount);
+//        	
+//        }
+//        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
+//        generateSQLfile.generateRsSQLfile();
     }
 }
 

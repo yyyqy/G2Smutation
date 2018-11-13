@@ -35,6 +35,7 @@ public class ReadConfig {
     public static String seqFastaFile;
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
+    public static String rsSqlInsertFile;
     public static String blastParaEvalue;
     public static String blastParaMaxTargetSeqs;
     public static String blastParaWordSize;
@@ -81,6 +82,7 @@ public class ReadConfig {
     public static String alignFilterStatsResult;
     public static String saveSpaceTag;
 
+
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
     }
@@ -126,6 +128,7 @@ public class ReadConfig {
             ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file").trim();
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
+            ReadConfig.rsSqlInsertFile = prop.getProperty("rs_sql_insert_file").trim();
             ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue").trim();
             ReadConfig.blastParaMaxTargetSeqs = prop.getProperty("blast_para_max_target_seqs").trim();
             ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size").trim();
@@ -327,6 +330,10 @@ public class ReadConfig {
     public static String getSqlDeleteFile() {
         return sqlDeleteFile;
     }
+    
+    public static String getRsSqlInsertFile() {
+        return rsSqlInsertFile;
+    }
 
     public static String getBlastParaEvalue() {
         return blastParaEvalue;
@@ -517,6 +524,10 @@ public class ReadConfig {
 
     public static void setSqlDeleteFile(String sqlDeleteFile) {
         ReadConfig.sqlDeleteFile = sqlDeleteFile;
+    }
+    
+    public static void setRsSqlInsertFile(String rsSqlInsertFile) {
+        ReadConfig.rsSqlInsertFile = rsSqlInsertFile;
     }
 
     public static void setBlastParaEvalue(String blastParaEvalue) {
