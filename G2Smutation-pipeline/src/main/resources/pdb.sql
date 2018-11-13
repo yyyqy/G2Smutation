@@ -88,7 +88,7 @@ CREATE TABLE `mutation_entry` (
 );
 
 CREATE TABLE `rs_mutation_entry` (
-  `RS_MUTATION_ID` int NOT NULL,
+  `RS_MUTATION_ID` int(255) NOT NULL,
   `SEQ_ID` int(255) NOT NULL,
   `PDB_NO` VARCHAR(12) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `PDB_INDEX` int NOT NULL,
