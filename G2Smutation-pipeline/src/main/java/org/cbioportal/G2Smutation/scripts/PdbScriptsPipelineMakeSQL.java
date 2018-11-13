@@ -1111,6 +1111,7 @@ public class PdbScriptsPipelineMakeSQL {
         }
     }
     
+
     public HashMap<String, String> BuildSNPHM(HashMap<String, String> SNPHM) {
     	try {
     		// open "SNP3D_PDB_GRCH37" file
@@ -1247,6 +1248,48 @@ public class PdbScriptsPipelineMakeSQL {
 		return transline;
     }
     
+
+    
+    /*
+     * String str =
+     * "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+     * + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" +
+     * strarrayS[2] + "','" + segStart + "','" + strarrayQ[0] + "'," +
+     * br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," +
+     * br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + ","
+     * + br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() +
+     * "','" + br.getPdb_align() + "','" + br.getMidline_align() +
+     * "',CURDATE());\n";
+     */
+    
+    /**
+     * parse mutation result in inputFile and generate outputfile in SQL
+     * 
+     * @param inputFilename
+     * @param outputFilename
+     */
+    public void parseGenerateMutationResultSQL(String inputFilename, String outputFilename){
+        try{
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            File inFile = new File(inputFilename);
+            List<String> list = FileUtils.readLines(inFile);
+            for(int i=1; i<list.size(); i++){
+                String[] str = list.get(i).split("\t");
+                String strr = "INSERT INTO `mutation_usage_table` (`MUTATION_ID`,`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`,`UPDATE_DATE`)VALUES('"
+                        +str[0]+"','"+str[1]+"','"+str[2]+"','"+str[3]+"','"+str[4]+"','"+str[5]+"','"+str[6]+"','"+str[7]+"','"+str[8]+"','"+str[9]+"',CURDATE());\n";
+                outputlist.add(strr);
+            }
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);
+        }catch(Exception ex){
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
 }
 
 /**
