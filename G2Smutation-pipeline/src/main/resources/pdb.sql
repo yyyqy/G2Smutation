@@ -9,6 +9,7 @@ drop table IF EXISTS pdb_entry;
 drop table IF EXISTS seq_entry;
 drop table IF EXISTS mutation_entry;
 drop table IF EXISTS rs_mutation_entry;
+drop table IF EXISTS mutation_usage_table;
 drop table IF EXISTS update_record;
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -85,6 +86,7 @@ CREATE TABLE `mutation_entry` (
   FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
   FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
 );
+
 CREATE TABLE `rs_mutation_entry` (
   `RS_MUTATION_ID` int NOT NULL,
   `SEQ_ID` int(255) NOT NULL,
@@ -98,6 +100,26 @@ CREATE TABLE `rs_mutation_entry` (
   FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
   FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
 );
+
+CREATE TABLE `mutation_usage_table` (
+  `MUTATION_ID` int NOT NULL AUTO_INCREMENT,
+  `MUTATION_NO` VARCHAR(50) NOT NULL,
+  `SEQ_ID` int(255) NOT NULL,
+  `SEQ_NAME` text,
+  `SEQ_INDEX` int NOT NULL,
+  `SEQ_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `PDB_NO` VARCHAR(12) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `PDB_INDEX` int NOT NULL,
+  `PDB_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `ALIGNMENT_ID` int NOT NULL,
+  `UPDATE_DATE` DATE,
+  PRIMARY KEY(`MUTATION_ID`),
+  KEY(`MUTATION_NO`,`SEQ_ID`,`PDB_NO`,`ALIGNMENT_ID`),
+  FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`),
+  FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
+  FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
+);
+
 CREATE TABLE `update_record` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `UPDATE_DATE` DATE,

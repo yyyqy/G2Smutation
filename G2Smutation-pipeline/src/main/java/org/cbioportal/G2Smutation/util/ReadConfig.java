@@ -72,6 +72,9 @@ public class ReadConfig {
     public static String updateObsolete;
     public static String pdbFastaService;
     public static String mysqlMaxAllowedPacket;
+    public static String mutationGenerateSQL;
+    public static String mutationResult;
+    public static String mutationInjectSQL;
     public static String alignFilterDiffT;
     public static String alignFilterDiffP;
     public static String alignFilterRatio;
@@ -162,6 +165,9 @@ public class ReadConfig {
             ReadConfig.updateObsolete = prop.getProperty("update.obsolete").trim();
             ReadConfig.pdbFastaService = prop.getProperty("pdb.fastaService").trim();
             ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet").trim();
+            ReadConfig.mutationGenerateSQL = prop.getProperty("mutation_generate_SQL").trim();
+            ReadConfig.mutationResult = prop.getProperty("mutation_result").trim();
+            ReadConfig.mutationInjectSQL = prop.getProperty("mutation_inject_SQL").trim();
             ReadConfig.alignFilterDiffT = prop.getProperty("align.filter.diffT").trim();
             ReadConfig.alignFilterDiffP = prop.getProperty("align.filter.diffP").trim();
             ReadConfig.alignFilterRatio = prop.getProperty("align.filter.ratio").trim();
@@ -683,5 +689,31 @@ public class ReadConfig {
     public static void setAlignFilterStatsResult(String alignFilterStatsResult) {
         ReadConfig.alignFilterStatsResult = alignFilterStatsResult;
     }
+
+    public static String getMutationGenerateSQL() {
+        return mutationGenerateSQL;
+    }
+
+    public static void setMutationGenerateSQL(String mutationGenerateSQL) {
+        ReadConfig.mutationGenerateSQL = mutationGenerateSQL;
+    }
+
+    public static String getMutationResult() {
+        return mutationResult;
+    }
+
+    public static void setMutationResult(String mutationResult) {
+        ReadConfig.mutationResult = mutationResult;
+    }
+
+    public static String getMutationInjectSQL() {
+        return mutationInjectSQL;
+    }
+
+    public static void setMutationInjectSQL(String mutationInjectSQL) {
+        ReadConfig.mutationInjectSQL = mutationInjectSQL;
+    }
+    
+    
 
 }

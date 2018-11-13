@@ -78,8 +78,9 @@ public class PdbScriptsPipelineRunCommand {
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
         CommandProcessUtil cu = new CommandProcessUtil();
+        PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         ArrayList<String> paralist = new ArrayList<String>();
-
+/*
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -220,7 +221,7 @@ public class PdbScriptsPipelineRunCommand {
             cu.runCommand("blastp", paralist);
         }
         
-        PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
+        
         this.seqFileCount = 10;
         
         // Step 7:
@@ -256,15 +257,30 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
         }
+<<<<<<< HEAD
  */       
         // Step 11:
         log.info("********************[STEP 11]********************");
+        log.info("[SQL] Find Mutation Info, Output and Generate Mutation SQL Injection Table)");
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.mutationGenerateSQL);
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationResult);
+        cu.runCommand("releaseTag", paralist);
+        
+        parseprocess.parseGenerateMutationResultSQL(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQL);       
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQL);
+        cu.runCommand("mysql", paralist);
+        
+        // Step 12:
+        log.info("********************[STEP 12]********************");
         log.info("[PrepareSQL] Call url and output as input rs sql statments");
         PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
         rsSqlCount = generateSQLfile.generateRsSQLfile();
         
-        // Step 12:
-        log.info("********************[STEP 12]********************");
+        // Step 13:
+        log.info("********************[STEP 13]********************");
         log.info("[SQL] Import RS INSERT SQL statements into the database (Warning: This step takes time)");
         for (int i = 0; i <= rsSqlCount; i++) {
             paralist = new ArrayList<String>();
@@ -272,8 +288,8 @@ public class PdbScriptsPipelineRunCommand {
             cu.runCommand("mysql", paralist);
         }
         
-        // Step 13:
-        log.info("********************[STEP 13]********************");
+        // Step 14:
+        log.info("********************[STEP 14]********************");
         log.info("[FileSystem] Clean Up");
         /*
          * if(ReadConfig.saveSpaceTag.equals("true")){ log.info(
@@ -565,7 +581,7 @@ public class PdbScriptsPipelineRunCommand {
         /*
         //Test for thresholds
         // https://github.com/juexinwang/G2Smutation/issues/14
-        for (int testcount = 1; testcount <= 79; testcount++) {
+        for (int testcount = 3; testcount <= 79; testcount++) {
             log.info("********************Start Test " + testcount + "th case ********************");
             // PdbScriptsPipelineMakeSQL parseprocess = new
             // PdbScriptsPipelineMakeSQL(this);
