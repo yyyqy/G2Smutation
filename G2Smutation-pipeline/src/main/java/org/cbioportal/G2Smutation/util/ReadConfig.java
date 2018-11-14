@@ -80,6 +80,8 @@ public class ReadConfig {
     public static String alignFilterRatio;
     public static String alignFilterStatsSQL;
     public static String alignFilterStatsResult;
+    public static String dbsnpFile;
+    public static String gnApiDbsnpInnerUrl;
     public static String saveSpaceTag;
 
 
@@ -173,6 +175,8 @@ public class ReadConfig {
             ReadConfig.alignFilterRatio = prop.getProperty("align.filter.ratio").trim();
             ReadConfig.alignFilterStatsSQL = prop.getProperty("align.filter.stats.sql").trim();
             ReadConfig.alignFilterStatsResult = prop.getProperty("align.filter.stats.result").trim();
+            ReadConfig.dbsnpFile = prop.getProperty("dbsnp.file").trim();
+            ReadConfig.gnApiDbsnpInnerUrl = prop.getProperty("gn.api.dbsnp.inner.url").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
@@ -189,6 +193,22 @@ public class ReadConfig {
             rcObj = new ReadConfig();
         }
         return rcObj;
+    }
+
+    public static String getGnApiDbsnpInnerUrl() {
+        return gnApiDbsnpInnerUrl;
+    }
+
+    public static void setGnApiDbsnpInnerUrl(String gnApiDbsnpInnerUrl) {
+        ReadConfig.gnApiDbsnpInnerUrl = gnApiDbsnpInnerUrl;
+    }
+
+    public static String getDbsnpFile() {
+        return dbsnpFile;
+    }
+
+    public static void setDbsnpFile(String dbsnpFile) {
+        ReadConfig.dbsnpFile = dbsnpFile;
     }
 
     public static String getUpdateWebProperties() {

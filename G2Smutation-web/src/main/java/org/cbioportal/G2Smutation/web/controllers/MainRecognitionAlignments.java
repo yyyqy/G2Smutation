@@ -16,6 +16,7 @@ import org.cbioportal.G2Smutation.web.models.Ensembl;
 import org.cbioportal.G2Smutation.web.models.GenomeResidueInput;
 import org.cbioportal.G2Smutation.web.models.Uniprot;
 import org.cbioportal.G2Smutation.web.models.api.UtilAPI;
+import org.cbioportal.G2Smutation.web.controllers.MainRecognitionAlignments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -173,7 +174,39 @@ public class MainRecognitionAlignments {
         UtilAPI uapi = new UtilAPI();
         List<GenomeResidueInput> grlist = new ArrayList<GenomeResidueInput>();
         try {
-            grlist = uapi.callAPI(chromosomeNum, position, nucleotideType, genomeVersion);
+            grlist = uapi.callHumanGenomeAPI(chromosomeNum, position, nucleotideType, genomeVersion);
+        } catch (HttpClientErrorException ex) {
+            ex.printStackTrace();
+            // org.springframework.web.client.HttpClientErrorException: 400 Bad
+            // Request
+            return false;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        List<Ensembl> ensembllist = new ArrayList<Ensembl>();
+        for (GenomeResidueInput gr : grlist) {
+            ensembllist.addAll(ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid()));
+        }
+        if (ensembllist.size() >= 1) {
+            for (Ensembl ensembl : ensembllist) {
+                if (geneSequenceRepository.findBySeqId(ensembl.getSeqId()).size() != 0) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+    
+    
+    // Implementation of API getExistedEnsemblIdinDBSNP
+    private boolean getExistedEnsemblIdinDBSNP(String dbSNPID) {
+        // Calling GenomeNexus
+        UtilAPI uapi = new UtilAPI();
+        List<GenomeResidueInput> grlist = new ArrayList<GenomeResidueInput>();
+        try {
+            grlist = uapi.calldbSNPAPI(dbSNPID);
         } catch (HttpClientErrorException ex) {
             ex.printStackTrace();
             // org.springframework.web.client.HttpClientErrorException: 400 Bad
