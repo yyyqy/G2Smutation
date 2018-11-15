@@ -22,116 +22,106 @@ import net.sf.json.JSONObject;
 
 public class PdbScriptsPipelineApiToSQL {
 	final static Logger log = Logger.getLogger(PdbScriptsPipelineMakeSQL.class);
-	String hostName = "https://g2s.genomenexus.org/api/";
-	String apiName = "alignments";
-	String varType = "dbsnp";
-	String varName = "rs";
-	String varId;// = "550710011";//"1800369";
-	String apiType = "residueMapping";
-	
-	private String sqlInsertOutputInterval;
-	
-	JSONArray jsonarray;
-    JSONObject jsonobj;
-    JSONArray residueMapping;
-    JSONObject residueobj;
-	
-	List<String> outputLines = new ArrayList<String>();
-	
-	String urlName;// = hostName+apiName+"/"+varType+"/"+varName+varId+"/"+apiType;
-	RSMutationRecord rmr = new RSMutationRecord();
 
-	
-	public List<String> getVarId(List<String> SNPid) {
-		try {
+	/**
+	 * 
+	 * @param filename
+	 * @return
+	 */
+	public List<String> getDbSNPIdFromMappingFile(String filename) {
+	    List<String> snpIds = new ArrayList<>();
+		try {		    
     		// open "SNP3D_PDB_GRCH37" file
-    		String SNPfilepwd = new String(ReadConfig.workspace + "SNP3D_PDB_GRCH37");
+    		String SNPfilepwd = new String(filename);
     		File SNPfile = new File(SNPfilepwd);
     		List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
     		int SNPNum = SNPfilelines.size()-1;
     		for (int i = 1; i <= SNPNum; i++) {
-    			SNPid.add(SNPfilelines.get(i).split("\\s+")[2]);
+    		    snpIds.add(SNPfilelines.get(i).split("\\s+")[2]);
     		}
-    		SNPid = PdbScriptsPipelineMakeSQL.removeStringListDupli(SNPid);
+    		snpIds= PdbScriptsPipelineMakeSQL.removeStringListDupli(snpIds);
 			} catch (Exception ex) {
 				log.error(ex.getMessage());
 				ex.printStackTrace();
 			}
-		return SNPid;
+		return snpIds;
 		
 	}
 	
-	public List<String> callUrl(String urlName, List<String> tempLines){
-		String rmrLine = null;
+	public List<String> callUrl(String urlName, List<String> bufferLines, String snpId){
 		try {
 			URL url = new URL(urlName);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			String s;
 			String HMkey;
-			HashMap<String, String> lineHM = new HashMap<String, String>();
+			HashMap<String, String> lineHM = new HashMap<>();
+			RSMutationRecord rmr = new RSMutationRecord();
 			if ((s = reader.readLine()) != null) {
-				jsonarray = JSONArray.fromObject(s);
+			    JSONArray jsonarray = JSONArray.fromObject(s);
 				for (int i = 0; i < jsonarray.size(); i++) {
-					jsonobj = JSONObject.fromObject(jsonarray.get(i));
-					residueMapping = JSONArray.fromObject(jsonobj.get("residueMapping"));
+				    JSONObject jsonobj = JSONObject.fromObject(jsonarray.get(i));
+				    JSONArray residueMapping = JSONArray.fromObject(jsonobj.get("residueMapping"));
 					//log.info(residueMapping);
 					HMkey = jsonobj.get("pdbNo").toString() + jsonobj.get("pdbSeg").toString();
 					if(lineHM.containsKey(HMkey)) {
 						continue;
 					}
 					else {
-						lineHM.put(HMkey, "");
+						lineHM.put(HMkey, "");						
 						if(!residueMapping.isEmpty()) {
-							residueobj = JSONObject.fromObject(residueMapping.get(0));
-							rmr.setRs_mutationId(Integer.parseInt(varId));
+						    JSONObject residueobj = JSONObject.fromObject(residueMapping.get(0));							
+							rmr.setRs_mutationId(Integer.parseInt(snpId));
 							rmr.setSeqId(Integer.parseInt(jsonobj.get("seqId").toString()));
+							rmr.setSeqResidueIndex(Integer.parseInt(residueobj.get("queryPosition").toString()));
+							rmr.setSeqResidueName(residueobj.get("queryAminoAcid").toString());
 							rmr.setPdbNo(jsonobj.get("pdbNo").toString());
 							rmr.setPdbResidueIndex(Integer.parseInt(residueobj.get("pdbPosition").toString()));
 							rmr.setPdbResidueName(residueobj.get("pdbAminoAcid").toString());
 							rmr.setAlignmentId(Integer.parseInt(jsonobj.get("alignmentId").toString()));
-							rmrLine = makeTable_rs_mutation_insert(rmr);
-							tempLines.add(rmrLine);
+							bufferLines.add(makeTable_rs_mutation_insert(rmr));
 						}
 						else {
-							rmr.setRs_mutationId(Integer.parseInt(varId));
+							rmr.setRs_mutationId(Integer.parseInt(snpId));
 							rmr.setSeqId(Integer.parseInt(jsonobj.get("seqId").toString()));
+							rmr.setSeqResidueIndex(-1);
+                            rmr.setSeqResidueName("");
 							rmr.setPdbNo(jsonobj.get("pdbNo").toString());
 							rmr.setPdbResidueIndex(-1);
 							rmr.setPdbResidueName("");
 							rmr.setAlignmentId(Integer.parseInt(jsonobj.get("alignmentId").toString()));
-							rmrLine = makeTable_rs_mutation_insert(rmr);
-							tempLines.add(rmrLine);
+							bufferLines.add(makeTable_rs_mutation_insert(rmr));
 						}
 					}
 				}
 			}
 				reader.close();
-		} catch(IOException ex) {
-			log.info(ex);;
-			}
-		return tempLines;
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return bufferLines;
 	}
 	
 	public int generateRsSQLfile() {
-		List<String> SNPid = new ArrayList<String>();
 		List<String> tempLines = new ArrayList<String>();
 		int fileCount = 0;
-		//String rssqlfilepwd = new String(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount);
 		String rssqlfilepwd = new String(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount);
 		File rssqlfile = new File(rssqlfilepwd);
-		SNPid = getVarId(SNPid);
-		this.sqlInsertOutputInterval = ReadConfig.sqlInsertOutputInterval;
-		int sql_insert_output_interval = Integer.parseInt(this.sqlInsertOutputInterval);
+		List<String> snpIds = getDbSNPIdFromMappingFile(ReadConfig.workspace + ReadConfig.dbsnpFile);	
+		int sql_insert_output_interval = Integer.parseInt(ReadConfig.sqlInsertOutputInterval);
+		List<String> outputLines = new ArrayList<String>();
 		outputLines.add("SET autocommit = 0;");
 		outputLines.add("start transaction;");
-		log.info("Begin to generate sql file");
-		for (int j = 0; j < SNPid.size(); j++) {	//20
-			varId = SNPid.get(j);
-			//varId = "1800369";
-			urlName = hostName+apiName+"/"+varType+"/"+varName+varId+"/"+apiType;
-			if (j % sql_insert_output_interval != 0 || j ==0) {
+		log.info("Begin to generate sql file");		
+		for (int j = 0; j < snpIds.size(); j++) {	//20
+			String snpId = snpIds.get(j);
+			//snpId = "1800369";
+			String url = ReadConfig.getGnApiDbsnpInnerUrl();
+			url = url.replace("DBSNPID", snpId);
+			//log.info(j + "th URL:" + url);
+			//if (j % sql_insert_output_interval != 0 || j ==0) {
+			if (j % sql_insert_output_interval != sql_insert_output_interval-1) {
 				tempLines.clear();
-				tempLines = callUrl(urlName, tempLines);
+				tempLines = callUrl(url, tempLines, snpId);
 				outputLines.addAll(tempLines);
 			}
 			else {
@@ -141,15 +131,15 @@ public class PdbScriptsPipelineApiToSQL {
 				} catch (IOException e) {
 					log.info("input " + rssqlfilepwd + " failed");
 				}
-				log.info("Finish the " + fileCount +" file");
+				log.info("Finished generating the " + fileCount +"th SQL file");
 				fileCount++;
-				rssqlfilepwd = new String(ReadConfig.workspace + "rsInsert.sql" + "." + fileCount);
+				rssqlfilepwd = new String(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount);
 				rssqlfile = new File(rssqlfilepwd);
 				outputLines.clear();
 				outputLines.add("SET autocommit = 0;");
 				outputLines.add("start transaction;");
 				tempLines.clear();
-				tempLines = callUrl(urlName, tempLines);
+				tempLines = callUrl(url, tempLines, snpId);
 				outputLines.addAll(tempLines);
 			}
 		}
@@ -159,14 +149,14 @@ public class PdbScriptsPipelineApiToSQL {
 		} catch (IOException e) {
 			log.info("input " + rssqlfilepwd + " failed");
 		}
-		log.info("Finish the " + fileCount +" file");
+		log.info("Finished generating the " + fileCount +"th SQL file");
 		log.info("insert rssql successful!");
 		return fileCount;
 	}
 
 	public String makeTable_rs_mutation_insert(RSMutationRecord rmr) {
-        String str = "INSERT INTO `rs_mutation_entry` (`RS_MUTATION_ID`,`SEQ_ID`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
-                + rmr.getRs_mutationId() + "',"+ rmr.getSeqId() + ",'" + rmr.getPdbNo() + "',"
+        String str = "INSERT INTO `rs_mutation_entry` (`RS_SNP_ID`,`SEQ_ID`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ("
+                + rmr.getRs_mutationId() + ","+ rmr.getSeqId() + ","+ rmr.getSeqResidueIndex() + ",'" + rmr.getSeqResidueName() + "','" + rmr.getPdbNo() + "',"
                 + rmr.getPdbResidueIndex() + ",'" + rmr.getPdbResidueName() + "'," + rmr.getAlignmentId() + ");\n";
         return str;
 //		String str = "INSERT INTO `mutation_entry` VALUES ("

@@ -59,12 +59,13 @@ public class MainGetResidueMappingController {
             RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("POST PDB Residue Mapping by ProteinId")
     public List<Alignment> postResidueMapping(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot;\n"
-                    + "uniprot_isoform; hgvs-grch37; hgvs-grch38") @PathVariable String id_type,
+            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot;"
+                    + "uniprot_isoform;\n hgvs-grch37; hgvs-grch38; dbsnp") @PathVariable String id_type,
             @ApiParam(required = true, value = "Input id e.g.\n"
                     + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
                     + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
-                    + "hgvs-grch37:17:g.79478130C>G;\n" + "hgvs-grch38:17:g.7676594T>G") @PathVariable String id,
+                    + "hgvs-grch37:17:g.79478130C>G;\n" + "hgvs-grch38:17:g.7676594T>G;\n"
+                    + "dbsnp:rs1800369") @PathVariable String id,
             @ApiParam(required = false, value = "Input Residue Positions e.g. 10,100; Anynumber for hgvs;\n"
                     + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
@@ -184,7 +185,14 @@ public class MainGetResidueMappingController {
             outList.addAll(
                     seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
 
-        } else {
+        }else if (id_type.equals("dbsnp")){
+            // https://www.genomenexus.org/beta/annotation/dbsnp/rs116035550
+            // https://www.genomenexus.org/beta/annotation/dbsnp/dbSNPID
+            System.out.println("dbsnp: "+id);
+            outList.addAll(
+                    seqController.getPdbResidueByEnsemblIddbSNPID(id));
+        } 
+        else {
             log.info("Error in Input. id_type:" + id_type + " id: " + id + " position:" + positionList);
         }
         return outList;

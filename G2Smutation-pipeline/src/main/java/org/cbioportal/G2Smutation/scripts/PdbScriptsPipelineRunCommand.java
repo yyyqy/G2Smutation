@@ -228,14 +228,14 @@ public class PdbScriptsPipelineRunCommand {
         log.info("********************[STEP 7]********************");
         log.info("[PrepareSQL] Parse results and output as input sql statments");
         parseprocess.parse2sql(false, ReadConfig.workspace, this.seqFileCount);
-*/
+
         // Step 8:
         log.info("********************[STEP 8]********************");
         log.info("[SQL] Create data schema");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
         cu.runCommand("mysql", paralist);
-/*
+
         // Step 9:
         log.info("********************[STEP 9]********************");
         log.info("[SQL] Import gene sequence SQL statements into the database");
@@ -257,8 +257,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
         }
-<<<<<<< HEAD
- */       
+       
         // Step 11:
         log.info("********************[STEP 11]********************");
         log.info("[SQL] Find Mutation Info, Output and Generate Mutation SQL Injection Table)");
@@ -272,17 +271,19 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQL);
         cu.runCommand("mysql", paralist);
+        */
         
         // Step 12:
         log.info("********************[STEP 12]********************");
         log.info("[PrepareSQL] Call url and output as input rs sql statments");
         PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
-        rsSqlCount = generateSQLfile.generateRsSQLfile();
+        this.rsSqlCount = generateSQLfile.generateRsSQLfile();
+
         
         // Step 13:
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Import RS INSERT SQL statements into the database (Warning: This step takes time)");
-        for (int i = 0; i <= rsSqlCount; i++) {
+        for (int i = 0; i <= this.rsSqlCount; i++) {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
