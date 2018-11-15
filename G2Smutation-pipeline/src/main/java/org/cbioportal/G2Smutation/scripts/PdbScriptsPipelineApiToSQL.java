@@ -72,6 +72,8 @@ public class PdbScriptsPipelineApiToSQL {
 						    JSONObject residueobj = JSONObject.fromObject(residueMapping.get(0));							
 							rmr.setRs_mutationId(Integer.parseInt(snpId));
 							rmr.setSeqId(Integer.parseInt(jsonobj.get("seqId").toString()));
+							rmr.setSeqResidueIndex(Integer.parseInt(residueobj.get("queryPosition").toString()));
+							rmr.setSeqResidueName(residueobj.get("queryAminoAcid").toString());
 							rmr.setPdbNo(jsonobj.get("pdbNo").toString());
 							rmr.setPdbResidueIndex(Integer.parseInt(residueobj.get("pdbPosition").toString()));
 							rmr.setPdbResidueName(residueobj.get("pdbAminoAcid").toString());
@@ -81,6 +83,8 @@ public class PdbScriptsPipelineApiToSQL {
 						else {
 							rmr.setRs_mutationId(Integer.parseInt(snpId));
 							rmr.setSeqId(Integer.parseInt(jsonobj.get("seqId").toString()));
+							rmr.setSeqResidueIndex(-1);
+                            rmr.setSeqResidueName("");
 							rmr.setPdbNo(jsonobj.get("pdbNo").toString());
 							rmr.setPdbResidueIndex(-1);
 							rmr.setPdbResidueName("");
@@ -113,8 +117,9 @@ public class PdbScriptsPipelineApiToSQL {
 			//snpId = "1800369";
 			String url = ReadConfig.getGnApiDbsnpInnerUrl();
 			url = url.replace("DBSNPID", snpId);
-			log.info(j + "th URL:" + url);
-			if (j % sql_insert_output_interval != 0 || j ==0) {
+			//log.info(j + "th URL:" + url);
+			//if (j % sql_insert_output_interval != 0 || j ==0) {
+			if (j % sql_insert_output_interval != sql_insert_output_interval-1) {
 				tempLines.clear();
 				tempLines = callUrl(url, tempLines, snpId);
 				outputLines.addAll(tempLines);
@@ -126,7 +131,7 @@ public class PdbScriptsPipelineApiToSQL {
 				} catch (IOException e) {
 					log.info("input " + rssqlfilepwd + " failed");
 				}
-				log.info("Finish the " + fileCount +" file");
+				log.info("Finished generating the " + fileCount +"th SQL file");
 				fileCount++;
 				rssqlfilepwd = new String(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount);
 				rssqlfile = new File(rssqlfilepwd);
@@ -144,14 +149,14 @@ public class PdbScriptsPipelineApiToSQL {
 		} catch (IOException e) {
 			log.info("input " + rssqlfilepwd + " failed");
 		}
-		log.info("Finish the " + fileCount +" file");
+		log.info("Finished generating the " + fileCount +"th SQL file");
 		log.info("insert rssql successful!");
 		return fileCount;
 	}
 
 	public String makeTable_rs_mutation_insert(RSMutationRecord rmr) {
-        String str = "INSERT INTO `rs_mutation_entry` (`RS_MUTATION_ID`,`SEQ_ID`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ("
-                + rmr.getRs_mutationId() + ","+ rmr.getSeqId() + ",'" + rmr.getPdbNo() + "',"
+        String str = "INSERT INTO `rs_mutation_entry` (`RS_SNP_ID`,`SEQ_ID`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ("
+                + rmr.getRs_mutationId() + ","+ rmr.getSeqId() + ","+ rmr.getSeqResidueIndex() + ",'" + rmr.getSeqResidueName() + "','" + rmr.getPdbNo() + "',"
                 + rmr.getPdbResidueIndex() + ",'" + rmr.getPdbResidueName() + "'," + rmr.getAlignmentId() + ");\n";
         return str;
 //		String str = "INSERT INTO `mutation_entry` VALUES ("

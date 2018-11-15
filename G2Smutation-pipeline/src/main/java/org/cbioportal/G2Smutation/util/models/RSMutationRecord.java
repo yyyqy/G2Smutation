@@ -6,6 +6,10 @@ public class RSMutationRecord {
     //Inner seqId
     private int seqId;
     
+    private int seqResidueIndex;
+    
+    private String seqResidueName;
+    
     private String pdbNo;
     
     private int pdbResidueIndex;
@@ -65,6 +69,22 @@ public class RSMutationRecord {
 
     public void setRs_mutationId(int rs_mutationId) {
         this.rs_mutationId = rs_mutationId;
+    }
+
+    public int getSeqResidueIndex() {
+        return seqResidueIndex;
+    }
+
+    public void setSeqResidueIndex(int seqResidueIndex) {
+        this.seqResidueIndex = seqResidueIndex;
+    }
+
+    public String getSeqResidueName() {
+        return seqResidueName;
+    }
+
+    public void setSeqResidueName(String seqResidueName) {
+        this.seqResidueName = seqResidueName;
     }
 
 }
