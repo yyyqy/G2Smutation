@@ -102,6 +102,10 @@ public class SeqIdAlignmentController {
            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
        List<Alignment> it = alignmentRepository.findBySeqId(seqId);
        List<Alignment> outit = new ArrayList<Alignment>();
+       // count "-" in genSequence
+       int seqGapCount = 0;
+       // count "-" in pdbSequence
+       int pdbGapCount = 0;
 
        for (Alignment ali : it) {
            List<ResidueMapping> residueMapping = new ArrayList<ResidueMapping>();
@@ -110,13 +114,25 @@ public class SeqIdAlignmentController {
 
                rp.setQueryAminoAcid(
                        ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-               // rp.setQueryPosition(inputAA - ali.getSeqFrom() + 1);
-               rp.setQueryPosition(inputAA);
-
                rp.setPdbAminoAcid(
                        ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+               
+               // if there is a "-" in genSequence, seqGapCount +1
+               if (rp.getQueryAminoAcid().equals("-")) {
+                   seqGapCount++;
+                   continue;
+               }
+               // if there is a "-" in pdbSequence, pdbGapCount+1
+               if (rp.getPdbAminoAcid().equals("-")) {
+                   pdbGapCount++;
+                   continue;
+               }
+               
+               // rp.setQueryPosition(inputAA - ali.getSeqFrom() + 1);
+               rp.setQueryPosition(inputAA - seqGapCount);
                rp.setPdbPosition(
-                       Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
+                       Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom())
+                       - pdbGapCount);
 
                // Withdraw if mapped to linker of the protein
                if (!rp.getPdbAminoAcid().equals("X")) {
@@ -144,17 +160,28 @@ public class SeqIdAlignmentController {
        List<Alignment> it = alignmentRepository.findBySeqId(seqId);
        List<Alignment> outit = new ArrayList<Alignment>();
        int inputAA = Integer.parseInt(position);
+       int seqGapCount = 0;
+       int pdbGapCount = 0;
        for (Alignment ali : it) {
            if (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo()) {
                ResidueMapping rp = new ResidueMapping();
                List<ResidueMapping> residueMapping = new ArrayList<ResidueMapping>();
                rp.setQueryAminoAcid(
                        ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-               rp.setQueryPosition(inputAA);
-               rp.setPdbPosition(
-                       Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                rp.setPdbAminoAcid(
                        ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+               if (rp.getQueryAminoAcid().equals("-")) {
+                   seqGapCount++;
+                   continue;
+               }
+               if (rp.getPdbAminoAcid().equals("-")) {
+                   pdbGapCount++;
+                   continue;
+               }
+               rp.setQueryPosition(inputAA - seqGapCount);
+               rp.setPdbPosition(
+                       Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom())
+                       - pdbGapCount);
                // Withdraw if mapped to linker of the protein
                if (!rp.getPdbAminoAcid().equals("X")) {
                    residueMapping.add(rp);
@@ -179,6 +206,8 @@ public class SeqIdAlignmentController {
            @ApiParam(required = true, value = "Input Residue Position e.g. 99,100") @PathVariable List<String> positionList) {
        List<Alignment> it = alignmentRepository.findBySeqId(seqId);
        List<Alignment> outit = new ArrayList<Alignment>();
+       int seqGapCount = 0;
+       int pdbGapCount = 0;
 
        for (Alignment ali : it) {
 
@@ -187,15 +216,24 @@ public class SeqIdAlignmentController {
            for (String position : positionList) {
                int inputAA = Integer.parseInt(position);
                if (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo()) {
-
                    ResidueMapping rp = new ResidueMapping();
                    rp.setQueryAminoAcid(
                            ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                   rp.setQueryPosition(inputAA);
-                   rp.setPdbPosition(
-                           Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                    rp.setPdbAminoAcid(
                            ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+                   if (rp.getQueryAminoAcid().equals("-")) {
+                       seqGapCount++;
+                       continue;
+                   }
+                   if (rp.getPdbAminoAcid().equals("-")) {
+                       pdbGapCount++;
+                       continue;
+                   }
+                   rp.setQueryPosition(inputAA - seqGapCount);
+                   rp.setPdbPosition(
+                           Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom())
+                           - pdbGapCount);
+                   
                    // Withdraw if mapped to linker of the protein
                    if (!rp.getPdbAminoAcid().equals("X")) {
                        residueMapping.add(rp);
