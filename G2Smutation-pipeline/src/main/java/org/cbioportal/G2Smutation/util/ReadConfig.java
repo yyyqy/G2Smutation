@@ -51,6 +51,7 @@ public class ReadConfig {
     public static String releaseTag;
     public static String releaseTagResult;
     public static String updateStatisticsSQL;
+    public static String updateRsSql;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
     public static String swissprotWholeSource;
@@ -66,6 +67,7 @@ public class ReadConfig {
     public static String updateMILLISECOND;
     public static String updateDELAY;
     public static String updateSeqFastaFileNum;
+    public static String updateRsSqlFileNum;
     public static String insertSequenceSQL;
     public static String updateAdded;
     public static String updateModified;
@@ -145,6 +147,7 @@ public class ReadConfig {
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
             ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
+            ReadConfig.updateRsSql = prop.getProperty("update.rsMutation.sql").trim();
             ReadConfig.updateStatisticsSQL = prop.getProperty("update.statistics.sql").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
             ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
@@ -161,6 +164,7 @@ public class ReadConfig {
             ReadConfig.updateMILLISECOND = prop.getProperty("update.MILLISECOND").trim();
             ReadConfig.updateDELAY = prop.getProperty("update.DELAY").trim();
             ReadConfig.updateSeqFastaFileNum = prop.getProperty("update.seq_fasta_file_num").trim();
+            ReadConfig.updateRsSqlFileNum = prop.getProperty("update.rs_sql_file_num").trim();
             ReadConfig.insertSequenceSQL = prop.getProperty("insert_sequence_SQL").trim();
             ReadConfig.updateAdded = prop.getProperty("update.added").trim();
             ReadConfig.updateModified = prop.getProperty("update.modified").trim();
@@ -184,7 +188,7 @@ public class ReadConfig {
         }
     }
 
-    /**
+	/**
      * Get Methods
      */
 
@@ -734,6 +738,22 @@ public class ReadConfig {
         ReadConfig.mutationInjectSQL = mutationInjectSQL;
     }
     
+    public static String getUpdateRsSql() {
+		return updateRsSql;
+	}
+
+	public static void setUpdateRsSql(String updateRsSql) {
+		ReadConfig.updateRsSql = updateRsSql;
+	}
+
+	public static String getUpdateRsSqlFileNum() {
+		return updateRsSqlFileNum;
+	}
+
+	public static void setUpdateRsSqlFileNum(String updateRsSqlFileNum) {
+		ReadConfig.updateRsSqlFileNum = updateRsSqlFileNum;
+	}
+
     
 
 }

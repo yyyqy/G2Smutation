@@ -61,7 +61,15 @@ public class PdbScriptsPipelineRunCommand {
     public void setSeqFileCount(int seqFileCount) {
         this.seqFileCount = seqFileCount;
     }
+    
+    public int getRsSqlCount() {
+        return rsSqlCount;
+    }
 
+    public void setRsSqlCount(int rsSqlCount) {
+        this.rsSqlCount = rsSqlCount;
+    }
+    
     public boolean isUpdateTag() {
         return updateTag;
     }
@@ -80,11 +88,11 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         ArrayList<String> paralist = new ArrayList<String>();
-/*
+
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
-/*        log.info("********************[STEP 1]********************");
+        log.info("********************[STEP 1]********************");
         log.info("Download PDB and parse to sequences");
         log.info(
                 "[Download] A cloned copy of whole PDB will be downloaded and parse to sequences, unziped and parsing to get the PDB sequences");
@@ -271,7 +279,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQL);
         cu.runCommand("mysql", paralist);
-        */
+        
         
         // Step 12:
         log.info("********************[STEP 12]********************");
@@ -469,6 +477,7 @@ public class PdbScriptsPipelineRunCommand {
         HashMap<String, String> pdbHm = new HashMap<String, String>();
         // Step 5: Create and insert SQL statements of new and modified
         // alignments; Use splited FASTA results
+        
         // Step 6: blastp ensembl genes against pdb; Use splited FASTA results
 
         if (this.seqFileCount != -1) {
@@ -531,7 +540,24 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
         cu.runCommand("mysql", paralist);
 
-        // Step 9: Clean up
+     // Step 9: Delete and create a new rsMutation table
+        log.info("********************[STEP 9]********************");
+        log.info("[SQL] Drop and create data schema");
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.updateRsSql);
+        cu.runCommand("mysql", paralist);
+        	paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + ".*");
+            cu.runCommand("rm", paralist);
+        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
+        this.rsSqlCount = generateSQLfile.generateRsSQLfile();
+        for (int i = 0; i <= this.rsSqlCount; i++) {
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+            cu.runCommand("mysql", paralist);
+        }
+        
+        // Step 10: Clean up
         if (ReadConfig.saveSpaceTag.equals("true")) {
             log.info("[PIPELINE] Start cleaning up in filesystem");
 
