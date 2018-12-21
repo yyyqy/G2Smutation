@@ -87,6 +87,53 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
+     * Mutation
+     * parse XML blast results to INSERT SQL file
+     * 
+     * @param oneInputTag
+     *            multiple SQL or not
+     * @param currentDir
+     *            on which directory to store this sql
+     */
+    public void parse2sqlMutation(boolean oneInputTag, String currentDir, int countnum) {
+        // System.out.println(this.updateTag);
+        System.setProperty("javax.xml.accessExternalDTD", "all");
+        System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
+        // is
+        // needed
+        // to fetch
+        // dtd from
+        // some
+        // servers
+        // System.out.println("this.seqFileCount:" + this.seqFileCount);
+        this.workspace = currentDir;
+        this.seqFileCount = countnum;
+        if (!oneInputTag) {
+            // multiple input, multiple sql generated incrementally
+            if (this.seqFileCount == -1) {
+                parseblastresultsSmallMem();
+            } else {
+                // Usually use this, save memory and time
+                HashMap<String, String> pdbHm = new HashMap<String, String>();
+                for (int i = 0; i < this.seqFileCount; i++) {
+                    log.info("[Parsing] Read blast results on " + i + "th xml file");
+                    parseblastresultsSmallMem(i, pdbHm, true);
+                }
+            }
+        } else {
+            // test for small datasets: single input, single sql generated in
+            // one time
+            // TODO
+            // Does not work for mutation list
+            MutationAlignmentResult outresults = new MutationAlignmentResult();
+            outresults.setAlignmentList(parseblastresultsSingle(currentDir));
+            generateSQLstatementsSingle(outresults, currentDir);
+        }
+    }
+    
+    
+    /**
+     * 
      * parse XML blast results to INSERT SQL file
      * 
      * @param oneInputTag
@@ -112,20 +159,15 @@ public class PdbScriptsPipelineMakeSQL {
             if (this.seqFileCount == -1) {
                 parseblastresultsSmallMem();
             } else {
-                // Usually use this, save memory and time
                 HashMap<String, String> pdbHm = new HashMap<String, String>();
                 for (int i = 0; i < this.seqFileCount; i++) {
-                    log.info("[Parsing] Read blast results on " + i + "th xml file");
-                    parseblastresultsSmallMem(i, pdbHm);
+                    parseblastresultsSmallMem(i, pdbHm, false);
                 }
             }
         } else {
             // test for small datasets: single input, single sql generated in
             // one time
-            // TODO
-            // Does not work for mutation list
-            MutationAlignmentResult outresults = new MutationAlignmentResult();
-            outresults.setAlignmentList(parseblastresultsSingle(currentDir));
+            List<BlastResult> outresults = parseblastresultsSingle(currentDir);
             generateSQLstatementsSingle(outresults, currentDir);
         }
     }
@@ -157,7 +199,7 @@ public class PdbScriptsPipelineMakeSQL {
             if (this.seqFileCount == -1) {
                 parseblastresultsSmallMem();
             } else {
-                parseblastresultsSmallMem(i, pdbHm);
+                parseblastresultsSmallMem(i, pdbHm, true);
             }
         } else {
             // test for small datasets: single input, single sql generated in
@@ -189,15 +231,20 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
+    
+    
 
     /**
      * parse multiple blast XML results, output to SQL file incrementally
      * 
      * @param filecount:
      *            id of the multiple files
+     * @param mutationFlag:
+     *              false: original 
+     *              true: for mutation
      * @return
      */
-    public void parseblastresultsSmallMem(int filecount, HashMap<String, String> pdbHm) {
+    public void parseblastresultsSmallMem(int filecount, HashMap<String, String> pdbHm, boolean mutationFlag) {
         try {
             log.info("[BLAST] Read blast results from " + filecount + "th xml file...");
             File blastresults = new File(this.workspace + this.db.resultfileName + "." + filecount);
@@ -208,7 +255,12 @@ public class PdbScriptsPipelineMakeSQL {
             } else {
                 outputfile = new File(this.workspace + this.sqlInsertFile);
             }
-            int count = parsexml(blastresults, outputfile, pdbHm);
+            int count = 0;
+            if (mutationFlag){
+                count = parsexmlMutation(blastresults, outputfile, pdbHm);
+            }else{
+                count = parsexml(blastresults, outputfile, pdbHm);
+            }
             this.matches = this.matches + count;
             log.info("[BLAST] Insert statements after parsing " + filecount + "th xml : " + this.matches);
         } catch (Exception ex) {
@@ -217,7 +269,7 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
-
+    
     /**
      * main body of parsing xml
      * 
@@ -227,6 +279,55 @@ public class PdbScriptsPipelineMakeSQL {
      * @return count
      */
     public int parsexml(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
+        int count = 1;
+        try {
+            JAXBContext jc = JAXBContext.newInstance("org.cbioportal.G2Smutation.util.blast");
+            Unmarshaller u = jc.createUnmarshaller();
+            u.setSchema(null);
+            BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
+            List<BlastResult> results = new ArrayList<BlastResult>();
+            BlastOutputIterations iterations = blast.getBlastOutputIterations();
+            log.info("[BLAST] Start parsing results...");
+            int sql_insert_output_interval = Integer.parseInt(this.sqlInsertOutputInterval);
+            for (Iteration iteration : iterations.getIteration()) {
+                String querytext = iteration.getIterationQueryDef();
+                IterationHits hits = iteration.getIterationHits();
+                for (Hit hit : hits.getHit()) {
+                    results.addAll(parseSingleAlignment(querytext, hit, count));
+                    count = results.size() + 1;
+
+                    // No need anymore
+                    // TODO: need number
+                    /*
+                     * if (count % sql_insert_output_interval == 0) { // Once
+                     * get the criteria, output contents to the SQL // file
+                     * genereateSQLstatementsSmallMem(results, pdbHm, count,
+                     * outputfile); count+=results.size(); results.clear(); }
+                     */
+                }
+            }
+            // output remaining contents to the SQL file
+            genereateSQLstatementsSmallMem(results, pdbHm, count, outputfile);
+
+        } catch (Exception ex) {
+            log.error("[BLAST] Error Parsing BLAST Result");
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return count;
+    }
+    
+    
+
+    /**
+     * main body of parsing xml
+     * 
+     * @param blastresults
+     * @param outputfile
+     * @param pdbHm
+     * @return count
+     */
+    public int parsexmlMutation(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
         int count = 1;
         try {
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.G2Smutation.util.blast");
@@ -249,7 +350,7 @@ public class PdbScriptsPipelineMakeSQL {
                     sequence_count++;
                 }
                 for (Hit hit : hits.getHit()) {
-                    MutationAlignmentResult mar = parseSingleAlignment(querytext, hit, count);
+                    MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
                     alignmentList.addAll(mar.getAlignmentList());
                     mutationList.addAll(mar.getMutationList());
                     count = alignmentList.size() + 1;
@@ -403,6 +504,33 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outresults
      *            List<BlastResult>
      */
+    public void generateSQLstatementsSingle(List<BlastResult> results, String currentDir) {
+        try {
+            log.info("[SHELL] Start Write insert.sql File...");
+            File file = new File(currentDir + this.sqlInsertFile);
+            // HashMap pdbHm is designed to avoid duplication of
+            // primary keys in SQL
+            // if we already have the entry, do nothing; otherwise generate the
+            // SQL and add the keys into the HashMap
+            HashMap<String, String> pdbHm = new HashMap<String, String>();
+            List<String> outputlist = makeSQLText(results, pdbHm);
+            FileUtils.writeLines(file, outputlist, "");
+            log.info("[SHELL] Write insert.sql Done");
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * 
+     * Mutation
+     * Parse list of String blast results to input SQL statements, time and
+     * memory consuming for huge files Use
+     * 
+     * @param outresults
+     *            List<BlastResult>
+     */
     public void generateSQLstatementsSingle(MutationAlignmentResult results, String currentDir) {
         try {
             log.info("[SHELL] Start Write insert.sql File...");
@@ -415,6 +543,35 @@ public class PdbScriptsPipelineMakeSQL {
             List<String> outputlist = makeSQLText(results, pdbHm);
             FileUtils.writeLines(file, outputlist, "");
             log.info("[SHELL] Write insert.sql Done");
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Parse multiple list of String blast results to multiple input SQL
+     * statements
+     * 
+     * @param List<BlastResult>
+     *            results
+     * @param pdbHm
+     * @param count
+     * @param outputfile
+     */
+    public void genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap<String, String> pdbHm, long count,
+            File outputfile) {
+        try {
+            log.info("[SHELL] Start Write insert.sql File from Alignment " + count + "...");
+            if (count == 1) {
+                // check, if starts, make sure it is empty
+                if (outputfile.exists()) {
+                    outputfile.delete();
+                }
+            }
+            List<String> outputlist = makeSQLText(results, pdbHm);
+            FileUtils.writeLines(outputfile, outputlist, "", true);
+            outputlist = null;
         } catch (Exception ex) {
             log.error(ex.getMessage());
             ex.printStackTrace();
@@ -450,8 +607,41 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * main body of generate SQL Insert text
+     * 
+     * @param results
+     * @param pdbHm
+     * @return
+     */
+    public List<String> makeSQLText(List<BlastResult> results, HashMap<String, String> pdbHm) {
+        List<String> outputlist = new ArrayList<String>();
+        // Add transaction
+        outputlist.add("SET autocommit = 0;");
+        outputlist.add("start transaction;");
+        for (BlastResult br : results) {
+            if (pdbHm.containsKey(br.getSseqid())) {
+                // do nothing
+            } else {
+                outputlist.add(makeTable_pdb_entry_insert(br));
+                pdbHm.put(br.getSseqid(), "");
+            }
+            // If it is update, then call function
+            if (this.updateTag) {//TODO 
+                outputlist.add(makeTable_pdb_seq_insert_Update(br));
+                // If it is init, generate INSERT statements
+            } else {
+                outputlist.add(makeTable_pdb_seq_insert(br));
+            }
+
+        }
+        outputlist.add("commit;");
+        return outputlist;
+    }
 
     /**
+     * Mutation
      * main body of generate SQL Insert text
      * 
      * @param results
@@ -517,7 +707,7 @@ public class PdbScriptsPipelineMakeSQL {
                 String querytext = iteration.getIterationQueryDef();
                 IterationHits hits = iteration.getIterationHits();
                 for (Hit hit : hits.getHit()) {
-                    MutationAlignmentResult mar = parseSingleAlignment(querytext, hit, count);
+                    MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
                     results.addAll(mar.getAlignmentList());
                     count = results.size() + 1;
                 }
@@ -530,6 +720,41 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
         return results;
+    }
+    
+    /**
+     * Parse XML structure into Object BlastResult
+     * 
+     * @param querytext
+     * @param hit
+     * @param count
+     * @return
+     */
+    public List<BlastResult> parseSingleAlignment(String querytext, Hit hit, int count) {
+
+        List<BlastResult> resultList = new ArrayList<BlastResult>();
+
+        List<Hsp> tmplist = hit.getHitHsps().getHsp();
+        for (Hsp tmp : tmplist) {
+            BlastResult br = new BlastResult(count);
+            br.qseqid = querytext;
+            br.sseqid = hit.getHitDef();
+            br.ident = Double.parseDouble(tmp.getHspIdentity());
+            br.identp = Double.parseDouble(tmp.getHspPositive());
+            br.evalue = Double.parseDouble(tmp.getHspEvalue());
+            br.bitscore = Double.parseDouble(tmp.getHspBitScore());
+            br.qStart = Integer.parseInt(tmp.getHspQueryFrom());
+            br.qEnd = Integer.parseInt(tmp.getHspQueryTo());
+            br.sStart = Integer.parseInt(tmp.getHspHitFrom());
+            br.sEnd = Integer.parseInt(tmp.getHspHitTo());
+            br.seq_align = tmp.getHspQseq();
+            br.pdb_align = tmp.getHspHseq();
+            br.midline_align = tmp.getHspMidline();
+            resultList.add(br);
+            count++;
+        }
+
+        return resultList;
     }
 
     /**
@@ -544,7 +769,7 @@ public class PdbScriptsPipelineMakeSQL {
      *            // number of alignment, it is the alignmentId
      * @return
      */
-    public MutationAlignmentResult parseSingleAlignment(String querytext, Hit hit, int count) {
+    public MutationAlignmentResult parseSingleAlignmentMutation(String querytext, Hit hit, int count) {
 
         // TODO Different criteria
         List<BlastResult> alignmentList = new ArrayList<BlastResult>();

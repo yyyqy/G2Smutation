@@ -88,6 +88,7 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         ArrayList<String> paralist = new ArrayList<String>();
+        /*
 
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
@@ -170,7 +171,8 @@ public class PdbScriptsPipelineRunCommand {
 
         // Step 4:
         log.info("********************[STEP 4]********************");
-        log.info("[Processing] Incorprate ensembl, swissprot, trembl and isoform togethe");
+        log.info("[Processing] Incorprate ensembl, swissprot, trembl and isoform together");
+        log.info("[Processing] Different from G2S original version, we only use proteins of ensembl human and uniprot human");
         // This step takes memory, then split into small files to save the
         // running memory
         // Read Uniprot Files First, get HashMap<Uniprot, Accession>
@@ -208,7 +210,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
-
+        /*        
         //this.seqFileCount = 57;
         // Step 6:
         log.info("********************[STEP 6]********************");
@@ -228,7 +230,6 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
-        
         
         this.seqFileCount = 10;
         
@@ -265,7 +266,8 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
         }
-       
+
+        
         // Step 11:
         log.info("********************[STEP 11]********************");
         log.info("[SQL] Find Mutation Info, Output and Generate Mutation SQL Injection Table)");
@@ -280,14 +282,19 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQL);
         cu.runCommand("mysql", paralist);
         
+        */
         
         // Step 12:
         log.info("********************[STEP 12]********************");
-        log.info("[PrepareSQL] Call url and output as input rs sql statments");
+        log.info("[PrepareSQL] Call url and output as input rs sql statments. Caution: Very Slow now");
         PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
         this.rsSqlCount = generateSQLfile.generateRsSQLfile();
+        //Add multiple threads
+        //TODO: Still does not work now
+        //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
 
         
+        /*
         // Step 13:
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Import RS INSERT SQL statements into the database (Warning: This step takes time)");
@@ -601,14 +608,18 @@ public class PdbScriptsPipelineRunCommand {
     }
 
     /* main steps of statistics */
+    /*
+     * Could directly use for generate all the tables;
+     */
     public void runStatistics() {
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
-        /*
+        
         //Test for thresholds
         // https://github.com/juexinwang/G2Smutation/issues/14
-        for (int testcount = 3; testcount <= 79; testcount++) {
+        //for (int testcount = 3; testcount <= 79; testcount++) {
+        for (int testcount = 1; testcount <= 1; testcount++) {
             log.info("********************Start Test " + testcount + "th case ********************");
             // PdbScriptsPipelineMakeSQL parseprocess = new
             // PdbScriptsPipelineMakeSQL(this);
@@ -634,21 +645,23 @@ public class PdbScriptsPipelineRunCommand {
             // Step 1:
             log.info("********************[STEP 1]********************");
             log.info("[PrepareSQL] Parse xml results and output as input sql statments");
-            parseprocess.parse2sql(false, ReadConfig.workspace, this.seqFileCount);
+            parseprocess.parse2sqlMutation(false, ReadConfig.workspace, this.seqFileCount);
 
+            
             // Step 2:
             log.info("********************[STEP 2]********************");
-            log.info("[SQL] Create data schema");
+            log.info("[SQL] Create data schema. CAUTION: only on test from 1 to 79");
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
             cu.runCommand("mysql", paralist);
+            
 
             // Step 3:
             log.info("********************[STEP 3]********************");
             log.info("[SQL] Import gene sequence SQL statements into the database");
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);
-            cu.runCommand("mysql", paralist);
+            cu.runCommand("mysql", paralist);           
 
             // Step 4:
             log.info("********************[STEP 4]********************");
@@ -665,6 +678,7 @@ public class PdbScriptsPipelineRunCommand {
                 cu.runCommand("mysql", paralist);
             }
 
+            /*
             // Step 5:
             log.info("********************[STEP 5]********************");
             log.info("[SQL] Find Mutation Info)");
@@ -672,9 +686,10 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.resourceDir + ReadConfig.alignFilterStatsSQL);
             paralist.add(ReadConfig.workspace + ReadConfig.alignFilterStatsResult + "." + testcount);
             cu.runCommand("releaseTag", paralist);
+            */
 
         }
-        */
+        
         //Analyze the mutation amount and rate
         log.info("********************Statistics Result********************");
 //        for (int testcount = 1; testcount <= 79; testcount++) {
