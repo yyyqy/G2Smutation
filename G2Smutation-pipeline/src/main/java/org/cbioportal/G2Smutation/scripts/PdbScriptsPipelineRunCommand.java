@@ -88,7 +88,7 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         ArrayList<String> paralist = new ArrayList<String>();
-        /*
+        
 
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
@@ -210,7 +210,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
-        /*        
+            
         //this.seqFileCount = 57;
         // Step 6:
         log.info("********************[STEP 6]********************");
@@ -282,8 +282,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQL);
         cu.runCommand("mysql", paralist);
         
-        */
-        
+                
         // Step 12:
         log.info("********************[STEP 12]********************");
         log.info("[PrepareSQL] Call url and output as input rs sql statments. Caution: Very Slow now");
@@ -292,13 +291,13 @@ public class PdbScriptsPipelineRunCommand {
         //Add multiple threads
         //TODO: Still does not work now
         //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
-
         
-        /*
+        
+        this.rsSqlCount =237;
         // Step 13:
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Import RS INSERT SQL statements into the database (Warning: This step takes time)");
-        for (int i = 0; i <= this.rsSqlCount; i++) {
+        for (int i = 0; i < this.rsSqlCount; i++) {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
