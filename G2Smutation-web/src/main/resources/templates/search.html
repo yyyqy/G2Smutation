@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  layout:decorator="layout">
+<head>
+<title>Search Page</title>
+</head>
+
+<body>
+<div layout:fragment="content" class="form-group">
+<h1>Database Display</h1>
+<p class="lead">For more details you can search the subdatabase.</p>
+	
+<form action="#" th:action="@{/search/PDBNO}" method="post">
+  	<input type="text" name="PDBNO" placeholder="e.g.2afy" style="width:200px; height:30px;margin-bottom:0px"/>	
+  	<input type="submit" value="Search for PDB_NO" style="width:200px; height:40px;"/>
+</form>
+	
+<form action="#" th:action="@{/search/unionSearch}" method="post">
+	<input type="text" name="SEQRESIDUE" placeholder="Search for SEQ_RESIDUE" title=" e.g. E" style="width:200px; height:30px;margin-bottom:10px"/><br/>
+  	<input type="text" name="PDBINDEX" placeholder="Search for PDB_INDEX" title=" e.g. 341" style="width:200px; height:30px;margin-bottom:10px"/>
+  	<input type="submit" value="Union Search" style="width:200px; height:40px;margin-bottom:10px"/><br/>
+  	<input type="text" name="PDBRESIDUE" placeholder="Search for PDB_RESIDUE"  title=" e.g. C" style="width:200px; height:30px;margin-bottom:10px"/>
+</form>
+	
+<table class="table table-bordered">
+    <tr style="color:red">
+       <th style="text-align:center">ID</th>
+       <th style="text-align:center">MUTATION_ID</th>
+       <th style="text-align:center">SEQ_NAME</th>
+       <th style="text-align:center">SEQ_INDEX</th>
+       <th style="text-align:center">SEQ_RESIDUE</th>
+       <th style="text-align:center">PDB_NO</th>
+       <th style="text-align:center">PDB_INDEX</th>
+       <th style="text-align:center">PDB_RESIDUE</th>
+       <th style="text-align:center">ALIGNMENT_ID</th>
+       <th style="text-align:center">3Dmol</th>
+       <th style="text-align:center">Ngl</th>
+    </tr>
+    
+    <tr th:each="datum : ${data}">
+        <td style="text-align:center" th:text="${datum.databaseId}"></td>
+        <td style="text-align:center" th:text="${datum.mutationId}"></td>
+        <td style="text-align:center" th:text="${datum.seqName}"></td>
+        <td style="text-align:center" th:text="${datum.seqIndex}"></td>
+        <td style="text-align:center" th:text="${datum.seqResidue}"></td>
+        <td style="text-align:center" th:text="${#strings.substring(datum.pdbNo,0,4)}"></td>
+        <td style="text-align:center" th:text="${datum.pdbIndex}"></td>
+        <td style="text-align:center" th:text="${datum.pdbResidue}"></td>
+        <td style="text-align:center"><a title="For more details" th:text="${datum.alignmentId}" th:href="@{'/AlignmentIdPage?AlignmentId='+${datum.alignmentId}}"></a></td>
+        <td style="text-align:center"><a th:href="@{'/3Dmol?pdbInfo='+${datum.pdbNo}+${datum.pdbIndex}}">3Dmol</a></td>
+		<td style="text-align:center"><a th:href="@{'/ngl?pdbInfo2='+${datum.pdbNo}+${datum.pdbIndex}}">Ngl</a></td> 
+    </tr>  
+</table>
+	
+<h3 th:inline="text" >
+	Current page:
+   	<small th:text="${number}"></small>
+</h3>
+<h3 th:inline="text" >
+   	Total pages:
+   	<small th:text="${requestCount}"></small>
+</h3>
+<form action="#" th:action="@{/searchPage}" method="post">
+	<input title="Input Page Number" style="width:100px;margin-bottom:0px" name="number" type="number" min="1" max="20000000"/>
+	<input style="width:100px" type="submit" value="Go"/>
+</form>
+
+</div>
+</body>
+</html>
