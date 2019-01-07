@@ -1,50 +1,56 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org" 
 	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 	  layout:decorator="layout">
-<script src=".../jquery.min.js?t=1484026799191" charset="utf-8"></script>
 
-<head></head>
+<head>
+	<title>RS database</title>
+	<!--<script src=".../jquery.min.js?t=1484026799191" charset="utf-8"></script>-->
+
+	<style type="text/css">
+		h1 {
+			margin-bottom: 0.6em;
+		}
+
+	</style>
+</head>
 
 <body>
-	<!-- 
-	<div layout:fragment="content" class="form-group">
-	<label for="sex1" class="control-label"></label>
-	 -->
-<h1 layout:fragment="header">Database Display</h1>
-	
 <div layout:fragment="content" class="form-group">
-	
-	<table class="table table-striped" style="width:1600px">
+<!-- <div class="container"> -->
+	<h1>Database Display</h1>
+	<div>
+	<table class="table table-bordered">
     <tr style="color:red">
-       <th>ID</th>
-       <th>RS_SNP_ID</th>
-       <th>SEQ_ID</th>
-       <th>SEQ_INDEX</th>
-       <th>SEQ_RESIDUE</th>
-       <th>PDB_NO</th>
-       <th>PDB_INDEX</th>
-       <th>PDB_RESIDUE</th>
-       <th>ALIGNMENT_ID</th>
+       	<th style="text-align:center">ID</th>
+       	<th style="text-align:center">RS_SNP_ID</th>
+       	<th style="text-align:center">SEQ_ID</th>
+       	<th style="text-align:center">SEQ_INDEX</th>
+       	<th style="text-align:center">SEQ_RESIDUE</th>
+       	<th style="text-align:center">PDB_NO</th>
+       	<th style="text-align:center">PDB_INDEX</th>
+       	<th style="text-align:center">PDB_RESIDUE</th>
+       	<th style="text-align:center">ALIGNMENT_ID</th>
     </tr>
     
     <tr th:each="datum : ${data}">
-        <td th:text="${datum.rsId}"></td>
-        <td th:text="${datum.rsSnpId}"></td>
-        <td th:text="${datum.seqId}"></td>
-        <td th:text="${datum.seqIndex}"></td>
-        <td th:text="${datum.seqResidue}"></td>
-        <td th:text="${datum.pdbNo}"></td>
-        <td th:text="${datum.pdbIndex}"></td>
-        <td th:text="${datum.pdbResidue}"></td>
-        <td th:text="${datum.alignmentId}"></td>
+        <td style="text-align:center" th:text="${datum.rsId}"></td>
+        <td style="text-align:center" th:text="${datum.rsSnpId}"></td>
+        <td style="text-align:center" th:text="${datum.seqId}"></td>
+        <td style="text-align:center" th:text="${datum.seqIndex}"></td>
+        <td style="text-align:center" th:text="${datum.seqResidue}"></td>
+        <td style="text-align:center" th:text="${#strings.substring(datum.pdbNo,0,4)}"></td>
+        <td style="text-align:center" th:text="${datum.pdbIndex}"></td>
+        <td style="text-align:center" th:text="${datum.pdbResidue}"></td>
+        <td style="text-align:center" th:text="${datum.alignmentId}"></td>
     </tr>
 	</table>
-    
-    <h2 th:inline="text" >
+	</div>
+
+	<h3 th:inline="text" >
 		Current page:
    		<small th:text="${number}"></small>
-	</h2>
+	</h3>
 	
 	<!--
 	<h2 th:inline="text" >
@@ -52,13 +58,13 @@
    		<small th:text="${top}"></small>
 	</h2>
 	-->
-	
+
 	<form action="#" th:action="@{/rsPage}" method="post">
-		<input name="number" type="number" min="1" max="50000000" value="1"></input>
-		<input type="submit" value="Go"/>
+		<input title="Input Page Number" style="width:100px;margin-bottom:0px" name="number" type="number" min="1" max="50000000"/>
+		<input style="width:100px" type="submit" value="Go"/>
 	</form>
-    
 
 </div>
+
 </body>
 </html>
