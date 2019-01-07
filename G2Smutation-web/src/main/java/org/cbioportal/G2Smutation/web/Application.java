@@ -4,6 +4,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.cbioportal.G2Smutation.web.database.pdbRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,11 +21,13 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import org.springframework.web.bind.annotation.ResponseBody;
+
 /**
  * 
  * @author Juexin Wang
  *
- */ 
+ */
 @SpringBootApplication
 @SpringBootConfiguration
 @EnableSwagger2
@@ -76,8 +79,7 @@ public class Application extends SpringBootServletInitializer{
     
     
     //http to https
-    //For localhost testing, we can use http
-    /*
+    
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
       TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
@@ -105,6 +107,5 @@ public class Application extends SpringBootServletInitializer{
       
       return connector;
     }
-    */
     
 }
