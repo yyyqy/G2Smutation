@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  layout:decorator="layout">
+
+<head>
+	<title>RS database</title>
+	<!--<script src=".../jquery.min.js?t=1484026799191" charset="utf-8"></script>-->
+
+	<script>
+		var searchChoose = 1;
+		function getChoose(choose) {
+			searchChoose = choose;
+		}
+		
+		function getDisplay() {
+			document.getElementById("rsSnpId").style.display = 'none';
+			document.getElementById("seqId").style.display = 'none';
+			document.getElementById("seqResidue").style.display = 'none';
+			document.getElementById("pdbNo").style.display = 'none';
+			document.getElementById("pdbResidue").style.display = 'none';
+			if (searchChoose == 1) {
+				document.getElementById("rsSnpId").style.display = 'block';
+			} else if (searchChoose == 2) {
+			document.getElementById("seqId").style.display = 'block';
+			} else if (searchChoose == 3) {
+			document.getElementById("seqResidue").style.display = 'block';
+			} else if (searchChoose == 4) {
+			document.getElementById("pdbNo").style.display = 'block';
+			} else if (searchChoose == 5) {
+			document.getElementById("pdbResidue").style.display = 'block';
+			}
+		}
+		</script>
+</head>
+
+<body>
+<div layout:fragment="content" class="form-group">
+	<h1 style="margin-bottom: 0.6em">Database Display</h1>
+	
+	<select style="margin-bottom:0px" onchange="getChoose(this.value)">
+		<option value="1" >RS_SNP_ID</option>
+		<option value="2" >SEQ_ID</option>
+		<option value="3" >SEQ_RESIDUE</option>
+		<option value="4" >PDB_NO</option>
+		<option value="5" >PDB_RESIDUE</option>
+	</select>
+	<input type="button" style="width:200px;height:30px" value="Search Filter" onclick="getDisplay()"/>
+	
+	<div id="rsSnpId" style="display:none;margin-top:10px">
+		<form action="#" th:action="@{/rssearch/RSSNPID}" method="post">
+  		<input type="text" name="RSSNPID" placeholder="e.g.748238757" style="margin-bottom:0px"/>	
+  		<input type="submit" value="Search for RS_SNP_ID" style="width:200px;height:30px"/>
+		</form>
+	</div>
+	<div id="seqId" style="display:none;margin-top:10px">
+		<form action="#" th:action="@{/rssearch/SEQID}" method="post">
+  		<input type="text" name="SEQID" placeholder="e.g.42484" style="margin-bottom:0px"/>	
+  		<input type="submit" value="Search for SEQ_ID" style="width:200px; height:30px;"/>
+	</form>
+	</div>
+	<div id="seqResidue" style="display:none;margin-top:10px">
+		<form action="#" th:action="@{/rssearch/SEQRESIDUE}" method="post">
+  		<input type="text" name="SEQRESIDUE" placeholder="e.g.L" style="margin-bottom:0px"/>	
+  		<input type="submit" value="Search for SEQ_RESIDUE" style="width:200px; height:30px;"/>
+	</form>
+	</div>
+	<div id="pdbNo" style="display:none;margin-top:10px">
+		<form action="#" th:action="@{/rssearch/PDBNO}" method="post">
+  		<input type="text" name="PDBNO" placeholder="e.g.6ces" style="margin-bottom:0px"/>	
+  		<input type="submit" value="Search for PDB_NO" style="width:200px; height:30px;"/>
+	</form>
+	</div>
+	<div id="pdbResidue" style="display:none;margin-top:10px">
+		<form action="#" th:action="@{/rssearch/PDBRESIDUE}" method="post">
+  		<input type="text" name="PDBRESIDUE" placeholder="e.g.L" style="margin-bottom:0px"/>	
+  		<input type="submit" value="Search for PDB_RESIDUE" style="width:200px; height:30px;"/>
+	</form>
+	</div>
+
+	<div>
+	<table class="table table-bordered" style="margin-top:50px;font-size:16px">
+    <tr style="color:red">
+       	<th style="text-align:center">ID</th>
+       	<th style="text-align:center">RS_SNP_ID</th>
+       	<th style="text-align:center">SEQ_ID</th>
+       	<!-- <th style="text-align:center">SEQ_NAME</th> -->
+       	<th style="text-align:center">SEQ_INDEX</th>
+       	<th style="text-align:center">SEQ_RESIDUE</th>
+       	<th style="text-align:center">PDB_NO</th>
+       	<th style="text-align:center">PDB_INDEX</th>
+       	<th style="text-align:center">PDB_RESIDUE</th>
+       	<th style="text-align:center">ALIGNMENT_ID</th>
+       	<th style="text-align:center">3Dmol</th>
+        <th style="text-align:center">Ngl</th>
+    </tr>
+    
+    <tr th:each="datum : ${data}">
+        <td style="text-align:center" th:text="${datum.rsId}"></td>
+        <td style="text-align:center"><a href="#" target="_blank" th:href="@{'/rsSnpIdWebJump?urlInfo='+${datum.rsSnpId}}" th:text="${datum.rsSnpId}"></a></td>
+        <td style="text-align:center" th:text="${datum.seqId}"></td>
+        <!--
+        <td>
+        	<table class="table table-bordered">
+        		<tr th:each="url:${#strings.arraySplit(datum.seqName, ';')}">
+        			<td><a href="#" target="_blank" th:href="@{'/seqNameUrl?urlInfo='+${url}}" th:text="${url}"></a></td>
+	 			</tr>
+        	</table>
+        </td>
+        -->
+        <td style="text-align:center" th:text="${datum.seqIndex}"></td>
+        <td style="text-align:center" th:text="${datum.seqResidue}"></td>
+        <td style="text-align:center" th:text="${#strings.substring(datum.pdbNo,0,4)}"></td>
+        <td style="text-align:center" th:text="${datum.pdbIndex}"></td>
+        <td style="text-align:center" th:text="${datum.pdbResidue}"></td>
+        <td style="text-align:center" th:text="${datum.alignmentId}"></td>
+        <td style="text-align:center"><a target="_blank" th:href="@{'/3Dmol?pdbInfo='+${datum.pdbNo}+${datum.pdbIndex}}">3Dmol</a></td>
+		<td style="text-align:center"><a target="_blank" th:href="@{'/ngl?pdbInfo2='+${datum.pdbNo}+${datum.pdbIndex}}">Ngl</a></td> 
+    </tr>
+	</table>
+	</div>
+	
+	<div>
+		<h3 style="float:right" th:inline="text" >Number of Lines Per Page</h3>
+		<h3 th:inline="text" >
+		Current page:
+   		<small th:text="${number}"></small>
+		</h3>
+
+		<form style="width:120px;margin-bottom:0px;float:right" action="#" th:action="@{/rssearchPerPageChange}" method="post">
+		<select style="width:120px;margin-bottom:5px;float:right" name="perPage">
+			<option value="10">10</option>
+			<option value="20">20</option>
+			<option value="50">50</option>
+		</select>
+		<input style="width:120px" type="submit" value="Change"/>
+		</form>
+
+		<h3 th:inline="text" >
+   		Total pages:
+   		<small th:text="${requestCount}"></small>
+		</h3>
+		<h3 th:inline="text" >
+   		Total number of result:
+   		<small th:text="${totalCount}"></small>
+		</h3>
+		<form action="#" th:action="@{/rssearchPage}" method="post">
+			<input title="Input Page Number" style="width:100px;margin-bottom:0px" name="number" type="number" min="1" max="20000000"/>
+			<input style="width:100px" type="submit" value="Go"/>
+		</form>
+	</div>
+</div>
+</body>
+</html>
