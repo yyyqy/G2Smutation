@@ -9,17 +9,13 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
-
 @Entity
-//@Table(name="mutation_usage_table")
-//@SecondaryTable(name="pdb_seq_alignment")
+@Table(name="mutation_usage_table")
+@SecondaryTable(name="pdb_seq_alignment")
 public class mutation_usage_table {	
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name = "ID")
-    public Integer databaseId;
-	
 	@Column(name = "ALIGNMENT_ID")
     public Integer alignmentId;
 	
@@ -55,7 +51,7 @@ public class mutation_usage_table {
 	//@Column(name = "UPDATE_DATE")
     //public Integer updateDate;
 	
-	/*
+
 	// EVALUE、BITSCORE、IDENTITY、IDENTP
 	@Column(name = "SEQ_ALIGN", table="pdb_seq_alignment")
 	public String seqAlign;
@@ -95,13 +91,9 @@ public class mutation_usage_table {
     public Integer getalignLength() {
         return seqAlign.length();
     }
-	*/
 
     public mutation_usage_table(){}
     
-    public Integer getdatabaseId() {
-        return databaseId;
-    }
     
     public Integer getmutationId() {
         return mutationId;
