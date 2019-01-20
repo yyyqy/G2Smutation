@@ -18,120 +18,88 @@ public class pdb_seq_alignment {
     @GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "ALIGNMENT_ID")
     public Integer alignmentId;
+	public Integer getalignmentId() {
+        return alignmentId;
+    }
 	
-	@Column(name = "SEQ_ALIGN")
-	public String seqAlign;
+	@Column(name = "PDB_ID")
+	public String pdbId;
+	public String getpdbId() {
+        return pdbId;
+    }
+	
+	@Column(name = "CHAIN")
+	public String chain;
+	public String getchain() {
+        return chain;
+    }
+	
+	@Column(name = "PDB_SEG")
+	public Integer pdbSeg;
+	public Integer getpdbSeg() {
+        return pdbSeg;
+    }
+	
+	@Column(name = "SEQ_ID")
+	public Integer seqId;
+	public Integer getseqId() {
+        return seqId;
+    }
+	
+	@Column(name = "PDB_FROM")
+	public Integer pdbFrom;
+	public Integer getpdbFrom() {
+        return pdbFrom;
+    }
+	
+	@Column(name = "PDB_TO")
+	public Integer pdbTo;
+	public Integer getpdbTo() {
+        return pdbTo;
+    }
+	
+	@Column(name = "SEQ_FROM")
+	public Integer seqFrom;
+	public Integer getseqFrom() {
+        return seqFrom;
+    }
+	
+	@Column(name = "SEQ_TO")
+	public Integer seqTo;
+	public Integer getseqTo() {
+        return seqTo;
+    }
 	
 	@Column(name = "EVALUE")
 	public Double evalue;
+	public Double getevalue() {
+        return evalue;
+    }
 	
 	@Column(name = "BITSCORE")
 	public Double bitscore;
+	public Double getbitscore() {
+        return bitscore;
+    }
 	
 	@Column(name = "IDENTITY")
 	public Integer identity;
-	
-	@Column(name = "IDENTP")
-	public double identp;
-	
-	/*
-	@Column(name = "MUTATION_ID", table="mutation_usage_table")
-    public Integer mutationId;
-	
-	@Column(name = "MUTATION_NO", table="mutation_usage_table")
-    public String mutationNo;
-	
-	// SEQ
-	@Column(name = "SEQ_ID", table="mutation_usage_table")
-    public Integer seqId;
-	
-	@Column(name = "SEQ_NAME", table="mutation_usage_table")
-	public String seqName;
-	
-	@Column(name = "SEQ_INDEX", table="mutation_usage_table")
-	public Integer seqIndex;
-	
-	@Column(name = "SEQ_RESIDUE", table="mutation_usage_table")
-	public String seqResidue;
-	
-	// PDB
-	@Column(name = "PDB_NO", table="mutation_usage_table")
-	public String pdbNo;
-	
-	@Column(name = "PDB_INDEX", table="mutation_usage_table")
-	public Integer pdbIndex;
-	
-	@Column(name = "PDB_RESIDUE", table="mutation_usage_table")
-	public String pdbResidue;
-	*/
-	
-
-    public pdb_seq_alignment(){}
-
-    
-    public Double getevalue() {
-        return evalue;
-    }
-    
-    public Double getbitscore() {
-        return bitscore;
-    }
-    
-    public Integer getidentity() {
+	public Integer getidentity() {
         return identity;
     }
-    
-    public double getidentp() {
+	
+	@Column(name = "IDENTP")
+	public Double identp;
+	public Double getidentp() {
         return identp;
     }
-    
-    public String getseqAlign() {
+	
+	@Column(name = "SEQ_ALIGN")
+	public String seqAlign;
+	public String getseqAlign() {
         return seqAlign;
     }
-    
-    public Integer getalignLength() {
-        return seqAlign.length();
-    }
-    
-    public Integer getalignmentId() {
-        return alignmentId;
-    }
-    
-    /*
-    public Integer getmutationId() {
-        return mutationId;
-    }
-    
-    public String getmutationNo() {
-        return mutationNo;
-    }
-    
-    public Integer getseqId() {
-        return seqId;
-    }
-    
-    public String getseqName() {
-        return seqName;
-    }
-    
-    public Integer getseqIndex() {
-        return seqIndex;
-    }
-    
-    public String getseqResidue() {
-        return seqResidue;
-    }
-    
-    public String getpdbNo() {
-        return pdbNo;
-    }
-    
-    public Integer getpdbIndex() {
-        return pdbIndex;
-    }
+	
+    public pdb_seq_alignment(){}
 
-    public String getpdbResidue() {
-        return pdbResidue;
-    }
-	*/
 }
