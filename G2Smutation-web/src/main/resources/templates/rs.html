@@ -31,7 +31,7 @@
 			document.getElementById("pdbResidue").style.display = 'block';
 			}
 		}
-	</script>
+		</script>
 </head>
 
 <body>
@@ -79,11 +79,12 @@
 	</div>
 
 	<div>
-	<table class="table table-bordered" style="margin-top:40px;font-size:16px">
+	<table class="table table-bordered" style="margin-top:50px;font-size:16px">
     <tr style="color:red">
        	<th style="text-align:center">ID</th>
        	<th style="text-align:center">RS_SNP_ID</th>
        	<th style="text-align:center">SEQ_ID</th>
+       	<!-- <th style="text-align:center">SEQ_NAME</th> -->
        	<th style="text-align:center">SEQ_INDEX</th>
        	<th style="text-align:center">SEQ_RESIDUE</th>
        	<th style="text-align:center">PDB_NO</th>
@@ -98,16 +99,55 @@
         <td style="text-align:center" th:text="${datum.rsId}"></td>
         <td style="text-align:center"><a href="#" target="_blank" th:href="@{'/rsSnpIdWebJump?urlInfo='+${datum.rsSnpId}}" th:text="${datum.rsSnpId}"></a></td>
         <td style="text-align:center" th:text="${datum.seqId}"></td>
+        <!--
+        <td>
+        	<table class="table table-bordered">
+        		<tr th:each="url:${#strings.arraySplit(datum.seqName, ';')}">
+        			<td><a href="#" target="_blank" th:href="@{'/seqNameUrl?urlInfo='+${url}}" th:text="${url}"></a></td>
+	 			</tr>
+        	</table>
+        </td>
+        -->
         <td style="text-align:center" th:text="${datum.seqIndex}"></td>
         <td style="text-align:center" th:text="${datum.seqResidue}"></td>
         <td style="text-align:center" th:text="${datum.pdbNo}"></td>
         <td style="text-align:center" th:text="${datum.pdbIndex}"></td>
         <td style="text-align:center" th:text="${datum.pdbResidue}"></td>
         <td style="text-align:center" th:text="${datum.alignmentId}"></td>
-		<td style="text-align:center"><a target="_blank" th:href="@{'/3Dmol?pdbInfo='+${datum.pdbNo}+${datum.pdbIndex}}">3Dmol</a></td>
+        <td style="text-align:center"><a target="_blank" th:href="@{'/3Dmol?pdbInfo='+${datum.pdbNo}+${datum.pdbIndex}}">3Dmol</a></td>
 		<td style="text-align:center"><a target="_blank" th:href="@{'/ngl?pdbInfo2='+${datum.pdbNo}+${datum.pdbIndex}}">Ngl</a></td> 
     </tr>
 	</table>
+	</div>
+	
+	<div>
+		<h3 style="float:right" th:inline="text" >Number of Lines Per Page</h3>
+		<h3 th:inline="text" >
+		Current page:
+   		<small th:text="${number}"></small>
+		</h3>
+
+		<form style="width:120px;margin-bottom:0px;float:right" action="#" th:action="@{/rssearchPerPageChange}" method="post">
+		<select style="width:120px;margin-bottom:5px;float:right" name="perPage">
+			<option value="10">10</option>
+			<option value="20">20</option>
+			<option value="50">50</option>
+		</select>
+		<input style="width:120px" type="submit" value="Change"/>
+		</form>
+
+		<h3 th:inline="text" >
+   		Total pages:
+   		<small th:text="${requestCount}"></small>
+		</h3>
+		<h3 th:inline="text" >
+   		Total number of result:
+   		<small th:text="${totalCount}"></small>
+		</h3>
+		<form action="#" th:action="@{/rssearchPage}" method="post">
+			<input title="Input Page Number" style="width:100px;margin-bottom:0px" name="number" type="number" min="1" max="20000000"/>
+			<input style="width:100px" type="submit" value="Go"/>
+		</form>
 	</div>
 </div>
 </body>
