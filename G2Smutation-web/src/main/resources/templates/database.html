@@ -85,14 +85,14 @@
         <td>
         	<table style="margin-bottom:0px" class="table table-bordered">
         		<tr th:each="url:${#strings.arraySplit(datum.seqName, ';')}">
-        			<td style="font-size:10px;padding:0px"><a href="#" target="_blank" th:href="@{'/seqNameUrl?urlInfo='+${url}}" th:text="${#strings.substring(url,0,8)}+'...'" th:title="${url}"></a></td>
+        			<td style="font-size:14px;padding:0px"><a href="#" target="_blank" th:href="@{'/seqNameUrl?urlInfo='+${url}}" th:text="${url}"></a></td>
 	 			</tr>
         	</table>
         </td>
         
         <td style="text-align:center;font-size:16px" th:text="${datum.seqIndex}"></td>
         <td style="text-align:center;font-size:16px" th:text="${datum.seqResidue}"></td>
-        <td style="text-align:center;font-size:16px" th:text="${#strings.substring(datum.pdbNo,0,4)}"></td>
+        <td style="text-align:center;font-size:16px" th:text="${datum.pdbNo}"></td>
         <td style="text-align:center;font-size:16px" th:text="${datum.pdbIndex}"></td>
         <td style="text-align:center;font-size:16px" th:text="${datum.pdbResidue}"></td>
         <td style="text-align:center;font-size:16px"><a target="_blank" th:href="@{'/3Dmol?pdbInfo='+${datum.pdbNo}+${datum.pdbIndex}}">3Dmol</a></td>
