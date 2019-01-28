@@ -248,11 +248,13 @@ public class MainController {
     }
     
     // RS database start
+    public Integer rstotaldata = 16290997;
     @GetMapping("/rs")    
     public ModelAndView RSInfo(@RequestParam(value="number",defaultValue = "1") Integer number,Model model){
     	List<rs_mutation_entry_Initia> datapage=RsRepositoryInitia.findTop20ByrsIdAfter(0);
         model.addAttribute("data", datapage);
         model.addAttribute("number",number);
+        model.addAttribute("rstotaldata",rstotaldata);
         return new ModelAndView("rs");
     }
     
@@ -315,10 +317,10 @@ public class MainController {
         return new ModelAndView("rssearch");	
     }
     
-    @RequestMapping("/rssearch/SEQRESIDUE")  
-    public ModelAndView rssearchGetSEQRESIDUE(HttpServletRequest request,Model model){  
-        String SEQRESIDUE = request.getParameter("SEQRESIDUE");
-        List<rs_mutation_entry> rsdatafind = RsRepository.findByseqResidue(SEQRESIDUE);
+    @RequestMapping("/rssearch/SEQINDEX")  
+    public ModelAndView rssearchGetSEQINDEX(HttpServletRequest request,Model model){  
+        String SEQINDEX = request.getParameter("SEQINDEX");
+        List<rs_mutation_entry> rsdatafind = RsRepository.findByseqIndex(Integer.parseInt(SEQINDEX));
         
         rsSearchData=rsdatafind;
         rstotalCount = rsSearchData.size();
@@ -336,6 +338,30 @@ public class MainController {
     	model.addAttribute("data", subList);
         return new ModelAndView("rssearch");	
     }
+    
+    @RequestMapping("/rssearch/SEQUNION")  
+    public ModelAndView rssearchGetSEQUNION(HttpServletRequest request,Model model){  
+    	String SEQID = request.getParameter("SEQID");
+    	String SEQINDEX = request.getParameter("SEQINDEX");
+        List<rs_mutation_entry> rsdatafind = RsRepository.findByseqIdAndSeqIndex(Integer.parseInt(SEQID),Integer.parseInt(SEQINDEX));
+        
+        rsSearchData=rsdatafind;
+        rstotalCount = rsSearchData.size();
+        Integer requestCount = rstotalCount / rssearchPerPage==0?1:rstotalCount / rssearchPerPage+1;
+        rssearchMaxPage = Math.max(1, requestCount);
+        model.addAttribute("requestCount", rssearchMaxPage);
+        
+        // First page
+        Integer number = 1;
+        int toIndex = Math.min(rstotalCount, (0 + 1) * rssearchPerPage);
+        List<rs_mutation_entry> subList = rsdatafind.subList(0, toIndex);
+        
+        model.addAttribute("totalCount", rstotalCount);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+        return new ModelAndView("rssearch");	
+    }
+    
     
     @RequestMapping("/rssearch/PDBNO")  
     public ModelAndView rssearchGetPDBNO(HttpServletRequest request,Model model){  
@@ -359,10 +385,10 @@ public class MainController {
         return new ModelAndView("rssearch");	
     }
     
-    @RequestMapping("/rssearch/PDBRESIDUE")  
-    public ModelAndView rssearchGetPDBRESIDUE(HttpServletRequest request,Model model){  
-        String PDBRESIDUE = request.getParameter("PDBRESIDUE");
-        List<rs_mutation_entry> rsdatafind = RsRepository.findBypdbResidue(PDBRESIDUE);
+    @RequestMapping("/rssearch/PDBINDEX")  
+    public ModelAndView rssearchGetPDBINDEX(HttpServletRequest request,Model model){  
+        String PDBINDEX = request.getParameter("PDBINDEX");
+        List<rs_mutation_entry> rsdatafind = RsRepository.findBypdbIndex(Integer.parseInt(PDBINDEX));
         
         rsSearchData=rsdatafind;
         rstotalCount = rsSearchData.size();
@@ -422,11 +448,13 @@ public class MainController {
     
     
     // Regular database start
+    public Integer totaldata = 1119936;
     @GetMapping("/database")    
     public ModelAndView databaseInfo(@RequestParam(value="number",defaultValue = "1") Integer number,Model model){
     	List<mutation_usage_table> datapage=mutationRepository.findTop20BymutationIdGreaterThan(1);
         model.addAttribute("data", datapage);
         model.addAttribute("number",number);
+        model.addAttribute("totaldata", totaldata);
         return new ModelAndView("database");
     }
     
@@ -435,31 +463,6 @@ public class MainController {
     public Integer searchPerPage = 10;
     public Integer searchMaxPage=1;
     public Integer totalCount;
-    public String backSEQRESIDUE;
-    public String backPDBINDEX;
-    public String backPDBRESIDUE;
-    
-    @RequestMapping("/search/PDBNO")  
-    public ModelAndView searchGetPDBNO(HttpServletRequest request,Model model){  
-        String PDBNO = request.getParameter("PDBNO");
-        List<mutation_usage_table> datafind = mutationRepository.findBypdbNoStartingWith(PDBNO);
-        
-        searchData=datafind;
-        totalCount = searchData.size();
-        Integer requestCount = totalCount / searchPerPage==0?1:totalCount / searchPerPage+1;
-        rssearchMaxPage = Math.max(1, requestCount);
-        model.addAttribute("requestCount", searchMaxPage);
-        
-        // First page
-        Integer number = 1;
-        int toIndex = Math.min(totalCount, (0 + 1) * searchPerPage);
-        List<mutation_usage_table> subList = datafind.subList(0, toIndex);
-        
-        model.addAttribute("totalCount", totalCount);
-        model.addAttribute("number",number);
-    	model.addAttribute("data", subList);
-        return new ModelAndView("databasesearch");	
-    }
     
     @RequestMapping("/search/SEQID")  
     public ModelAndView searchGetDEQID(HttpServletRequest request,Model model){  
@@ -469,7 +472,7 @@ public class MainController {
         searchData=datafind;
         totalCount = searchData.size();
         Integer requestCount = totalCount / searchPerPage==0?1:totalCount / searchPerPage+1;
-        rssearchMaxPage = Math.max(1, requestCount);
+        searchMaxPage = Math.max(1, requestCount);
         model.addAttribute("requestCount", searchMaxPage);
         
         // First page
@@ -483,6 +486,120 @@ public class MainController {
         return new ModelAndView("databasesearch");	
     }
     
+    @RequestMapping("/search/SEQINDEX")  
+    public ModelAndView searchGetSEQINDEX(HttpServletRequest request,Model model){  
+        String SEQINDEX = request.getParameter("SEQINDEX");
+        List<mutation_usage_table> datafind = mutationRepository.findByseqIndex(Integer.parseInt(SEQINDEX));
+        
+        searchData=datafind;
+        totalCount = searchData.size();
+        Integer requestCount = totalCount / searchPerPage==0?1:totalCount / searchPerPage+1;
+        searchMaxPage = Math.max(1, requestCount);
+        model.addAttribute("requestCount", searchMaxPage);
+        
+        // First page
+        Integer number = 1;
+        int toIndex = Math.min(totalCount, (0 + 1) * searchPerPage);
+        List<mutation_usage_table> subList = datafind.subList(0, toIndex);
+        
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+        return new ModelAndView("databasesearch");	
+    }
+    
+    @RequestMapping("/search/SEQUNION")  
+    public ModelAndView searchGetSEQUNION(HttpServletRequest request,Model model){  
+    	String SEQID = request.getParameter("SEQID");
+    	String SEQINDEX = request.getParameter("SEQINDEX");
+        List<mutation_usage_table> datafind = mutationRepository.findByseqIdAndSeqIndex(Integer.parseInt(SEQID),Integer.parseInt(SEQINDEX));
+        
+        searchData=datafind;
+        totalCount = searchData.size();
+        Integer requestCount = totalCount / searchPerPage==0?1:totalCount / searchPerPage+1;
+        searchMaxPage = Math.max(1, requestCount);
+        model.addAttribute("requestCount", searchMaxPage);
+        
+        // First page
+        Integer number = 1;
+        int toIndex = Math.min(totalCount, (0 + 1) * searchPerPage);
+        List<mutation_usage_table> subList = datafind.subList(0, toIndex);
+        
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+        return new ModelAndView("databasesearch");	
+    }
+    
+    
+    @RequestMapping("/search/PDBNO")  
+    public ModelAndView searchGetPDBNO(HttpServletRequest request,Model model){  
+        String PDBNO = request.getParameter("PDBNO");
+        List<mutation_usage_table> datafind = mutationRepository.findBypdbNoStartingWith(PDBNO);
+        
+        searchData=datafind;
+        totalCount = searchData.size();
+        Integer requestCount = totalCount / searchPerPage==0?1:totalCount / searchPerPage+1;
+        searchMaxPage = Math.max(1, requestCount);
+        model.addAttribute("requestCount", searchMaxPage);
+        
+        // First page
+        Integer number = 1;
+        int toIndex = Math.min(totalCount, (0 + 1) * searchPerPage);
+        List<mutation_usage_table> subList = datafind.subList(0, toIndex);
+        
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+        return new ModelAndView("databasesearch");	
+    }
+    
+    @RequestMapping("/search/PDBINDEX")  
+    public ModelAndView searchGetPDBINDEX(HttpServletRequest request,Model model){  
+        String PDBINDEX = request.getParameter("PDBINDEX");
+        List<mutation_usage_table> datafind = mutationRepository.findBypdbIndex(Integer.parseInt(PDBINDEX));
+        
+        searchData=datafind;
+        totalCount = searchData.size();
+        Integer requestCount = totalCount / searchPerPage==0?1:totalCount / searchPerPage+1;
+        searchMaxPage = Math.max(1, requestCount);
+        model.addAttribute("requestCount", searchMaxPage);
+        
+        // First page
+        Integer number = 1;
+        int toIndex = Math.min(totalCount, (0 + 1) * searchPerPage);
+        List<mutation_usage_table> subList = datafind.subList(0, toIndex);
+        
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+        return new ModelAndView("databasesearch");	
+    }
+    
+    @RequestMapping("/search/pdbUNION")  
+    public ModelAndView searchGetpdbUNION(HttpServletRequest request,Model model){  
+    	String PDBNO = request.getParameter("PDBNO");
+    	String PDBINDEX = request.getParameter("PDBINDEX");
+        List<mutation_usage_table> datafind = mutationRepository.findBypdbNoAndPdbIndex(PDBNO,Integer.parseInt(PDBINDEX));
+        
+        searchData=datafind;
+        totalCount = searchData.size();
+        Integer requestCount = totalCount / searchPerPage==0?1:totalCount / searchPerPage+1;
+        searchMaxPage = Math.max(1, requestCount);
+        model.addAttribute("requestCount", searchMaxPage);
+        
+        // First page
+        Integer number = 1;
+        int toIndex = Math.min(totalCount, (0 + 1) * searchPerPage);
+        List<mutation_usage_table> subList = datafind.subList(0, toIndex);
+        
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+        return new ModelAndView("databasesearch");	
+    }
+    
+    /*
     @RequestMapping("/search/unionSearch")  
     public ModelAndView searchGetSEQRESIDUE(HttpServletRequest request,Model model){  
         String SEQRESIDUE = request.getParameter("SEQRESIDUE");
@@ -523,6 +640,7 @@ public class MainController {
     	model.addAttribute("data", subList);
         return new ModelAndView("databasesearch");
     }
+    */
     
     @RequestMapping("/searchPerPageChange")  
     public ModelAndView searchPerPageChangeGet(HttpServletRequest request,Model model){
@@ -535,11 +653,7 @@ public class MainController {
         searchMaxPage = Math.max(1, requestCount);
         model.addAttribute("requestCount", searchMaxPage);
         model.addAttribute("totalCount", totalCount);
-            
-        model.addAttribute("backSEQRESIDUE", backSEQRESIDUE);
-        model.addAttribute("backPDBINDEX", backPDBINDEX);
-        model.addAttribute("backPDBRESIDUE", backPDBRESIDUE);
-            
+        
         // First page
         Integer number = 1;
         int toIndex = Math.min(totalCount,searchPerPage);
@@ -561,9 +675,6 @@ public class MainController {
         List<mutation_usage_table> datapage = searchData.subList(low, high);
         model.addAttribute("data", datapage);
         
-        model.addAttribute("backSEQRESIDUE", backSEQRESIDUE);
-        model.addAttribute("backPDBINDEX", backPDBINDEX);
-        model.addAttribute("backPDBRESIDUE", backPDBRESIDUE);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("number",number);
         model.addAttribute("requestCount", searchMaxPage);
