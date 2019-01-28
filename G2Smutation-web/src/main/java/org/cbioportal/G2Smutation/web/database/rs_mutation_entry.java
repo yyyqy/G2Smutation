@@ -29,7 +29,7 @@ public class rs_mutation_entry {
 	public Integer seqId;
 	
 	@Column(name = "SEQ_INDEX")
-	public String seqIndex;
+	public Integer seqIndex;
 	
 	@Column(name = "SEQ_RESIDUE")
 	public String seqResidue;
@@ -61,7 +61,7 @@ public class rs_mutation_entry {
         return seqId;
     }
     
-    public String getseqIndex() {
+    public Integer getseqIndex() {
         return seqIndex;
     }
     
