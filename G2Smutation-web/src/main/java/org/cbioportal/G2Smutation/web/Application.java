@@ -12,14 +12,12 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -78,7 +76,7 @@ public class Application extends SpringBootServletInitializer{
     
     
     //http to https
-    
+    /*
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
       TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
@@ -106,5 +104,5 @@ public class Application extends SpringBootServletInitializer{
       
       return connector;
     }
-    
+    */
 }
