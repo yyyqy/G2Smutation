@@ -5,96 +5,49 @@
 <head>
 	<title>AlignmentId Page</title>
 	<!-- <script src=".../jquery.min.js?t=1484026799191" charset="utf-8"></script> -->
-	<style type="text/css">
-		h1 {
-			margin-bottom: 0.6em;
-		}
-
-	</style>
 </head>
+
 <body>
 <div layout:fragment="content" class="form-group">
 
-<!--
-	<form action="#" th:action="@{/detail/EVALUE}" method="post">
-	    <h2>EVALUE Smaller Than:
-	    	<input type="text" name="evalueHigh" placeholder="e.g.10" style="width:200px; height:30px;"/>
-  			<input type="submit" value="Search" style="width:60px; height:30px;"/>
-	    </h2>	
-	</form>
-	
-	<form action="#" th:action="@{/detail/BITSCORE}" method="post">
-		<h2>BITSCORE Bigger Than:
-			<input type="text" name="bitscoreLow" placeholder="e.g.500" style="width:200px; height:30px;"/>
-  			<input type="submit" value="Search" style="width:60px; height:30px;"/>
-		</h2>
-	</form>
-
-	<form action="#" th:action="@{/detail/IDENTITY}" method="post">
-		<h2>IDENTITY Range:
-			<input type="text" name="identityLow" placeholder="e.g.1000" style="width:200px; height:30px;"/>-
-  			<input type="text" name="identityHigh" placeholder="e.g.2000" style="width:200px; height:30px;"/>
-  			<input type="submit" value="Search" style="width:60px; height:30px;"/>
-		</h2>
-	</form>
-	
-	<form action="#" th:action="@{/detail/IDENTP}" method="post">
-		<h2>IDENTP Range:
-			<input type="text" name="identpLow" placeholder="e.g.200" style="width:200px; height:30px;"/>-
-  			<input type="text" name="identpHigh" placeholder="e.g.400" style="width:200px; height:30px;"/>
-  			<input type="submit" value="Search" style="width:60px; height:30px;"/>
-		</h2>
-	</form>
--->
-
-<h1>Alignment Details</h1>
-<table class="table table-bordered">
+	<h1>Alignment Details</h1>
+	<table class="table table-bordered">
     <tr style="color:red">
        <th style="text-align:center">ALIGNMENT_ID</th>
+       <th style="text-align:center">PDB_ID</th>
+       <th style="text-align:center">CHAIN</th>
+       <th style="text-align:center">PDB_SEG</th>
+       <th style="text-align:center">SEQ_ID</th>
+       <th style="text-align:center">PDB_FROM</th>
+       <th style="text-align:center">PDB_TO</th>
+       <th style="text-align:center">SEQ_FROM</th>
+       <th style="text-align:center">SEQ_TO</th>
        <th style="text-align:center">EVALUE</th>
        <th style="text-align:center">BITSCORE</th>
        <th style="text-align:center">IDENTITY</th>
        <th style="text-align:center">IDENTP</th>
+       <th style="text-align:center">SEQ_ALIGN</th>
  
     </tr>
     
     <tr th:each="detail : ${details}">
         <td style="text-align:center" th:text="${detail.alignmentId}"></td>
+        <td style="text-align:center" th:text="${detail.pdbId}"></td>
+        <td style="text-align:center" th:text="${detail.chain}"></td>
+        <td style="text-align:center" th:text="${detail.pdbSeg}"></td>
+        <td style="text-align:center" th:text="${detail.seqId}"></td>
+        <td style="text-align:center" th:text="${detail.pdbFrom}"></td>
+        <td style="text-align:center" th:text="${detail.pdbTo}"></td>
+        <td style="text-align:center" th:text="${detail.seqFrom}"></td>
+        <td style="text-align:center" th:text="${detail.seqTo}"></td>
         <td style="text-align:center" th:text="${detail.evalue}"></td>
         <td style="text-align:center" th:text="${detail.bitscore}"></td>
         <td style="text-align:center" th:text="${detail.identity}"></td>
         <td style="text-align:center" th:text="${detail.identp}"></td>
+        <td style="text-align:center;color:blue" th:text="${#strings.substring(detail.seqAlign,0,12)}+'...'" th:title="${detail.seqAlign}"></td>
     </tr>  
-</table>
+	</table>
 
-<h1>Database Display</h1>
-<table class="table table-bordered">
-    <tr style="color:red">
-       <th style="text-align:center">ALIGNMENT_ID</th>
-       <th style="text-align:center">MUTATION_ID</th>
-       <th style="text-align:center">SEQ_NAME</th>
-       <th style="text-align:center">SEQ_INDEX</th>
-       <th style="text-align:center">SEQ_RESIDUE</th>
-       <th style="text-align:center">PDB_NO</th>
-       <th style="text-align:center">PDB_INDEX</th>
-       <th style="text-align:center">PDB_RESIDUE</th>
-       <th style="text-align:center">3Dmol</th>
-       <th style="text-align:center">Ngl</th>
-    </tr>
-    
-    <tr th:each="datum : ${data}">
-        <td style="text-align:center" th:text="${datum.alignmentId}"></td>
-        <td style="text-align:center" th:text="${datum.mutationId}"></td>
-        <td style="text-align:center" th:text="${datum.seqName}"></td>
-        <td style="text-align:center" th:text="${datum.seqIndex}"></td>
-        <td style="text-align:center" th:text="${datum.seqResidue}"></td>
-        <td style="text-align:center" th:text="${#strings.substring(datum.pdbNo,0,4)}"></td>
-        <td style="text-align:center" th:text="${datum.pdbIndex}"></td>
-        <td style="text-align:center" th:text="${datum.pdbResidue}"></td>
-        <td style="text-align:center"><a th:href="@{'/3Dmol?pdbInfo='+${datum.pdbNo}+${datum.pdbIndex}}">3Dmol</a></td>
-		<td style="text-align:center"><a th:href="@{'/ngl?pdbInfo2='+${datum.pdbNo}+${datum.pdbIndex}}">Ngl</a></td> 
-    </tr>  
-</table>
 </div>
 </body>
 </html>
