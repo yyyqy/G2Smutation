@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  layout:decorator="layout">
+<head>
+	<title>AlignmentId Page</title>
+	<!-- <script src=".../jquery.min.js?t=1484026799191" charset="utf-8"></script> -->
+</head>
+
+<body>
+<div layout:fragment="content" class="form-group">
+
+	<h1>Alignment Details</h1>
+	<table class="table table-bordered">
+    <tr style="color:red">
+       <th style="text-align:center">ALIGNMENT_ID</th>
+       <th style="text-align:center">PDB_ID</th>
+       <th style="text-align:center">CHAIN</th>
+       <th style="text-align:center">PDB_SEG</th>
+       <th style="text-align:center">SEQ_ID</th>
+       <th style="text-align:center">PDB_FROM</th>
+       <th style="text-align:center">PDB_TO</th>
+       <th style="text-align:center">SEQ_FROM</th>
+       <th style="text-align:center">SEQ_TO</th>
+       <th style="text-align:center">EVALUE</th>
+       <th style="text-align:center">BITSCORE</th>
+       <th style="text-align:center">IDENTITY</th>
+       <th style="text-align:center">IDENTP</th>
+       <th style="text-align:center">SEQ_ALIGN</th>
+ 
+    </tr>
+    
+    <tr th:each="detail : ${details}">
+        <td style="text-align:center" th:text="${detail.alignmentId}"></td>
+        <td style="text-align:center" th:text="${detail.pdbId}"></td>
+        <td style="text-align:center" th:text="${detail.chain}"></td>
+        <td style="text-align:center" th:text="${detail.pdbSeg}"></td>
+        <td style="text-align:center" th:text="${detail.seqId}"></td>
+        <td style="text-align:center" th:text="${detail.pdbFrom}"></td>
+        <td style="text-align:center" th:text="${detail.pdbTo}"></td>
+        <td style="text-align:center" th:text="${detail.seqFrom}"></td>
+        <td style="text-align:center" th:text="${detail.seqTo}"></td>
+        <td style="text-align:center" th:text="${detail.evalue}"></td>
+        <td style="text-align:center" th:text="${detail.bitscore}"></td>
+        <td style="text-align:center" th:text="${detail.identity}"></td>
+        <td style="text-align:center" th:text="${detail.identp}"></td>
+        <td style="text-align:center;color:blue" th:text="${#strings.substring(detail.seqAlign,0,12)}+'...'" th:title="${detail.seqAlign}"></td>
+    </tr>  
+	</table>
+
+</div>
+</body>
+</html>
