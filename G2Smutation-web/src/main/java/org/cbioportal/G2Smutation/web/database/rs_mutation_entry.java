@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
+//TODO: what's the differnce between this and rs_mutation_entry_Initia.java
+//TODO: need refine
 @Entity
 @Table(name="rs_mutation_entry")
 //@SecondaryTable(name="mutation_usage_table")

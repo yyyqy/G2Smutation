@@ -1,9 +1,8 @@
 package org.cbioportal.G2Smutation.util.models;
 
-
-
 /**
- *
+ * Model of Alignment
+ * 
  * @author Juexin Wang
  *
  */
@@ -18,7 +17,7 @@ public class Alignment {
     private String chain;
 
     private String pdbSeg;
-    
+
     private String segStart;
 
     private String seqId;

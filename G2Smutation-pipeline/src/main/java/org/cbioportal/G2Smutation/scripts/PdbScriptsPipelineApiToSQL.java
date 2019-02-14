@@ -18,35 +18,41 @@ import org.apache.log4j.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-
+/**
+ * SQL Insert statements Generation from API
+ * TODO: Do this again with storing into mysql database and we need reconstruct
+ * 
+ * @author Juexin Wang
+ *
+ */
 public class PdbScriptsPipelineApiToSQL {
-	final static Logger log = Logger.getLogger(PdbScriptsPipelineMakeSQL.class);
+    final static Logger log = Logger.getLogger(PdbScriptsPipelineMakeSQL.class);
 
-	/**
-	 * 
-	 * @param filename
-	 * @return
-	 */
-	public List<String> getDbSNPIdFromMappingFile(String filename) {
-	    List<String> snpIds = new ArrayList<>();
-		try {		    
-    		// open "SNP3D_PDB_GRCH37" file
-    		String SNPfilepwd = new String(filename);
-    		File SNPfile = new File(SNPfilepwd);
-    		List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
-    		int SNPNum = SNPfilelines.size()-1;
-    		for (int i = 1; i <= SNPNum; i++) {
-    		    snpIds.add(SNPfilelines.get(i).split("\\s+")[2]);
-    		}
-    		snpIds= PdbScriptsPipelineMakeSQL.removeStringListDupli(snpIds);
-			} catch (Exception ex) {
-				log.error(ex.getMessage());
-				ex.printStackTrace();
-			}
-		return snpIds;
-		
-	}
-	
+    /**
+     * 
+     * @param filename
+     * @return
+     */
+    public List<String> getDbSNPIdFromMappingFile(String filename) {
+        List<String> snpIds = new ArrayList<>();
+        try {
+            // open "SNP3D_PDB_GRCH37" file
+            String SNPfilepwd = new String(filename);
+            File SNPfile = new File(SNPfilepwd);
+            List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
+            int SNPNum = SNPfilelines.size() - 1;
+            for (int i = 1; i <= SNPNum; i++) {
+                snpIds.add(SNPfilelines.get(i).split("\\s+")[2]);
+            }
+            snpIds = PdbScriptsPipelineMakeSQL.removeStringListDupli(snpIds);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return snpIds;
+
+    }
+
     public List<String> callUrl(String urlName, List<String> bufferLines, String snpId) {
         try {
             URL url = new URL(urlName);
@@ -71,12 +77,12 @@ public class PdbScriptsPipelineApiToSQL {
                             rmr.setSeqResidueIndex(Integer.parseInt(residueobj.get("queryPosition").toString()));
                             rmr.setSeqResidueName(residueobj.get("queryAminoAcid").toString());
                             rmr.setPdbResidueIndex(Integer.parseInt(residueobj.get("pdbPosition").toString()));
-                            rmr.setPdbResidueName(residueobj.get("pdbAminoAcid").toString());                           
+                            rmr.setPdbResidueName(residueobj.get("pdbAminoAcid").toString());
                         } else {
                             rmr.setSeqResidueIndex(-1);
-                            rmr.setSeqResidueName("");                            
+                            rmr.setSeqResidueName("");
                             rmr.setPdbResidueIndex(-1);
-                            rmr.setPdbResidueName("");                                                        
+                            rmr.setPdbResidueName("");
                         }
                         rmr.setRs_mutationId(Integer.parseInt(snpId));
                         rmr.setSeqId(Integer.parseInt(jsonobj.get("seqId").toString()));
@@ -92,79 +98,84 @@ public class PdbScriptsPipelineApiToSQL {
         }
         return bufferLines;
     }
-	
-	public int generateRsSQLfile() {
-		List<String> tempLines = new ArrayList<String>();
-		int fileCount = 0;
-		String rssqlfilepwd = new String(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount);
-		File rssqlfile = new File(rssqlfilepwd);
-		List<String> snpIds = getDbSNPIdFromMappingFile(ReadConfig.workspace + ReadConfig.dbsnpFile);	
-		int sql_insert_output_interval = Integer.parseInt(ReadConfig.sqlInsertOutputInterval);
-		List<String> outputLines = new ArrayList<String>();
-		outputLines.add("SET autocommit = 0;");
-		outputLines.add("start transaction;");
-		log.info("Begin to generate sql file");	
-		log.info("Total rsSNP is:"+snpIds.size());
-		for (int j = 0; j < snpIds.size(); j++) {	//20
-		    if(j%1000==0){
-		        log.info("Now start working on "+j+"th SNP");
-		    }
-			String snpId = snpIds.get(j);
-			//snpId = "1800369";
-			String url = ReadConfig.getGnApiDbsnpInnerUrl();
-			url = url.replace("DBSNPID", snpId);
-			//log.info(j + "th URL:" + url);
-			//if (j % sql_insert_output_interval != 0 || j ==0) {
-			if (j % sql_insert_output_interval != sql_insert_output_interval-1) {
-				tempLines = new ArrayList<String>();
-				//original use .clear() but may be better to directly allocate new instead
-				//tempLines.clear();
-				tempLines = callUrl(url, tempLines, snpId);
-				outputLines.addAll(tempLines);
-			}
-			else {
-				outputLines.add("commit;");
-				try {
-					FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
-				} catch (IOException e) {
-					log.info("input " + rssqlfilepwd + " failed");
-				}
-				log.info("Finished generating the " + fileCount +"th SQL file");
-				fileCount++;
-				rssqlfilepwd = ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount;
-				rssqlfile = new File(rssqlfilepwd);
-				outputLines = new ArrayList<String>();
-				outputLines.add("SET autocommit = 0;");
-				outputLines.add("start transaction;");
-				tempLines = new ArrayList<String>();
-                //original use .clear() but may be better to directly allocate new instead
-                //tempLines.clear();
-				tempLines = callUrl(url, tempLines, snpId);
-				outputLines.addAll(tempLines);
-			}
-		}
-		outputLines.add("commit;");
-		try {
-			FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
-		} catch (IOException e) {
-			log.info("input " + rssqlfilepwd + " failed");
-		}
-		log.info("Finished generating the " + fileCount +"th SQL file");
-		log.info("insert rssql successful!");
-		return fileCount;
-	}
-	
-	/**
-	 * Multiple thread version of generateRsSQL
-	 * @return
-	 */
-	public int generateRsSQLfileMT() {
-        List<String> snpIds = getDbSNPIdFromMappingFile(ReadConfig.workspace + ReadConfig.dbsnpFile);   
-                
-        log.info("Begin to generate sql file"); 
-        log.info("Total rsSNP has:"+snpIds.size()+" Entries");        
+
+    /** 
+     * Call millions of API from genomenexus
+     * @return
+     */
+    public int generateRsSQLfile() {
+        List<String> tempLines = new ArrayList<String>();
+        int fileCount = 0;
+        String rssqlfilepwd = new String(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount);
+        File rssqlfile = new File(rssqlfilepwd);
+        List<String> snpIds = getDbSNPIdFromMappingFile(ReadConfig.workspace + ReadConfig.dbsnpFile);
+        int sql_insert_output_interval = Integer.parseInt(ReadConfig.sqlInsertOutputInterval);
+        List<String> outputLines = new ArrayList<String>();
+        outputLines.add("SET autocommit = 0;");
+        outputLines.add("start transaction;");
+        log.info("Begin to generate sql file");
+        log.info("Total rsSNP is:" + snpIds.size());
+        for (int j = 0; j < snpIds.size(); j++) { // 20
+            if (j % 1000 == 0) {
+                log.info("Now start working on " + j + "th SNP");
+            }
+            String snpId = snpIds.get(j);
+            // snpId = "1800369";
+            String url = ReadConfig.getGnApiDbsnpInnerUrl();
+            url = url.replace("DBSNPID", snpId);
+            // log.info(j + "th URL:" + url);
+            // if (j % sql_insert_output_interval != 0 || j ==0) {
+            if (j % sql_insert_output_interval != sql_insert_output_interval - 1) {
+                tempLines = new ArrayList<String>();
+                // original use .clear() but may be better to directly allocate
+                // new instead
+                // tempLines.clear();
+                tempLines = callUrl(url, tempLines, snpId);
+                outputLines.addAll(tempLines);
+            } else {
+                outputLines.add("commit;");
+                try {
+                    FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
+                } catch (IOException e) {
+                    log.info("input " + rssqlfilepwd + " failed");
+                }
+                log.info("Finished generating the " + fileCount + "th SQL file");
+                fileCount++;
+                rssqlfilepwd = ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount;
+                rssqlfile = new File(rssqlfilepwd);
+                outputLines = new ArrayList<String>();
+                outputLines.add("SET autocommit = 0;");
+                outputLines.add("start transaction;");
+                tempLines = new ArrayList<String>();
+                // original use .clear() but may be better to directly allocate
+                // new instead
+                // tempLines.clear();
+                tempLines = callUrl(url, tempLines, snpId);
+                outputLines.addAll(tempLines);
+            }
+        }
+        outputLines.add("commit;");
+        try {
+            FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
+        } catch (IOException e) {
+            log.info("input " + rssqlfilepwd + " failed");
+        }
+        log.info("Finished generating the " + fileCount + "th SQL file");
+        log.info("insert rssql successful!");
+        return fileCount;
+    }
+
+    /**
+     * Multiple thread version of generateRsSQL
+     * 
+     * @return
+     */
+    public int generateRsSQLfileMT() {
+        List<String> snpIds = getDbSNPIdFromMappingFile(ReadConfig.workspace + ReadConfig.dbsnpFile);
+
+        log.info("Begin to generate sql file");
+        log.info("Total rsSNP has:" + snpIds.size() + " Entries");
         log.info("Start multiple threads");
-        
 
         ArrayList<APICallingThread> threadsArr = new ArrayList<APICallingThread>();
         APICallingAgent PD = new APICallingAgent();
@@ -184,46 +195,50 @@ public class PdbScriptsPipelineApiToSQL {
             System.out.println(ex);
         }
         log.info("Muliple Thread Finished!");
-        
-        
+
         int filenumber = 0;
-        try{            
+        try {
             File folder = new File(ReadConfig.workspace);
             File[] listOfFiles = folder.listFiles();
             for (int i = 0; i < listOfFiles.length; i++) {
                 if (listOfFiles[i].isFile()) {
-                    if(listOfFiles[i].getName().startsWith(ReadConfig.rsSqlInsertFile)){
-                        int num = Integer.parseInt(listOfFiles[i].getName().split(ReadConfig.rsSqlInsertFile)[1].split("\\.")[1].toString());
-                        if(num>filenumber){
+                    if (listOfFiles[i].getName().startsWith(ReadConfig.rsSqlInsertFile)) {
+                        int num = Integer
+                                .parseInt(listOfFiles[i].getName().split(ReadConfig.rsSqlInsertFile)[1].split("\\.")[1]
+                                        .toString());
+                        if (num > filenumber) {
                             filenumber = num;
-                        }                        
+                        }
                     }
                 }
-              }
-        }catch(Exception ex){
+            }
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         log.info("Total got filenumber " + filenumber);
-        
+
         return filenumber;
     }
 
-	public String makeTable_rs_mutation_insert(RSMutationRecord rmr) {
+    public String makeTable_rs_mutation_insert(RSMutationRecord rmr) {
         String str = "INSERT INTO `rs_mutation_entry` (`RS_SNP_ID`,`SEQ_ID`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ("
-                + rmr.getRs_mutationId() + ","+ rmr.getSeqId() + ","+ rmr.getSeqResidueIndex() + ",'" + rmr.getSeqResidueName() + "','" + rmr.getPdbNo() + "',"
-                + rmr.getPdbResidueIndex() + ",'" + rmr.getPdbResidueName() + "'," + rmr.getAlignmentId() + ");\n";
+                + rmr.getRs_mutationId() + "," + rmr.getSeqId() + "," + rmr.getSeqResidueIndex() + ",'"
+                + rmr.getSeqResidueName() + "','" + rmr.getPdbNo() + "'," + rmr.getPdbResidueIndex() + ",'"
+                + rmr.getPdbResidueName() + "'," + rmr.getAlignmentId() + ");\n";
         return str;
-//		String str = "INSERT INTO `mutation_entry` VALUES ("
-//                + rmr.getRs_mutationId() + ","+ rmr.getSeqId() + ",'" + rmr.getPdbNo() + "',"
-//                + rmr.getPdbResidueIndex() + ",'" + rmr.getPdbResidueName() + "'," + rmr.getAlignmentId() + ");\n";
-//        return str;
+        // String str = "INSERT INTO `mutation_entry` VALUES ("
+        // + rmr.getRs_mutationId() + ","+ rmr.getSeqId() + ",'" +
+        // rmr.getPdbNo() + "',"
+        // + rmr.getPdbResidueIndex() + ",'" + rmr.getPdbResidueName() + "'," +
+        // rmr.getAlignmentId() + ");\n";
+        // return str;
     }
-	
-    synchronized boolean isFinished(StringBuffer sb, int count){             
-        if(sb.toString().length()>count || count==0){
+
+    synchronized boolean isFinished(StringBuffer sb, int count) {
+        if (sb.toString().length() > count || count == 0) {
             return true;
         }
         return false;
     }
-	
+
 }

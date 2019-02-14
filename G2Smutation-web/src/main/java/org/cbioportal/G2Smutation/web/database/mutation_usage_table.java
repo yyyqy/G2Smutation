@@ -9,6 +9,11 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
+/**
+ * Model of mutation_usage_table
+ * @author Juexin Wang
+ *
+ */
 @Entity
 @Table(name="mutation_usage_table")
 @SecondaryTable(name="pdb_seq_alignment")

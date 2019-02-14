@@ -223,24 +223,22 @@ public class PdbScriptsPipelinePreprocessing {
             return inputStr + "_1" + " " + accMap.get(inputStr);
         }
     }
-    
+
     /**
      * parsing fasta names: UniprotID and Acc, only choose HUMAN
      * 
-     *@author Baoxin Liu
+     * @author Baoxin Liu
      *
      * @param inputStr
      * @param accMap
      * @return
      */
-    String getUniqueSeqIDUniprotHUMAN(String inputStr,
-            HashMap<String, String> accMap) {
+    String getUniqueSeqIDUniprotHUMAN(String inputStr, HashMap<String, String> accMap) {
         String tmpArray[] = inputStr.trim().split("-");
         if (tmpArray.length == 2) {
             String human[] = accMap.get(tmpArray[0]).split("_");
             if (human[1].equals("HUMAN")) {
-                return tmpArray[0] + "_" + tmpArray[1] + " "
-                        + accMap.get(tmpArray[0]);
+                return tmpArray[0] + "_" + tmpArray[1] + " " + accMap.get(tmpArray[0]);
             } else
                 return "";
         } else {
@@ -345,45 +343,39 @@ public class PdbScriptsPipelinePreprocessing {
         }
         return outHm;
     }
-    
+
     /**
      * 
-     * Similar with preprocessUniqSeqUniprot
-     * For Uniprot deal with redundancy,combine the name together, split with
-     * ";"
-     * It could also deal with different isoform
+     * Similar with preprocessUniqSeqUniprot For Uniprot deal with
+     * redundancy,combine the name together, split with ";" It could also deal
+     * with different isoform
      * 
      * But only choose uniprot with _HUMAN
+     * 
      * @author Baoxin Liu
      * 
      * @param infilename
      * @param outHm
      * @return
      */
-    HashMap<String, String> preprocessUniqSeqUniprotHuman(String infilename,
-            HashMap<String, String> accMap, HashMap<String, String> outHm) {
+    HashMap<String, String> preprocessUniqSeqUniprotHuman(String infilename, HashMap<String, String> accMap,
+            HashMap<String, String> outHm) {
         try {
             LinkedHashMap<String, ProteinSequence> originalHm = FastaReaderHelper
                     .readFastaProteinSequence(new File(infilename));
 
             for (Entry<String, ProteinSequence> entry : originalHm.entrySet()) {
                 if (outHm.containsKey(entry.getValue().getSequenceAsString())) {
-                    String tmpStr = outHm
-                            .get(entry.getValue().getSequenceAsString());
-                    if (getUniqueSeqIDUniprotHUMAN(entry.getKey(),
-                            accMap) != "") {
-                        tmpStr = tmpStr + ";" + getUniqueSeqIDUniprotHUMAN(
-                                entry.getKey(), accMap);
-                        outHm.put(entry.getValue().getSequenceAsString(),
-                                tmpStr);
+                    String tmpStr = outHm.get(entry.getValue().getSequenceAsString());
+                    if (getUniqueSeqIDUniprotHUMAN(entry.getKey(), accMap) != "") {
+                        tmpStr = tmpStr + ";" + getUniqueSeqIDUniprotHUMAN(entry.getKey(), accMap);
+                        outHm.put(entry.getValue().getSequenceAsString(), tmpStr);
                         tmpStr = "";
                     }
                 } else {
-                    if (getUniqueSeqIDUniprotHUMAN(entry.getKey(),
-                            accMap) != "") {
+                    if (getUniqueSeqIDUniprotHUMAN(entry.getKey(), accMap) != "") {
                         outHm.put(entry.getValue().getSequenceAsString(),
-                                getUniqueSeqIDUniprotHUMAN(entry.getKey(),
-                                        accMap));
+                                getUniqueSeqIDUniprotHUMAN(entry.getKey(), accMap));
                     }
                 }
             }

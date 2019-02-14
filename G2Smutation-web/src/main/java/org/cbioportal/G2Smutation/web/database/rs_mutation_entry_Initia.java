@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+//TODO: what's the differnce between this and rs_mutation_entry.java
+//TODO: need refine
 @Entity
 @Table(name="rs_mutation_entry")
 // This class is for rs.html Start Page

@@ -26,7 +26,7 @@ import org.biojava.nbio.structure.StructureIO;
 import org.cbioportal.G2Smutation.util.pdb.SegmentRecord;
 
 /**
- * Read PDB files Utils
+ * Read PDB files Utils using bioJava
  * 
  * @author Juexin Wang
  *

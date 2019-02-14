@@ -6,6 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
+ * Model of Gene Sequence,only contains SEQ_ID now
+ * TODO: Add seq name and sequence information in pipeline
  * 
  * @author Juexin Wang
  *

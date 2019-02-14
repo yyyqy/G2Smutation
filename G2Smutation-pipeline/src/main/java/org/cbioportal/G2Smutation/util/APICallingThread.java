@@ -5,8 +5,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.scripts.PdbScriptsPipelineMakeSQL;
 
-
-public class APICallingThread extends Thread{
+/**
+ * Multithreads version of SNP calling, has bugs now
+ * 
+ * @author wangjue
+ *
+ */
+public class APICallingThread extends Thread {
     final static Logger log = Logger.getLogger(PdbScriptsPipelineMakeSQL.class);
 
     private Thread t;
@@ -19,7 +24,7 @@ public class APICallingThread extends Thread{
         threadName = name;
         agent = ag;
         snpIds = snpIdsInput;
-        agentNo = agentNoInput;        
+        agentNo = agentNoInput;
     }
 
     @Override
@@ -40,4 +45,3 @@ public class APICallingThread extends Thread{
     }
 
 }
-

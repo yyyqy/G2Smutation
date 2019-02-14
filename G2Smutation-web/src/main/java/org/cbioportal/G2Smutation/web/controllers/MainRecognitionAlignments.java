@@ -33,6 +33,8 @@ import io.swagger.annotations.ApiParam;
  * Recognize whether input alignments is existed in the system, not used for
  * cBioportal, but it still works
  * 
+ * Invisible from webpage
+ * 
  * @author Juexin Wang
  *
  */
@@ -198,8 +200,7 @@ public class MainRecognitionAlignments {
             return false;
         }
     }
-    
-    
+
     // Implementation of API getExistedEnsemblIdinDBSNP
     private boolean getExistedEnsemblIdinDBSNP(String dbSNPID) {
         // Calling GenomeNexus

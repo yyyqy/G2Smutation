@@ -38,6 +38,7 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * Other Controllers, for detailed results of Alignments and ResidueMappings
+ * Invisible from webpage
  * 
  * @author wangjue
  *

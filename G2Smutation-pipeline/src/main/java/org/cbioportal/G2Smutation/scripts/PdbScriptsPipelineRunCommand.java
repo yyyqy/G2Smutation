@@ -13,9 +13,11 @@ import org.cbioportal.G2Smutation.util.FTPClientUtil;
 import org.cbioportal.G2Smutation.util.PdbSequenceUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
+import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
 
 /**
- * Shell-based command running
+ * Main function from entrance of G2Smutation pipeline
+ * Shell-based command running in initialization, update and statistics 
  *
  * @author Juexin Wang
  *
@@ -266,6 +268,73 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
         }
+        
+        
+        
+        
+        /**
+         * Check later
+         */
+        //this.seqFileCount = 10;
+
+        // Step 11:
+        log.info("********************[STEP 11]********************");
+        log.info("Clean Up g2s *.sql.*");
+        if (this.seqFileCount != -1) {
+            for (int i = 0; i < this.seqFileCount; i++) {
+                paralist = new ArrayList<String>();
+                paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("rm", paralist);
+            }
+        } else {
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
+            cu.runCommand("rm", paralist);
+        }
+
+        // Step 12:
+        log.info("********************[STEP 12]********************");
+        log.info("[PrepareSQL] Parse xml results and output as input sql statments for mutation");
+        parseprocess.parse2sqlMutation(false, ReadConfig.workspace, this.seqFileCount);
+
+/*        
+        // Step 13:
+        log.info("********************[STEP 2]********************");
+        log.info("[SQL] Create data schema. CAUTION: only on test from 1 to 79");
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
+        cu.runCommand("mysql", paralist);
+        
+
+        // Step 3:
+        log.info("********************[STEP 3]********************");
+        log.info("[SQL] Import gene sequence SQL statements into the database");
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);
+        cu.runCommand("mysql", paralist); 
+*/          
+
+        // Step 13:
+        log.info("********************[STEP 13]********************");
+        log.info("[SQL] Import INSERT SQL statements into the database (Warning: This step takes time)");
+        if (this.seqFileCount != -1) {
+            for (int i = 0; i < this.seqFileCount; i++) {
+                paralist = new ArrayList<String>();
+                paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("mysql", paralist);
+            }
+        } else {
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
+            cu.runCommand("mysql", paralist);
+        }
+        
+        
+        
+        
+        
+        
+        
 
         
         // Step 11:
@@ -276,18 +345,119 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationResult);
         cu.runCommand("releaseTag", paralist);
         
-        parseprocess.parseGenerateMutationResultSQL(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQL);       
+        parseprocess.parseGenerateMutationResultSQL4MutatationUsageTable(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage);       
         
         paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQL);
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage);
         cu.runCommand("mysql", paralist);
         
-                
+        // Step 12: 
+        //TODO: Set Location
+        log.info("********************[STEP 12]********************");
+        log.info("[SQL] Use mutation info, find genomic coordinaties, update table mutation_location_entry)");        
+        MutationUsageRecord MUR = parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);       
+        List<String> residueList = MUR.getResidueList();
+        HashMap<String, String> genomicCoorHm = MUR.getGenomicCoorHm();
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);
+        cu.runCommand("mysql", paralist);
+        
+        // Step 13:
+        // TODO: Structural annotation for table structure_annotation_entry
+        // Qinyuan
+        log.info("********************[STEP 13]********************");
+        log.info("[SQL] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");
+        
+        parseprocess.parseGenerateMutationResultSQL4StructureAnnotationEntry(residueList,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
+       
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);
+        cu.runCommand("mysql", paralist);
+        
+        //TODO: dbsnp, clinvar, cosmic, genie, tcga annotation in Table 14-18
+        // Step 14:  
+        log.info("********************[STEP 14]********************");
+        log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
+        parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.dbsnpFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLDbsnp);       
+       
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.annotationDbsnpSQL);
+        cu.runCommand("mysql", paralist);
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLDbsnp);
+        cu.runCommand("mysql", paralist);
+        
+        // Step 15:  
+        log.info("********************[STEP 15]********************");
+        log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table clinvar_entry)");
+        parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.clinvarFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);       
+       
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.annotationClinvarSQL);
+        cu.runCommand("mysql", paralist);
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);
+        cu.runCommand("mysql", paralist);
+        
+        // Step 16:  
+        log.info("********************[STEP 16]********************");
+        log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
+        parseprocess.parseGenerateMutationResultSQL4CosmicEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.cosmicFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLCosmic);       
+       
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.annotationCosmicSQL);
+        cu.runCommand("mysql", paralist);
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLCosmic);
+        cu.runCommand("mysql", paralist);
+        
+        // Step 17:  
+        log.info("********************[STEP 17]********************");
+        log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
+        parseprocess.parseGenerateMutationResultSQL4GenieEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.genieFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLGenie);       
+       
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.annotationGenieSQL);
+        cu.runCommand("mysql", paralist);
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLGenie);
+        cu.runCommand("mysql", paralist);
+        
+        // Step 18:  
+        log.info("********************[STEP 18]********************");
+        log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table tcga_entry)");
+        parseprocess.parseGenerateMutationResultSQL4TcgaEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.tcgaFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLTcga);       
+       
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.annotationTcgaSQL);
+        cu.runCommand("mysql", paralist);
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLTcga);
+        cu.runCommand("mysql", paralist);
+        
+        
+        
+        
+        
+          
+        /** For further development on mapping all SNPs using g2s
+         *  Good points are we have already got all dbsnp mapped
+         *  But we need to rerun for the mapping may have some problems before 02/2019 fixing 
+         *  Need to run dbsnp, cosmic, clinvar, genie, tcga
+         */
+        /*
         // Step 12:
         log.info("********************[STEP 12]********************");
         log.info("[PrepareSQL] Call url and output as input rs sql statments. Caution: Very Slow now");
         PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
         this.rsSqlCount = generateSQLfile.generateRsSQLfile();
+        
         //Add multiple threads
         //TODO: Still does not work now
         //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
@@ -302,6 +472,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
         }
+        */
         
         // Step 14:
         log.info("********************[STEP 14]********************");
@@ -546,22 +717,18 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
         cu.runCommand("mysql", paralist);
 
-     // Step 9: Delete and create a new rsMutation table
+        // Step 9: Delete and create a new rsMutation table
         log.info("********************[STEP 9]********************");
-        log.info("[SQL] Drop and create data schema");
+        log.info("[SQL] Total update mutation_usage_table by Drop and create data schema");
+        
+        //TODO: update mutation_entry
+        
         paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.resourceDir + ReadConfig.updateRsSql);
-        cu.runCommand("mysql", paralist);
-        	paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + ".*");
-            cu.runCommand("rm", paralist);
-        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
-        this.rsSqlCount = generateSQLfile.generateRsSQLfile();
-        for (int i = 0; i <= this.rsSqlCount; i++) {
-            paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
-            cu.runCommand("mysql", paralist);
-        }
+        paralist.add(ReadConfig.resourceDir + ReadConfig.mutationGenerateSQL);
+        paralist.add(ReadConfig.workspace + ReadConfig.mutationResult);
+        cu.runCommand("releaseTag", paralist);
+
+        //regenerate everything
         
         // Step 10: Clean up
         if (ReadConfig.saveSpaceTag.equals("true")) {
@@ -597,6 +764,10 @@ public class PdbScriptsPipelineRunCommand {
             // raw, delete one, zip one
             paralist = new ArrayList<String>();
             paralist.add(currentDir + ReadConfig.pdbSeqresDownloadFile);
+            cu.runCommand("rm", paralist);
+            
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + ".*");
             cu.runCommand("rm", paralist);
 
             paralist = new ArrayList<String>();

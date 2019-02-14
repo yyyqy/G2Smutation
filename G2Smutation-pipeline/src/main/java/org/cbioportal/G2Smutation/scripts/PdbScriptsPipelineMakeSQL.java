@@ -26,6 +26,7 @@ import org.cbioportal.G2Smutation.util.blast.Hsp;
 import org.cbioportal.G2Smutation.util.blast.Iteration;
 import org.cbioportal.G2Smutation.util.blast.IterationHits;
 import org.cbioportal.G2Smutation.util.models.MutationRecord;
+import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
 
 /**
  * SQL Insert statements Generation
@@ -87,8 +88,7 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
-     * Mutation
-     * parse XML blast results to INSERT SQL file
+     * Mutation parse XML blast results to INSERT SQL file
      * 
      * @param oneInputTag
      *            multiple SQL or not
@@ -130,8 +130,7 @@ public class PdbScriptsPipelineMakeSQL {
             generateSQLstatementsSingle(outresults, currentDir);
         }
     }
-    
-    
+
     /**
      * 
      * parse XML blast results to INSERT SQL file
@@ -231,8 +230,6 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
-    
-    
 
     /**
      * parse multiple blast XML results, output to SQL file incrementally
@@ -240,8 +237,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param filecount:
      *            id of the multiple files
      * @param mutationFlag:
-     *              false: original 
-     *              true: for mutation
+     *            false: original true: for mutation
      * @return
      */
     public void parseblastresultsSmallMem(int filecount, HashMap<String, String> pdbHm, boolean mutationFlag) {
@@ -256,9 +252,9 @@ public class PdbScriptsPipelineMakeSQL {
                 outputfile = new File(this.workspace + this.sqlInsertFile);
             }
             int count = 0;
-            if (mutationFlag){
+            if (mutationFlag) {
                 count = parsexmlMutation(blastresults, outputfile, pdbHm);
-            }else{
+            } else {
                 count = parsexml(blastresults, outputfile, pdbHm);
             }
             this.matches = this.matches + count;
@@ -269,7 +265,7 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
-    
+
     /**
      * main body of parsing xml
      * 
@@ -316,8 +312,6 @@ public class PdbScriptsPipelineMakeSQL {
         }
         return count;
     }
-    
-    
 
     /**
      * main body of parsing xml
@@ -414,7 +408,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @return generated SQL statements
      */
     public String makeTable_mutation_insert(MutationRecord mr) {
-       String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
+        String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
                 + mr.getSeqId() + "_" + mr.getSeqResidueIndex() + "','" + mr.getSeqId() + "','" + mr.getSeqName() + "',"
                 + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "',"
                 + mr.getPdbResidueIndex() + ",'" + mr.getPdbResidueName() + "'," + mr.getAlignmentId() + ");\n";
@@ -521,12 +515,11 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
-    
+
     /**
      * 
-     * Mutation
-     * Parse list of String blast results to input SQL statements, time and
-     * memory consuming for huge files Use
+     * Mutation Parse list of String blast results to input SQL statements, time
+     * and memory consuming for huge files Use
      * 
      * @param outresults
      *            List<BlastResult>
@@ -548,7 +541,7 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
-    
+
     /**
      * Parse multiple list of String blast results to multiple input SQL
      * statements
@@ -607,7 +600,7 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
-    
+
     /**
      * main body of generate SQL Insert text
      * 
@@ -628,7 +621,7 @@ public class PdbScriptsPipelineMakeSQL {
                 pdbHm.put(br.getSseqid(), "");
             }
             // If it is update, then call function
-            if (this.updateTag) {//TODO 
+            if (this.updateTag) {// TODO
                 outputlist.add(makeTable_pdb_seq_insert_Update(br));
                 // If it is init, generate INSERT statements
             } else {
@@ -641,8 +634,7 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
-     * Mutation
-     * main body of generate SQL Insert text
+     * Mutation main body of generate SQL Insert text
      * 
      * @param results
      * @param pdbHm
@@ -721,7 +713,7 @@ public class PdbScriptsPipelineMakeSQL {
         }
         return results;
     }
-    
+
     /**
      * Parse XML structure into Object BlastResult
      * 
@@ -1023,18 +1015,11 @@ public class PdbScriptsPipelineMakeSQL {
     /**
      * Check whether the alignment itself has high quality, define the condition
      * here, this function is for test
+     * Refer to  https://github.com/juexinwang/G2Smutation/issues/14
      * 
-     * - 2 3 (1-3) 
-     * - 3 2 (4-5) 
-     * - 4 2 (6-7) 
-     * - 2&&(3&&4) 3*2*2 (8-19) 
-     * - 2&&(3||4) 3*2*2 (20-31) 
-     * - 2&&3 3*2 (32-37) 
-     * - 2&&4 3*2 (38-43) 
-     * - 2||(3&&4) 3*2*2 (44-55) 
-     * - 2||3||4 3*2*2 (56-67) 
-     * - 2||3 3*2 (68-73) 
-     * - 2||4 3*2 (74-79)
+     * - 2 3 (1-3) - 3 2 (4-5) - 4 2 (6-7) - 2&&(3&&4) 3*2*2 (8-19) - 2&&(3||4)
+     * 3*2*2 (20-31) - 2&&3 3*2 (32-37) - 2&&4 3*2 (38-43) - 2||(3&&4) 3*2*2
+     * (44-55) - 2||3||4 3*2*2 (56-67) - 2||3 3*2 (68-73) - 2||4 3*2 (74-79)
      * 
      * @param br
      * @param alignlen
@@ -1335,128 +1320,128 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
-    
 
     public HashMap<String, String> BuildSNPHM(HashMap<String, String> SNPHM) {
-    	try {
-    		// open "SNP3D_PDB_GRCH37" file
-    		String SNPfilepwd = new String(ReadConfig.workspace + "SNP3D_PDB_GRCH37");
-    		File SNPfile = new File(SNPfilepwd);
-    		List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
-    		int SNPNum = SNPfilelines.size()-1;
-    		List<String> SNPMutationPos = new ArrayList<String>();
-    		List<String> SNPid = new ArrayList<String>();
-    		// Build SNP HashMap
-    		for (int i = 1; i <= SNPNum; i++) {
-    			SNPid.add(SNPfilelines.get(i).split("\\s+")[2]);
-    			SNPMutationPos.add(SNPfilelines.get(i).split("\\s+")[9] + "_" + SNPfilelines.get(i).split("\\s+")[10] + "_" + SNPfilelines.get(i).split("\\s+")[12]);
-    			if (SNPHM.containsKey(SNPMutationPos.get(i-1))) {
-    				String SNPTempValue = SNPHM.get(SNPMutationPos.get(i-1)) + ";" + SNPid.get(i-1);
-    				SNPHM.put(SNPMutationPos.get(i-1), SNPTempValue);
-    			}
-    			else {
-    				SNPHM.put(SNPMutationPos.get(i-1), SNPid.get(i-1));
-    			}
-    		}  		
-    	} catch (Exception ex) {
-    		log.error(ex.getMessage());
+        try {
+            // open "SNP3D_PDB_GRCH37" file
+            String SNPfilepwd = new String(ReadConfig.workspace + "SNP3D_PDB_GRCH37");
+            File SNPfile = new File(SNPfilepwd);
+            List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
+            int SNPNum = SNPfilelines.size() - 1;
+            List<String> SNPMutationPos = new ArrayList<String>();
+            List<String> SNPid = new ArrayList<String>();
+            // Build SNP HashMap
+            for (int i = 1; i <= SNPNum; i++) {
+                SNPid.add(SNPfilelines.get(i).split("\\s+")[2]);
+                SNPMutationPos.add(SNPfilelines.get(i).split("\\s+")[9] + "_" + SNPfilelines.get(i).split("\\s+")[10]
+                        + "_" + SNPfilelines.get(i).split("\\s+")[12]);
+                if (SNPHM.containsKey(SNPMutationPos.get(i - 1))) {
+                    String SNPTempValue = SNPHM.get(SNPMutationPos.get(i - 1)) + ";" + SNPid.get(i - 1);
+                    SNPHM.put(SNPMutationPos.get(i - 1), SNPTempValue);
+                } else {
+                    SNPHM.put(SNPMutationPos.get(i - 1), SNPid.get(i - 1));
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
             ex.printStackTrace();
-    	}
-    	return SNPHM;
+        }
+        return SNPHM;
     }
-    
+
     public HashMap<String, String> BuildOutputHM(HashMap<String, String> OutputSNPHM) {
-    	try {
-    		// open "SNP3D_PDB_GRCH37" file
-    		String SNPfilepwd = new String(ReadConfig.workspace + "SNP3D_PDB_GRCH37");
-    		File SNPfile = new File(SNPfilepwd);
-    		List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
-    		int SNPNum = SNPfilelines.size()-1;
-    		List<String> SNPid = new ArrayList<String>();
-    		// Build Output HashMap
-    		for (int i = 1; i <= SNPNum; i++) {
-    			SNPid.add(SNPfilelines.get(i).split("\\s+")[2]);
-    			// log.info(SNPid.get(i-1));
-    			OutputSNPHM.put(SNPid.get(i-1), SNPfilelines.get(i));
-    		}  		
-    	} catch (Exception ex) {
-    		log.error(ex.getMessage());
+        try {
+            // open "SNP3D_PDB_GRCH37" file
+            String SNPfilepwd = new String(ReadConfig.workspace + "SNP3D_PDB_GRCH37");
+            File SNPfile = new File(SNPfilepwd);
+            List<String> SNPfilelines = FileUtils.readLines(SNPfile, StandardCharsets.UTF_8.name());
+            int SNPNum = SNPfilelines.size() - 1;
+            List<String> SNPid = new ArrayList<String>();
+            // Build Output HashMap
+            for (int i = 1; i <= SNPNum; i++) {
+                SNPid.add(SNPfilelines.get(i).split("\\s+")[2]);
+                // log.info(SNPid.get(i-1));
+                OutputSNPHM.put(SNPid.get(i - 1), SNPfilelines.get(i));
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
             ex.printStackTrace();
-    	}
-    	return OutputSNPHM;
+        }
+        return OutputSNPHM;
     }
-    
+
     public void compareMutation(int testcount) {
-    	try {
-    		log.info("********************The statistics result of the "+ testcount +"th case********************");
-    		
-    		// Output the mutation number of each mutationresult file
-    		String pdbfilepwd = new String(ReadConfig.workspace + ReadConfig.alignFilterStatsResult + "." + testcount);
-    		File pdbfile = new File(pdbfilepwd);
-    		List<String> pdbfilelines = FileUtils.readLines(pdbfile, StandardCharsets.UTF_8.name());
-    		int mutationline = pdbfilelines.size() - 1;
-    		
-    		// Compare each mutation to the SNP_PDB file 		
-    		List<String> pdbMutationNo = new ArrayList<String>();
-    		List<String> pdbMutationPos = new ArrayList<String>();
-    		HashMap<String, String> pdbMutationHM = new HashMap<String, String>();
-    		HashMap<String, String> SNPHM = new HashMap<String, String>();
-    		HashMap<String, String> OutputSNPHM = new HashMap<String, String>();
-    		List<String> outputSNPSeq = new ArrayList<String>();
-    		
-    		SNPHM = BuildSNPHM(SNPHM);
-    		OutputSNPHM = BuildOutputHM(OutputSNPHM);
-    		
-    		for (int i = 1; i <= mutationline; i++) {
-    			pdbMutationNo.add(pdbfilelines.get(i).split("\\s+")[0]);
-    			pdbMutationPos.add(transferPdblines(pdbfilelines.get(i)));
-    			if(SNPHM.containsKey(pdbMutationPos.get(i-1))) {
-    				pdbMutationHM.put(pdbMutationNo.get(i-1), SNPHM.get(pdbMutationPos.get(i-1)));
-    				for(int j = 0; j < pdbMutationHM.get(pdbMutationNo.get(i-1)).split(";").length; j++) {
-    					outputSNPSeq.add(OutputSNPHM.get(pdbMutationHM.get(pdbMutationNo.get(i-1)).split(";")[j]));
-    				}
-    			}
-    		}
-    		pdbMutationNo = removeStringListDupli(pdbMutationNo);
-    		double pdbMutationNum = pdbMutationNo.size();
-    		double matchNum = pdbMutationHM.size();
-    		log.info("[Statistic]There are totally " + pdbMutationNum + " mutation");
-    		log.info("[Statistic]The matching num is " + matchNum);
-    		double matchRate = matchNum / pdbMutationNum;
-    		log.info("[Statistic]The matching rate is " + matchRate);
-    		
-    		// output result to "analyzefile.txt"
-    		File analyzefile = new File(ReadConfig.workspace + "analyzefile.txt");
-    		if (!analyzefile.exists()) {
-    			FileUtils.touch(analyzefile);
-    		}
-    		List<String> analyzefilelines = new ArrayList<>();
-    		analyzefilelines.add("mutationresult" + testcount +": ");
-    		analyzefilelines.add("MutationNum under threshold: " + pdbMutationNum);
-    		analyzefilelines.add("MutationNum Matched: " + matchNum);
-    		analyzefilelines.add("MatchRate: " + matchRate);
-    		analyzefilelines.add(" ");
-    		FileUtils.writeLines(analyzefile, StandardCharsets.UTF_8.name(), analyzefilelines, true);
-    		
-    		// output SNP information to "SNPresult.txt.testcount"
-    		File SNPResultFile = new File(ReadConfig.workspace + "snpresult.txt" + "." + testcount);
-    		if (!SNPResultFile.exists()) {
-    			FileUtils.touch(SNPResultFile);
-    		}
-    		List<String> outputTitle = new ArrayList<String>();
-    		outputTitle.add("chr	pos	snp_id	master_acc	master_gi	master_pos	master_res	master_var	pdb_gi	pdb	pdb_chain	pdb_res	pdb_pos	blast_ident	clinsig");
-    		FileUtils.writeLines(SNPResultFile, StandardCharsets.UTF_8.name(), outputTitle);
-    		if (!outputSNPSeq.isEmpty()) {
-    			outputSNPSeq = removeStringListDupli(outputSNPSeq);
-    			FileUtils.writeLines(SNPResultFile, StandardCharsets.UTF_8.name(), outputSNPSeq, true);
-    		}
-	
-    	} catch (Exception ex) {
-    		log.error(ex.getMessage());
+        try {
+            log.info("********************The statistics result of the " + testcount + "th case********************");
+
+            // Output the mutation number of each mutationresult file
+            String pdbfilepwd = new String(ReadConfig.workspace + ReadConfig.alignFilterStatsResult + "." + testcount);
+            File pdbfile = new File(pdbfilepwd);
+            List<String> pdbfilelines = FileUtils.readLines(pdbfile, StandardCharsets.UTF_8.name());
+            int mutationline = pdbfilelines.size() - 1;
+
+            // Compare each mutation to the SNP_PDB file
+            List<String> pdbMutationNo = new ArrayList<String>();
+            List<String> pdbMutationPos = new ArrayList<String>();
+            HashMap<String, String> pdbMutationHM = new HashMap<String, String>();
+            HashMap<String, String> SNPHM = new HashMap<String, String>();
+            HashMap<String, String> OutputSNPHM = new HashMap<String, String>();
+            List<String> outputSNPSeq = new ArrayList<String>();
+
+            SNPHM = BuildSNPHM(SNPHM);
+            OutputSNPHM = BuildOutputHM(OutputSNPHM);
+
+            for (int i = 1; i <= mutationline; i++) {
+                pdbMutationNo.add(pdbfilelines.get(i).split("\\s+")[0]);
+                pdbMutationPos.add(transferPdblines(pdbfilelines.get(i)));
+                if (SNPHM.containsKey(pdbMutationPos.get(i - 1))) {
+                    pdbMutationHM.put(pdbMutationNo.get(i - 1), SNPHM.get(pdbMutationPos.get(i - 1)));
+                    for (int j = 0; j < pdbMutationHM.get(pdbMutationNo.get(i - 1)).split(";").length; j++) {
+                        outputSNPSeq.add(OutputSNPHM.get(pdbMutationHM.get(pdbMutationNo.get(i - 1)).split(";")[j]));
+                    }
+                }
+            }
+            pdbMutationNo = removeStringListDupli(pdbMutationNo);
+            double pdbMutationNum = pdbMutationNo.size();
+            double matchNum = pdbMutationHM.size();
+            log.info("[Statistic]There are totally " + pdbMutationNum + " mutation");
+            log.info("[Statistic]The matching num is " + matchNum);
+            double matchRate = matchNum / pdbMutationNum;
+            log.info("[Statistic]The matching rate is " + matchRate);
+
+            // output result to "analyzefile.txt"
+            File analyzefile = new File(ReadConfig.workspace + "analyzefile.txt");
+            if (!analyzefile.exists()) {
+                FileUtils.touch(analyzefile);
+            }
+            List<String> analyzefilelines = new ArrayList<>();
+            analyzefilelines.add("mutationresult" + testcount + ": ");
+            analyzefilelines.add("MutationNum under threshold: " + pdbMutationNum);
+            analyzefilelines.add("MutationNum Matched: " + matchNum);
+            analyzefilelines.add("MatchRate: " + matchRate);
+            analyzefilelines.add(" ");
+            FileUtils.writeLines(analyzefile, StandardCharsets.UTF_8.name(), analyzefilelines, true);
+
+            // output SNP information to "SNPresult.txt.testcount"
+            File SNPResultFile = new File(ReadConfig.workspace + "snpresult.txt" + "." + testcount);
+            if (!SNPResultFile.exists()) {
+                FileUtils.touch(SNPResultFile);
+            }
+            List<String> outputTitle = new ArrayList<String>();
+            outputTitle.add(
+                    "chr	pos	snp_id	master_acc	master_gi	master_pos	master_res	master_var	pdb_gi	pdb	pdb_chain	pdb_res	pdb_pos	blast_ident	clinsig");
+            FileUtils.writeLines(SNPResultFile, StandardCharsets.UTF_8.name(), outputTitle);
+            if (!outputSNPSeq.isEmpty()) {
+                outputSNPSeq = removeStringListDupli(outputSNPSeq);
+                FileUtils.writeLines(SNPResultFile, StandardCharsets.UTF_8.name(), outputSNPSeq, true);
+            }
+
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
             ex.printStackTrace();
-    	}
+        }
     }
-    
+
     public static List<String> removeStringListDupli(List<String> stringList) {
         Set<String> set = new LinkedHashSet<>();
         set.addAll(stringList);
@@ -1468,51 +1453,157 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     public String transferPdblines(String line) {
-    	String transline = new String();
-    	transline = line.split("\\s+")[1].substring(0, 7).toUpperCase() + line.split("\\s+")[2]; 	
-		return transline;
+        String transline = new String();
+        transline = line.split("\\s+")[1].substring(0, 7).toUpperCase() + line.split("\\s+")[2];
+        return transline;
     }
-    
 
-    
     /*
      * String str =
      * "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
      * + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" +
      * strarrayS[2] + "','" + segStart + "','" + strarrayQ[0] + "'," +
      * br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," +
-     * br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + ","
-     * + br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() +
-     * "','" + br.getPdb_align() + "','" + br.getMidline_align() +
-     * "',CURDATE());\n";
+     * br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," +
+     * br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() + "','" +
+     * br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
      */
-    
+
     /**
-     * parse mutation result in inputFile and generate outputfile in SQL
+     * parse mutation result from inputFile and generate outputfile in SQL for mutation_usage_table
      * 
      * @param inputFilename
      * @param outputFilename
      */
-    public void parseGenerateMutationResultSQL(String inputFilename, String outputFilename){
-        try{
+    public void parseGenerateMutationResultSQL4MutatationUsageTable(String inputFilename, String outputFilename) {
+        try {
             List<String> outputlist = new ArrayList<String>();
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
             File inFile = new File(inputFilename);
             List<String> list = FileUtils.readLines(inFile);
-            for(int i=1; i<list.size(); i++){
+            for (int i = 1; i < list.size(); i++) {
                 String[] str = list.get(i).split("\t");
                 String strr = "INSERT INTO `mutation_usage_table` (`MUTATION_ID`,`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`,`UPDATE_DATE`)VALUES('"
-                        +str[0]+"','"+str[1]+"','"+str[2]+"','"+str[3]+"','"+str[4]+"','"+str[5]+"','"+str[6]+"','"+str[7]+"','"+str[8]+"','"+str[9]+"',CURDATE());\n";
+                        + str[0] + "','" + str[1] + "','" + str[2] + "','" + str[3] + "','" + str[4] + "','" + str[5]
+                        + "','" + str[6] + "','" + str[7] + "','" + str[8] + "','" + str[9] + "',CURDATE());\n";
                 outputlist.add(strr);
             }
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             log.error(ex.getMessage());
             ex.printStackTrace();
         }
+    }
+    
+
+    /**
+     * parse mutation result from inputFile and generate outputfile in SQL for mutation_location_entry
+     * 
+     * @param inputFilename
+     * @param outputFilename
+     * @return MutationUsageRecord contains (1) HashMap<String,String>, key:chr_start_end, value:""
+     *                                      (2) List<String>, XXXX_Chain_INDEX
+     */
+    public MutationUsageRecord parseGenerateMutationResultSQL4MutationLocationEntry(String inputFilename, String outputFilename) {
+        MutationUsageRecord MUR = new MutationUsageRecord();
+        HashMap<String,String> genomicCoorHm = new HashMap<>();
+        List<String> residueList = new ArrayList<>();
+        //TODO: 
+        /**
+         * Use API: https://grch37.rest.ensembl.org/map/translation/ENSP00000412542/100..100?content-type=application/json
+         * In template of application.properties: https://grch37.rest.ensembl.org/map/translation/ENSPID/LOCATION..LOCATION?content-type=application/json
+         * Change accordingly
+         * 
+         * The URL is ReadConfig.protein2GenomicURL
+         * 
+         * Most could learn from function parseGenerateMutationResultSQL4MutatationUsageTable
+         * 
+         */
+        
+        MUR.setGenomicCoorHm(genomicCoorHm);
+        MUR.setResidueList(residueList);
+        return MUR;
+    }
+    
+    /**
+     * generate structure annotation for strucure_annotation_entry
+     * 
+     * @param residueList
+     * @param outputFilename
+     */
+    public void parseGenerateMutationResultSQL4StructureAnnotationEntry(List<String> residueList, String outputFilename) {
+        //TODO: 
+        
+
+    }
+    
+
+    /**
+     * generate dbSNP annotation for dbsnp_entry
+     * 
+     * @param residueList
+     * @param inputFilename
+     * @param outputFilename
+     */
+    public void parseGenerateMutationResultSQL4DbsnpEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+        //TODO: 
+        
+
+    }
+    
+    /**
+     * generate clinvar annotation for clinvar_entry
+     * 
+     * @param residueList
+     * @param inputFilename
+     * @param outputFilename
+     */
+    public void parseGenerateMutationResultSQL4ClinvarEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+        //TODO: 
+        
+
+    }
+    
+    /**
+     * generate cosmic annotation for cosmic_entry
+     * 
+     * @param residueList
+     * @param inputFilename
+     * @param outputFilename
+     */
+    public void parseGenerateMutationResultSQL4CosmicEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+        //TODO: 
+        
+
+    }
+    
+    /**
+     * generate genie annotation for genie_entry
+     * 
+     * @param residueList
+     * @param inputFilename
+     * @param outputFilename
+     */
+    public void parseGenerateMutationResultSQL4GenieEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+        //TODO: 
+        
+
+    }
+    
+    /**
+     * generate tcga annotation for tcga_entry
+     * 
+     * @param residueList
+     * @param inputFilename
+     * @param outputFilename
+     */
+    public void parseGenerateMutationResultSQL4TcgaEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+        //TODO: 
+        
+
     }
 
 }
@@ -1520,7 +1611,7 @@ public class PdbScriptsPipelineMakeSQL {
 /**
  * Used for store mutation and alignment list for generating sql
  * 
- * @author wangjue
+ * @author Juexin Wang
  *
  */
 class MutationAlignmentResult {

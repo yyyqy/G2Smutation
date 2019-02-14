@@ -1,5 +1,11 @@
 package org.cbioportal.G2Smutation.util.blast;
 
+/**
+ * Model of Parsed Results from Blast
+ * 
+ * @author wangjue
+ *
+ */
 public class BlastResult {
     public int oligoID;
     public String qseqid;
@@ -147,9 +153,9 @@ public class BlastResult {
 
     @Override
     public String toString() {
-        return oligoID + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString()
-                + "\t" + bitscore.toString() + "\t" + qStart.toString() + "\t" + qEnd.toString() + "\t"
-                + sStart.toString() + "\t" + sEnd.toString() + "\t" + seq_align.toString() + "\t" + pdb_align.toString()
-                + "\t" + midline_align.toString();
+        return oligoID + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString() + "\t"
+                + bitscore.toString() + "\t" + qStart.toString() + "\t" + qEnd.toString() + "\t" + sStart.toString()
+                + "\t" + sEnd.toString() + "\t" + seq_align.toString() + "\t" + pdb_align.toString() + "\t"
+                + midline_align.toString();
     }
 }

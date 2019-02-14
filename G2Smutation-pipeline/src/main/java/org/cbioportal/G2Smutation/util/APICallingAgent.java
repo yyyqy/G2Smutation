@@ -17,6 +17,12 @@ import org.cbioportal.G2Smutation.util.models.RSMutationRecord;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+/**
+ * Call API
+ * 
+ * @author wangjue
+ *
+ */
 public class APICallingAgent {
     final static Logger log = Logger.getLogger(APICallingAgent.class);
 

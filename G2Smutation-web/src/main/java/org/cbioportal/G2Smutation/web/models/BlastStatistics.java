@@ -1,5 +1,11 @@
 package org.cbioportal.G2Smutation.web.models;
 
+/**
+ * Model of Blast statistics
+ * 
+ * @author wangjue
+ *
+ */
 public class BlastStatistics {
     
   //BLAST statistics

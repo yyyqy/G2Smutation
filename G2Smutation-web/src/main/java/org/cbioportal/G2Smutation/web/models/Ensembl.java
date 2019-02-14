@@ -7,6 +7,7 @@ import javax.persistence.Table;
 
 /**
  *
+ * Model of Ensembl
  * @author Juexin Wang
  *
  */

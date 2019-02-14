@@ -1,5 +1,10 @@
 package org.cbioportal.G2Smutation.util.blast;
 
+/**
+ * Model of Blast database
+ * @author wangjue
+ *
+ */
 public class BlastDataBase {
     public String name;
     public String dbName;
