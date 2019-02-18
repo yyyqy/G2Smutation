@@ -1,5 +1,12 @@
 package org.cbioportal.G2Smutation.web.models;
 
+/**
+ * Model of Residue Mapping
+ * 
+ * @author Juexin Wang
+ *
+ */
+
 public class ResidueMapping {
 
     private int queryPosition;

@@ -1,28 +1,34 @@
 package org.cbioportal.G2Smutation.util.models;
 
-public class MutationRecord {   
-    
+/**
+ * Model in order to use mutation record
+ * 
+ * @author wangjue
+ *
+ */
+public class MutationRecord {
+
     private String mutationNo;
-    //Inner seqId
+    // Inner seqId
     private int seqId;
-    
+
     private String seqName;
-    
+
     private int seqResidueIndex;
-    
+
     private String seqResidueName;
-    
+
     private String pdbNo;
-    
+
     private int pdbResidueIndex;
-    
+
     private String pdbResidueName;
-    
-    //alignmentId: id of Alignment
+
+    // alignmentId: id of Alignment
     private int alignmentId;
-    
+
     /*
-     * getter and setter methods 
+     * getter and setter methods
      */
 
     public int getSeqId() {
@@ -96,7 +102,5 @@ public class MutationRecord {
     public void setMutationNo(String mutation_No) {
         this.mutationNo = mutation_No;
     }
-    
 
-    
 }

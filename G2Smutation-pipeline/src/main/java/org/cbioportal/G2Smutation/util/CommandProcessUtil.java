@@ -7,7 +7,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
- * Command Utils for dealing with the processes invoked by JAVA
+ * Command Utils for dealing with the processes invoked by JAVA, all the linux
+ * commands should be here
  *
  * @author Juexin Wang
  *
@@ -140,8 +141,9 @@ public class CommandProcessUtil {
                 break;
             case "blastp":
                 log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
-                // original: has limitation 50 
-                //pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2)));
+                // original: has limitation 50
+                // pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0),
+                // paralist.get(1), paralist.get(2)));
                 // No limit in alignments
                 pb = new ProcessBuilder(makeBlastPCommandNoseqlimit(paralist.get(0), paralist.get(1), paralist.get(2)));
                 break;
@@ -274,10 +276,12 @@ public class CommandProcessUtil {
         list.add(outFilename);
         return list;
     }
-    
+
     /**
-     * The differnce between Function makeBlastPCommandNoseqlimit and makeBlastPCommand is this function does not have any limitation of -max_target_seqs
-     * We choose to use this to preserve all the possible alignments
+     * The differnce between Function makeBlastPCommandNoseqlimit and
+     * makeBlastPCommand is this function does not have any limitation of
+     * -max_target_seqs We choose to use this to preserve all the possible
+     * alignments
      * 
      * Helper Function for building the following command : blastp -db
      * pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue
@@ -297,9 +301,9 @@ public class CommandProcessUtil {
         list.add(ReadConfig.blastParaWordSize);
         list.add("-evalue");
         list.add(ReadConfig.blastParaEvalue);
-//        No limitation in max_target_seqs
-//        list.add("-max_target_seqs");
-//        list.add(ReadConfig.blastParaMaxTargetSeqs);
+        // No limitation in max_target_seqs
+        // list.add("-max_target_seqs");
+        // list.add(ReadConfig.blastParaMaxTargetSeqs);
         list.add("-num_threads");
         list.add(ReadConfig.blastParaThreads);
         list.add("-outfmt");

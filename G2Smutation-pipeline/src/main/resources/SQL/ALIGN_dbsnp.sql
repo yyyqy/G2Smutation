@@ -3,6 +3,7 @@
 --
 SET FOREIGN_KEY_CHECKS = 0;
 drop table IF EXISTS rs_mutation_entry;
+SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE `rs_mutation_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,

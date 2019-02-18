@@ -7,7 +7,9 @@ import org.cbioportal.G2Smutation.scripts.PdbScriptsPipelineStarter;
 
 /**
  *
- * Read application.properties by singleton design pattern
+ * Read application.properties by singleton design pattern.
+ * 
+ * All the parameters should be dealt here
  *
  * @author Juexin Wang
  *
@@ -76,16 +78,32 @@ public class ReadConfig {
     public static String mysqlMaxAllowedPacket;
     public static String mutationGenerateSQL;
     public static String mutationResult;
-    public static String mutationInjectSQL;
+    public static String mutationInjectSQLUsage;
+    public static String mutationInjectSQLLocation;
+    public static String mutationInjectSQLStructure;
+    public static String mutationInjectSQLDbsnp;
+    public static String mutationInjectSQLClinvar;
+    public static String mutationInjectSQLCosmic;
+    public static String mutationInjectSQLGenie;
+    public static String mutationInjectSQLTcga;
+    public static String annotationDbsnpSQL;
+    public static String annotationClinvarSQL;
+    public static String annotationCosmicSQL;
+    public static String annotationGenieSQL;
+    public static String annotationTcgaSQL;
     public static String alignFilterDiffT;
     public static String alignFilterDiffP;
     public static String alignFilterRatio;
     public static String alignFilterStatsSQL;
     public static String alignFilterStatsResult;
+    public static String protein2GenomicURL;
     public static String dbsnpFile;
+    public static String clinvarFile;
+    public static String cosmicFile;
+    public static String genieFile;
+    public static String tcgaFile;
     public static String gnApiDbsnpInnerUrl;
     public static String saveSpaceTag;
-
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -173,13 +191,30 @@ public class ReadConfig {
             ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet").trim();
             ReadConfig.mutationGenerateSQL = prop.getProperty("mutation_generate_SQL").trim();
             ReadConfig.mutationResult = prop.getProperty("mutation_result").trim();
-            ReadConfig.mutationInjectSQL = prop.getProperty("mutation_inject_SQL").trim();
+            ReadConfig.mutationInjectSQLUsage = prop.getProperty("mutation_inject_SQL_mutation_usage_table").trim();
+            ReadConfig.mutationInjectSQLLocation = prop.getProperty("mutation_inject_SQL_mutation_location_entry").trim();
+            ReadConfig.mutationInjectSQLStructure = prop.getProperty("mutation_inject_SQL_structure_annotation_entry").trim();
+            ReadConfig.mutationInjectSQLDbsnp = prop.getProperty("mutation_inject_SQL_dbsnp_entry").trim();
+            ReadConfig.mutationInjectSQLClinvar = prop.getProperty("mutation_inject_SQL_clinvar_entry").trim();
+            ReadConfig.mutationInjectSQLCosmic = prop.getProperty("mutation_inject_SQL_cosmic_entry").trim();
+            ReadConfig.mutationInjectSQLGenie = prop.getProperty("mutation_inject_SQL_genie_entry").trim();
+            ReadConfig.mutationInjectSQLTcga = prop.getProperty("mutation_inject_SQL_tcga_entry").trim();
+            ReadConfig.annotationDbsnpSQL = prop.getProperty("annotation_dbsnp_SQL").trim();
+            ReadConfig.annotationClinvarSQL = prop.getProperty("annotation_clinvar_SQL").trim();
+            ReadConfig.annotationCosmicSQL = prop.getProperty("annotation_cosmic_SQL").trim();
+            ReadConfig.annotationGenieSQL= prop.getProperty("annotation_genie_SQL").trim();
+            ReadConfig.annotationTcgaSQL = prop.getProperty("annotation_tcga_SQL").trim();
             ReadConfig.alignFilterDiffT = prop.getProperty("align.filter.diffT").trim();
             ReadConfig.alignFilterDiffP = prop.getProperty("align.filter.diffP").trim();
             ReadConfig.alignFilterRatio = prop.getProperty("align.filter.ratio").trim();
             ReadConfig.alignFilterStatsSQL = prop.getProperty("align.filter.stats.sql").trim();
             ReadConfig.alignFilterStatsResult = prop.getProperty("align.filter.stats.result").trim();
+            ReadConfig.protein2GenomicURL = prop.getProperty("protein2genomic.url").trim();
             ReadConfig.dbsnpFile = prop.getProperty("dbsnp.file").trim();
+            ReadConfig.clinvarFile = prop.getProperty("clinvar.file").trim();
+            ReadConfig.cosmicFile = prop.getProperty("cosmic.file").trim();
+            ReadConfig.genieFile = prop.getProperty("genie.file").trim();
+            ReadConfig.tcgaFile = prop.getProperty("tcga.file").trim();
             ReadConfig.gnApiDbsnpInnerUrl = prop.getProperty("gn.api.dbsnp.inner.url").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
@@ -188,7 +223,7 @@ public class ReadConfig {
         }
     }
 
-	/**
+    /**
      * Get Methods
      */
 
@@ -197,6 +232,152 @@ public class ReadConfig {
             rcObj = new ReadConfig();
         }
         return rcObj;
+    }
+
+    
+    
+    public static String getClinvarFile() {
+        return clinvarFile;
+    }
+
+    public static void setClinvarFile(String clinvarFile) {
+        ReadConfig.clinvarFile = clinvarFile;
+    }
+
+    public static String getCosmicFile() {
+        return cosmicFile;
+    }
+
+    public static void setCosmicFile(String cosmicFile) {
+        ReadConfig.cosmicFile = cosmicFile;
+    }
+
+    public static String getGenieFile() {
+        return genieFile;
+    }
+
+    public static void setGenieFile(String genieFile) {
+        ReadConfig.genieFile = genieFile;
+    }
+
+    public static String getTcgaFile() {
+        return tcgaFile;
+    }
+
+    public static void setTcgaFile(String tcgaFile) {
+        ReadConfig.tcgaFile = tcgaFile;
+    }
+
+    public static String getMutationInjectSQLStructure() {
+        return mutationInjectSQLStructure;
+    }
+
+    public static void setMutationInjectSQLStructure(String mutationInjectSQLStructure) {
+        ReadConfig.mutationInjectSQLStructure = mutationInjectSQLStructure;
+    }
+
+    public static String getMutationInjectSQLDbsnp() {
+        return mutationInjectSQLDbsnp;
+    }
+
+    public static void setMutationInjectSQLDbsnp(String mutationInjectSQLDbsnp) {
+        ReadConfig.mutationInjectSQLDbsnp = mutationInjectSQLDbsnp;
+    }
+
+    public static String getMutationInjectSQLClinvar() {
+        return mutationInjectSQLClinvar;
+    }
+
+    public static void setMutationInjectSQLClinvar(String mutationInjectSQLClinvar) {
+        ReadConfig.mutationInjectSQLClinvar = mutationInjectSQLClinvar;
+    }
+
+    public static String getMutationInjectSQLCosmic() {
+        return mutationInjectSQLCosmic;
+    }
+
+    public static void setMutationInjectSQLCosmic(String mutationInjectSQLCosmic) {
+        ReadConfig.mutationInjectSQLCosmic = mutationInjectSQLCosmic;
+    }
+
+    public static String getMutationInjectSQLGenie() {
+        return mutationInjectSQLGenie;
+    }
+
+    public static void setMutationInjectSQLGenie(String mutationInjectSQLGenie) {
+        ReadConfig.mutationInjectSQLGenie = mutationInjectSQLGenie;
+    }
+
+    public static String getMutationInjectSQLTcga() {
+        return mutationInjectSQLTcga;
+    }
+
+    public static void setMutationInjectSQLTcga(String mutationInjectSQLTcga) {
+        ReadConfig.mutationInjectSQLTcga = mutationInjectSQLTcga;
+    }
+
+    public static String getAnnotationDbsnpSQL() {
+        return annotationDbsnpSQL;
+    }
+
+    public static void setAnnotationDbsnpSQL(String annotationDbsnpSQL) {
+        ReadConfig.annotationDbsnpSQL = annotationDbsnpSQL;
+    }
+
+    public static String getMutationInjectSQLUsage() {
+        return mutationInjectSQLUsage;
+    }
+
+    public static void setMutationInjectSQLUsage(String mutationInjectSQLUsage) {
+        ReadConfig.mutationInjectSQLUsage = mutationInjectSQLUsage;
+    }
+
+    public static String getMutationInjectSQLLocation() {
+        return mutationInjectSQLLocation;
+    }
+
+    public static void setMutationInjectSQLLocation(String mutationInjectSQLLocation) {
+        ReadConfig.mutationInjectSQLLocation = mutationInjectSQLLocation;
+    }
+
+    public static String getProtein2GenomicURL() {
+        return protein2GenomicURL;
+    }
+
+    public static void setProtein2GenomicURL(String protein2GenomicURL) {
+        ReadConfig.protein2GenomicURL = protein2GenomicURL;
+    }
+
+    public static String getAnnotationClinvarSQL() {
+        return annotationClinvarSQL;
+    }
+
+    public static void setAnnotationClinvarSQL(String annotationClinvarSQL) {
+        ReadConfig.annotationClinvarSQL = annotationClinvarSQL;
+    }
+
+    public static String getAnnotationCosmicSQL() {
+        return annotationCosmicSQL;
+    }
+
+    public static void setAnnotationCosmicSQL(String annotationCosmicSQL) {
+        ReadConfig.annotationCosmicSQL = annotationCosmicSQL;
+    }
+
+    public static String getAnnotationGenieSQL() {
+        return annotationGenieSQL;
+    }
+
+    public static void setAnnotationGenieSQL(String annotationGenieSQL) {
+        ReadConfig.annotationGenieSQL = annotationGenieSQL;
+    }
+
+    public static String getAnnotationTcgaSQL() {
+        return annotationTcgaSQL;
+    }
+
+    public static void setAnnotationTcgaSQL(String annotationTcgaSQL) {
+        ReadConfig.annotationTcgaSQL = annotationTcgaSQL;
     }
 
     public static String getGnApiDbsnpInnerUrl() {
@@ -354,7 +535,7 @@ public class ReadConfig {
     public static String getSqlDeleteFile() {
         return sqlDeleteFile;
     }
-    
+
     public static String getRsSqlInsertFile() {
         return rsSqlInsertFile;
     }
@@ -549,7 +730,7 @@ public class ReadConfig {
     public static void setSqlDeleteFile(String sqlDeleteFile) {
         ReadConfig.sqlDeleteFile = sqlDeleteFile;
     }
-    
+
     public static void setRsSqlInsertFile(String rsSqlInsertFile) {
         ReadConfig.rsSqlInsertFile = rsSqlInsertFile;
     }
@@ -730,30 +911,20 @@ public class ReadConfig {
         ReadConfig.mutationResult = mutationResult;
     }
 
-    public static String getMutationInjectSQL() {
-        return mutationInjectSQL;
-    }
-
-    public static void setMutationInjectSQL(String mutationInjectSQL) {
-        ReadConfig.mutationInjectSQL = mutationInjectSQL;
-    }
-    
     public static String getUpdateRsSql() {
-		return updateRsSql;
-	}
+        return updateRsSql;
+    }
 
-	public static void setUpdateRsSql(String updateRsSql) {
-		ReadConfig.updateRsSql = updateRsSql;
-	}
+    public static void setUpdateRsSql(String updateRsSql) {
+        ReadConfig.updateRsSql = updateRsSql;
+    }
 
-	public static String getUpdateRsSqlFileNum() {
-		return updateRsSqlFileNum;
-	}
+    public static String getUpdateRsSqlFileNum() {
+        return updateRsSqlFileNum;
+    }
 
-	public static void setUpdateRsSqlFileNum(String updateRsSqlFileNum) {
-		ReadConfig.updateRsSqlFileNum = updateRsSqlFileNum;
-	}
-
-    
+    public static void setUpdateRsSqlFileNum(String updateRsSqlFileNum) {
+        ReadConfig.updateRsSqlFileNum = updateRsSqlFileNum;
+    }
 
 }

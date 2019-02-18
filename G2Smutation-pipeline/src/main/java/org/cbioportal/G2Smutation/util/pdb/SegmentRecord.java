@@ -1,7 +1,7 @@
 package org.cbioportal.G2Smutation.util.pdb;
 
 /**
- * Segment for PDB sequences
+ * Segment Model for PDB sequences
  * 
  * @author Juexin Wang
  *

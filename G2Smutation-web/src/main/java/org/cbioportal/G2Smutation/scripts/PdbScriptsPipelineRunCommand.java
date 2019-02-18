@@ -23,7 +23,7 @@ import org.cbioportal.G2Smutation.web.models.InputAlignment;
 import org.cbioportal.G2Smutation.web.models.InputSequence;
 
 /**
- * Shell-based command running
+ * Shell-based command running Partly shared with G2S Pipeline
  *
  * @author Juexin Wang
  *

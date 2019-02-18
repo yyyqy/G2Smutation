@@ -12,23 +12,24 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
+ * Main Entrance of G2S web
  * 
  * @author Juexin Wang
  *
- */ 
+ */
 @SpringBootApplication
 @SpringBootConfiguration
 @EnableSwagger2
-public class Application extends SpringBootServletInitializer{
+public class Application extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -40,11 +41,9 @@ public class Application extends SpringBootServletInitializer{
     }
 
     /*
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-    */
-    
+     * public static void main(String[] args) {
+     * SpringApplication.run(Application.class, args); }
+     */
 
     @Bean
     public Docket annotationApi() {
@@ -73,38 +72,35 @@ public class Application extends SpringBootServletInitializer{
                 "https://github.com/cBioPortal/cbioportal/blob/master/LICENSE");
         return apiInfo;
     }
-    
-    
-    //http to https
-    //For localhost testing, we can use http
-    /*
+
+    // http to https
+/*
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
-      TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
-          @Override
-          protected void postProcessContext(Context context) {
-            SecurityConstraint securityConstraint = new SecurityConstraint();
-            securityConstraint.setUserConstraint("CONFIDENTIAL");
-            SecurityCollection collection = new SecurityCollection();
-            collection.addPattern("/*");
-            securityConstraint.addCollection(collection);
-            context.addConstraint(securityConstraint);
-          }
+        TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
+            @Override
+            protected void postProcessContext(Context context) {
+                SecurityConstraint securityConstraint = new SecurityConstraint();
+                securityConstraint.setUserConstraint("CONFIDENTIAL");
+                SecurityCollection collection = new SecurityCollection();
+                collection.addPattern("/*");
+                securityConstraint.addCollection(collection);
+                context.addConstraint(securityConstraint);
+            }
         };
-      
-      tomcat.addAdditionalTomcatConnectors(initiateHttpConnector());
-      return tomcat;
+
+        tomcat.addAdditionalTomcatConnectors(initiateHttpConnector());
+        return tomcat;
     }
-    
+
     private Connector initiateHttpConnector() {
-      Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-      connector.setScheme("http");
-      connector.setPort(8080);
-      connector.setSecure(false);
-      connector.setRedirectPort(8443);
-      
-      return connector;
+        Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+        connector.setScheme("http");
+        connector.setPort(8080);
+        connector.setSecure(false);
+        connector.setRedirectPort(8443);
+
+        return connector;
     }
-    */
-    
+*/
 }

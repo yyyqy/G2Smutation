@@ -2,6 +2,13 @@ package org.cbioportal.G2Smutation.web.models;
 
 import java.util.List;
 
+/**
+ * Ensembl as the primary key for most of cases
+ * 
+ * @author wangjue
+ *
+ */
+
 public class ResidueEnsembl {
 
     // Primary KEY: EnsemblId

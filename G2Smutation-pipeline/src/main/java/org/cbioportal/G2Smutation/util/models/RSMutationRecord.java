@@ -1,26 +1,32 @@
 package org.cbioportal.G2Smutation.util.models;
 
+/**
+ * Model of DBSNP RS mutation record
+ * 
+ * @author wangjue
+ *
+ */
 public class RSMutationRecord {
-	
-	private int rs_mutationId;
-    //Inner seqId
+
+    private int rs_mutationId;
+    // Inner seqId
     private int seqId;
-    
+
     private int seqResidueIndex;
-    
+
     private String seqResidueName;
-    
+
     private String pdbNo;
-    
+
     private int pdbResidueIndex;
-    
+
     private String pdbResidueName;
-    
-    //alignmentId: id of Alignment
+
+    // alignmentId: id of Alignment
     private int alignmentId;
-    
+
     /*
-     * getter and setter methods 
+     * getter and setter methods
      */
 
     public int getSeqId() {

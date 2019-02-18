@@ -8,6 +8,8 @@ import org.cbioportal.G2Smutation.web.models.InputSequence;
 
 /**
  * Command Utils for dealing with the processes invoked by JAVA
+ * 
+ * partly shared with G2S pipeline
  *
  * @author Juexin Wang
  *

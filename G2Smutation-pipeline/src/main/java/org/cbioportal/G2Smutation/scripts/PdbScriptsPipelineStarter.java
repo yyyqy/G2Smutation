@@ -9,8 +9,8 @@ import org.cbioportal.G2Smutation.util.*;
 import org.apache.log4j.Logger;
 
 /**
- * Preliminary script, includes several steps See README for how to install and
- * run the project
+ * Main Entrance of the project G2Smutation pipeline Preliminary script,
+ * includes several steps See README for how to install and run the project
  *
  * @author Juexin Wang
  *
@@ -79,7 +79,7 @@ public class PdbScriptsPipelineStarter {
             app.runUpdatePDB();
             break;
         case STATISTICS_COMMAND:
-            // hidden commands;
+            // hidden commands for inner usage;
             // Used to generate summaries of different thresholds
             log.info("[Pipeline] Run Statistics");
             app = new PdbScriptsPipelineRunCommand();
