@@ -104,6 +104,10 @@ public class ReadConfig {
     public static String tcgaFile;
     public static String gnApiDbsnpInnerUrl;
     public static String saveSpaceTag;
+    public static String naccessInstallFile;
+    public static String naccessRunFile;
+    public static String relativeRatio;
+    public static String dsspLocalDataFile;
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -217,6 +221,10 @@ public class ReadConfig {
             ReadConfig.tcgaFile = prop.getProperty("tcga.file").trim();
             ReadConfig.gnApiDbsnpInnerUrl = prop.getProperty("gn.api.dbsnp.inner.url").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
+            ReadConfig.naccessInstallFile = prop.getProperty("naccess_install_file").trim();
+            ReadConfig.naccessRunFile = prop.getProperty("naccess_run_file").trim();
+            ReadConfig.relativeRatio = prop.getProperty("relative_ratio").trim();
+            ReadConfig.dsspLocalDataFile = prop.getProperty("dssp_localData_file").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
             ex.printStackTrace();
@@ -926,5 +934,37 @@ public class ReadConfig {
     public static void setUpdateRsSqlFileNum(String updateRsSqlFileNum) {
         ReadConfig.updateRsSqlFileNum = updateRsSqlFileNum;
     }
+
+	public static String getNaccessInstallFile() {
+		return naccessInstallFile;
+	}
+
+	public static void setNaccessInstallFile(String naccessInstallFile) {
+		ReadConfig.naccessInstallFile = naccessInstallFile;
+	}
+
+	public static String getNaccessRunFile() {
+		return naccessRunFile;
+	}
+
+	public static void setNaccessRunFile(String naccessRunFile) {
+		ReadConfig.naccessRunFile = naccessRunFile;
+	}
+
+	public static String getRelativeRatio() {
+		return relativeRatio;
+	}
+
+	public static void setRelativeRatio(String relativeRatio) {
+		ReadConfig.relativeRatio = relativeRatio;
+	}
+
+	public static String getDsspLocalDataFile() {
+		return dsspLocalDataFile;
+	}
+
+	public static void setDsspLocalDataFile(String dsspLocalDataFile) {
+		ReadConfig.dsspLocalDataFile = dsspLocalDataFile;
+	}
 
 }
