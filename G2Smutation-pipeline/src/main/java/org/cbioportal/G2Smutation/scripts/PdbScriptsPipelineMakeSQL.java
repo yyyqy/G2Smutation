@@ -27,6 +27,7 @@ import org.cbioportal.G2Smutation.util.blast.Iteration;
 import org.cbioportal.G2Smutation.util.blast.IterationHits;
 import org.cbioportal.G2Smutation.util.models.MutationRecord;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
+import org.cbioportal.G2Smutation.util.models.StructureAnnotationRecord;
 
 /**
  * SQL Insert statements Generation
@@ -1536,8 +1537,73 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public void parseGenerateMutationResultSQL4StructureAnnotationEntry(List<String> residueList, String outputFilename) {
         //TODO: 
-        
-
+    	try {
+            List<String> outputlist = new ArrayList<String>();
+            StructureAnnotationRecord sar = new StructureAnnotationRecord();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            
+            for(int i=0; i<residueList.size(); i++) {
+            	sar.setChrPos(""); //need more info
+            	sar.setMutationId(0); //need more info
+            	sar.setPdbNo(residueList.get(i).split("_")[0]);
+            	sar.setPdbResidueIndex(Integer.parseInt(residueList.get(i).split("_")[2]));
+            	
+            	sar.setPdbResidueName("");
+            	//sar.setBuried();
+            }
+            
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);
+    	}catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    
+    public String makeTable_structureAnnotation_insert(StructureAnnotationRecord sar) {
+    	String str = "INSERT INTO `structure_annotation_entry` (`CHR_POS`,`MUTATION_ID`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,"
+    			+ "`BURIED`,`ALL_ATOMS_ABS`,`ALL_ATOMS_REL`,`TOTAL_SIDE_ABS`,`TOTAL_SIDE_REL`,`MAIN_CHAIN_ABS`,`MAIN_CHAIN_REL`,"
+    			+ "`NON_POLAR_ABS`,`NON_POLAR_REL`,`ALL_POLAR_ABS`,`ALL_POLAR_REL`,`SEC_STRUCTURE`,`THREE_TURN_HELIX`,"
+    			+ "`FOUR_TURN_HELIX`,`FIVE_TURN_HELIX`,`GEOMETRICAL_BEND`,`CHIRALITY`,`BETA_BRIDGE_LABELA`,`BETA_BRIDGE_LABELB`,"
+    			+ "`BPA`,`BPB`,`BETA_SHEET_LABEL`,`ACC`,`LIGAND_BINDING_PROTEIN`,`LIGAND_BINDING_DIRECT`,`LIGAND_NAME`)VALUES ('"
+    			+ sar.getChrPos() + "'," + sar.getMutationId() + ",'" + sar.getPdbNo() + "'," + sar.getPdbResidueIndex() + ",'"
+    			+ sar.getPdbResidueName() + "'," + sar.getBuried() + "," + sar.getAllAtomsABS() + "," +sar.getAllAtomsREL() + ","
+    			+ sar.getTotalSideABS() + "," + sar.getTotalSideREL() + "," + sar.getMainChainABS() + "," +sar.getMainChainREL() + ","
+    			+ sar.getNonPolarABS() + "," +sar.getNonPolarREL() + "," + sar.getAllPolarABS() + "," + sar.getAllPolarREL() + ",'"
+    			+ sar.getSecStructure() + "','" + sar.getThreeTurnHelix() + "','" + sar.getFiveTurnHelix() + "','"
+    			+ sar.getFiveTurnHelix() + "','" + sar.getGeometricalBend() + "','" + sar.getChirality() + "','"
+    			+ sar.getBetaBridgeLabela() + "','" + sar.getBetaBridgeLabelb() + "','" + sar.getBpa() + "','"
+    			+ sar.getBpb() + "','" + sar.getBetaSheetLabel() + "','" + sar.getAcc() + "'," + sar.getLigandBindingProtein() + ","
+    			+ sar.getLigandBindingdirect() + ",'" + sar.getLigandName() + "');\n";
+		return str;
+    }
+    
+    public String getDSSPInfo(String pdbNo, int pdbResidueIndex){
+    	String resfilepwd = new String(ReadConfig.workspace + ReadConfig.dsspLocalDataFile + pdbNo + ReadConfig.dsspFileSuffix);
+		File resfile = new File(resfilepwd);
+		String str = null;
+		
+		return str;
+    }
+    
+    public String getNaccessInfo(String pdbNo, int pdbResidueIndex){
+    	String resfilepwd = new String(ReadConfig.workspace + pdbNo + ReadConfig.naccessFileSuffix);
+		File resfile = new File(resfilepwd);
+		String str = null;
+		try {
+			List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
+			int i = 0;
+			while(!(lines.get(i).split("\\s+")[0].equals("RES")&&lines.get(i).split("\\s+")[3].equals(Integer.toString(pdbResidueIndex)))){
+				i++;
+			}
+			str = lines.get(i);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return str;
     }
     
 
