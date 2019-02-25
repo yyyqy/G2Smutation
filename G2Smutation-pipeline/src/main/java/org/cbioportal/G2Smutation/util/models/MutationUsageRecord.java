@@ -4,28 +4,40 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Model mutationResult for return results containing genomic Coordinates and List of PDB residue
+ * Model mutationResult for return results containing Map of Mutation_ID, PDB residue
  * 
  * @author Juexin Wang
  *
  */
 public class MutationUsageRecord {
     
-    private HashMap<String,String> genomicCoorHm;
-    private List<String> residueList;
+    //private HashMap<String,List<Integer>> genomicCoorHm; //key:chr_start_end, value: list of MUTATION_ID
+    //private HashMap<String, String> mutationHm;  //key:MUTATION_NO(SeqID_Index), value: chr_start_end
+    private HashMap<Integer, String> mutationIdHm;//key:MUTATION_ID, value: chr_start_end
+    private HashMap<Integer, String> residueHm;  //key:MUTATION_ID, value:XXXX_Chain_INDEX
     
-    public HashMap<String, String> getGenomicCoorHm() {
-        return genomicCoorHm;
+    public HashMap<Integer, String> getMutationIdHm() {
+        return mutationIdHm;
     }
-    public void setGenomicCoorHm(HashMap<String, String> genomicCoorHm) {
-        this.genomicCoorHm = genomicCoorHm;
+    public void setMutationIdHm(HashMap<Integer, String> mutationIdHm) {
+        this.mutationIdHm = mutationIdHm;
     }
-    public List<String> getResidueList() {
-        return residueList;
+    public HashMap<Integer, String> getResidueHm() {
+        return residueHm;
     }
-    public void setResidueList(List<String> residueList) {
-        this.residueList = residueList;
+    public void setResidueHm(HashMap<Integer, String> residueHm) {
+        this.residueHm = residueHm;
     }
+    
+    
+    
+    
+    
+
+    
+    
+    
+
     
     
     

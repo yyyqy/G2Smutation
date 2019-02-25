@@ -1499,42 +1499,42 @@ public class PdbScriptsPipelineMakeSQL {
     }
     
 
+
     /**
      * parse mutation result from inputFile and generate outputfile in SQL for mutation_location_entry
      * 
-     * @param inputFilename
+     * @param mUsageRecord
      * @param outputFilename
-     * @return MutationUsageRecord contains (1) HashMap<String,String>, key:chr_start_end, value:""
-     *                                      (2) List<String>, XXXX_Chain_INDEX
      */
-    public MutationUsageRecord parseGenerateMutationResultSQL4MutationLocationEntry(String inputFilename, String outputFilename) {
-        MutationUsageRecord MUR = new MutationUsageRecord();
-        HashMap<String,String> genomicCoorHm = new HashMap<>();
-        List<String> residueList = new ArrayList<>();
-        //TODO: 
-        /**
-         * Use API: https://grch37.rest.ensembl.org/map/translation/ENSP00000412542/100..100?content-type=application/json
-         * In template of application.properties: https://grch37.rest.ensembl.org/map/translation/ENSPID/LOCATION..LOCATION?content-type=application/json
-         * Change accordingly
-         * 
-         * The URL is ReadConfig.protein2GenomicURL
-         * 
-         * Most could learn from function parseGenerateMutationResultSQL4MutatationUsageTable
-         * 
-         */
-        
-        MUR.setGenomicCoorHm(genomicCoorHm);
-        MUR.setResidueList(residueList);
-        return MUR;
+    public void parseGenerateMutationResultSQL4MutationLocationEntry(MutationUsageRecord mUsageRecord, String outputFilename) {
+        HashMap<Integer, String> mutationIdHm = mUsageRecord.getMutationIdHm();        
+        try{
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(int mutationId : mutationIdHm.keySet()){
+                String chr_pos = mutationIdHm.get(mutationId);
+                String[] strArray = chr_pos.split("_");
+                String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
+                            + mutationId + "','" + chr_pos + "','" + strArray[0] + "','" + strArray[1] + "','" + strArray[2] + "');\n";
+                outputlist.add(str);              
+            }           
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);
+        }catch(Exception ex){
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }        
     }
     
     /**
      * generate structure annotation for strucure_annotation_entry
      * 
-     * @param residueList
+     * @param MutationUsageRecord
      * @param outputFilename
      */
-    public void parseGenerateMutationResultSQL4StructureAnnotationEntry(List<String> residueList, String outputFilename) {
+    public void parseGenerateMutationResultSQL4StructureAnnotationEntry(MutationUsageRecord mUsageRecord, String outputFilename) {
         //TODO: 
         
 
@@ -1544,11 +1544,11 @@ public class PdbScriptsPipelineMakeSQL {
     /**
      * generate dbSNP annotation for dbsnp_entry
      * 
-     * @param residueList
+     * @param MutationUsageRecord
      * @param inputFilename
      * @param outputFilename
      */
-    public void parseGenerateMutationResultSQL4DbsnpEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+    public void parseGenerateMutationResultSQL4DbsnpEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
         //TODO: 
         
 
@@ -1557,11 +1557,11 @@ public class PdbScriptsPipelineMakeSQL {
     /**
      * generate clinvar annotation for clinvar_entry
      * 
-     * @param residueList
+     * @param MutationUsageRecord
      * @param inputFilename
      * @param outputFilename
      */
-    public void parseGenerateMutationResultSQL4ClinvarEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+    public void parseGenerateMutationResultSQL4ClinvarEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
         //TODO: 
         
 
@@ -1570,11 +1570,11 @@ public class PdbScriptsPipelineMakeSQL {
     /**
      * generate cosmic annotation for cosmic_entry
      * 
-     * @param residueList
+     * @param MutationUsageRecord
      * @param inputFilename
      * @param outputFilename
      */
-    public void parseGenerateMutationResultSQL4CosmicEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+    public void parseGenerateMutationResultSQL4CosmicEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
         //TODO: 
         
 
@@ -1583,11 +1583,11 @@ public class PdbScriptsPipelineMakeSQL {
     /**
      * generate genie annotation for genie_entry
      * 
-     * @param residueList
+     * @param MutationUsageRecord
      * @param inputFilename
      * @param outputFilename
      */
-    public void parseGenerateMutationResultSQL4GenieEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+    public void parseGenerateMutationResultSQL4GenieEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
         //TODO: 
         
 
@@ -1596,11 +1596,11 @@ public class PdbScriptsPipelineMakeSQL {
     /**
      * generate tcga annotation for tcga_entry
      * 
-     * @param residueList
+     * @param MutationUsageRecord
      * @param inputFilename
      * @param outputFilename
      */
-    public void parseGenerateMutationResultSQL4TcgaEntry(HashMap<String,String> genomicCoorHm, String inputFilename, String outputFilename) {
+    public void parseGenerateMutationResultSQL4TcgaEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
         //TODO: 
         
 
