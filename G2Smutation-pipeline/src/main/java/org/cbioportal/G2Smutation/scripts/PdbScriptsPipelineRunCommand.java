@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.util.CommandProcessUtil;
 import org.cbioportal.G2Smutation.util.FTPClientUtil;
+import org.cbioportal.G2Smutation.util.FileOperatingUtil;
 import org.cbioportal.G2Smutation.util.PdbSequenceUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
@@ -100,7 +101,8 @@ public class PdbScriptsPipelineRunCommand {
         log.info(
                 "[Download] A cloned copy of whole PDB will be downloaded and parse to sequences, unziped and parsing to get the PDB sequences");
         PdbSequenceUtil pu = new PdbSequenceUtil();
-        
+
+        /*
         //Choice 1/3: Parsing from specific folder
         //pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",
         //       ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
@@ -276,7 +278,7 @@ public class PdbScriptsPipelineRunCommand {
          * Check later
          */
         //this.seqFileCount = 10;
-
+/*
         // Step 11:
         log.info("********************[STEP 11]********************");
         log.info("Clean Up g2s *.sql.*");
@@ -300,7 +302,7 @@ public class PdbScriptsPipelineRunCommand {
 /*        
         // Step 13:
         log.info("********************[STEP 2]********************");
-        log.info("[SQL] Create data schema. CAUTION: only on test from 1 to 79");
+        log.info("[SQL] Test statistics, Create data schema. CAUTION: only on test from 1 to 79");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
         cu.runCommand("mysql", paralist);
@@ -312,7 +314,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);
         cu.runCommand("mysql", paralist); 
-*/          
+          
 
         // Step 13:
         log.info("********************[STEP 13]********************");
@@ -328,6 +330,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
         }
+        */
         
         
         
@@ -335,10 +338,10 @@ public class PdbScriptsPipelineRunCommand {
         
         
 
-        
+        /*
         // Step 11:
         log.info("********************[STEP 11]********************");
-        log.info("[SQL] Find Mutation Info, Output and Generate Mutation SQL Injection Table)");
+        log.info("[SQL] Usage Parts start. Find Mutation Info, Output and Generate Mutation SQL Injection Table)");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.mutationGenerateSQL);
         paralist.add(ReadConfig.workspace + ReadConfig.mutationResult);
@@ -349,40 +352,44 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage);
         cu.runCommand("mysql", paralist);
-        
+        */
         /**
          * Annotation Start
          */
-        
-        // Step 12: 
-        //TODO: Set Location
+        // Step 12:
         log.info("********************[STEP 12]********************");
-        log.info("[SQL] Use mutation info, find genomic coordinaties, update table mutation_location_entry)");        
-        MutationUsageRecord MUR = parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);       
-        List<String> residueList = MUR.getResidueList();
-        HashMap<String, String> genomicCoorHm = MUR.getGenomicCoorHm();
+        log.info("[SQL] Read results from file, generate HashMap for usage"); 
+        FileOperatingUtil fou = new FileOperatingUtil();
+        MutationUsageRecord mUsageRecord = fou.readMutationResult2MutationUsageRecord(ReadConfig.workspace + ReadConfig.mutationResult);
+        
+        // Step 13: 
+        //TODO: Set Location
+        log.info("********************[STEP 13]********************");
+        log.info("[SQL] Use mutation results, update table mutation_location_entry)");        
+        parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);       
         
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);
         cu.runCommand("mysql", paralist);
         
-        // Step 13:
+        /*
+        // Step 14:
         // TODO: Structural annotation for table structure_annotation_entry
         // Qinyuan
-        log.info("********************[STEP 13]********************");
+        log.info("********************[STEP 14]********************");
         log.info("[SQL] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");
         
-        parseprocess.parseGenerateMutationResultSQL4StructureAnnotationEntry(residueList,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
+        parseprocess.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);
         cu.runCommand("mysql", paralist);
         
         //TODO: dbsnp, clinvar, cosmic, genie, tcga annotation in Table 14-18
-        // Step 14:  
-        log.info("********************[STEP 14]********************");
+        // Step 15:  
+        log.info("********************[STEP 15]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
-        parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.dbsnpFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLDbsnp);       
+        parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.dbsnpFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLDbsnp);       
        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.annotationDbsnpSQL);
@@ -392,10 +399,10 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLDbsnp);
         cu.runCommand("mysql", paralist);
         
-        // Step 15:  
-        log.info("********************[STEP 15]********************");
+        // Step 16:  
+        log.info("********************[STEP 16]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table clinvar_entry)");
-        parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.clinvarFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);       
+        parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.clinvarFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);       
        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.annotationClinvarSQL);
@@ -405,10 +412,10 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);
         cu.runCommand("mysql", paralist);
         
-        // Step 16:  
-        log.info("********************[STEP 16]********************");
+        // Step 17:  
+        log.info("********************[STEP 17]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
-        parseprocess.parseGenerateMutationResultSQL4CosmicEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.cosmicFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLCosmic);       
+        parseprocess.parseGenerateMutationResultSQL4CosmicEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.cosmicFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLCosmic);       
        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.annotationCosmicSQL);
@@ -418,10 +425,10 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLCosmic);
         cu.runCommand("mysql", paralist);
         
-        // Step 17:  
-        log.info("********************[STEP 17]********************");
+        // Step 18:  
+        log.info("********************[STEP 18]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
-        parseprocess.parseGenerateMutationResultSQL4GenieEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.genieFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLGenie);       
+        parseprocess.parseGenerateMutationResultSQL4GenieEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.genieFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLGenie);       
        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.annotationGenieSQL);
@@ -431,10 +438,10 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLGenie);
         cu.runCommand("mysql", paralist);
         
-        // Step 18:  
-        log.info("********************[STEP 18]********************");
+        // Step 19:  
+        log.info("********************[STEP 19]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table tcga_entry)");
-        parseprocess.parseGenerateMutationResultSQL4TcgaEntry(genomicCoorHm, ReadConfig.workspace + ReadConfig.tcgaFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLTcga);       
+        parseprocess.parseGenerateMutationResultSQL4TcgaEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.tcgaFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLTcga);       
        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.annotationTcgaSQL);
