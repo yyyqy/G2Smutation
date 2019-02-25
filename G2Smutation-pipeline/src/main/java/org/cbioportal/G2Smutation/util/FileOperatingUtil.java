@@ -55,7 +55,7 @@ public class FileOperatingUtil {
                 String proteinIndex = "";
                 String gpos = "";
                 List<Integer> mutationList;
-                //Pattern pattern = Pattern.compile("ENSP\\d+\\.\\d");
+                // Pattern pattern = Pattern.compile("ENSP\\d+\\.\\d");
                 Pattern pattern = Pattern.compile("ENSP\\d+");
                 Matcher matcher = pattern.matcher(strArray[3]);
                 String[] tmpArray = strArray[6].split("_");
@@ -75,18 +75,17 @@ public class FileOperatingUtil {
                         // Calling GenomeNexus
                         // https://grch37.rest.ensembl.org/map/translation/ENSP00000356671.3/167..167?content-type=application/json
                         try {
+                            System.out.print(count + "\t");
                             gpos = uapi.callAPICoor(proteinName, proteinIndex);
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                            count++;
-                            continue;
                         }
-                        mutationHm.put(mutationNO, gpos);
+                        mutationHm.put(mutationNO, gpos); //gpos could be ""
                         mutationList = new ArrayList<Integer>();
                         mutationList.add(mutationID);
                     }
-                    mutationIdHm.put(mutationID, gpos);
-                    genomicCoorHm.put(gpos, mutationList);
+                    mutationIdHm.put(mutationID, gpos); //gpos could be ""
+                    genomicCoorHm.put(gpos, mutationList); //mutationList could be ""
 
                 } else {
                     log.info("Not found ENSP in " + strArray[3]);
