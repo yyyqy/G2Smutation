@@ -1515,10 +1515,13 @@ public class PdbScriptsPipelineMakeSQL {
             outputlist.add("start transaction;");
             for(int mutationId : mutationIdHm.keySet()){
                 String chr_pos = mutationIdHm.get(mutationId);
-                String[] strArray = chr_pos.split("_");
-                String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
+                if(!chr_pos.equals("")){
+                    //chr_pos may be "" if API return 500 error.
+                    String[] strArray = chr_pos.split("_");
+                    String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
                             + mutationId + "','" + chr_pos + "','" + strArray[0] + "','" + strArray[1] + "','" + strArray[2] + "');\n";
-                outputlist.add(str);              
+                    outputlist.add(str);
+                }
             }           
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
