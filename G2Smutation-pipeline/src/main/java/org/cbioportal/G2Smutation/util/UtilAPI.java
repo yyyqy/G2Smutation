@@ -2,6 +2,9 @@ package org.cbioportal.G2Smutation.util;
 
 import org.springframework.web.client.RestTemplate;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.cbioportal.G2Smutation.scripts.PdbScriptsPipelineMakeSQL;
 import org.cbioportal.G2Smutation.util.models.api.Mappings;
 import org.cbioportal.G2Smutation.util.models.api.QuoteCoor;
 
@@ -12,6 +15,7 @@ import org.cbioportal.G2Smutation.util.models.api.QuoteCoor;
  *
  */
 public class UtilAPI {
+    final static Logger log = Logger.getLogger(UtilAPI.class);
 
     /**
      * Call Genomic cooridinate in GRCh37 from EVP
@@ -32,11 +36,9 @@ public class UtilAPI {
         String url = rc.getProtein2GenomicURL();
         url = url.replace("ENSPID", proteinName);
         url = url.replace("LOCATION", proteinIndex);
-        System.out.println(url);
+        //log.info(url);
 
         RestTemplate restTemplate = new RestTemplate();
-        //String str = restTemplate.getForObject(url, String.class);
-        //System.out.println(str);
         
         QuoteCoor quote = restTemplate.getForObject(url, QuoteCoor.class);
         List<Mappings> mappings = quote.getMappings();

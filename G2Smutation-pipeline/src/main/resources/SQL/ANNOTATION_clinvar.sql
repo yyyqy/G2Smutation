@@ -4,9 +4,9 @@
 drop table IF EXISTS clinvar_entry;
 CREATE TABLE `clinvar_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
-  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, --CHR_POSSTART_POSEND
+  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART_POSEND
   `MUTATION_ID` int,
-  `CLINVAR_ID` int, --key
+  `CLINVAR_ID` int, -- key
   `AF_ESP` float,
   `AF_EXAC` float,
   `AF_TGP` float,

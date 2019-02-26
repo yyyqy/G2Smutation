@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
@@ -1552,7 +1553,46 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4DbsnpEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
+        HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm(); //<chr_pos,List of mutationId>
+        HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,chr_pos_snpid>
+        
+        try{
+            LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            while(it.hasNext()){
+                String str = it.nextLine();
+                String[] strArray = str.split("\t");
+                String gpos = strArray[0]+"_"+strArray[1];
+                if(mutationIdRHm.containsKey(gpos)){
+                    List<Integer> tmplist = mutationIdRHm.get(gpos);
+                    for (Integer mutationId: tmplist){
+                        rsHm.put(mutationId, gpos+"_"+strArray[2]);
+                    }                    
+                }
+            }            
+            
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(int mutationId : rsHm.keySet()){
+                String chr_pos_snpid = rsHm.get(mutationId);
+                String[] strArray = chr_pos_snpid.split("_");
+                String chr_pos = "";
+                for (int i=0; i<strArray.length-2; i++){
+                    chr_pos = chr_pos + strArray[i] + "_";
+                }
+                chr_pos = chr_pos + strArray[strArray.length-2];
+                //System.out.println(chr_pos_snpid);
+                String str = "INSERT INTO `dbsnp_entry` (`CHR_POS`,`MUTATION_ID`,`RS_ID`)VALUES('" + chr_pos
+                        + "','" + Integer.toString(mutationId) + "','" + strArray[strArray.length-1] + "');\n";
+                outputlist.add(str);               
+            }           
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         
 
     }
