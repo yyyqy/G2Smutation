@@ -7,6 +7,8 @@ CREATE TABLE `clinvar_entry` (
   `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART_POSEND
   `MUTATION_ID` int,
   `CLINVAR_ID` int, -- key
+  `REF` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+  `ALT` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
   `AF_ESP` float,
   `AF_EXAC` float,
   `AF_TGP` float,

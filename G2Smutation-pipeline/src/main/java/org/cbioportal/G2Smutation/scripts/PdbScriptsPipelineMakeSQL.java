@@ -17,6 +17,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
+import org.cbioportal.G2Smutation.util.FileOperatingUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
 import org.cbioportal.G2Smutation.util.blast.BlastOutput;
@@ -1607,6 +1608,7 @@ public class PdbScriptsPipelineMakeSQL {
     public void parseGenerateMutationResultSQL4ClinvarEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
         HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();
         HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,string as all information in the line>
+        FileOperatingUtil fou = new FileOperatingUtil();
         try{
             LineIterator it = FileUtils.lineIterator(new File(inputFilename));
             while(it.hasNext()){
@@ -1631,17 +1633,26 @@ public class PdbScriptsPipelineMakeSQL {
                 String contentStr = rsHm.get(mutationId);
                 String[] strArray = contentStr.split("\t");
                 String chr_pos = strArray[0]+"_"+strArray[1];
+                HashMap<String,String> contentHm = fou.clinvarContentStr2Map(strArray[7]);
+                //original: manually, we change accordingly
+				//String str = "INSERT INTO `clinvar_entry` (`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`,`REF`,`ALT`,`AF_ESP`,`AF_EXAC`,`AF_TGP`,"
+				//		+ "`ALLELEID`,`CLNDN`,`CLNDNINCL`,`CLNDISDB`,`CLNDISDBINCL`,`CLNHGVS`,`CLNREVSTAT`,`CLNSIG`,`CLNSIGCONF`,"
+				//		+ "`CLNSIGINCL`,`CLNVC`,`CLNVCSO`,`CLNVI`,`DBVARID`,`GENEINFO`,`MC`,`ORIGIN`,`RS`,`SSR`,`UPDATE_DATE`)VALUES('"
+				//		+ chr_pos + "','" + Integer.toString(mutationId) + "','" + strArray[2] + "','"+ strArray[3] + "','" + strArray[4] + "','"
+				//		+ "',CURDATE());\n";
+                String keystr = "INSERT INTO `clinvar_entry` (`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`,`REF`,`ALT`";
+                String valstr = ",`UPDATE_DATE`)VALUES('" + chr_pos + "','" + Integer.toString(mutationId) + "','" + strArray[2] + "','"+ strArray[3] + "','" + strArray[4] + "'";
                 
-                String str = "INSERT INTO `dbsnp_entry` (`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`,`AF_ESP`,`AF_EXAC`,`AF_TGP`,"
-                        + "`ALLELEID`,`CLNDN`,`CLNDNINCL`,`CLNDISDB`,`CLNDISDBINCL`,`CLNHGVS`,`CLNREVSTAT`,`CLNSIG`,`CLNSIGCONF`,"
-                        + "`CLNSIGINCL`,`CLNVC`,`CLNVCSO`,`CLNVI`,`DBVARID`,`GENEINFO`,`MC`,`ORIGIN`,`RS`,`SSR`,`UPDATE_DATE`)VALUES('" + chr_pos
-                        + "','" + Integer.toString(mutationId) + "','" + strArray[strArray.length-1] + "',CURDATE());\n";
-                outputlist.add(str);               
+                for(String key: contentHm.keySet()){
+                	keystr = keystr + ",`" + key + "`";
+                	valstr = valstr + ",'" + contentHm.get(key) + "'";
+                }
+                valstr = valstr + ",CURDATE());\n";
+                
+                outputlist.add(keystr+valstr);               
             }           
             outputlist.add("commit;");
-            FileUtils.writeLines(new File(outputFilename), outputlist);
-            
-            
+            FileUtils.writeLines(new File(outputFilename), outputlist);            
         }catch(Exception ex){
             ex.printStackTrace();
         }

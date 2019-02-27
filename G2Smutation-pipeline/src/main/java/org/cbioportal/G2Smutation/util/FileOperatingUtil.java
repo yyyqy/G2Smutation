@@ -134,5 +134,22 @@ public class FileOperatingUtil {
         mur.setResidueHm(residueHm);
         return mur;
     }
+    
+    /**
+     * Convert clinvar contents line as string to HashMap
+     * Using table clinvar_entry as the model
+     * 
+     * @param contentlineStr
+     * @return
+     */
+    public HashMap<String,String> clinvarContentStr2Map(String contentlineStr){
+    	HashMap<String,String> hm = new HashMap<>();
+    	String[] strArray = contentlineStr.split(";");
+    	for (String str : strArray){
+    		String[] reArray = str.split("=");
+    		hm.put(reArray[0], reArray[1]);
+    	}    	
+    	return hm;
+    }
 
 }
