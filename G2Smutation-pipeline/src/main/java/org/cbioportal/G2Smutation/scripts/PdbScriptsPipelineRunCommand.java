@@ -97,6 +97,7 @@ public class PdbScriptsPipelineRunCommand {
         ArrayList<String> paralist = new ArrayList<String>();
         
 
+        /*
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -106,7 +107,7 @@ public class PdbScriptsPipelineRunCommand {
                 "[Download] A cloned copy of whole PDB will be downloaded and parse to sequences, unziped and parsing to get the PDB sequences");
         PdbSequenceUtil pu = new PdbSequenceUtil();
 
-        /*
+        
         //Choice 1/3: Parsing from specific folder
         //pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",
         //       ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
@@ -384,8 +385,7 @@ public class PdbScriptsPipelineRunCommand {
             mUsageRecord = (MutationUsageRecord)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
         }catch(Exception ex){
             ex.printStackTrace();
-        }
-        
+        }    
         
         
         // Step 13: 
@@ -427,7 +427,6 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLDbsnp);
         cu.runCommand("mysql", paralist);
-        */
         
         // Step 16:  
         log.info("********************[STEP 16]********************");
@@ -439,17 +438,11 @@ public class PdbScriptsPipelineRunCommand {
         System.out.println(ReadConfig.workspace
                 + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
         
-        //paralist = new ArrayList<String>();
-        //paralist.add(ReadConfig.clinvarWholeSource);
-        //paralist.add(ReadConfig.workspace + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
-        //cu.runCommand("wget", paralist);
-        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace
                 + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
         paralist.add(ReadConfig.workspace + ReadConfig.clinvarFile);
-        cu.runCommand("gunzip", paralist);
-      
+        cu.runCommand("gunzip", paralist);      
         
         parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.clinvarFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);       
        
@@ -460,8 +453,8 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);
         cu.runCommand("mysql", paralist);
+        */
         
-        /*
         // Step 17:  
         log.info("********************[STEP 17]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
@@ -475,6 +468,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLCosmic);
         cu.runCommand("mysql", paralist);
         
+        /*
         // Step 18:  
         log.info("********************[STEP 18]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");

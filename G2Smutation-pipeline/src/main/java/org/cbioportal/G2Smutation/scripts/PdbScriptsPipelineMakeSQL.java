@@ -1668,7 +1668,73 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4CosmicEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
+    	HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();//key:chr_pos, value: List of MUTATION_ID
+        HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,string as all information in the line>
+        HashMap<Integer,String> rsPosHm = new HashMap<>();//<mutationId,chr_pos>
+        FileOperatingUtil fou = new FileOperatingUtil();
+        String keystr = "INSERT INTO `cosmic_entry` (`CHR_POS`,`MUTATION_ID`";
+        
+        try{
+            LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            int count = 0;
+            while(it.hasNext()){
+                String contentStr = it.nextLine();
+                String[] strArray = contentStr.split("\t");
+                if(count==0){
+                	//header, convert header to inject key string
+                	for(String str:strArray){
+                		str = str.replaceAll("\\s+", "_").toUpperCase();
+                		if(str.equals("MUTATION_ID")){//duplicate key in Cosmic, we changed accordingly
+                			str = "COSMIC_MUTATION_ID";
+                		}
+                		keystr = keystr + ",`" + str + "`";
+                	}
+                	keystr = keystr + ",`COSMIC_VERSION`)VALUES('";
+                }
+                else{    
+                	String[] tmpArray = strArray[23].split(":");
+                	String[] posArray = tmpArray[1].split("-");
+                	int start = Integer.parseInt(posArray[0]);
+                	int end = Integer.parseInt(posArray[1]);
+                	for(int i=start;i<=end;i++){
+                		String gpos = tmpArray[0]+"_"+Integer.toString(i);
+                		if(mutationIdRHm.containsKey(gpos)){
+                            List<Integer> tmplist = mutationIdRHm.get(gpos);
+                            for (Integer mutationId: tmplist){
+                                rsHm.put(mutationId, contentStr);
+                                rsPosHm.put(mutationId, gpos);
+                            }                    
+                        }
+                	}                                        
+                }
+                count++;
+            }            
+            
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(int mutationId : rsHm.keySet()){
+                String contentStr = rsHm.get(mutationId);
+                String chr_pos = rsPosHm.get(mutationId); 
+                String[] strArray = contentStr.split("\t");
+                
+                String valstr = chr_pos + "','" + Integer.toString(mutationId) + "'";
+                
+                for(String str: strArray){
+                	valstr = valstr + ",'" + str + "'";
+                }
+                valstr = valstr + ",'COSMIC v87, released 13-NOV-18');\n";
+                
+                outputlist.add(keystr+valstr);               
+            }           
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+ 
         
 
     }
