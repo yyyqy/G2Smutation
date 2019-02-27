@@ -1692,7 +1692,7 @@ public class PdbScriptsPipelineMakeSQL {
                 	keystr = keystr + ",`COSMIC_VERSION`)VALUES('";
                 }
                 else{    
-                	String[] tmpArray = strArray[23].split(":");
+                	String[] tmpArray = strArray[22].split(":");
                 	String[] posArray = tmpArray[1].split("-");
                 	int start = Integer.parseInt(posArray[0]);
                 	int end = Integer.parseInt(posArray[1]);
