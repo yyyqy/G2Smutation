@@ -1671,12 +1671,12 @@ public class PdbScriptsPipelineMakeSQL {
     	HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();//key:chr_pos, value: List of MUTATION_ID
         HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,string as all information in the line>
         HashMap<Integer,String> rsPosHm = new HashMap<>();//<mutationId,chr_pos>
-        FileOperatingUtil fou = new FileOperatingUtil();
-        String keystr = "INSERT INTO `cosmic_entry` (`CHR_POS`,`MUTATION_ID`";
-        
+
+        String keystr = "INSERT INTO `cosmic_entry` (`CHR_POS`,`MUTATION_ID`";        
         try{
             LineIterator it = FileUtils.lineIterator(new File(inputFilename));
             int count = 0;
+            int coorcount = 0;
             while(it.hasNext()){
                 String contentStr = it.nextLine();
                 String[] strArray = contentStr.split("\t");
@@ -1692,25 +1692,38 @@ public class PdbScriptsPipelineMakeSQL {
                 	keystr = keystr + ",`COSMIC_VERSION`)VALUES('";
                 }
                 else{ 
-                	System.out.println(strArray[23]);
-                	String[] tmpArray = strArray[23].split(":");
-                	String[] posArray = tmpArray[1].split("-");
-                	int start = Integer.parseInt(posArray[0]);
-                	int end = Integer.parseInt(posArray[1]);
-                	for(int i=start;i<=end;i++){
-                		String gpos = tmpArray[0]+"_"+Integer.toString(i);
-                		if(mutationIdRHm.containsKey(gpos)){
-                            List<Integer> tmplist = mutationIdRHm.get(gpos);
-                            for (Integer mutationId: tmplist){
-                                rsHm.put(mutationId, contentStr);
-                                rsPosHm.put(mutationId, gpos);
-                            }                    
+                	//System.out.println(count + " * " + strArray[23]);
+                	if( !strArray[23].equals("") ){               	    
+                	    String[] tmpArray = strArray[23].split(":");
+                        String[] posArray = tmpArray[1].split("-");
+                        int start = Integer.parseInt(posArray[0]);
+                        int end = Integer.parseInt(posArray[1]);
+                        for(int i=start;i<=end;i++){
+                            String gpos = tmpArray[0]+"_"+Integer.toString(i);
+                            if(mutationIdRHm.containsKey(gpos)){
+                                List<Integer> tmplist = mutationIdRHm.get(gpos);
+                                for (Integer mutationId: tmplist){
+                                    rsHm.put(mutationId, contentStr);
+                                    rsPosHm.put(mutationId, gpos);
+                                }                    
+                            }
                         }
-                	}                                        
+                        coorcount++;
+                	}else{
+                	    // if does not map to genomic location, we just neglect now, 
+                	    //e.g. COSM5790 malignant_melanoma c.?del? p.?fs   Deletion - Frameshift
+                	    //e.g. COSM12980 c.?     p.E746_A750del  Deletion -In frame Confirmed somatic variant ...
+                	    //Unknown;Substitution - Missense;Deletion - In frame;Insertion - In frame;Deletion - Frameshift;Complex - deletion inframe;Frameshift
+                	    //System.out.println(count + " * " + strArray[19]);
+                	}
+                	if (count%1000000 == 0){
+                	    log.info(Integer.toString(count)+" has procceeded");
+                	}                	
                 }
                 count++;
             }            
             
+            log.info(Integer.toString(coorcount) + " has genomic coordinates");
             List<String> outputlist = new ArrayList<String>();
             // Add transaction
             outputlist.add("SET autocommit = 0;");
@@ -1720,10 +1733,13 @@ public class PdbScriptsPipelineMakeSQL {
                 String chr_pos = rsPosHm.get(mutationId); 
                 String[] strArray = contentStr.split("\t");
                 
-                String valstr = chr_pos + "','" + Integer.toString(mutationId) + "'";
-                
+                String valstr = chr_pos + "','" + Integer.toString(mutationId) + "'";                
                 for(String str: strArray){
                 	valstr = valstr + ",'" + str + "'";
+                }
+                // deal with the last character may miss
+                if(strArray.length == 34){// temp hardcode here related with the cosmic_entry;
+                    valstr = valstr + ",''";
                 }
                 valstr = valstr + ",'COSMIC v87, released 13-NOV-18');\n";
                 
