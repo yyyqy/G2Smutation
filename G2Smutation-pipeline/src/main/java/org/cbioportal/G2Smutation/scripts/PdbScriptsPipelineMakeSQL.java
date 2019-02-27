@@ -1605,7 +1605,46 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4ClinvarEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
+        HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();
+        HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,string as all information in the line>
+        try{
+            LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            while(it.hasNext()){
+                String str = it.nextLine();
+                if(!str.startsWith("#")){
+                    String[] strArray = str.split("\t");
+                    String gpos = strArray[0]+"_"+strArray[1];
+                    if(mutationIdRHm.containsKey(gpos)){
+                        List<Integer> tmplist = mutationIdRHm.get(gpos);
+                        for (Integer mutationId: tmplist){
+                            rsHm.put(mutationId, str);
+                        }                    
+                    }                    
+                }                
+            }            
+            
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(int mutationId : rsHm.keySet()){
+                String contentStr = rsHm.get(mutationId);
+                String[] strArray = contentStr.split("\t");
+                String chr_pos = strArray[0]+"_"+strArray[1];
+                
+                String str = "INSERT INTO `dbsnp_entry` (`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`,`AF_ESP`,`AF_EXAC`,`AF_TGP`,"
+                        + "`ALLELEID`,`CLNDN`,`CLNDNINCL`,`CLNDISDB`,`CLNDISDBINCL`,`CLNHGVS`,`CLNREVSTAT`,`CLNSIG`,`CLNSIGCONF`,"
+                        + "`CLNSIGINCL`,`CLNVC`,`CLNVCSO`,`CLNVI`,`DBVARID`,`GENEINFO`,`MC`,`ORIGIN`,`RS`,`SSR`,`UPDATE_DATE`)VALUES('" + chr_pos
+                        + "','" + Integer.toString(mutationId) + "','" + strArray[strArray.length-1] + "',CURDATE());\n";
+                outputlist.add(str);               
+            }           
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         
 
     }

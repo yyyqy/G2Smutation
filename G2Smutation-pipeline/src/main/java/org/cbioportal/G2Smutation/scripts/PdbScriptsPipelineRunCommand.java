@@ -414,10 +414,10 @@ public class PdbScriptsPipelineRunCommand {
         */
         
         //TODO: dbsnp, clinvar, cosmic, genie, tcga annotation in Table 15-19
-        
+        /*
         // Step 15:  
         log.info("********************[STEP 15]********************");
-        log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
+        log.info("[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
         parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.dbsnpFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLDbsnp);       
        
         paralist = new ArrayList<String>();
@@ -427,11 +427,30 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLDbsnp);
         cu.runCommand("mysql", paralist);
+        */
         
-        /*
         // Step 16:  
         log.info("********************[STEP 16]********************");
-        log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table clinvar_entry)");
+        log.info("[SQL] Clinvar: Download weekly Clinvar, parsing annotation file and inject to table clinvar_entry)");
+        
+        FTPClientUtil fc = new FTPClientUtil();
+        fc.downloadFilefromFTP(ReadConfig.clinvarWholeSource, ReadConfig.workspace
+                + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+        System.out.println(ReadConfig.workspace
+                + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+        
+        //paralist = new ArrayList<String>();
+        //paralist.add(ReadConfig.clinvarWholeSource);
+        //paralist.add(ReadConfig.workspace + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+        //cu.runCommand("wget", paralist);
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace
+                + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+        paralist.add(ReadConfig.workspace + ReadConfig.clinvarFile);
+        cu.runCommand("gunzip", paralist);
+      
+        
         parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.clinvarFile, ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);       
        
         paralist = new ArrayList<String>();
@@ -442,6 +461,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);
         cu.runCommand("mysql", paralist);
         
+        /*
         // Step 17:  
         log.info("********************[STEP 17]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
