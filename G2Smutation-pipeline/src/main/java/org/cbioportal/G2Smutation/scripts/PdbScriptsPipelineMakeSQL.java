@@ -1764,9 +1764,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4GenieEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
-        
-
+        parseGenerateMutationResultSQL4bothGenieTcga(mUsageRecord, inputFilename, outputFilename, "genie");
     }
     
     /**
@@ -1777,9 +1775,136 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4TcgaEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
+        parseGenerateMutationResultSQL4bothGenieTcga(mUsageRecord, inputFilename, outputFilename, "tcga");
+    }
+    
+    /**
+     * As genie and tcga are mainly share with the same structure, this function is designed for both othem.
+     * 
+     * @param mUsageRecord
+     * @param inputFilename
+     * @param outputFilename
+     * @param annotationType
+     */
+    public void parseGenerateMutationResultSQL4bothGenieTcga(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename, String annotationType){
+        //
+        String dbTableName="";
+        String dbTableVersion="";
+        String dbTableVersionUse="";
+        int commonMiss=0;
+        int commonAdd=0;
+        int ignoreLineNo = 0;
+        int convertLineNo = 1;
+        if(annotationType == "genie"){
+            dbTableName = "genie_entry";
+            dbTableVersion = "GENIE_VERSION"; 
+            dbTableVersionUse = "5.0-public";
+            commonMiss = 112;
+            commonAdd = 11;
+            ignoreLineNo = 0;
+            convertLineNo = 1;
+        }else if(annotationType == "tcga"){
+            dbTableName = "tcga_entry";
+            dbTableVersion = "TCGA_VERSION"; 
+            dbTableVersionUse = "mc3.v0.2.8.PUBLIC";
+            commonMiss = 114;
+            commonAdd = 11;
+            ignoreLineNo = -1;
+            convertLineNo = 0;
+        }else{
+            log.error("Now only support genie and tcga");
+        }
         
+        //main function
+        HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();//key:chr_pos, value: List of MUTATION_ID
+        HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,string as all information in the line>
+        HashMap<Integer,String> rsPosHm = new HashMap<>();//<mutationId,chr_pos>
 
+        String keystr = "INSERT INTO `"+dbTableName+"` (`CHR_POS`,`MUTATION_ID`";
+        try {
+            LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            int count = 0;
+            while (it.hasNext()) {
+                String contentStr = it.nextLine();
+                String[] strArray = contentStr.split("\t");
+                if (count == ignoreLineNo) {
+                    // header, ignore
+                } else if (count == convertLineNo) {
+                    // annotation header, convert header to inject key string
+                    for (String str : strArray) {
+                        if(annotationType.equals("tcga")){
+                            if(str.equals("STRAND")){
+                                str = "STRAND-VEP";
+                            }                           
+                        }
+                        str = str.replaceAll("\\s+", "_").toUpperCase();
+                        keystr = keystr + ",`" + str + "`";
+                    }
+                    keystr = keystr + ",`"+dbTableVersion+"`)VALUES('";
+                } else {
+                    int start = Integer.parseInt(strArray[5]);
+                    int end = Integer.parseInt(strArray[6]);
+                    for (int i = start; i <= end; i++) {
+                        String gpos = strArray[4] + "_" + Integer.toString(i);
+                        if (mutationIdRHm.containsKey(gpos)) {
+                            List<Integer> tmplist = mutationIdRHm.get(gpos);
+                            for (Integer mutationId : tmplist) {
+                                rsHm.put(mutationId, contentStr);
+                                rsPosHm.put(mutationId, gpos);
+                            }
+                        }
+                    }
+
+                    if (count % 1000000 == 0) {
+                        log.info(Integer.toString(count) + " has procceeded");
+                    }
+                }
+                count++;
+            }
+
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for (int mutationId : rsHm.keySet()) {
+                String contentStr = rsHm.get(mutationId);
+                String chr_pos = rsPosHm.get(mutationId);
+                String[] strArray = contentStr.split("\t");
+
+                String valstr = chr_pos + "','" + Integer.toString(mutationId) + "'";
+                for (String str : strArray) {
+                    //in case have 3'UTR in the text
+                    if(str.contains("'")){
+                        //System.out.println("* "+str);
+                        str = str.replace("'", "\\'");
+                        //System.out.println(str);
+                    }
+                    valstr = valstr + ",'" + str + "'";
+                }
+                //System.out.println(strArray.length);
+                if(annotationType.equals("genie")){//Only genie may have problem
+                    // deal with the last characters, they may miss in EXAC
+                    // part.
+                    if (strArray.length == commonMiss) {// temp hardcode here
+                                                        // related with
+                        // the genie_entry;
+                        for (int i = 0; i < commonAdd; i++) {// the complete one
+                                                             // should be
+                            // 123
+                            valstr = valstr + ",''";
+                        }
+                    }
+                }
+                valstr = valstr + ",'"+dbTableVersionUse+"');\n";
+
+                outputlist.add(keystr + valstr);
+            }
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
     }
 
 }

@@ -453,7 +453,6 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLClinvar);
         cu.runCommand("mysql", paralist);
-        */
         
         // Step 17:  
         log.info("********************[STEP 17]********************");
@@ -467,6 +466,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLCosmic);
         cu.runCommand("mysql", paralist);
+        */
         
         /*
         // Step 18:  
@@ -481,6 +481,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLGenie);
         cu.runCommand("mysql", paralist);
+        */
         
         // Step 19:  
         log.info("********************[STEP 19]********************");
