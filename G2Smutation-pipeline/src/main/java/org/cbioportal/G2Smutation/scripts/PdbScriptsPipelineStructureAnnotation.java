@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.util.CommandProcessUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
+import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.io.PDBFileReader;
 
@@ -129,11 +130,21 @@ public class PdbScriptsPipelineStructureAnnotation {
 		try {
 			PDBFileReader reader = new PDBFileReader();
 			Structure struc = reader.getStructure(ReadConfig.workspace + filename);
-			//struc.getPDBHeader();
-			log.info(struc.getHetGroups());
+			List<Group> hetGroup = new ArrayList<Group>();
+			hetGroup.addAll(struc.getHetGroups());
+			
+				log.info(hetGroup.get(4));
+				log.info(hetGroup.get(4).getPDBName());
+				//log.info(hetGroup.get(5));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+    
+    public double getDistance(float x1, float y1, float z1, float x2, float y2, float z2) {
+    	double dis=0;
+    	dis = Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2));
+    	return dis;
+    }
     
 }

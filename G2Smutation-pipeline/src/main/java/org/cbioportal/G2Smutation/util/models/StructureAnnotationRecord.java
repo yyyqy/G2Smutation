@@ -18,7 +18,7 @@ public class StructureAnnotationRecord {
 
     private int pdbResidueIndex;
 
-    private String pdbResidueName;
+    private char pdbResidueName;
     
     private int buried;
     
@@ -58,13 +58,13 @@ public class StructureAnnotationRecord {
     
     private char betaBridgeLabelb;
     
-    private char bpa;
+    private int bpa;
     
-    private char bpb;
+    private int bpb;
     
     private char betaSheetLabel;
     
-    private char acc;
+    private int acc;
     
     private int ligandBindingProtein;
     
@@ -109,11 +109,11 @@ public class StructureAnnotationRecord {
 		this.pdbResidueIndex = pdbResidueIndex;
 	}
 
-	public String getPdbResidueName() {
+	public char getPdbResidueName() {
 		return pdbResidueName;
 	}
 
-	public void setPdbResidueName(String pdbResidueName) {
+	public void setPdbResidueName(char pdbResidueName) {
 		this.pdbResidueName = pdbResidueName;
 	}
 
@@ -269,19 +269,19 @@ public class StructureAnnotationRecord {
 		this.betaBridgeLabelb = betaBridgeLabelb;
 	}
 
-	public char getBpa() {
+	public int getBpa() {
 		return bpa;
 	}
 
-	public void setBpa(char bpa) {
+	public void setBpa(int bpa) {
 		this.bpa = bpa;
 	}
 
-	public char getBpb() {
+	public int getBpb() {
 		return bpb;
 	}
 
-	public void setBpb(char bpb) {
+	public void setBpb(int bpb) {
 		this.bpb = bpb;
 	}
 
@@ -293,11 +293,11 @@ public class StructureAnnotationRecord {
 		this.betaSheetLabel = betaSheetLabel;
 	}
 
-	public char getAcc() {
+	public int getAcc() {
 		return acc;
 	}
 
-	public void setAcc(char acc) {
+	public void setAcc(int acc) {
 		this.acc = acc;
 	}
 

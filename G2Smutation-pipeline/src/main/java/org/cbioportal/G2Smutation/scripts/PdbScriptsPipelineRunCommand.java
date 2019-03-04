@@ -15,6 +15,7 @@ import org.cbioportal.G2Smutation.util.PdbSequenceUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
+import org.cbioportal.G2Smutation.util.models.StructureAnnotationRecord;
 
 /**
  * Main function from entrance of G2Smutation pipeline
@@ -371,7 +372,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);
         cu.runCommand("mysql", paralist);
-        
+       
         /*
         // Step 14:
         // TODO: Structural annotation for table structure_annotation_entry
@@ -806,7 +807,7 @@ public class PdbScriptsPipelineRunCommand {
             // For Test Purpose:
             PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
             this.seqFileCount = 10;
-
+/*
             // Step 0:
             log.info("********************[STEP 0]********************");
             log.info("Clean Up *.sql.*");
@@ -821,7 +822,7 @@ public class PdbScriptsPipelineRunCommand {
                 paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
                 cu.runCommand("rm", paralist);
             }
-
+            
             // Step 1:
             log.info("********************[STEP 1]********************");
             log.info("[PrepareSQL] Parse xml results and output as input sql statments");
@@ -869,16 +870,20 @@ public class PdbScriptsPipelineRunCommand {
             */
 
         }
-        
+/*        
         //Analyze the mutation amount and rate
         log.info("********************Statistics Result********************");
-//        for (int testcount = 1; testcount <= 79; testcount++) {
-//        	PdbScriptsPipelineMakeSQL compareprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
-//        	compareprocess.compareMutation(testcount);
-//        	
-//        }
-//        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
-//        generateSQLfile.generateRsSQLfile();
+        for (int testcount = 1; testcount <= 79; testcount++) {
+        	PdbScriptsPipelineMakeSQL compareprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
+        	compareprocess.compareMutation(testcount);
+        	
+        }
+        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
+        generateSQLfile.generateRsSQLfile();
+       
+*/     
+        PdbScriptsPipelineStructureAnnotation sar = new PdbScriptsPipelineStructureAnnotation();
+        sar.getHETFromPdbFile("4cof.pdb");
     }
 }
 
