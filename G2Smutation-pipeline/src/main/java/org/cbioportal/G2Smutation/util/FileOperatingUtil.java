@@ -27,7 +27,9 @@ public class FileOperatingUtil {
      * @return MutationUsageRecord contains 
      *  (1)HashMap<String, String> mutationIdHm, 
      *          key:MUTATION_ID, value: chr_start_end
-     *  (2)HashMap<Integer, String> residueHm,
+     *  (2)HashMap<String, List<Integer>> mutationIdRHm,
+     *          key:chr_pos, value: List of mutationId
+     *  (3)HashMap<Integer, String> residueHm,
      *          key:MUTATION_ID, value:XXXX_Chain_INDEX
      * 
      */
@@ -37,6 +39,7 @@ public class FileOperatingUtil {
         HashMap<String, String> mutationHm = new HashMap<>();// save time for
                                                              // calling API
         HashMap<Integer, String> mutationIdHm = new HashMap<>();
+        HashMap<String, List<Integer>> mutationIdRHm = new HashMap<>();
         HashMap<Integer, String> residueHm = new HashMap<>();
 
         try {
@@ -75,7 +78,7 @@ public class FileOperatingUtil {
                         // Calling GenomeNexus
                         // https://grch37.rest.ensembl.org/map/translation/ENSP00000356671.3/167..167?content-type=application/json
                         try {
-                            System.out.print(count + "\t");
+                            log.info(count);
                             gpos = uapi.callAPICoor(proteinName, proteinIndex);
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -98,9 +101,55 @@ public class FileOperatingUtil {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        //Construct Reverse HashMap mutationIdRHm for mutationIdHm
+        for (Integer mutationId: mutationIdHm.keySet()){
+            String gpos = mutationIdHm.get(mutationId);
+            if(!gpos.equals("")){
+                System.out.println(mutationId+" "+gpos);
+                //Corner Case:
+                //HSCHR6_MHC_MCF_29989718_29989720
+                //https://grch37.rest.ensembl.org/map/translation/ENSP00000403922.1/176..176?content-type=application/json
+                String[] strArray = gpos.split("_");
+                int start = Integer.parseInt(strArray[strArray.length-2]);
+                int end = Integer.parseInt(strArray[strArray.length-1]);
+                for (int i=start;i<=end;i++){
+                    String chr_pos = "";
+                    for(int j=0;j<strArray.length-2;j++){
+                        chr_pos = chr_pos + strArray[j] + "_";
+                    }
+                    chr_pos = chr_pos+Integer.toString(i);
+                    List<Integer> tmpList;
+                    if(mutationIdRHm.containsKey(chr_pos)){
+                        tmpList = mutationIdRHm.get(chr_pos);                                               
+                    }else{
+                        tmpList = new ArrayList<Integer>(); 
+                    }
+                    tmpList.add(mutationId);
+                    mutationIdRHm.put(chr_pos, tmpList);                    
+                }                
+            }           
+        }        
         mur.setMutationIdHm(mutationIdHm);
+        mur.setMutationIdRHm(mutationIdRHm);
         mur.setResidueHm(residueHm);
         return mur;
+    }
+    
+    /**
+     * Convert clinvar contents line as string to HashMap
+     * Using table clinvar_entry as the model
+     * 
+     * @param contentlineStr
+     * @return
+     */
+    public HashMap<String,String> clinvarContentStr2Map(String contentlineStr){
+    	HashMap<String,String> hm = new HashMap<>();
+    	String[] strArray = contentlineStr.split(";");
+    	for (String str : strArray){
+    		String[] reArray = str.split("=");
+    		hm.put(reArray[0], reArray[1]);
+    	}    	
+    	return hm;
     }
 
 }
