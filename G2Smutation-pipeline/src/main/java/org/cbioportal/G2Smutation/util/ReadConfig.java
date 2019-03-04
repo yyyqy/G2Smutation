@@ -59,6 +59,7 @@ public class ReadConfig {
     public static String swissprotWholeSource;
     public static String tremblWholeSource;
     public static String isoformWholeSource;
+    public static String clinvarWholeSource;
     public static String updateTxt;
     public static String updateFasta;
     public static String delPDB;
@@ -179,6 +180,7 @@ public class ReadConfig {
             ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource").trim();
             ReadConfig.tremblWholeSource = prop.getProperty("trembl.wholeSource").trim();
             ReadConfig.isoformWholeSource = prop.getProperty("isoform.wholeSource").trim();
+            ReadConfig.clinvarWholeSource = prop.getProperty("clinvar.wholeSource").trim();
             ReadConfig.updateTxt = prop.getProperty("update.updateTxt").trim();
             ReadConfig.updateFasta = prop.getProperty("update.updateFasta").trim();
             ReadConfig.delPDB = prop.getProperty("update.delPDB").trim();
@@ -250,6 +252,15 @@ public class ReadConfig {
 
     
     
+    
+    public static String getClinvarWholeSource() {
+        return clinvarWholeSource;
+    }
+
+    public static void setClinvarWholeSource(String clinvarWholeSource) {
+        ReadConfig.clinvarWholeSource = clinvarWholeSource;
+    }
+
     public static String getClinvarFile() {
         return clinvarFile;
     }

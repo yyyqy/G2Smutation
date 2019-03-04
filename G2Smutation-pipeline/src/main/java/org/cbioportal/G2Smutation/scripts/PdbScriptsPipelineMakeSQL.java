@@ -15,7 +15,9 @@ import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
+import org.cbioportal.G2Smutation.util.FileOperatingUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
 import org.cbioportal.G2Smutation.util.blast.BlastOutput;
@@ -1516,10 +1518,13 @@ public class PdbScriptsPipelineMakeSQL {
             outputlist.add("start transaction;");
             for(int mutationId : mutationIdHm.keySet()){
                 String chr_pos = mutationIdHm.get(mutationId);
-                String[] strArray = chr_pos.split("_");
-                String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
+                if(!chr_pos.equals("")){
+                    //chr_pos may be "" if API return 500 error.
+                    String[] strArray = chr_pos.split("_");
+                    String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
                             + mutationId + "','" + chr_pos + "','" + strArray[0] + "','" + strArray[1] + "','" + strArray[2] + "');\n";
-                outputlist.add(str);              
+                    outputlist.add(str);
+                }
             }           
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
@@ -1615,7 +1620,46 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4DbsnpEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
+        HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm(); //<chr_pos,List of mutationId>
+        HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,chr_pos_snpid>
+        
+        try{
+            LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            while(it.hasNext()){
+                String str = it.nextLine();
+                String[] strArray = str.split("\t");
+                String gpos = strArray[0]+"_"+strArray[1];
+                if(mutationIdRHm.containsKey(gpos)){
+                    List<Integer> tmplist = mutationIdRHm.get(gpos);
+                    for (Integer mutationId: tmplist){
+                        rsHm.put(mutationId, gpos+"_"+strArray[2]);
+                    }                    
+                }
+            }            
+            
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(int mutationId : rsHm.keySet()){
+                String chr_pos_snpid = rsHm.get(mutationId);
+                String[] strArray = chr_pos_snpid.split("_");
+                String chr_pos = "";
+                for (int i=0; i<strArray.length-2; i++){
+                    chr_pos = chr_pos + strArray[i] + "_";
+                }
+                chr_pos = chr_pos + strArray[strArray.length-2];
+                //System.out.println(chr_pos_snpid);
+                String str = "INSERT INTO `dbsnp_entry` (`CHR_POS`,`MUTATION_ID`,`RS_ID`)VALUES('" + chr_pos
+                        + "','" + Integer.toString(mutationId) + "','" + strArray[strArray.length-1] + "');\n";
+                outputlist.add(str);               
+            }           
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         
 
     }
@@ -1628,7 +1672,56 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4ClinvarEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
+        HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();
+        HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,string as all information in the line>
+        FileOperatingUtil fou = new FileOperatingUtil();
+        try{
+            LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            while(it.hasNext()){
+                String str = it.nextLine();
+                if(!str.startsWith("#")){
+                    String[] strArray = str.split("\t");
+                    String gpos = strArray[0]+"_"+strArray[1];
+                    if(mutationIdRHm.containsKey(gpos)){
+                        List<Integer> tmplist = mutationIdRHm.get(gpos);
+                        for (Integer mutationId: tmplist){
+                            rsHm.put(mutationId, str);
+                        }                    
+                    }                    
+                }                
+            }            
+            
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(int mutationId : rsHm.keySet()){
+                String contentStr = rsHm.get(mutationId);
+                String[] strArray = contentStr.split("\t");
+                String chr_pos = strArray[0]+"_"+strArray[1];
+                HashMap<String,String> contentHm = fou.clinvarContentStr2Map(strArray[7]);
+                //original: manually, we change accordingly
+				//String str = "INSERT INTO `clinvar_entry` (`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`,`REF`,`ALT`,`AF_ESP`,`AF_EXAC`,`AF_TGP`,"
+				//		+ "`ALLELEID`,`CLNDN`,`CLNDNINCL`,`CLNDISDB`,`CLNDISDBINCL`,`CLNHGVS`,`CLNREVSTAT`,`CLNSIG`,`CLNSIGCONF`,"
+				//		+ "`CLNSIGINCL`,`CLNVC`,`CLNVCSO`,`CLNVI`,`DBVARID`,`GENEINFO`,`MC`,`ORIGIN`,`RS`,`SSR`,`UPDATE_DATE`)VALUES('"
+				//		+ chr_pos + "','" + Integer.toString(mutationId) + "','" + strArray[2] + "','"+ strArray[3] + "','" + strArray[4] + "','"
+				//		+ "',CURDATE());\n";
+                String keystr = "INSERT INTO `clinvar_entry` (`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`,`REF`,`ALT`";
+                String valstr = ",`UPDATE_DATE`)VALUES('" + chr_pos + "','" + Integer.toString(mutationId) + "','" + strArray[2] + "','"+ strArray[3] + "','" + strArray[4] + "'";
+                
+                for(String key: contentHm.keySet()){
+                	keystr = keystr + ",`" + key + "`";
+                	valstr = valstr + ",'" + contentHm.get(key) + "'";
+                }
+                valstr = valstr + ",CURDATE());\n";
+                
+                outputlist.add(keystr+valstr);               
+            }           
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         
 
     }
@@ -1641,7 +1734,90 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4CosmicEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
+    	HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();//key:chr_pos, value: List of MUTATION_ID
+        HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,string as all information in the line>
+        HashMap<Integer,String> rsPosHm = new HashMap<>();//<mutationId,chr_pos>
+
+        String keystr = "INSERT INTO `cosmic_entry` (`CHR_POS`,`MUTATION_ID`";        
+        try{
+            LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            int count = 0;
+            int coorcount = 0;
+            while(it.hasNext()){
+                String contentStr = it.nextLine();
+                String[] strArray = contentStr.split("\t");
+                if(count==0){
+                	//header, convert header to inject key string
+                	for(String str:strArray){
+                		str = str.replaceAll("\\s+", "_").toUpperCase();
+                		if(str.equals("MUTATION_ID")){//duplicate key in Cosmic, we changed accordingly
+                			str = "COSMIC_MUTATION_ID";
+                		}
+                		keystr = keystr + ",`" + str + "`";
+                	}
+                	keystr = keystr + ",`COSMIC_VERSION`)VALUES('";
+                }
+                else{ 
+                	//System.out.println(count + " * " + strArray[23]);
+                	if( !strArray[23].equals("") ){               	    
+                	    String[] tmpArray = strArray[23].split(":");
+                        String[] posArray = tmpArray[1].split("-");
+                        int start = Integer.parseInt(posArray[0]);
+                        int end = Integer.parseInt(posArray[1]);
+                        for(int i=start;i<=end;i++){
+                            String gpos = tmpArray[0]+"_"+Integer.toString(i);
+                            if(mutationIdRHm.containsKey(gpos)){
+                                List<Integer> tmplist = mutationIdRHm.get(gpos);
+                                for (Integer mutationId: tmplist){
+                                    rsHm.put(mutationId, contentStr);
+                                    rsPosHm.put(mutationId, gpos);
+                                }                    
+                            }
+                        }
+                        coorcount++;
+                	}else{
+                	    // if does not map to genomic location, we just neglect now, 
+                	    //e.g. COSM5790 malignant_melanoma c.?del? p.?fs   Deletion - Frameshift
+                	    //e.g. COSM12980 c.?     p.E746_A750del  Deletion -In frame Confirmed somatic variant ...
+                	    //Unknown;Substitution - Missense;Deletion - In frame;Insertion - In frame;Deletion - Frameshift;Complex - deletion inframe;Frameshift
+                	    //System.out.println(count + " * " + strArray[19]);
+                	}
+                	if (count%1000000 == 0){
+                	    log.info(Integer.toString(count)+" has procceeded");
+                	}                	
+                }
+                count++;
+            }            
+            
+            log.info(Integer.toString(coorcount) + " has genomic coordinates");
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(int mutationId : rsHm.keySet()){
+                String contentStr = rsHm.get(mutationId);
+                String chr_pos = rsPosHm.get(mutationId); 
+                String[] strArray = contentStr.split("\t");
+                
+                String valstr = chr_pos + "','" + Integer.toString(mutationId) + "'";                
+                for(String str: strArray){
+                	valstr = valstr + ",'" + str + "'";
+                }
+                // deal with the last character may miss
+                if(strArray.length == 34){// temp hardcode here related with the cosmic_entry;
+                    valstr = valstr + ",''";
+                }
+                valstr = valstr + ",'COSMIC v87, released 13-NOV-18');\n";
+                
+                outputlist.add(keystr+valstr);               
+            }           
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+ 
         
 
     }
@@ -1654,9 +1830,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4GenieEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
-        
-
+        parseGenerateMutationResultSQL4bothGenieTcga(mUsageRecord, inputFilename, outputFilename, "genie");
     }
     
     /**
@@ -1667,9 +1841,136 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputFilename
      */
     public void parseGenerateMutationResultSQL4TcgaEntry(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename) {
-        //TODO: 
+        parseGenerateMutationResultSQL4bothGenieTcga(mUsageRecord, inputFilename, outputFilename, "tcga");
+    }
+    
+    /**
+     * As genie and tcga are mainly share with the same structure, this function is designed for both othem.
+     * 
+     * @param mUsageRecord
+     * @param inputFilename
+     * @param outputFilename
+     * @param annotationType
+     */
+    public void parseGenerateMutationResultSQL4bothGenieTcga(MutationUsageRecord mUsageRecord, String inputFilename, String outputFilename, String annotationType){
+        //
+        String dbTableName="";
+        String dbTableVersion="";
+        String dbTableVersionUse="";
+        int commonMiss=0;
+        int commonAdd=0;
+        int ignoreLineNo = 0;
+        int convertLineNo = 1;
+        if(annotationType == "genie"){
+            dbTableName = "genie_entry";
+            dbTableVersion = "GENIE_VERSION"; 
+            dbTableVersionUse = "5.0-public";
+            commonMiss = 112;
+            commonAdd = 11;
+            ignoreLineNo = 0;
+            convertLineNo = 1;
+        }else if(annotationType == "tcga"){
+            dbTableName = "tcga_entry";
+            dbTableVersion = "TCGA_VERSION"; 
+            dbTableVersionUse = "mc3.v0.2.8.PUBLIC";
+            commonMiss = 114;
+            commonAdd = 11;
+            ignoreLineNo = -1;
+            convertLineNo = 0;
+        }else{
+            log.error("Now only support genie and tcga");
+        }
         
+        //main function
+        HashMap<String,List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();//key:chr_pos, value: List of MUTATION_ID
+        HashMap<Integer,String> rsHm = new HashMap<>();//<mutationId,string as all information in the line>
+        HashMap<Integer,String> rsPosHm = new HashMap<>();//<mutationId,chr_pos>
 
+        String keystr = "INSERT INTO `"+dbTableName+"` (`CHR_POS`,`MUTATION_ID`";
+        try {
+            LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            int count = 0;
+            while (it.hasNext()) {
+                String contentStr = it.nextLine();
+                String[] strArray = contentStr.split("\t");
+                if (count == ignoreLineNo) {
+                    // header, ignore
+                } else if (count == convertLineNo) {
+                    // annotation header, convert header to inject key string
+                    for (String str : strArray) {
+                        if(annotationType.equals("tcga")){
+                            if(str.equals("STRAND")){
+                                str = "STRAND-VEP";
+                            }                           
+                        }
+                        str = str.replaceAll("\\s+", "_").toUpperCase();
+                        keystr = keystr + ",`" + str + "`";
+                    }
+                    keystr = keystr + ",`"+dbTableVersion+"`)VALUES('";
+                } else {
+                    int start = Integer.parseInt(strArray[5]);
+                    int end = Integer.parseInt(strArray[6]);
+                    for (int i = start; i <= end; i++) {
+                        String gpos = strArray[4] + "_" + Integer.toString(i);
+                        if (mutationIdRHm.containsKey(gpos)) {
+                            List<Integer> tmplist = mutationIdRHm.get(gpos);
+                            for (Integer mutationId : tmplist) {
+                                rsHm.put(mutationId, contentStr);
+                                rsPosHm.put(mutationId, gpos);
+                            }
+                        }
+                    }
+
+                    if (count % 1000000 == 0) {
+                        log.info(Integer.toString(count) + " has procceeded");
+                    }
+                }
+                count++;
+            }
+
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for (int mutationId : rsHm.keySet()) {
+                String contentStr = rsHm.get(mutationId);
+                String chr_pos = rsPosHm.get(mutationId);
+                String[] strArray = contentStr.split("\t");
+
+                String valstr = chr_pos + "','" + Integer.toString(mutationId) + "'";
+                for (String str : strArray) {
+                    //in case have 3'UTR in the text
+                    if(str.contains("'")){
+                        //System.out.println("* "+str);
+                        str = str.replace("'", "\\'");
+                        //System.out.println(str);
+                    }
+                    valstr = valstr + ",'" + str + "'";
+                }
+                //System.out.println(strArray.length);
+                if(annotationType.equals("genie")){//Only genie may have problem
+                    // deal with the last characters, they may miss in EXAC
+                    // part.
+                    if (strArray.length == commonMiss) {// temp hardcode here
+                                                        // related with
+                        // the genie_entry;
+                        for (int i = 0; i < commonAdd; i++) {// the complete one
+                                                             // should be
+                            // 123
+                            valstr = valstr + ",''";
+                        }
+                    }
+                }
+                valstr = valstr + ",'"+dbTableVersionUse+"');\n";
+
+                outputlist.add(keystr + valstr);
+            }
+            outputlist.add("commit;");
+            FileUtils.writeLines(new File(outputFilename), outputlist);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
     }
 
 }
