@@ -158,6 +158,7 @@ CREATE TABLE `structure_annotation_entry` (
   `LIGAND_BINDING_DIRECT` int, -- Direct binding, 1 for true, 0 for false 
   `LIGAND_NAME` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin, 
   `INTERPRO_ID` VARCHAR(9) CHARACTER SET utf8 COLLATE utf8_bin,
+  `INTERPRO_NAME` TEXT,
   `INTERPRO_IDENTIFIER` TEXT,
   `INTERPRO_START` int,
   `INTERPRO_END` int,
