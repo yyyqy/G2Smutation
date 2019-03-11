@@ -156,7 +156,7 @@ CREATE TABLE `structure_annotation_entry` (
   `ACC` int,
   `LIGAND_BINDING_PROTEIN` int, -- From HET, LPC, 1 for true, 0 for false 
   `LIGAND_BINDING_DIRECT` int, -- Direct binding, 1 for true, 0 for false 
-  `LIGAND_NAME` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin  
+  `LIGAND_NAME` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin, 
   PRIMARY KEY(`ID`),
   KEY(`CHR_POS`,`MUTATION_ID`)
 );

@@ -1555,24 +1555,29 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            
+            int testcount = 0;
             for(int mutationId : mutationIdHm.keySet()) {
+            	testcount++;
+            	if(testcount>10) {
+            		break;
+            	}
             	sar.setChrPos(mutationIdHm.get(mutationId));
             	sar.setMutationId(mutationId);
             	sar.setPdbNo(residueHm.get(mutationId));
-            	sar.setPdbResidueIndex(Integer.parseInt(residueHm.get(mutationId).split("_")[2]));            	
+            	sar.setPdbResidueIndex(Integer.parseInt(residueHm.get(mutationId).split("_")[2]));    
+            	log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
             	strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],residueHm.get(mutationId).split("_")[1],residueHm.get(mutationId).split("_")[2]);
-            	sar.setBuried(Integer.parseInt(strNaccess.split("//s+")[14]));
-            	sar.setAllAtomsABS(Float.parseFloat(strNaccess.split("//s+")[4]));
-            	sar.setAllAtomsREL(Float.parseFloat(strNaccess.split("//s+")[5]));
-            	sar.setTotalSideABS(Float.parseFloat(strNaccess.split("//s+")[6]));
-            	sar.setTotalSideREL(Float.parseFloat(strNaccess.split("//s+")[7]));
-            	sar.setMainChainABS(Float.parseFloat(strNaccess.split("//s+")[8]));
-            	sar.setMainChainREL(Float.parseFloat(strNaccess.split("//s+")[9]));
-            	sar.setNonPolarABS(Float.parseFloat(strNaccess.split("//s+")[10]));
-            	sar.setNonPolarREL(Float.parseFloat(strNaccess.split("//s+")[11]));
-            	sar.setAllPolarABS(Float.parseFloat(strNaccess.split("//s+")[12]));
-            	sar.setAllPolarREL(Float.parseFloat(strNaccess.split("//s+")[13]));
+            	sar.setBuried(Integer.parseInt(strNaccess.substring(86,87)));
+            	sar.setAllAtomsABS(Float.parseFloat(strNaccess.substring(16,22)));
+            	sar.setAllAtomsREL(Float.parseFloat(strNaccess.substring(23,28)));
+            	sar.setTotalSideABS(Float.parseFloat(strNaccess.substring(29,35)));
+            	sar.setTotalSideREL(Float.parseFloat(strNaccess.substring(36,41)));
+            	sar.setMainChainABS(Float.parseFloat(strNaccess.substring(42,48)));
+            	sar.setMainChainREL(Float.parseFloat(strNaccess.substring(49,54)));
+            	sar.setNonPolarABS(Float.parseFloat(strNaccess.substring(55,61)));
+            	sar.setNonPolarREL(Float.parseFloat(strNaccess.substring(62,67)));
+            	sar.setAllPolarABS(Float.parseFloat(strNaccess.substring(68,74)));
+            	sar.setAllPolarREL(Float.parseFloat(strNaccess.substring(75,80)));
             	strDSSP = getDSSPInfo(residueHm.get(mutationId).split("_")[0],residueHm.get(mutationId).split("_")[1],residueHm.get(mutationId).split("_")[2]);
             	sar.setPdbResidueName(strDSSP.charAt(13));
             	sar.setSecStructure(strDSSP.charAt(16));
@@ -1583,10 +1588,10 @@ public class PdbScriptsPipelineMakeSQL {
             	sar.setChirality(strDSSP.charAt(22));
             	sar.setBetaBridgeLabela(strDSSP.charAt(23));
             	sar.setBetaBridgeLabelb(strDSSP.charAt(24));
-            	sar.setBpa(Integer.parseInt(strDSSP.substring(26, 29)));
-            	sar.setBpb(Integer.parseInt(strDSSP.substring(30, 33)));
+            	sar.setBpa(stringToInt(strDSSP.substring(26, 29)));
+            	sar.setBpb(stringToInt(strDSSP.substring(30, 33)));
             	sar.setBetaSheetLabel(strDSSP.charAt(33));
-            	sar.setAcc(Integer.parseInt(strDSSP.substring(35,38)));
+            	sar.setAcc(stringToInt(strDSSP.substring(35,38)));
             	getHETInfo(sar,residueHm.get(mutationId).split("_")[0],residueHm.get(mutationId).split("_")[1],residueHm.get(mutationId).split("_")[2]);
             	outputlist.add(makeTable_structureAnnotation_insert(sar));
             }         
@@ -1608,7 +1613,7 @@ public class PdbScriptsPipelineMakeSQL {
     			+ sar.getPdbResidueName() + "'," + sar.getBuried() + "," + sar.getAllAtomsABS() + "," +sar.getAllAtomsREL() + ","
     			+ sar.getTotalSideABS() + "," + sar.getTotalSideREL() + "," + sar.getMainChainABS() + "," +sar.getMainChainREL() + ","
     			+ sar.getNonPolarABS() + "," +sar.getNonPolarREL() + "," + sar.getAllPolarABS() + "," + sar.getAllPolarREL() + ",'"
-    			+ sar.getSecStructure() + "','" + sar.getThreeTurnHelix() + "','" + sar.getFiveTurnHelix() + "','"
+    			+ sar.getSecStructure() + "','" + sar.getThreeTurnHelix() + "','" + sar.getFourTurnHelix() + "','"
     			+ sar.getFiveTurnHelix() + "','" + sar.getGeometricalBend() + "','" + sar.getChirality() + "','"
     			+ sar.getBetaBridgeLabela() + "','" + sar.getBetaBridgeLabelb() + "','" + sar.getBpa() + "','"
     			+ sar.getBpb() + "','" + sar.getBetaSheetLabel() + "','" + sar.getAcc() + "'," + sar.getLigandBindingProtein() + ","
@@ -1624,10 +1629,26 @@ public class PdbScriptsPipelineMakeSQL {
 			List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
 			int i = 0;
 			int index = Integer.parseInt(pdbResidueIndex);
-			while(!(lines.get(i).substring(11,12).equals(pdbChain)&&Integer.parseInt(lines.get(i).substring(6,10))==index)) {
-				i++;
+			int flag = 0;
+			log.info(index);
+			for(;i<lines.size();i++) {
+				if(lines.get(i).substring(2, 3).equals("#")) {
+					flag = 1;
+				}
+				if(flag == 0) {
+					continue;
+				}
+				else {
+					if(!(lines.get(i).substring(11,12).equals(pdbChain)&&stringToInt(lines.get(i).substring(6,10))==index)) {
+						continue;
+					}
+					else {
+						break;
+					}
+				}
 			}
 			str = lines.get(i);
+			log.info(str);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1642,7 +1663,7 @@ public class PdbScriptsPipelineMakeSQL {
 		try {
 			List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
 			int i = 0;
-			while(!(lines.get(i).split("\\s+")[0].equals("RES")&&lines.get(i).split("\\s+")[2].equals(pdbChain)&&lines.get(i).split("\\s+")[3].equals(pdbResidueIndex))){
+			while(!(lines.get(i).substring(0,3).equals("RES")&&lines.get(i).substring(8,9).equals(pdbChain)&&stringToInt(lines.get(i).substring(9,13))==Integer.parseInt(pdbResidueIndex))){
 				i++;
 			}
 			str = lines.get(i);
@@ -1660,7 +1681,7 @@ public class PdbScriptsPipelineMakeSQL {
 			File asafile = new File(asafilepwd);
 			List<String> lines = FileUtils.readLines(asafile, StandardCharsets.UTF_8.name());
 			int k = 0;
-			while(!(lines.get(k).substring(21,22).equals(pdbChain)&&lines.get(k).substring(13,15).equals("CA")&&Integer.parseInt(lines.get(k).substring(22, 26))==Integer.parseInt(pdbResidueIndex))){
+			while(!(lines.get(k).substring(21,22).equals(pdbChain)&&lines.get(k).substring(13,15).equals("CA")&&stringToInt(lines.get(k).substring(22, 26))==Integer.parseInt(pdbResidueIndex))){
 				k++;
 			}
 			x1 = Double.parseDouble(lines.get(k).substring(30, 38));
@@ -1817,9 +1838,19 @@ public class PdbScriptsPipelineMakeSQL {
     			rl = 2.75;
     			break;
     	}
-		return rl;
-    		
+		return rl;	
     }
+    
+    public int stringToInt(String str) {
+    	int pos = 0;
+    	int i = 0;
+    	while(str.charAt(i)==' ') {
+    		i++;
+    	}
+    	pos = Integer.parseInt(str.substring(i, str.length()));
+    	return pos;
+    }
+    
     
 
     /**
@@ -2026,9 +2057,6 @@ public class PdbScriptsPipelineMakeSQL {
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        
- 
-        
 
     }
     

@@ -386,8 +386,19 @@ public class PdbScriptsPipelineRunCommand {
             mUsageRecord = (MutationUsageRecord)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
         }catch(Exception ex){
             ex.printStackTrace();
-        }    
+        }
         
+        // 
+        HashMap<Integer, String> murid = mUsageRecord.getMutationIdHm();
+        HashMap<Integer, String> mured = mUsageRecord.getResidueHm();
+        int j=0;
+        for (Integer key : murid.keySet()) {
+        	System.out.println("Key = " + key);
+        	System.out.println("Val = " + mured.get(key));
+        	j++;
+        	if(j>9)
+        		break;
+        }
         
         // Step 13: 
         /*
@@ -399,7 +410,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);
         cu.runCommand("mysql", paralist);
 
-        /*
+        */
         // Step 14:
         // TODO: Structural annotation for table structure_annotation_entry
         // Qinyuan
@@ -407,11 +418,10 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[SQL] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");
         
         parseprocess.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
-       
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);
         cu.runCommand("mysql", paralist);
-        */
+        
         
         //TODO: dbsnp, clinvar, cosmic, genie, tcga annotation in Table 15-19
         /*
@@ -844,89 +854,103 @@ public class PdbScriptsPipelineRunCommand {
         //Test for thresholds
         // https://github.com/juexinwang/G2Smutation/issues/14
         //for (int testcount = 3; testcount <= 79; testcount++) {
-        for (int testcount = 1; testcount <= 1; testcount++) {
-            log.info("********************Start Test " + testcount + "th case ********************");
-            // PdbScriptsPipelineMakeSQL parseprocess = new
-            // PdbScriptsPipelineMakeSQL(this);
-            // For Test Purpose:
-            PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
-            this.seqFileCount = 10;
-
-            // Step 0:
-            log.info("********************[STEP 0]********************");
-            log.info("Clean Up *.sql.*");
-            if (this.seqFileCount != -1) {
-                for (int i = 0; i < this.seqFileCount; i++) {
-                    paralist = new ArrayList<String>();
-                    paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
-                    cu.runCommand("rm", paralist);
-                }
-            } else {
-                paralist = new ArrayList<String>();
-                paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
-                cu.runCommand("rm", paralist);
-            }
-            
-            // Step 1:
-            log.info("********************[STEP 1]********************");
-            log.info("[PrepareSQL] Parse xml results and output as input sql statments");
-            parseprocess.parse2sqlMutation(false, ReadConfig.workspace, this.seqFileCount);
-
-            
-            // Step 2:
-            log.info("********************[STEP 2]********************");
-            log.info("[SQL] Create data schema. CAUTION: only on test from 1 to 79");
-            paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
-            cu.runCommand("mysql", paralist);
-            
-
-            // Step 3:
-            log.info("********************[STEP 3]********************");
-            log.info("[SQL] Import gene sequence SQL statements into the database");
-            paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);
-            cu.runCommand("mysql", paralist);           
-
-            // Step 4:
-            log.info("********************[STEP 4]********************");
-            log.info("[SQL] Import INSERT SQL statements into the database (Warning: This step takes time)");
-            if (this.seqFileCount != -1) {
-                for (int i = 0; i < this.seqFileCount; i++) {
-                    paralist = new ArrayList<String>();
-                    paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
-                    cu.runCommand("mysql", paralist);
-                }
-            } else {
-                paralist = new ArrayList<String>();
-                paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
-                cu.runCommand("mysql", paralist);
-            }
-
-            /*
-            // Step 5:
-            log.info("********************[STEP 5]********************");
-            log.info("[SQL] Find Mutation Info)");
-            paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.resourceDir + ReadConfig.alignFilterStatsSQL);
-            paralist.add(ReadConfig.workspace + ReadConfig.alignFilterStatsResult + "." + testcount);
-            cu.runCommand("releaseTag", paralist);
-            */
-
-        }
-       
-        //Analyze the mutation amount and rate
-        log.info("********************Statistics Result********************");
-        for (int testcount = 1; testcount <= 79; testcount++) {
-        	PdbScriptsPipelineMakeSQL compareprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
-        	compareprocess.compareMutation(testcount);
-        	
-        }
-        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
-        generateSQLfile.generateRsSQLfile();
+//        for (int testcount = 1; testcount <= 1; testcount++) {
+//            log.info("********************Start Test " + testcount + "th case ********************");
+//            // PdbScriptsPipelineMakeSQL parseprocess = new
+//            // PdbScriptsPipelineMakeSQL(this);
+//            // For Test Purpose:
+//            PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
+//            this.seqFileCount = 10;
+//
+//            // Step 0:
+//            log.info("********************[STEP 0]********************");
+//            log.info("Clean Up *.sql.*");
+//            if (this.seqFileCount != -1) {
+//                for (int i = 0; i < this.seqFileCount; i++) {
+//                    paralist = new ArrayList<String>();
+//                    paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+//                    cu.runCommand("rm", paralist);
+//                }
+//            } else {
+//                paralist = new ArrayList<String>();
+//                paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
+//                cu.runCommand("rm", paralist);
+//            }
+//            
+//            // Step 1:
+//            log.info("********************[STEP 1]********************");
+//            log.info("[PrepareSQL] Parse xml results and output as input sql statments");
+//            parseprocess.parse2sqlMutation(false, ReadConfig.workspace, this.seqFileCount);
+//
+//            
+//            // Step 2:
+//            log.info("********************[STEP 2]********************");
+//            log.info("[SQL] Create data schema. CAUTION: only on test from 1 to 79");
+//            paralist = new ArrayList<String>();
+//            paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
+//            cu.runCommand("mysql", paralist);
+//            
+//
+//            // Step 3:
+//            log.info("********************[STEP 3]********************");
+//            log.info("[SQL] Import gene sequence SQL statements into the database");
+//            paralist = new ArrayList<String>();
+//            paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);
+//            cu.runCommand("mysql", paralist);           
+//
+//            // Step 4:
+//            log.info("********************[STEP 4]********************");
+//            log.info("[SQL] Import INSERT SQL statements into the database (Warning: This step takes time)");
+//            if (this.seqFileCount != -1) {
+//                for (int i = 0; i < this.seqFileCount; i++) {
+//                    paralist = new ArrayList<String>();
+//                    paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+//                    cu.runCommand("mysql", paralist);
+//                }
+//            } else {
+//                paralist = new ArrayList<String>();
+//                paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile);
+//                cu.runCommand("mysql", paralist);
+//            }
+//
+//            /*
+//            // Step 5:
+//            log.info("********************[STEP 5]********************");
+//            log.info("[SQL] Find Mutation Info)");
+//            paralist = new ArrayList<String>();
+//            paralist.add(ReadConfig.resourceDir + ReadConfig.alignFilterStatsSQL);
+//            paralist.add(ReadConfig.workspace + ReadConfig.alignFilterStatsResult + "." + testcount);
+//            cu.runCommand("releaseTag", paralist);
+//            */
+//
+//        }
+//       
+//        //Analyze the mutation amount and rate
+//        log.info("********************Statistics Result********************");
+//        for (int testcount = 1; testcount <= 79; testcount++) {
+//        	PdbScriptsPipelineMakeSQL compareprocess = new PdbScriptsPipelineMakeSQL(this, testcount);
+//        	compareprocess.compareMutation(testcount);
+//        	
+//        }
+//        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
+//        generateSQLfile.generateRsSQLfile();
          
         PdbScriptsPipelineStructureAnnotation sar = new PdbScriptsPipelineStructureAnnotation();
-        sar.getHETFromPdbFile("4cof.pdb");
+        sar.runNaccessFromLocal("5k0b.pdb");
+        sar.runNaccessFromLocal("1o1d.pdb");
+        sar.runNaccessFromLocal("5hd4.pdb");
+        sar.runNaccessFromLocal("3u81.pdb");
+        sar.runNaccessFromLocal("4xrj.pdb");
+        try {
+			sar.generateBuriedAtomicFile("5k0b.rsa");
+			sar.generateBuriedAtomicFile("1o1d.rsa");
+			sar.generateBuriedAtomicFile("5hd4.rsa");
+			sar.generateBuriedAtomicFile("3u81.rsa");
+			sar.generateBuriedAtomicFile("4xrj.rsa");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }
 
