@@ -369,15 +369,15 @@ public class PdbScriptsPipelineRunCommand {
         FileOperatingUtil fou = new FileOperatingUtil();
         MutationUsageRecord mUsageRecord = fou.readMutationResult2MutationUsageRecord(ReadConfig.workspace + ReadConfig.mutationResult);
         
-        // Serialize the MutationUsageRecord into the tmpfile
+        // Serialize the MutationUsageRecord into the tmpfile!!!!
         String filename = ReadConfig.workspace + "mUsageRecord.ser";
         try{
             FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(mUsageRecord));
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        */
         
+        // Deserialize!!!!
         String filename = ReadConfig.workspace + "mUsageRecord.ser";
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
         // Deserialize the tmpfile to MutationUsageRecord
@@ -386,6 +386,7 @@ public class PdbScriptsPipelineRunCommand {
         }catch(Exception ex){
             ex.printStackTrace();
         }    
+        */
         
         
         // Step 13: 
@@ -466,9 +467,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLCosmic);
         cu.runCommand("mysql", paralist);
-        */
         
-        /*
         // Step 18:  
         log.info("********************[STEP 18]********************");
         log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
@@ -480,8 +479,7 @@ public class PdbScriptsPipelineRunCommand {
         
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLGenie);
-        cu.runCommand("mysql", paralist);
-        */
+        cu.runCommand("mysql", paralist);        
         
         // Step 19:  
         log.info("********************[STEP 19]********************");
@@ -495,7 +493,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLTcga);
         cu.runCommand("mysql", paralist);
-        
+        */
         
         
         
@@ -506,10 +504,10 @@ public class PdbScriptsPipelineRunCommand {
          *  But we need to rerun for the mapping may have some problems before 02/2019 fixing 
          *  Need to run dbsnp, cosmic, clinvar, genie, tcga
          */
-        /*
+        
         // Step 12:
         log.info("********************[STEP 12]********************");
-        log.info("[PrepareSQL] Call url and output as input rs sql statments. Caution: Very Slow now");
+        log.info("[PrepareSQL] Call url and output as input rs sql statments on all possible rsSNPs Caution: Very Slow now");
         PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
         this.rsSqlCount = generateSQLfile.generateRsSQLfile();
         
@@ -518,6 +516,7 @@ public class PdbScriptsPipelineRunCommand {
         //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
         
         
+        /*
         this.rsSqlCount =237;
         // Step 13:
         log.info("********************[STEP 13]********************");
