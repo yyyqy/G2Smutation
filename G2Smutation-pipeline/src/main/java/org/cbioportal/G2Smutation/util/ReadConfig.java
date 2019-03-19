@@ -53,7 +53,7 @@ public class ReadConfig {
     public static String releaseTag;
     public static String releaseTagResult;
     public static String updateStatisticsSQL;
-    public static String updateRsSql;
+    public static String updateAllSnpSql;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
     public static String swissprotWholeSource;
@@ -104,6 +104,7 @@ public class ReadConfig {
     public static String genieFile;
     public static String tcgaFile;
     public static String gnApiDbsnpInnerUrl;
+    public static String gnApiDbsnpInnerGposUrl;
     public static String saveSpaceTag;
 
     public static boolean isPositiveInteger(String str) {
@@ -166,7 +167,7 @@ public class ReadConfig {
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
             ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
-            ReadConfig.updateRsSql = prop.getProperty("update.rsMutation.sql").trim();
+            ReadConfig.updateAllSnpSql = prop.getProperty("update.allSnpMutation.sql").trim();
             ReadConfig.updateStatisticsSQL = prop.getProperty("update.statistics.sql").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
             ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
@@ -194,8 +195,10 @@ public class ReadConfig {
             ReadConfig.mutationGenerateSQL = prop.getProperty("mutation_generate_SQL").trim();
             ReadConfig.mutationResult = prop.getProperty("mutation_result").trim();
             ReadConfig.mutationInjectSQLUsage = prop.getProperty("mutation_inject_SQL_mutation_usage_table").trim();
-            ReadConfig.mutationInjectSQLLocation = prop.getProperty("mutation_inject_SQL_mutation_location_entry").trim();
-            ReadConfig.mutationInjectSQLStructure = prop.getProperty("mutation_inject_SQL_structure_annotation_entry").trim();
+            ReadConfig.mutationInjectSQLLocation = prop.getProperty("mutation_inject_SQL_mutation_location_entry")
+                    .trim();
+            ReadConfig.mutationInjectSQLStructure = prop.getProperty("mutation_inject_SQL_structure_annotation_entry")
+                    .trim();
             ReadConfig.mutationInjectSQLDbsnp = prop.getProperty("mutation_inject_SQL_dbsnp_entry").trim();
             ReadConfig.mutationInjectSQLClinvar = prop.getProperty("mutation_inject_SQL_clinvar_entry").trim();
             ReadConfig.mutationInjectSQLCosmic = prop.getProperty("mutation_inject_SQL_cosmic_entry").trim();
@@ -204,7 +207,7 @@ public class ReadConfig {
             ReadConfig.annotationDbsnpSQL = prop.getProperty("annotation_dbsnp_SQL").trim();
             ReadConfig.annotationClinvarSQL = prop.getProperty("annotation_clinvar_SQL").trim();
             ReadConfig.annotationCosmicSQL = prop.getProperty("annotation_cosmic_SQL").trim();
-            ReadConfig.annotationGenieSQL= prop.getProperty("annotation_genie_SQL").trim();
+            ReadConfig.annotationGenieSQL = prop.getProperty("annotation_genie_SQL").trim();
             ReadConfig.annotationTcgaSQL = prop.getProperty("annotation_tcga_SQL").trim();
             ReadConfig.alignFilterDiffT = prop.getProperty("align.filter.diffT").trim();
             ReadConfig.alignFilterDiffP = prop.getProperty("align.filter.diffP").trim();
@@ -218,6 +221,7 @@ public class ReadConfig {
             ReadConfig.genieFile = prop.getProperty("genie.file").trim();
             ReadConfig.tcgaFile = prop.getProperty("tcga.file").trim();
             ReadConfig.gnApiDbsnpInnerUrl = prop.getProperty("gn.api.dbsnp.inner.url").trim();
+            ReadConfig.gnApiDbsnpInnerGposUrl = prop.getProperty("gn.api.dbsnp.inner.gpos.url").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
@@ -236,9 +240,14 @@ public class ReadConfig {
         return rcObj;
     }
 
-    
-    
-    
+    public static String getGnApiDbsnpInnerGposUrl() {
+        return gnApiDbsnpInnerGposUrl;
+    }
+
+    public static void setGnApiDbsnpInnerGposUrl(String gnApiDbsnpInnerGposUrl) {
+        ReadConfig.gnApiDbsnpInnerGposUrl = gnApiDbsnpInnerGposUrl;
+    }
+
     public static String getClinvarWholeSource() {
         return clinvarWholeSource;
     }
@@ -922,12 +931,12 @@ public class ReadConfig {
         ReadConfig.mutationResult = mutationResult;
     }
 
-    public static String getUpdateRsSql() {
-        return updateRsSql;
+    public static String getUpdateAllSnpSql() {
+        return updateAllSnpSql;
     }
 
-    public static void setUpdateRsSql(String updateRsSql) {
-        ReadConfig.updateRsSql = updateRsSql;
+    public static void setUpdateAllSnpSql(String updateAllSnpSql) {
+        ReadConfig.updateAllSnpSql = updateAllSnpSql;
     }
 
     public static String getUpdateRsSqlFileNum() {

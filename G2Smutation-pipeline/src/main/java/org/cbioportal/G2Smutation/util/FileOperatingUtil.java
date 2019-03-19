@@ -159,32 +159,32 @@ public class FileOperatingUtil {
      * @param snpCollectionName
      * @return
      */
-    public HashMap<String,String> collectAllSNPs2Map(HashMap<String,String> inputHm, String snpCollectionName){
+    public HashMap<String,String> collectAllSNPs2Map(HashMap<String,String> inputHm, SNPAnnotationType snpCollectionName){
     	try{  		
     		String inputFilename = "";   		
     		switch (snpCollectionName) {
-            case "dbsnp":
+            case DBSNP:
             	inputFilename = ReadConfig.workspace + ReadConfig.dbsnpFile;
-            	inputHm = constructAnnotationHmWrapperDbsnp(inputHm, inputFilename,snpCollectionName);
+            	inputHm = constructAnnotationHmWrapperDbsnp(inputHm, inputFilename,snpCollectionName.toString());
                 break;
-            case "clinvar":
+            case CLINVAR:
             	inputFilename = ReadConfig.workspace + ReadConfig.clinvarFile;
-            	inputHm = constructAnnotationHmWrapperClinvar(inputHm, inputFilename,snpCollectionName);
+            	inputHm = constructAnnotationHmWrapperClinvar(inputHm, inputFilename,snpCollectionName.toString());
                 break;
-            case "cosmic":
+            case COSMIC:
             	inputFilename = ReadConfig.workspace + ReadConfig.cosmicFile;
-            	inputHm = constructAnnotationHmWrapperCosmic(inputHm, inputFilename,snpCollectionName);
+            	inputHm = constructAnnotationHmWrapperCosmic(inputHm, inputFilename,snpCollectionName.toString());
                 break;
-            case "genie":
+            case GENIE:
             	inputFilename = ReadConfig.workspace + ReadConfig.genieFile;
-            	inputHm = constructAnnotationHmWrapperGenieTcga(inputHm, inputFilename,snpCollectionName,1);
+            	inputHm = constructAnnotationHmWrapperGenieTcga(inputHm, inputFilename,snpCollectionName.toString(),1);
                 break;
-            case "tcga":
+            case TCGA:
             	inputFilename = ReadConfig.workspace + ReadConfig.tcgaFile;
-            	inputHm = constructAnnotationHmWrapperGenieTcga(inputHm, inputFilename,snpCollectionName,0);
+            	inputHm = constructAnnotationHmWrapperGenieTcga(inputHm, inputFilename,snpCollectionName.toString(),0);
                 break;
             default:
-                log.error("Now only supports dbsnp, clinvar, cosmic, genie and tcga");
+                log.error("Now only supports DBSNP, CLINVAR, COSMIC, GENIE and TCGA");
                 break;
             }
     	}catch(Exception ex){

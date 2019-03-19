@@ -13,14 +13,15 @@ import org.apache.commons.io.FileUtils;
 import org.cbioportal.G2Smutation.util.APICallingAgent;
 import org.cbioportal.G2Smutation.util.APICallingThread;
 import org.cbioportal.G2Smutation.util.ReadConfig;
+import org.cbioportal.G2Smutation.util.models.AllMutationRecord;
 import org.cbioportal.G2Smutation.util.models.RSMutationRecord;
 import org.apache.log4j.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * SQL Insert statements Generation from API
- * TODO: Do this again with storing into mysql database and we need reconstruct
+ * SQL Insert statements Generation from API TODO: Do this again with storing
+ * into mysql database and we need reconstruct
  * 
  * @author Juexin Wang
  *
@@ -29,6 +30,7 @@ public class PdbScriptsPipelineApiToSQL {
     final static Logger log = Logger.getLogger(PdbScriptsPipelineMakeSQL.class);
 
     /**
+     * Obsolete! Paired with function generateRsSQLfile()
      * 
      * @param filename
      * @return
@@ -53,6 +55,16 @@ public class PdbScriptsPipelineApiToSQL {
 
     }
 
+    /**
+     * Obsolete! Paired with function generateRsSQLfile() Will not use anymore
+     * for it is slow for all mapping Call millions of API from genomenexus, not
+     * use it anymore
+     * 
+     * @param urlName
+     * @param bufferLines
+     * @param snpId
+     * @return
+     */
     public List<String> callUrl(String urlName, List<String> bufferLines, String snpId) {
         try {
             URL url = new URL(urlName);
@@ -99,13 +111,10 @@ public class PdbScriptsPipelineApiToSQL {
         return bufferLines;
     }
 
-    
-     
-    
-    
-    /** 
-     * Obsolete! Will not use anymore for it is slow for all mapping
-     * Call millions of API from genomenexus, not use it anymore
+    /**
+     * Obsolete! Will not use anymore for it is slow for all mapping Call
+     * millions of API from genomenexus, not use it anymore
+     * 
      * @return
      */
     public int generateRsSQLfile() {
@@ -171,7 +180,171 @@ public class PdbScriptsPipelineApiToSQL {
     }
 
     /**
-     * Multiple thread version of generateRsSQL
+     * Obsolete! paried with generateRsSQLfile()
+     * 
+     * @param rmr
+     * @return
+     */
+    public String makeTable_rs_mutation_insert(RSMutationRecord rmr) {
+        String str = "INSERT INTO `rs_mutation_entry` (`RS_SNP_ID`,`SEQ_ID`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ("
+                + rmr.getRs_mutationId() + "," + rmr.getSeqId() + "," + rmr.getSeqResidueIndex() + ",'"
+                + rmr.getSeqResidueName() + "','" + rmr.getPdbNo() + "'," + rmr.getPdbResidueIndex() + ",'"
+                + rmr.getPdbResidueName() + "'," + rmr.getAlignmentId() + ");\n";
+        return str;
+        // String str = "INSERT INTO `mutation_entry` VALUES ("
+        // + rmr.getRs_mutationId() + ","+ rmr.getSeqId() + ",'" +
+        // rmr.getPdbNo() + "',"
+        // + rmr.getPdbResidueIndex() + ",'" + rmr.getPdbResidueName() + "'," +
+        // rmr.getAlignmentId() + ");\n";
+        // return str;
+    }
+
+    /**
+     * Call URL using chr_posstart
+     * 
+     * @param urlName
+     * @param bufferLines
+     * @param gpos
+     * @param annotationTypeIds
+     * @return
+     */
+    public List<String> callGposUrl(String urlName, List<String> bufferLines, String gpos, String annotationTypeIds) {
+        try {
+            URL url = new URL(urlName);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            String s;
+            String HMkey;
+            HashMap<String, String> lineHM = new HashMap<>();
+            AllMutationRecord armr = new AllMutationRecord();
+            if ((s = reader.readLine()) != null) {
+                JSONArray jsonarray = JSONArray.fromObject(s);
+                for (int i = 0; i < jsonarray.size(); i++) {
+                    JSONObject jsonobj = JSONObject.fromObject(jsonarray.get(i));
+                    JSONArray residueMapping = JSONArray.fromObject(jsonobj.get("residueMapping"));
+                    // log.info(residueMapping);
+                    HMkey = jsonobj.get("pdbNo").toString() + jsonobj.get("pdbSeg").toString();
+                    if (lineHM.containsKey(HMkey)) {
+                        continue;
+                    } else {
+                        lineHM.put(HMkey, "");
+                        if (!residueMapping.isEmpty()) {
+                            JSONObject residueobj = JSONObject.fromObject(residueMapping.get(0));
+                            armr.setSeqResidueIndex(Integer.parseInt(residueobj.get("queryPosition").toString()));
+                            armr.setSeqResidueName(residueobj.get("queryAminoAcid").toString());
+                            armr.setPdbResidueIndex(Integer.parseInt(residueobj.get("pdbPosition").toString()));
+                            armr.setPdbResidueName(residueobj.get("pdbAminoAcid").toString());
+                        } else {
+                            armr.setSeqResidueIndex(-1);
+                            armr.setSeqResidueName("");
+                            armr.setPdbResidueIndex(-1);
+                            armr.setPdbResidueName("");
+                        }
+                        armr.setChr_pos(gpos);
+                        armr.setAnnotation_type_id(annotationTypeIds);
+                        armr.setSeqId(Integer.parseInt(jsonobj.get("seqId").toString()));
+                        armr.setPdbNo(jsonobj.get("pdbNo").toString());
+                        armr.setAlignmentId(Integer.parseInt(jsonobj.get("alignmentId").toString()));
+                        bufferLines.add(makeTable_all_mutation_insert(armr));
+                    }
+                }
+            }
+            reader.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return bufferLines;
+    }
+
+    /**
+     * 
+     * @param inputHm
+     *            key: chr_posstart_end value: dbsnp:123;clinvar:321;...
+     * @return
+     */
+    public int generateAllMappingSQLfile(HashMap<String, String> inputHm) {
+        List<String> tempLines = new ArrayList<String>();
+        int fileCount = 0;
+        String allsqlfilepwd = new String(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount);
+        File rssqlfile = new File(allsqlfilepwd);
+        int sql_insert_output_interval = Integer.parseInt(ReadConfig.sqlInsertOutputInterval);
+        List<String> outputLines = new ArrayList<String>();
+        outputLines.add("SET autocommit = 0;");
+        outputLines.add("start transaction;");
+        log.info("Begin to generate sql file");
+        log.info("Total gpos number: "+ inputHm.size());
+
+        int count = 0;
+        for (String gpos : inputHm.keySet()) {
+            String annotationTypeIds = inputHm.get(gpos);
+            if (count % 1000 == 0) {
+                log.info("Now start working on " + count + "th SNP");
+            }
+            String chr = gpos.split("_")[0];
+            String pos = gpos.split("_")[1];
+            String url = ReadConfig.getGnApiDbsnpInnerGposUrl();
+            url = url.replace("CHROMSOME", chr);
+            url = url.replace("LOCATION", pos);
+
+            if (count % sql_insert_output_interval != sql_insert_output_interval - 1) {
+                tempLines = new ArrayList<String>();
+                // original use .clear() but may be better to directly allocate
+                // new instead
+                // tempLines.clear();
+                tempLines = callGposUrl(url, tempLines, gpos, annotationTypeIds);
+                outputLines.addAll(tempLines);
+            } else {
+                outputLines.add("commit;");
+                try {
+                    FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
+                } catch (IOException e) {
+                    log.info("input " + allsqlfilepwd + " failed");
+                }
+                log.info("Finished generating the " + fileCount + "th SQL file");
+                fileCount++;
+                allsqlfilepwd = ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount;
+                rssqlfile = new File(allsqlfilepwd);
+                outputLines = new ArrayList<String>();
+                outputLines.add("SET autocommit = 0;");
+                outputLines.add("start transaction;");
+                tempLines = new ArrayList<String>();
+                // original use .clear() but may be better to directly allocate
+                // new instead
+                // tempLines.clear();
+                tempLines = callGposUrl(url, tempLines, gpos, annotationTypeIds);
+                outputLines.addAll(tempLines);
+            }
+            count++;
+        }
+
+        log.info("Total mapping SNP is:" + count);
+        outputLines.add("commit;");
+        try {
+            FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
+        } catch (IOException e) {
+            log.info("input " + allsqlfilepwd + " failed");
+        }
+        log.info("Finished generating the " + fileCount + "th SQL file");
+        log.info("Insert allmapping sql successful!");
+        return fileCount;
+
+    }
+
+    /**
+     * Generate sql for allmapping_mutation_entry table
+     * 
+     * @param armr
+     * @return
+     */
+    public String makeTable_all_mutation_insert(AllMutationRecord armr) {
+        String str = "INSERT INTO `allmapping_mutation_entry` (`CHR_POS`,`ANNOTATION_TYPE_ID`,`SEQ_ID`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ("
+                + armr.getChr_pos() + "," + armr.getAnnotation_type_id() + "," + armr.getSeqId() + ","
+                + armr.getSeqResidueIndex() + ",'" + armr.getSeqResidueName() + "','" + armr.getPdbNo() + "',"
+                + armr.getPdbResidueIndex() + ",'" + armr.getPdbResidueName() + "'," + armr.getAlignmentId() + ");\n";
+        return str;
+    }
+
+    /**
+     * Multiple thread version of generateRsSQL, only for test now
      * 
      * @return
      */
@@ -223,20 +396,6 @@ public class PdbScriptsPipelineApiToSQL {
         log.info("Total got filenumber " + filenumber);
 
         return filenumber;
-    }
-
-    public String makeTable_rs_mutation_insert(RSMutationRecord rmr) {
-        String str = "INSERT INTO `rs_mutation_entry` (`RS_SNP_ID`,`SEQ_ID`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ("
-                + rmr.getRs_mutationId() + "," + rmr.getSeqId() + "," + rmr.getSeqResidueIndex() + ",'"
-                + rmr.getSeqResidueName() + "','" + rmr.getPdbNo() + "'," + rmr.getPdbResidueIndex() + ",'"
-                + rmr.getPdbResidueName() + "'," + rmr.getAlignmentId() + ");\n";
-        return str;
-        // String str = "INSERT INTO `mutation_entry` VALUES ("
-        // + rmr.getRs_mutationId() + ","+ rmr.getSeqId() + ",'" +
-        // rmr.getPdbNo() + "',"
-        // + rmr.getPdbResidueIndex() + ",'" + rmr.getPdbResidueName() + "'," +
-        // rmr.getAlignmentId() + ");\n";
-        // return str;
     }
 
     synchronized boolean isFinished(StringBuffer sb, int count) {

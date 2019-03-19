@@ -17,6 +17,7 @@ import org.cbioportal.G2Smutation.util.FTPClientUtil;
 import org.cbioportal.G2Smutation.util.FileOperatingUtil;
 import org.cbioportal.G2Smutation.util.PdbSequenceUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
+import org.cbioportal.G2Smutation.util.SNPAnnotationType;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
 
@@ -34,7 +35,7 @@ public class PdbScriptsPipelineRunCommand {
     private int matches;
     private int seqFileCount;
     private boolean updateTag;
-    private int rsSqlCount;
+    private int allSqlCount;
 
     /**
      * Constructor
@@ -69,20 +70,21 @@ public class PdbScriptsPipelineRunCommand {
         this.seqFileCount = seqFileCount;
     }
     
-    public int getRsSqlCount() {
-        return rsSqlCount;
-    }
-
-    public void setRsSqlCount(int rsSqlCount) {
-        this.rsSqlCount = rsSqlCount;
-    }
-    
     public boolean isUpdateTag() {
         return updateTag;
     }
 
     public void setUpdateTag(boolean updateTag) {
         this.updateTag = updateTag;
+    }
+    
+
+    public int getAllSqlCount() {
+        return allSqlCount;
+    }
+
+    public void setAllSqlCount(int allSqlCount) {
+        this.allSqlCount = allSqlCount;
     }
 
     /**
@@ -363,7 +365,7 @@ public class PdbScriptsPipelineRunCommand {
          */
         
         // Step 12:
-        
+        /*
         log.info("********************[STEP 12]********************");
         log.info("[SQL] Read results from file, generate HashMap for usage"); 
         FileOperatingUtil fou = new FileOperatingUtil();
@@ -385,10 +387,11 @@ public class PdbScriptsPipelineRunCommand {
             mUsageRecord = (MutationUsageRecord)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
         }catch(Exception ex){
             ex.printStackTrace();
-        }    
+        } 
+        */   
         
         
-        
+        /*
         // Step 13:         
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Use mutation results, update table mutation_location_entry)");        
@@ -397,7 +400,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);
         cu.runCommand("mysql", paralist);
-        
+        */
         
         /*
         // Step 14:
@@ -414,7 +417,7 @@ public class PdbScriptsPipelineRunCommand {
         */
         
         //dbsnp, clinvar, cosmic, genie, tcga annotation in Table 15-19
-        
+        /*
         // Step 15:  
         log.info("********************[STEP 15]********************");
         log.info("[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
@@ -492,6 +495,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLTcga);
         cu.runCommand("mysql", paralist);
+        */
         
         
         
@@ -507,25 +511,15 @@ public class PdbScriptsPipelineRunCommand {
         // Step 12:
         log.info("********************[STEP 12]********************");
         log.info("[PrepareSQL] Call url and output as input rs sql statments on all possible rsSNPs Caution: Very Slow now");
-        /*
-        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
-        //Old implementation: 10days of mapping all dbSNP in millions of SNP
-        this.rsSqlCount = generateSQLfile.generateRsSQLfile();
-        */
-        //dbsnp
-        String snpCollectionName = "dbsnp";
-        //Could be dbsnp, clinvar, cosmic, genie, tcga
-        FileOperatingUtil fou = new FileOperatingUtil();
-        HashMap<String,String> inputHm = new HashMap<String,String>();
-        inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
         
-        this.rsSqlCount = generateSQLfile.generateAllSNPMappingSQLfile(mappingAnnotationName);
-
+        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
+        
+        //Old implementation: 10days of mapping all dbSNP in millions of SNP
+        //this.rsSqlCount = generateSQLfile.generateRsSQLfile();
         
         //Add multiple threads on all rs mapping
         //TODO: Still does not work now
         //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
-        
         
         /*
         this.rsSqlCount =237;
@@ -538,6 +532,39 @@ public class PdbScriptsPipelineRunCommand {
             cu.runCommand("mysql", paralist);
         }
         */
+        
+        
+        //Use enum
+        //Could be dbsnp, clinvar, cosmic, genie, tcga
+        FileOperatingUtil fou = new FileOperatingUtil();
+        HashMap<String,String> inputHm = new HashMap<String,String>();
+        for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
+            inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
+        }
+        
+        this.allSqlCount = generateSQLfile.generateAllMappingSQLfile(inputHm);
+        
+        /*
+        // Step 13:
+        log.info("********************[STEP 13]********************");
+        log.info("[SQL] Import All INSERT SQL statements into the database (Warning: This step takes time)");
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.updateAllSnpSql);
+        cu.runCommand("mysql", paralist);
+        
+        
+        for (int i = 0; i < this.allSqlCount; i++) {
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+            cu.runCommand("mysql", paralist);
+        }
+        */
+        
+        
+              
+        
+
         
         // Step 14:
         log.info("********************[STEP 14]********************");
