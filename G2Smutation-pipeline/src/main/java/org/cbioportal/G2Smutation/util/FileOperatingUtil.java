@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
 
@@ -151,5 +152,188 @@ public class FileOperatingUtil {
     	}    	
     	return hm;
     }
+    
+    /**
+     * collect all SNP as HashMap
+     * @param inputHm key:chr_pos value: dbsnp:12345;clinvar:54321;...
+     * @param snpCollectionName
+     * @return
+     */
+    public HashMap<String,String> collectAllSNPs2Map(HashMap<String,String> inputHm, String snpCollectionName){
+    	try{  		
+    		String inputFilename = "";   		
+    		switch (snpCollectionName) {
+            case "dbsnp":
+            	inputFilename = ReadConfig.workspace + ReadConfig.dbsnpFile;
+            	inputHm = constructAnnotationHmWrapperDbsnp(inputHm, inputFilename,snpCollectionName);
+                break;
+            case "clinvar":
+            	inputFilename = ReadConfig.workspace + ReadConfig.clinvarFile;
+            	inputHm = constructAnnotationHmWrapperClinvar(inputHm, inputFilename,snpCollectionName);
+                break;
+            case "cosmic":
+            	inputFilename = ReadConfig.workspace + ReadConfig.cosmicFile;
+            	inputHm = constructAnnotationHmWrapperCosmic(inputHm, inputFilename,snpCollectionName);
+                break;
+            case "genie":
+            	inputFilename = ReadConfig.workspace + ReadConfig.genieFile;
+            	inputHm = constructAnnotationHmWrapperGenieTcga(inputHm, inputFilename,snpCollectionName,1);
+                break;
+            case "tcga":
+            	inputFilename = ReadConfig.workspace + ReadConfig.tcgaFile;
+            	inputHm = constructAnnotationHmWrapperGenieTcga(inputHm, inputFilename,snpCollectionName,0);
+                break;
+            default:
+                log.error("Now only supports dbsnp, clinvar, cosmic, genie and tcga");
+                break;
+            }
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}
+    	return inputHm;
+    }
+    
+    /**
+     * inner coding part, avoid redundancy
+     * @param inputHm
+     * @param gpos
+     * @param snpCollectionName
+     * @param value
+     */
+    void constructAnnotationHmWorker(HashMap<String, String> inputHm, String gpos, String snpCollectionName, String value ){    		
+    	if(inputHm.containsKey(gpos)){
+            String tmpstr = inputHm.get(gpos);  
+            inputHm.put(gpos, tmpstr+";"+snpCollectionName+":"+value);
+        }else{
+        	inputHm.put(gpos, snpCollectionName+":"+value);
+        }    	
+    }
+ 
+    /**
+     * Add dbsnp locations into the hashmap
+     * @param inputHm
+     * @param inputFilename
+     * @param snpCollectionName
+     * @return
+     */
+    HashMap<String,String> constructAnnotationHmWrapperDbsnp(HashMap<String, String> inputHm, String inputFilename,String snpCollectionName){
+    	try{
+    		LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+    		int count = 0;
+            while(it.hasNext()){
+                String str = it.nextLine();
+                String[] strArray = str.split("\t");
+                String gpos = strArray[0]+"_"+strArray[1];
+                constructAnnotationHmWorker(inputHm,gpos,snpCollectionName,strArray[2]);
+                if(count%100000 == 0){
+                	log.info(snpCollectionName + " line: " + count);
+                }
+                count++;
+            }    		
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}   	
+        return inputHm;
+    }
+    
+    /**
+     * Add clinvar locations into the hashmap
+     * @param inputHm
+     * @param inputFilename
+     * @param snpCollectionName
+     * @return
+     */
+    HashMap<String,String> constructAnnotationHmWrapperClinvar(HashMap<String, String> inputHm, String inputFilename,String snpCollectionName){
+    	try{
+    		LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+            int count =0;
+    		while(it.hasNext()){
+                String str = it.nextLine();
+                String[] strArray = str.split("\t");
+                if(!str.startsWith("#")){ 
+                	String gpos = strArray[0]+"_"+strArray[1];
+                	constructAnnotationHmWorker(inputHm,gpos,snpCollectionName,strArray[2]);                	
+                }
+                if(count%100000 == 0){
+                	log.info(snpCollectionName + " line: " + count);
+                }
+                count++;
+            }     		
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}   	
+        return inputHm;
+    }
+    
+    /**
+     * Add cosmic locations into the hashmap
+     * @param inputHm
+     * @param inputFilename
+     * @param snpCollectionName
+     * @return
+     */
+    HashMap<String,String> constructAnnotationHmWrapperCosmic(HashMap<String, String> inputHm, String inputFilename,String snpCollectionName){
+    	try{
+    		LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+        	int count = 0;
+            while(it.hasNext()){
+                String str = it.nextLine();
+                String[] strArray = str.split("\t");
+                if(count>0){
+    				if (!strArray[23].equals("")) {
+    					String[] tmpArray = strArray[23].split(":");
+    					String[] posArray = tmpArray[1].split("-");
+    					int start = Integer.parseInt(posArray[0]);
+    					int end = Integer.parseInt(posArray[1]);
+    					for (int i = start; i <= end; i++) {
+    						String gpos = tmpArray[0] + "_" + Integer.toString(i);
+    						constructAnnotationHmWorker(inputHm,gpos,snpCollectionName,strArray[16]);
+    					}
+    				}					
+    			}
+                if(count%100000 == 0){
+                	log.info(snpCollectionName + " line: " + count);
+                }
+    			count++;
+            }   		
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}   	 
+        return inputHm;
+    }
+    
+    /**
+     * Add Genie and Tcga locations into the hashmap
+     * @param inputHm
+     * @param inputFilename
+     * @param snpCollectionName
+     * @param dealLineNum
+     * @return
+     */
+    HashMap<String,String> constructAnnotationHmWrapperGenieTcga(HashMap<String, String> inputHm, String inputFilename,String snpCollectionName, int dealLineNum){
+    	try{
+    		LineIterator it = FileUtils.lineIterator(new File(inputFilename));
+    		int count = 0;
+    		while (it.hasNext()) {
+    			String contentStr = it.nextLine();
+    			String[] strArray = contentStr.split("\t");
+    			if(count>dealLineNum){
+    				int start = Integer.parseInt(strArray[5]);
+                    int end = Integer.parseInt(strArray[6]);
+                    for (int i = start; i <= end; i++) {
+                        String gpos = strArray[4] + "_" + Integer.toString(i);
+                        constructAnnotationHmWorker(inputHm,gpos,snpCollectionName,gpos);
+                    }					
+    			}
+    			if(count%100000 == 0){
+                	log.info(snpCollectionName + " line: " + count);
+                }
+    			count++;				
+    		}    		
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}    	
+		return inputHm;
+    }  
 
 }

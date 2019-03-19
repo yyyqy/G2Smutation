@@ -389,8 +389,7 @@ public class PdbScriptsPipelineRunCommand {
         
         
         
-        // Step 13: 
-        
+        // Step 13:         
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Use mutation results, update table mutation_location_entry)");        
         parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);       
@@ -508,13 +507,18 @@ public class PdbScriptsPipelineRunCommand {
         // Step 12:
         log.info("********************[STEP 12]********************");
         log.info("[PrepareSQL] Call url and output as input rs sql statments on all possible rsSNPs Caution: Very Slow now");
+        /*
         PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
         //Old implementation: 10days of mapping all dbSNP in millions of SNP
         this.rsSqlCount = generateSQLfile.generateRsSQLfile();
-        
+        */
         //dbsnp
-        String mappingAnnotationName = "dbsnp";
+        String snpCollectionName = "dbsnp";
         //Could be dbsnp, clinvar, cosmic, genie, tcga
+        FileOperatingUtil fou = new FileOperatingUtil();
+        HashMap<String,String> inputHm = new HashMap<String,String>();
+        inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
+        
         this.rsSqlCount = generateSQLfile.generateAllSNPMappingSQLfile(mappingAnnotationName);
 
         

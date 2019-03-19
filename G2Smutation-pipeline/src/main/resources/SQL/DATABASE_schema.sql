@@ -8,7 +8,7 @@ drop table IF EXISTS ensembl_entry;
 drop table IF EXISTS pdb_entry;
 drop table IF EXISTS seq_entry;
 drop table IF EXISTS mutation_entry;
-drop table IF EXISTS rs_mutation_entry;
+drop table IF EXISTS allmapping_mutation_entry;
 drop table IF EXISTS mutation_usage_table;
 drop table IF EXISTS mutation_location_entry;
 drop table IF EXISTS structure_annotation_entry;
