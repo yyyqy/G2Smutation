@@ -363,7 +363,7 @@ public class PdbScriptsPipelineRunCommand {
          */
         
         // Step 12:
-        /*
+        
         log.info("********************[STEP 12]********************");
         log.info("[SQL] Read results from file, generate HashMap for usage"); 
         FileOperatingUtil fou = new FileOperatingUtil();
@@ -386,11 +386,11 @@ public class PdbScriptsPipelineRunCommand {
         }catch(Exception ex){
             ex.printStackTrace();
         }    
-        */
+        
         
         
         // Step 13: 
-        /*
+        
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Use mutation results, update table mutation_location_entry)");        
         parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);       
@@ -414,8 +414,8 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("mysql", paralist);
         */
         
-        //TODO: dbsnp, clinvar, cosmic, genie, tcga annotation in Table 15-19
-        /*
+        //dbsnp, clinvar, cosmic, genie, tcga annotation in Table 15-19
+        
         // Step 15:  
         log.info("********************[STEP 15]********************");
         log.info("[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
@@ -493,7 +493,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLTcga);
         cu.runCommand("mysql", paralist);
-        */
+        
         
         
         
@@ -509,9 +509,16 @@ public class PdbScriptsPipelineRunCommand {
         log.info("********************[STEP 12]********************");
         log.info("[PrepareSQL] Call url and output as input rs sql statments on all possible rsSNPs Caution: Very Slow now");
         PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
+        //Old implementation: 10days of mapping all dbSNP in millions of SNP
         this.rsSqlCount = generateSQLfile.generateRsSQLfile();
         
-        //Add multiple threads
+        //dbsnp
+        String mappingAnnotationName = "dbsnp";
+        //Could be dbsnp, clinvar, cosmic, genie, tcga
+        this.rsSqlCount = generateSQLfile.generateAllSNPMappingSQLfile(mappingAnnotationName);
+
+        
+        //Add multiple threads on all rs mapping
         //TODO: Still does not work now
         //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
         
