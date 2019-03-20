@@ -2,23 +2,31 @@
 -- database `g2smutation`
 --
 SET FOREIGN_KEY_CHECKS = 0;
-drop table IF EXISTS allmapping_mutation_entry;
+drop table IF EXISTS gpos_allmapping_entry;
+drop table IF EXISTS gpos_protein_entry;
 SET FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE `allmapping_mutation_entry` (
+CREATE TABLE `gpos_allmapping_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
-  `ANNOTATION_TYPE_ID` text, -- AnnotationType:ID; e.g.dbsnp:12345;clnvar:54321
+  `DBSNP_ID` text default '',
+  `CLINVAR_ID` text default '',
+  `COSMIC_ID` text default '',
+  `GENIE_ID` text default '',
+  `TCGA_ID` text default '',
+  PRIMARY KEY(`ID`),
+  KEY(`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)
+);
+
+
+CREATE TABLE `gpos_protein_entry` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
+  `MUTATION_NO` VARCHAR(50) NOT NULL, -- same as MUTATION_NO in table mutation_usage_table: SEQID_INDEX
   `SEQ_ID` int NOT NULL,
   `SEQ_INDEX` int NOT NULL,
   `SEQ_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `PDB_NO` VARCHAR(12) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `PDB_INDEX` int NOT NULL,
-  `PDB_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `ALIGNMENT_ID` int NOT NULL,
   PRIMARY KEY(`ID`),
-  KEY(`CHR_POS`,`SEQ_ID`,`PDB_NO`,`ALIGNMENT_ID`),
-  FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`),
-  FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
-  FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
+  KEY(`CHR_POS`,`MUTATION_NO`,`SEQ_ID`),
+  FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`) 
 );

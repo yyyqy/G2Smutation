@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.cbioportal.G2Smutation.util.APICallingAgent;
 import org.cbioportal.G2Smutation.util.APICallingThread;
 import org.cbioportal.G2Smutation.util.ReadConfig;
+import org.cbioportal.G2Smutation.util.SNPAnnotationType;
 import org.cbioportal.G2Smutation.util.models.AllMutationRecord;
 import org.cbioportal.G2Smutation.util.models.RSMutationRecord;
 import org.apache.log4j.Logger;
@@ -256,7 +257,7 @@ public class PdbScriptsPipelineApiToSQL {
     }
 
     /**
-     * 
+     * Not necessarry to call all mapping, not use any more!
      * @param inputHm
      *            key: chr_posstart_end value: dbsnp:123;clinvar:321;...
      * @return
@@ -315,7 +316,6 @@ public class PdbScriptsPipelineApiToSQL {
             }
             count++;
         }
-
         log.info("Total mapping SNP is:" + count);
         outputLines.add("commit;");
         try {
@@ -326,10 +326,10 @@ public class PdbScriptsPipelineApiToSQL {
         log.info("Finished generating the " + fileCount + "th SQL file");
         log.info("Insert allmapping sql successful!");
         return fileCount;
-
     }
 
     /**
+     * Not necessarry to call all mapping, not use any more!
      * Generate sql for allmapping_mutation_entry table
      * 
      * @param armr
@@ -341,6 +341,106 @@ public class PdbScriptsPipelineApiToSQL {
                 + armr.getSeqResidueIndex() + ",'" + armr.getSeqResidueName() + "','" + armr.getPdbNo() + "',"
                 + armr.getPdbResidueIndex() + ",'" + armr.getPdbResidueName() + "'," + armr.getAlignmentId() + ");\n";
         return str;
+    }
+    
+    /**
+     * Generate gpos_allmapping_entry tables sql file
+     * @param chr_pos
+     * @param annotationTypeIds
+     * @return
+     */
+    public String makeTable_gpos_allmapping_insert(String chr_pos, String annotationTypeIds) {
+    	HashMap<SNPAnnotationType,String> hm = new HashMap<>();
+    	for (SNPAnnotationType type: SNPAnnotationType.values()){
+    		hm.put(type, "");
+    	}
+    	if(annotationTypeIds.contains(";")){
+    		String[] strArray = annotationTypeIds.split(";");
+    		for(String str: strArray){
+    			String typestr = str.split(":")[0];
+    			String idstr = str.split(":")[1];
+    			String tmpstr = hm.get(typestr);
+    			hm.put(SNPAnnotationType.valueOf(typestr), tmpstr+idstr+";");
+    		}
+    	}else{
+    		String typestr = annotationTypeIds.split(":")[0];
+			String idstr = annotationTypeIds.split(":")[1];
+			String tmpstr = hm.get(typestr);
+			hm.put(SNPAnnotationType.valueOf(typestr), tmpstr+idstr+";");    		
+    	}
+        //String str = "INSERT INTO `gpos_allmapping_entry` (`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)VALUES ("
+        //        + chr_pos + "," + armr.getChr_pos() + ");\n";        
+    	String str = "INSERT INTO `gpos_allmapping_entry` (`CHR_POS`";
+    	for (SNPAnnotationType type: SNPAnnotationType.values()){
+    		str = str + ",`"+type.toString() +"_ID`";
+    	}
+    	str = str + ")VALUES ('" + chr_pos + "'";
+    	for (SNPAnnotationType type: SNPAnnotationType.values()){
+    		str = str + ",`"+hm.get(type) +"`";
+    	}
+    	str = str + ");\n";;
+    	return str;
+    }
+    
+    /**
+     * Generate gpos_allmapping_entry tables
+     * @param inputHm
+     * key: chr_posstart_end value: dbsnp:123;clinvar:321;...
+     * @return
+     */
+    public int generateGposAllMappingSQLfile(HashMap<String, String> inputHm) {
+        List<String> tempLines = new ArrayList<String>();
+        int fileCount = 0;
+        String allsqlfilepwd = new String(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount);
+        File rssqlfile = new File(allsqlfilepwd);
+        int sql_insert_output_interval = Integer.parseInt(ReadConfig.sqlInsertOutputInterval);
+        List<String> outputLines = new ArrayList<String>();
+        outputLines.add("SET autocommit = 0;");
+        outputLines.add("start transaction;");
+        log.info("Begin to generate gpos_allmapping file");
+        log.info("Total gpos number: "+ inputHm.size());
+
+        int count = 0;
+        for (String gpos : inputHm.keySet()) {
+            String annotationTypeIds = inputHm.get(gpos);
+            if (count % 10000 == 0) {
+                log.info("Now start working on " + count + "th SNP");
+            }
+
+            if (count % sql_insert_output_interval != sql_insert_output_interval - 1) {
+                tempLines = new ArrayList<String>();
+                tempLines.add(makeTable_gpos_allmapping_insert(gpos, annotationTypeIds));
+                outputLines.addAll(tempLines);
+            } else {
+                outputLines.add("commit;");
+                try {
+                    FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
+                } catch (IOException e) {
+                    log.info("input " + allsqlfilepwd + " failed");
+                }
+                log.info("Finished generating the " + fileCount + "th SQL file");
+                fileCount++;
+                allsqlfilepwd = ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount;
+                rssqlfile = new File(allsqlfilepwd);
+                outputLines = new ArrayList<String>();
+                outputLines.add("SET autocommit = 0;");
+                outputLines.add("start transaction;");
+                tempLines = new ArrayList<String>();
+                tempLines.add(makeTable_gpos_allmapping_insert(gpos, annotationTypeIds));
+                outputLines.addAll(tempLines);
+            }
+            count++;
+        }
+        log.info("Total mapping SNP is:" + count);
+        outputLines.add("commit;");
+        try {
+            FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
+        } catch (IOException e) {
+            log.info("input " + allsqlfilepwd + " failed");
+        }
+        log.info("Finished generating the " + fileCount + "th SQL file");
+        log.info("Insert allmapping sql successful!");
+        return fileCount;
     }
 
     /**

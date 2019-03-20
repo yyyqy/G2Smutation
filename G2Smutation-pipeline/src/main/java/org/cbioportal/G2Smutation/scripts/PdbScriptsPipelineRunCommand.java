@@ -517,6 +517,9 @@ public class PdbScriptsPipelineRunCommand {
         //Old implementation: 10days of mapping all dbSNP in millions of SNP
         //this.rsSqlCount = generateSQLfile.generateRsSQLfile();
         
+        //Another old implementation: Use Hashmap to reduce cost, over 12million SNP to call, too long
+        //this.allSqlCount = generateSQLfile.generateAllMappingSQLfile(inputHm);
+        
         //Add multiple threads on all rs mapping
         //TODO: Still does not work now
         //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
@@ -541,8 +544,8 @@ public class PdbScriptsPipelineRunCommand {
         for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
             inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
         }
-        
-        this.allSqlCount = generateSQLfile.generateAllMappingSQLfile(inputHm);
+                
+        this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
         
         /*
         // Step 13:
