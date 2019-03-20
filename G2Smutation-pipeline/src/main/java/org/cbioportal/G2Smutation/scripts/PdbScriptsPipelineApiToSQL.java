@@ -350,23 +350,25 @@ public class PdbScriptsPipelineApiToSQL {
      * @return
      */
     public String makeTable_gpos_allmapping_insert(String chr_pos, String annotationTypeIds) {
-    	HashMap<SNPAnnotationType,String> hm = new HashMap<>();
+    	HashMap<SNPAnnotationType,HashMap<String,String>> hm = new HashMap<>();
     	for (SNPAnnotationType type: SNPAnnotationType.values()){
-    		hm.put(type, "");
+    		hm.put(type, new HashMap<String,String>());
     	}
     	if(annotationTypeIds.contains(";")){
     		String[] strArray = annotationTypeIds.split(";");
     		for(String str: strArray){
     			String typestr = str.split(":")[0];
     			String idstr = str.split(":")[1];
-    			String tmpstr = hm.get(SNPAnnotationType.valueOf(typestr));
-    			hm.put(SNPAnnotationType.valueOf(typestr), tmpstr+idstr+";");
+    			HashMap<String,String> tmpHm = hm.get(SNPAnnotationType.valueOf(typestr));
+    			tmpHm.put(idstr, "");
+    			hm.put(SNPAnnotationType.valueOf(typestr), tmpHm);
     		}
     	}else{
     		String typestr = annotationTypeIds.split(":")[0];
 			String idstr = annotationTypeIds.split(":")[1];
-			String tmpstr = hm.get(SNPAnnotationType.valueOf(typestr));
-			hm.put(SNPAnnotationType.valueOf(typestr), tmpstr+idstr+";");    		
+			HashMap<String,String> tmpHm = hm.get(SNPAnnotationType.valueOf(typestr));
+			tmpHm.put(idstr, "");
+			hm.put(SNPAnnotationType.valueOf(typestr), tmpHm);    		
     	}
         //String str = "INSERT INTO `gpos_allmapping_entry` (`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)VALUES ("
         //        + chr_pos + "," + armr.getChr_pos() + ");\n";        
@@ -376,7 +378,17 @@ public class PdbScriptsPipelineApiToSQL {
     	}
     	str = str + ")VALUES ('" + chr_pos + "'";
     	for (SNPAnnotationType type: SNPAnnotationType.values()){
-    		str = str + ",`"+hm.get(type) +"`";
+    	    String contentStr = "";
+    	    int count = 0;
+    	    for(String cStr: hm.get(type).keySet()){
+    	        if (count == 0){
+    	            contentStr = cStr;
+    	        }else{
+    	            contentStr = contentStr + ";" + cStr;
+    	        }
+    	        count++;
+            }
+    		str = str + ",'"+contentStr +"'";
     	}
     	str = str + ");\n";;
     	return str;

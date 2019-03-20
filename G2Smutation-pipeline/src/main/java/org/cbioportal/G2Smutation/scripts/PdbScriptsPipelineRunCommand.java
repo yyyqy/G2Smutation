@@ -545,13 +545,12 @@ public class PdbScriptsPipelineRunCommand {
             inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
         }
                 
-        this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
+        this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);        
         
-        /*
         // Step 13:
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Import All INSERT SQL statements into the database (Warning: This step takes time)");
-        
+        //this.allSqlCount =13;
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.updateAllSnpSql);
         cu.runCommand("mysql", paralist);
@@ -562,7 +561,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
         }
-        */
+        
         
         
               

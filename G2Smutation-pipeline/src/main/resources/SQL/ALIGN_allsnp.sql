@@ -9,11 +9,11 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE `gpos_allmapping_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
-  `DBSNP_ID` text default '',
-  `CLINVAR_ID` text default '',
-  `COSMIC_ID` text default '',
-  `GENIE_ID` text default '',
-  `TCGA_ID` text default '',
+  `DBSNP_ID` VARCHAR(50) default '',
+  `CLINVAR_ID` VARCHAR(50) default '',
+  `COSMIC_ID` VARCHAR(50) default '',
+  `GENIE_ID` VARCHAR(50) default '',
+  `TCGA_ID` VARCHAR(50) default '',
   PRIMARY KEY(`ID`),
   KEY(`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)
 );
