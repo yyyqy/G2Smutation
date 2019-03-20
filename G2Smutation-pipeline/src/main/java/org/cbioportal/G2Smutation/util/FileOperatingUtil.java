@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
+import org.cbioportal.G2Smutation.util.models.SNPAnnotationType;
+import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * Read mutation_result.txt etc, and output results
@@ -334,6 +336,61 @@ public class FileOperatingUtil {
     		ex.printStackTrace();
     	}    	
 		return inputHm;
-    }  
+    }
+    
+    /**
+     * Read file geneseq.fasta
+     * 
+     * @param filename
+     * @return
+     */
+    public HashMap<String, Integer> readEnsembl2SeqIdHm(String filename){
+    	HashMap<String, Integer> en2SeqHm = new HashMap<>();
+    	try{
+    		List<String> lines = FileUtils.readLines(new File(filename));
+    		for(String line: lines){
+    			if(line.startsWith(">")){
+    				String[] headArray = line.split(";");
+    				int seqId = Integer.parseInt(headArray[0]);
+    				for(int i=1;i<headArray.length;i++){
+    					if(headArray[i].startsWith("ENSP")){
+    						String enspStr = headArray[i].split("\\s+")[0].split("\\.")[0];
+    						en2SeqHm.put(enspStr, seqId);
+    					}
+    				}    				
+    			}
+    		}
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}    	
+    	return en2SeqHm;
+    }
+    
+    /**
+     * Construct hashmap in <chr_pos,seqId_startindex>
+     * 
+     * @param inputHm <chr_pos, DBSNP:123;CLINVAR:321;...>
+     * @return gpos2proHm <chr_pos,seqId_startindex>
+     */
+    public HashMap<String,String> convertgpso2proHm(HashMap<String,String> inputHm){
+    	HashMap<String,String> gpos2proHm = new HashMap<>();//<chr_pos,seqId_startindex>
+    	//Read <ensemblName,seqId> in en2SeqHm
+    	HashMap<String,Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.seqFastaFile);
+    	UtilAPI uapi = new UtilAPI();
+    	try{
+    		for (String gpos: inputHm.keySet()){    			
+    			try {
+    	            uapi.callgpos2ensemblAPI(en2SeqHm, gpos2proHm, gpos);
+    	        } catch (HttpClientErrorException ex) {
+    	            ex.printStackTrace();
+    	        } catch (Exception ex) {
+    	            ex.printStackTrace();
+    	        }
+    		}    		
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}    	
+    	return gpos2proHm;
+    }
 
 }

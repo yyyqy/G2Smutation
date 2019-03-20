@@ -25,7 +25,6 @@ CREATE TABLE `gpos_protein_entry` (
   `MUTATION_NO` VARCHAR(50) NOT NULL, -- same as MUTATION_NO in table mutation_usage_table: SEQID_INDEX
   `SEQ_ID` int NOT NULL,
   `SEQ_INDEX` int NOT NULL,
-  `SEQ_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   PRIMARY KEY(`ID`),
   KEY(`CHR_POS`,`MUTATION_NO`,`SEQ_ID`),
   FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`) 

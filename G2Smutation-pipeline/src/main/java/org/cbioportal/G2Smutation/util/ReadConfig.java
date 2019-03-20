@@ -38,6 +38,7 @@ public class ReadConfig {
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
     public static String rsSqlInsertFile;
+    public static String gposSqlInsertFile;
     public static String blastParaEvalue;
     public static String blastParaMaxTargetSeqs;
     public static String blastParaWordSize;
@@ -98,6 +99,7 @@ public class ReadConfig {
     public static String alignFilterStatsSQL;
     public static String alignFilterStatsResult;
     public static String protein2GenomicURL;
+    public static String gnApiGnUrl;
     public static String dbsnpFile;
     public static String clinvarFile;
     public static String cosmicFile;
@@ -153,6 +155,7 @@ public class ReadConfig {
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
             ReadConfig.rsSqlInsertFile = prop.getProperty("rs_sql_insert_file").trim();
+            ReadConfig.gposSqlInsertFile = prop.getProperty("gpos_sql_insert_file").trim();
             ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue").trim();
             ReadConfig.blastParaMaxTargetSeqs = prop.getProperty("blast_para_max_target_seqs").trim();
             ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size").trim();
@@ -215,6 +218,7 @@ public class ReadConfig {
             ReadConfig.alignFilterStatsSQL = prop.getProperty("align.filter.stats.sql").trim();
             ReadConfig.alignFilterStatsResult = prop.getProperty("align.filter.stats.result").trim();
             ReadConfig.protein2GenomicURL = prop.getProperty("protein2genomic.url").trim();
+            ReadConfig.gnApiGnUrl = prop.getProperty("gn.api.genomenexus.url").trim();
             ReadConfig.dbsnpFile = prop.getProperty("dbsnp.file").trim();
             ReadConfig.clinvarFile = prop.getProperty("clinvar.file").trim();
             ReadConfig.cosmicFile = prop.getProperty("cosmic.file").trim();
@@ -946,5 +950,23 @@ public class ReadConfig {
     public static void setUpdateRsSqlFileNum(String updateRsSqlFileNum) {
         ReadConfig.updateRsSqlFileNum = updateRsSqlFileNum;
     }
+
+	public static String getGnApiGnUrl() {
+		return gnApiGnUrl;
+	}
+
+	public static void setGnApiGnUrl(String gnApiGnUrl) {
+		ReadConfig.gnApiGnUrl = gnApiGnUrl;
+	}
+
+	public static String getGposSqlInsertFile() {
+		return gposSqlInsertFile;
+	}
+
+	public static void setGposSqlInsertFile(String gposSqlInsertFile) {
+		ReadConfig.gposSqlInsertFile = gposSqlInsertFile;
+	}
+    
+    
 
 }

@@ -17,9 +17,9 @@ import org.cbioportal.G2Smutation.util.FTPClientUtil;
 import org.cbioportal.G2Smutation.util.FileOperatingUtil;
 import org.cbioportal.G2Smutation.util.PdbSequenceUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
-import org.cbioportal.G2Smutation.util.SNPAnnotationType;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
+import org.cbioportal.G2Smutation.util.models.SNPAnnotationType;
 
 /**
  * Main function from entrance of G2Smutation pipeline
@@ -545,27 +545,37 @@ public class PdbScriptsPipelineRunCommand {
             inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
         }
                 
-        this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);        
+        this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
+        System.out.println("allSql Mapping Count:"+allSqlCount);
         
         // Step 13:
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Import All INSERT SQL statements into the database (Warning: This step takes time)");
-        //this.allSqlCount =13;
+        //this.allSqlCount =12;
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.updateAllSnpSql);
         cu.runCommand("mysql", paralist);
-        
-        
-        for (int i = 0; i < this.allSqlCount; i++) {
+                
+        /*
+        for (int i = 0; i <= this.allSqlCount; i++) {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
         }
+        */
         
+        log.info("********************[STEP 13]********************");
+        log.info("[SQL] Generate and import into the table gpos_protein_entry");
+        HashMap<String,String> gpos2proHm = fou.convertgpso2proHm(inputHm);
         
+        this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
+        System.out.println("gpos to protein Count:"+allSqlCount);
         
-              
-        
+        for (int i = 0; i <= this.allSqlCount; i++) {
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.gposSqlInsertFile + "." + new Integer(i).toString());
+            cu.runCommand("mysql", paralist);
+        }
 
         
         // Step 14:

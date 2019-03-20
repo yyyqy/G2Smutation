@@ -13,9 +13,9 @@ import org.apache.commons.io.FileUtils;
 import org.cbioportal.G2Smutation.util.APICallingAgent;
 import org.cbioportal.G2Smutation.util.APICallingThread;
 import org.cbioportal.G2Smutation.util.ReadConfig;
-import org.cbioportal.G2Smutation.util.SNPAnnotationType;
 import org.cbioportal.G2Smutation.util.models.AllMutationRecord;
 import org.cbioportal.G2Smutation.util.models.RSMutationRecord;
+import org.cbioportal.G2Smutation.util.models.SNPAnnotationType;
 import org.apache.log4j.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -395,6 +395,21 @@ public class PdbScriptsPipelineApiToSQL {
     }
     
     /**
+     * generate insert sentences of table gpos_protein_entry
+     * 
+     * @param gpos
+     * @param mutation_NO
+     * @return
+     */
+    public String makeTable_gpos_protein_insert(String gpos, String mutation_NO) {
+    	String seqId = mutation_NO.split("_")[0];
+    	String proteinIndex = mutation_NO.split("_")[1];
+        String str = "INSERT INTO `gpos_protein_entry` (`CHR_POS`,`MUTATION_NO`,`SEQ_ID`,`SEQ_INDEX`)VALUES ('"
+                + gpos + "','" + mutation_NO + "','" + seqId + "','" +proteinIndex + "');\n";
+        return str;
+    }
+    
+    /**
      * Generate gpos_allmapping_entry tables
      * @param inputHm
      * key: chr_posstart_end value: dbsnp:123;clinvar:321;...
@@ -443,17 +458,81 @@ public class PdbScriptsPipelineApiToSQL {
             }
             count++;
         }
-        log.info("Total mapping SNP is:" + count);
+        
         outputLines.add("commit;");
         try {
             FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
         } catch (IOException e) {
             log.info("input " + allsqlfilepwd + " failed");
         }
+        log.info("Total mapping SNP is:" + count);
         log.info("Finished generating the " + fileCount + "th SQL file");
         log.info("Insert allmapping sql successful!");
         return fileCount;
     }
+    
+    /**
+     * Generate sql file table gpos_protein_entry
+     * 
+     * @param gpos2proHm
+     * @return
+     */
+    public int generateGposProteinSQLfile(HashMap<String, String> gpos2proHm) {
+        List<String> tempLines = new ArrayList<String>();
+        int fileCount = 0;
+        String allsqlfilepwd = new String(ReadConfig.workspace + ReadConfig.gposSqlInsertFile + "." + fileCount);
+        File rssqlfile = new File(allsqlfilepwd);
+        int sql_insert_output_interval = Integer.parseInt(ReadConfig.sqlInsertOutputInterval);
+        List<String> outputLines = new ArrayList<String>();
+        outputLines.add("SET autocommit = 0;");
+        outputLines.add("start transaction;");
+        log.info("Begin to generate gpos_protein file");
+        log.info("Total gpos number has protein loc: "+ gpos2proHm.size());
+
+        int count = 0;
+        for (String gpos : gpos2proHm.keySet()) {
+            String mutation_NO = gpos2proHm.get(gpos);
+            if (count % 100000 == 0) {
+                log.info("Now start working on " + count + "th SNP");
+            }
+
+            if (count % sql_insert_output_interval != sql_insert_output_interval - 1) {
+                tempLines = new ArrayList<String>();
+                tempLines.add(makeTable_gpos_protein_insert(gpos, mutation_NO));
+                outputLines.addAll(tempLines);
+            } else {
+                outputLines.add("commit;");
+                try {
+                    FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
+                } catch (IOException e) {
+                    log.info("input " + allsqlfilepwd + " failed");
+                }
+                log.info("Finished generating the " + fileCount + "th SQL file");
+                fileCount++;
+                allsqlfilepwd = ReadConfig.workspace + ReadConfig.gposSqlInsertFile + "." + fileCount;
+                rssqlfile = new File(allsqlfilepwd);
+                outputLines = new ArrayList<String>();
+                outputLines.add("SET autocommit = 0;");
+                outputLines.add("start transaction;");
+                tempLines = new ArrayList<String>();
+                tempLines.add(makeTable_gpos_protein_insert(gpos, mutation_NO));
+                outputLines.addAll(tempLines);
+            }
+            count++;
+        }
+        
+        outputLines.add("commit;");
+        try {
+            FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
+        } catch (IOException e) {
+            log.info("input " + allsqlfilepwd + " failed");
+        }
+        log.info("Total mapping SNP to protein is:" + count);
+        log.info("Finished generating the " + fileCount + "th SQL file");
+        log.info("Insert allmapping sql successful!");
+        return fileCount;
+    }
+    
 
     /**
      * Multiple thread version of generateRsSQL, only for test now
