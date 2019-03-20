@@ -359,13 +359,13 @@ public class PdbScriptsPipelineApiToSQL {
     		for(String str: strArray){
     			String typestr = str.split(":")[0];
     			String idstr = str.split(":")[1];
-    			String tmpstr = hm.get(typestr);
+    			String tmpstr = hm.get(SNPAnnotationType.valueOf(typestr));
     			hm.put(SNPAnnotationType.valueOf(typestr), tmpstr+idstr+";");
     		}
     	}else{
     		String typestr = annotationTypeIds.split(":")[0];
 			String idstr = annotationTypeIds.split(":")[1];
-			String tmpstr = hm.get(typestr);
+			String tmpstr = hm.get(SNPAnnotationType.valueOf(typestr));
 			hm.put(SNPAnnotationType.valueOf(typestr), tmpstr+idstr+";");    		
     	}
         //String str = "INSERT INTO `gpos_allmapping_entry` (`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)VALUES ("
@@ -403,7 +403,7 @@ public class PdbScriptsPipelineApiToSQL {
         int count = 0;
         for (String gpos : inputHm.keySet()) {
             String annotationTypeIds = inputHm.get(gpos);
-            if (count % 10000 == 0) {
+            if (count % 100000 == 0) {
                 log.info("Now start working on " + count + "th SNP");
             }
 
