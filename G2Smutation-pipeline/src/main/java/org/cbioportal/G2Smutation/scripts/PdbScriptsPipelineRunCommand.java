@@ -541,6 +541,7 @@ public class PdbScriptsPipelineRunCommand {
         //Could be dbsnp, clinvar, cosmic, genie, tcga
         FileOperatingUtil fou = new FileOperatingUtil();
         HashMap<String,String> inputHm = new HashMap<String,String>();
+        //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
         for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
             inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
         }

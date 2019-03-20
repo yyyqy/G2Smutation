@@ -76,11 +76,11 @@ public class UtilAPI {
     	
     	String chromosomeNum = gpos.split("_")[0];
 		String position = gpos.split("_")[1];
-
-        String url = ReadConfig.getGnApiGnUrl();
-        url = url.replace("CHROMSOME", chromosomeNum);
-        url = url.replace("POSITION", position);
+        
         for (NucleotideType val: NucleotideType.values()){
+            String url = ReadConfig.getGnApiGnUrl();
+            url = url.replace("CHROMSOME", chromosomeNum);
+            url = url.replace("POSITION", position);
         	url = url.replace("ORIGINAL", val.toString());
         	// Artificial mutation for API
             String mutation = "A";
@@ -88,28 +88,32 @@ public class UtilAPI {
                 mutation = "T";
             }
         	url = url.replace("MUTATION", mutation);
+        	//System.out.println(url);        	
         	
-        	RestTemplate restTemplate = new RestTemplate();            
-            QuotePro quote = restTemplate.getForObject(url, QuotePro.class);
-            if (quote.toString() !=""){            	
-            	List<Transcript_consequences> list = quote.getTranscript_consequences();
-                
+        	try{
+        	    RestTemplate restTemplate = new RestTemplate(); 
+                QuotePro[] quote = restTemplate.getForObject(url, QuotePro[].class);
+        	    List<Transcript_consequences> list = quote[0].getTranscript_consequences();
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).getProtein_start() != 0) {
-                    	String ensp = list.get(i).getProtein_id();
-                    	if (en2SeqHm.containsKey(ensp)){
-                    		int seqId = en2SeqHm.get(ensp);
-                        	int protein_index = list.get(i).getProtein_start();
-                        	String mutation_NO = Integer.toString(seqId) + "_" + Integer.toString(protein_index);
-                        	gpos2proHm.put(gpos, mutation_NO);               		
-                    	}else{
-                    		//log.info(ensp + " does not included in the system");
-                    	}
+                        //System.out.println("((("+list.get(i));
+                        String ensp = list.get(i).getProtein_id();
+                        if (en2SeqHm.containsKey(ensp)){
+                            int seqId = en2SeqHm.get(ensp);
+                            int protein_index = list.get(i).getProtein_start();
+                            String mutation_NO = Integer.toString(seqId) + "_" + Integer.toString(protein_index);
+                            //System.out.println(ensp + "\t" + gpos + "\t" +mutation_NO);
+                            gpos2proHm.put(gpos, mutation_NO);                      
+                        }else{
+                            //log.info(ensp + " does not included in the system");
+                        }
                     }
                 }
-                break;// if the nucleotide is correct, then does not need to run API again.           	
-            }
-                   	
+                break;
+        	}catch(Exception ex){
+        	    //Don't print for it is too much
+        	    //ex.printStackTrace();
+        	}                    	
         }
                 
     }

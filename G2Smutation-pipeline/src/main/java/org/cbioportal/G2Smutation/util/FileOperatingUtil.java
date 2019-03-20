@@ -351,7 +351,7 @@ public class FileOperatingUtil {
     		for(String line: lines){
     			if(line.startsWith(">")){
     				String[] headArray = line.split(";");
-    				int seqId = Integer.parseInt(headArray[0]);
+    				int seqId = Integer.parseInt(headArray[0].substring(1));
     				for(int i=1;i<headArray.length;i++){
     					if(headArray[i].startsWith("ENSP")){
     						String enspStr = headArray[i].split("\\s+")[0].split("\\.")[0];
@@ -375,8 +375,10 @@ public class FileOperatingUtil {
     public HashMap<String,String> convertgpso2proHm(HashMap<String,String> inputHm){
     	HashMap<String,String> gpos2proHm = new HashMap<>();//<chr_pos,seqId_startindex>
     	//Read <ensemblName,seqId> in en2SeqHm
-    	HashMap<String,Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.seqFastaFile);
+    	HashMap<String,Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
     	UtilAPI uapi = new UtilAPI();
+    	int count = 0;
+    	log.info("Total locations: "+ inputHm.size());
     	try{
     		for (String gpos: inputHm.keySet()){    			
     			try {
@@ -386,6 +388,10 @@ public class FileOperatingUtil {
     	        } catch (Exception ex) {
     	            ex.printStackTrace();
     	        }
+    			if(count%10000==0){
+    			    log.info("Deal at "+count+"pos");
+    			}
+    			count++;
     		}    		
     	}catch(Exception ex){
     		ex.printStackTrace();
