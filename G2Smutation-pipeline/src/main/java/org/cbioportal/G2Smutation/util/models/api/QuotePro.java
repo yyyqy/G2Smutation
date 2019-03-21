@@ -25,6 +25,7 @@ public class QuotePro {
      * String id; private String input; private String most_severe_consequence;
      * private String seq_region_name; private long start; private int strand;
      */
+    private String variant;
     private List<Transcript_consequences> transcript_consequences;
 
     public QuotePro() {
@@ -86,6 +87,14 @@ public class QuotePro {
     public void setTranscript_consequences(List<Transcript_consequences> transcript_consequences) {
         this.transcript_consequences = transcript_consequences;
     }
+    
+    public String getVariant() {
+        return variant;
+    }
+
+    public void setVariant(String variant) {
+        this.variant = variant;
+    }  
 
     /*
      * @Override public String toString() { return "Quote [allele_string=" +
@@ -96,6 +105,7 @@ public class QuotePro {
      * ", start=" + start + ", strand=" + strand + ", transcript_consequences="
      * + transcript_consequences + "]"; }
      */
+
 
     @Override
     public String toString() {

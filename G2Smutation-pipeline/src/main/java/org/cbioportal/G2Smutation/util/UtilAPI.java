@@ -1,7 +1,10 @@
 package org.cbioportal.G2Smutation.util;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.scripts.PdbScriptsPipelineMakeSQL;
 import org.cbioportal.G2Smutation.util.models.NucleotideType;
+import org.cbioportal.G2Smutation.util.models.api.GenomePosition;
 import org.cbioportal.G2Smutation.util.models.api.Mappings;
 import org.cbioportal.G2Smutation.util.models.api.QuoteCoor;
 import org.cbioportal.G2Smutation.util.models.api.QuotePro;
@@ -63,7 +67,9 @@ public class UtilAPI {
     
 
     /**
-     * Call url, input chr pos, and protein seqId_index
+     * GET method
+     * Call url, input chr pos, and protein seqId_index 
+     * Slow if calling multiple times
      * 
      * http://annotation.genomenexus.org/hgvs/17:g.79478130C%3ET?isoformOverrideSource=uniprot&summary=summary
      * 
@@ -72,7 +78,7 @@ public class UtilAPI {
      * @param gpos  chr_pos
      * @throws Exception
      */
-    public void callgpos2ensemblAPI(HashMap<String,Integer> en2SeqHm, HashMap<String,String> gpos2proHm, String gpos) throws Exception {
+    public void callgpos2ensemblAPIGet(HashMap<String,Integer> en2SeqHm, HashMap<String,String> gpos2proHm, String gpos) throws Exception {
     	
     	String chromosomeNum = gpos.split("_")[0];
 		String position = gpos.split("_")[1];
@@ -116,6 +122,85 @@ public class UtilAPI {
         	}                    	
         }
                 
+    }
+    
+    /**
+     * POST method
+     * Good for bulk calling
+     * Call url, input chr pos, and protein seqId_index 
+     * 
+     * http://annotation.genomenexus.org/hgvs/17:g.79478130C%3ET?isoformOverrideSource=uniprot&summary=summary
+     * 
+     * @param en2SeqHm <ensemblName,seqId>
+     * @param gpos2proHm <chr_pos,seqId_startindex>
+     * @param gpos  chr_pos
+     * @throws Exception
+     */
+    public void callgpos2ensemblAPIPost(HashMap<String, Integer> en2SeqHm, HashMap<String, String> gpos2proHm,
+            List<String> gposList) throws Exception {
+
+        String url = ReadConfig.getGnApiDbsnpInnerGposUrl();
+        List<GenomePosition> gpList = new ArrayList<>();
+
+        for (String gpos : gposList) {
+
+            String chromosomeNum = gpos.split("_")[0];
+            String position = gpos.split("_")[1];
+
+            for (NucleotideType val : NucleotideType.values()) {
+                GenomePosition gp = new GenomePosition();
+                gp.setChromosome(chromosomeNum);
+                gp.setStart(Integer.parseInt(position));
+                gp.setEnd(Integer.parseInt(position));
+                gp.setReferenceAllele(val.toString());
+                // Artificial mutation for API
+                String mutation = "A";
+                if (val.toString().equals("A")) {
+                    mutation = "T";
+                }
+                gp.setVariantAllele(mutation);
+                gpList.add(gp);
+                // System.out.println(url);
+            }
+        }
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            URI uri = new URI(url);
+            HttpHeaders headers = new HttpHeaders();  
+            headers.set("Content-Type", "application/json");
+            headers.set("Accept", "application/json");
+            HttpEntity<List<GenomePosition>> request = new HttpEntity<>(gpList, headers);
+            QuotePro[] quoteArray = restTemplate.postForObject(uri, request, QuotePro[].class);
+            for (QuotePro quote: quoteArray){
+                String variant = quote.getVariant();
+                String[] tmpArray = variant.split(":");
+                int tmpl =  tmpArray[1].split(">")[0].length();
+                String gpos = tmpArray[0]+"_"+tmpArray[1].substring(2, tmpl-2);
+                List<Transcript_consequences> list = quote.getTranscript_consequences();
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getProtein_start() != 0) {
+                        // System.out.println("((("+list.get(i));
+                        String ensp = list.get(i).getProtein_id();
+                        if (en2SeqHm.containsKey(ensp)) {
+                            int seqId = en2SeqHm.get(ensp);
+                            int protein_index = list.get(i).getProtein_start();
+                            String mutation_NO = Integer.toString(seqId) + "_" + Integer.toString(protein_index);
+                            // System.out.println(ensp + "\t" + gpos + "\t"
+                            // +mutation_NO);
+                            gpos2proHm.put(gpos, mutation_NO);
+                        } else {
+                            // log.info(ensp + " does not included in the
+                            // system");
+                        }
+                    }
+                }               
+            }
+        } catch (Exception ex) {
+            // Don't print for it is too much
+            // ex.printStackTrace();
+        }
+
     }
 
 }

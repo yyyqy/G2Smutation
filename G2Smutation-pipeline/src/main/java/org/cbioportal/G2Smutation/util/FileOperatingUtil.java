@@ -372,33 +372,44 @@ public class FileOperatingUtil {
      * Construct hashmap in <chr_pos,seqId_startindex>
      * 
      * @param inputHm <chr_pos, DBSNP:123;CLINVAR:321;...>
+     * @param postFlag true for using POST, false for using GET
      * @return gpos2proHm <chr_pos,seqId_startindex>
      */
-    public HashMap<String,String> convertgpso2proHm(HashMap<String,String> inputHm){
-    	HashMap<String,String> gpos2proHm = new HashMap<>();//<chr_pos,seqId_startindex>
-    	//Read <ensemblName,seqId> in en2SeqHm
-    	HashMap<String,Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
-    	UtilAPI uapi = new UtilAPI();
-    	int count = 0;
-    	log.info("Total locations: "+ inputHm.size());
-    	try{
-    		for (String gpos: inputHm.keySet()){    			
-    			try {
-    	            uapi.callgpos2ensemblAPI(en2SeqHm, gpos2proHm, gpos);
-    	        } catch (HttpClientErrorException ex) {
-    	            ex.printStackTrace();
-    	        } catch (Exception ex) {
-    	            ex.printStackTrace();
-    	        }
-    			if(count%10000==0){
-    			    log.info("Deal at "+count+"pos");
-    			}
-    			count++;
-    		}    		
-    	}catch(Exception ex){
-    		ex.printStackTrace();
-    	}    	
-    	return gpos2proHm;
+    public HashMap<String, String> convertgpso2proHm(HashMap<String, String> inputHm, boolean postFlag) {
+        HashMap<String, String> gpos2proHm = new HashMap<>();// <chr_pos,seqId_startindex>
+        // Read <ensemblName,seqId> in en2SeqHm
+        HashMap<String, Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
+        UtilAPI uapi = new UtilAPI();
+        List<String> gposList = new ArrayList<>();
+        int count = 1;
+        int callSize = Integer.parseInt(ReadConfig.callPostSize);
+        log.info("Total locations: " + inputHm.size());
+        try {
+            for (String gpos : inputHm.keySet()) {
+
+                if (postFlag) {// POST
+                    gposList.add(gpos);
+                    if (count % callSize == 0) {
+                        uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);
+                        gposList = new ArrayList<>();
+                        log.info("Deal at " + count + "th pos;Size of gpos2proHm is " + gpos2proHm.size());
+                    }
+                } else {// GET method
+                    uapi.callgpos2ensemblAPIGet(en2SeqHm, gpos2proHm, gpos);
+                    if (count % 10000 == 0) {
+                        log.info("Deal at " + count + "pos");
+                    }
+                }               
+                count++;
+            }
+            if (postFlag){//POST, post process
+                uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return gpos2proHm;
     }
     
     
@@ -468,7 +479,7 @@ public class FileOperatingUtil {
     	public void run(){
     		try{
     			UtilAPI uapi = new UtilAPI();
-    			uapi.callgpos2ensemblAPI(en2SeqHm, gpos2proHm, gpos);
+    			uapi.callgpos2ensemblAPIGet(en2SeqHm, gpos2proHm, gpos);
     		}catch(Exception ex){
     			ex.printStackTrace();
     		}

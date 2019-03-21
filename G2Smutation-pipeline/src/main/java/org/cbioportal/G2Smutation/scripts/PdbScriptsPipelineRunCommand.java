@@ -517,9 +517,6 @@ public class PdbScriptsPipelineRunCommand {
         //Old implementation: 10days of mapping all dbSNP in millions of SNP
         //this.rsSqlCount = generateSQLfile.generateRsSQLfile();
         
-        //Another old implementation: Use Hashmap to reduce cost, over 12million SNP to call, too long
-        //this.allSqlCount = generateSQLfile.generateAllMappingSQLfile(inputHm);
-        
         //Add multiple threads on all rs mapping
         //TODO: Still does not work now
         //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
@@ -545,17 +542,13 @@ public class PdbScriptsPipelineRunCommand {
 //        for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
 //            inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
 //        }
+        
+        
                 
         this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
         System.out.println("allSql Mapping Count:"+allSqlCount);
         
-        // Step 13:
-        log.info("********************[STEP 13]********************");
-        log.info("[SQL] Import All INSERT SQL statements into the database (Warning: This step takes time)");
-        //this.allSqlCount =12;
-        paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.resourceDir + ReadConfig.updateAllSnpSql);
-        cu.runCommand("mysql", paralist);
+        
                 
         /*
         for (int i = 0; i <= this.allSqlCount; i++) {
@@ -567,18 +560,35 @@ public class PdbScriptsPipelineRunCommand {
         
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Generate and import into the table gpos_protein_entry");
-        //HashMap<String,String> gpos2proHm = fou.convertgpso2proHm(inputHm);
+        //true for POST, false for GET, POST is better
+        HashMap<String,String> gpos2proHm = fou.convertgpso2proHm(inputHm,true);
+        
+        
         //Concurrent version
-        HashMap<String,String> gpos2proHm = fou.convertgpso2proHmMT(inputHm);
+        //HashMap<String,String> gpos2proHm = fou.convertgpso2proHmMT(inputHm);
         
         this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
         System.out.println("gpos to protein Count:"+allSqlCount);
         
+        
+        /*
         for (int i = 0; i <= this.allSqlCount; i++) {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.gposSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
         }
+        */
+        
+        // Step 13:
+        log.info("********************[STEP 13]********************");
+        log.info("[SQL] Import All INSERT SQL statements into the database (Warning: This step takes time)");
+        //this.allSqlCount =12;
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.updateAllSnpSql);
+        cu.runCommand("mysql", paralist);
+        
+        //Another old implementation: Use Hashmap to reduce cost, over 12million SNP to call, too long
+        this.allSqlCount = generateSQLfile.generateAllMappingSQLfile(inputHm);
 
         
         // Step 14:

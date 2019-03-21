@@ -100,6 +100,8 @@ public class ReadConfig {
     public static String alignFilterStatsResult;
     public static String protein2GenomicURL;
     public static String gnApiGnUrl;
+    public static String gnApiGnPostUrl;
+    public static String callPostSize;
     public static String dbsnpFile;
     public static String clinvarFile;
     public static String cosmicFile;
@@ -220,6 +222,8 @@ public class ReadConfig {
             ReadConfig.alignFilterStatsResult = prop.getProperty("align.filter.stats.result").trim();
             ReadConfig.protein2GenomicURL = prop.getProperty("protein2genomic.url").trim();
             ReadConfig.gnApiGnUrl = prop.getProperty("gn.api.genomenexus.url").trim();
+            ReadConfig.gnApiGnPostUrl = prop.getProperty("gn.api.genomenexus.post.url").trim();
+            ReadConfig.callPostSize = prop.getProperty("call.post.size").trim();
             ReadConfig.dbsnpFile = prop.getProperty("dbsnp.file").trim();
             ReadConfig.clinvarFile = prop.getProperty("clinvar.file").trim();
             ReadConfig.cosmicFile = prop.getProperty("cosmic.file").trim();
@@ -976,6 +980,22 @@ public class ReadConfig {
 	public static void setCallThreadsNum(String callThreadsNum) {
 		ReadConfig.callThreadsNum = callThreadsNum;
 	}
+
+    public static String getGnApiGnPostUrl() {
+        return gnApiGnPostUrl;
+    }
+
+    public static void setGnApiGnPostUrl(String gnApiGnPostUrl) {
+        ReadConfig.gnApiGnPostUrl = gnApiGnPostUrl;
+    }
+
+    public static String getCallPostSize() {
+        return callPostSize;
+    }
+
+    public static void setCallPostSize(String callPostSize) {
+        ReadConfig.callPostSize = callPostSize;
+    }
     
     
 
