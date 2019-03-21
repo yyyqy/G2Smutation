@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -397,6 +399,82 @@ public class FileOperatingUtil {
     		ex.printStackTrace();
     	}    	
     	return gpos2proHm;
+    }
+    
+    
+    /**
+     * MultipleThreads!
+     * Construct hashmap in <chr_pos,seqId_startindex>
+     * 
+     * @param inputHm <chr_pos, DBSNP:123;CLINVAR:321;...>
+     * @return gpos2proHm <chr_pos,seqId_startindex>
+     */
+    public HashMap<String,String> convertgpso2proHmMT(HashMap<String,String> inputHm){
+    	ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(ReadConfig.callThreadsNum));
+		
+    	
+    	HashMap<String,String> gpos2proHm = new HashMap<>();//<chr_pos,seqId_startindex>
+    	//Read <ensemblName,seqId> in en2SeqHm
+    	HashMap<String,Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
+    	
+    	int count = 0;
+    	log.info("Total locations: "+ inputHm.size());
+    	try{
+    		for (String gpos: inputHm.keySet()){    			
+    			try {
+    				Runnable worker = new CallAPIRunnable(en2SeqHm,gpos2proHm,gpos);
+    				executor.execute(worker);   	            
+    	        } catch (HttpClientErrorException ex) {
+    	            ex.printStackTrace();
+    	        } catch (Exception ex) {
+    	            ex.printStackTrace();
+    	        }
+    			if(count%10000==0){
+    			    log.info("Deal at "+count+"pos");
+    			}
+    			count++;
+    		}
+    		executor.shutdown();
+    		// Wait until all threads are finish
+    		while (!executor.isTerminated()) {
+     
+    		}
+    		log.info("Finished all threads in Calling...");
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}    	
+    	return gpos2proHm;
+    }
+    
+    
+    /**
+     * Concurrent worker of call API in genomenexus gpos to ensembl
+     * 
+     * @author juexinwang
+     *
+     */
+    public static class CallAPIRunnable implements Runnable{
+    	private HashMap<String,Integer> en2SeqHm;
+    	private HashMap<String,String> gpos2proHm;
+    	private final String gpos;
+    	
+    	CallAPIRunnable(HashMap<String,Integer> en2SeqHm, HashMap<String,String> gpos2proHm, String gpos){
+    		this.en2SeqHm = en2SeqHm;
+    		this.gpos2proHm = gpos2proHm;
+    		this.gpos = gpos;
+    	}
+    	
+    	@Override
+    	public void run(){
+    		try{
+    			UtilAPI uapi = new UtilAPI();
+    			uapi.callgpos2ensemblAPI(en2SeqHm, gpos2proHm, gpos);
+    		}catch(Exception ex){
+    			ex.printStackTrace();
+    		}
+    		
+    	}
+
     }
 
 }

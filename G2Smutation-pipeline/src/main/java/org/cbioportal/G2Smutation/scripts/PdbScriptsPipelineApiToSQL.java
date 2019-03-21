@@ -9,9 +9,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.commons.io.FileUtils;
-import org.cbioportal.G2Smutation.util.APICallingAgent;
-import org.cbioportal.G2Smutation.util.APICallingThread;
 import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.models.AllMutationRecord;
 import org.cbioportal.G2Smutation.util.models.RSMutationRecord;
@@ -533,67 +534,17 @@ public class PdbScriptsPipelineApiToSQL {
         return fileCount;
     }
     
-
-    /**
-     * Multiple thread version of generateRsSQL, only for test now
-     * 
-     * @return
-     */
-    public int generateRsSQLfileMT() {
-        List<String> snpIds = getDbSNPIdFromMappingFile(ReadConfig.workspace + ReadConfig.dbsnpFile);
-
-        log.info("Begin to generate sql file");
-        log.info("Total rsSNP has:" + snpIds.size() + " Entries");
-        log.info("Start multiple threads");
-
-        ArrayList<APICallingThread> threadsArr = new ArrayList<APICallingThread>();
-        APICallingAgent PD = new APICallingAgent();
-
-        try {
-            for (int i = 0; i < 20; i++) {
-                APICallingThread T1 = new APICallingThread("Thread - " + i, PD, snpIds, i);
-                T1.start();
-                threadsArr.add(T1);
-            }
-            for (int i = 0; i < 20; i++) {
-                threadsArr.get(i).join();
-
-            }
-        } catch (Exception ex) {
-            log.info("Thread Interrupted");
-            System.out.println(ex);
-        }
-        log.info("Muliple Thread Finished!");
-
-        int filenumber = 0;
-        try {
-            File folder = new File(ReadConfig.workspace);
-            File[] listOfFiles = folder.listFiles();
-            for (int i = 0; i < listOfFiles.length; i++) {
-                if (listOfFiles[i].isFile()) {
-                    if (listOfFiles[i].getName().startsWith(ReadConfig.rsSqlInsertFile)) {
-                        int num = Integer
-                                .parseInt(listOfFiles[i].getName().split(ReadConfig.rsSqlInsertFile)[1].split("\\.")[1]
-                                        .toString());
-                        if (num > filenumber) {
-                            filenumber = num;
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        log.info("Total got filenumber " + filenumber);
-
-        return filenumber;
-    }
-
+    
     synchronized boolean isFinished(StringBuffer sb, int count) {
         if (sb.toString().length() > count || count == 0) {
             return true;
         }
         return false;
     }
+    
+    
 
 }
+
+
+

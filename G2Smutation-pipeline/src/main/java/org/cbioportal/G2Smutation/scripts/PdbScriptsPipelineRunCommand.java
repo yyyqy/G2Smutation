@@ -567,7 +567,9 @@ public class PdbScriptsPipelineRunCommand {
         
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Generate and import into the table gpos_protein_entry");
-        HashMap<String,String> gpos2proHm = fou.convertgpso2proHm(inputHm);
+        //HashMap<String,String> gpos2proHm = fou.convertgpso2proHm(inputHm);
+        //Concurrent version
+        HashMap<String,String> gpos2proHm = fou.convertgpso2proHmMT(inputHm);
         
         this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
         System.out.println("gpos to protein Count:"+allSqlCount);

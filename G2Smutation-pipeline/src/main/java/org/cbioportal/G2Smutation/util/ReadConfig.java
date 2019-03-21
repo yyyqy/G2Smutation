@@ -107,6 +107,7 @@ public class ReadConfig {
     public static String tcgaFile;
     public static String gnApiDbsnpInnerUrl;
     public static String gnApiDbsnpInnerGposUrl;
+    public static String callThreadsNum;
     public static String saveSpaceTag;
 
     public static boolean isPositiveInteger(String str) {
@@ -226,6 +227,7 @@ public class ReadConfig {
             ReadConfig.tcgaFile = prop.getProperty("tcga.file").trim();
             ReadConfig.gnApiDbsnpInnerUrl = prop.getProperty("gn.api.dbsnp.inner.url").trim();
             ReadConfig.gnApiDbsnpInnerGposUrl = prop.getProperty("gn.api.dbsnp.inner.gpos.url").trim();
+            ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
@@ -965,6 +967,14 @@ public class ReadConfig {
 
 	public static void setGposSqlInsertFile(String gposSqlInsertFile) {
 		ReadConfig.gposSqlInsertFile = gposSqlInsertFile;
+	}
+
+	public static String getCallThreadsNum() {
+		return callThreadsNum;
+	}
+
+	public static void setCallThreadsNum(String callThreadsNum) {
+		ReadConfig.callThreadsNum = callThreadsNum;
 	}
     
     
