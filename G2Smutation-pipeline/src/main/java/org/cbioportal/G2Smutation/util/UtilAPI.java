@@ -176,7 +176,7 @@ public class UtilAPI {
                 String variant = quote.getVariant();
                 String[] tmpArray = variant.split(":");
                 int tmpl =  tmpArray[1].split(">")[0].length();
-                String gpos = tmpArray[0]+"_"+tmpArray[1].substring(2, tmpl-2);
+                String gpos = tmpArray[0]+"_"+tmpArray[1].substring(2, tmpl-1);
                 List<Transcript_consequences> list = quote.getTranscript_consequences();
                 System.out.println(quote.getVariant() + "Size:" + list.size());
                 for (int i = 0; i < list.size(); i++) {
