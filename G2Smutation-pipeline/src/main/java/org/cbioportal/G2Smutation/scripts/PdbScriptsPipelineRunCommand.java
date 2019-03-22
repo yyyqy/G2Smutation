@@ -538,17 +538,13 @@ public class PdbScriptsPipelineRunCommand {
         //Could be dbsnp, clinvar, cosmic, genie, tcga
         FileOperatingUtil fou = new FileOperatingUtil();
         HashMap<String,String> inputHm = new HashMap<String,String>();
-        inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
-//        for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
-//            inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
-//        }
-        
-        
+        //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
+        for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
+            inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
+        }                
                 
         this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
-        System.out.println("allSql Mapping Count:"+allSqlCount);
-        
-        
+        System.out.println("allSql Mapping Count:"+allSqlCount);                
                 
         /*
         for (int i = 0; i <= this.allSqlCount; i++) {
@@ -561,15 +557,14 @@ public class PdbScriptsPipelineRunCommand {
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Generate and import into the table gpos_protein_entry");
         //true for POST, false for GET, POST is better
-        HashMap<String,String> gpos2proHm = fou.convertgpso2proHm(inputHm,true);
+        HashMap<String,String> gpos2proHm = fou.convertgpso2proHm(inputHm,true);        
         
+        //Concurrent version,does not need it anymore, may be
+        //HashMap<String,String> gpos2proHm = fou.convertgpso2proHmMT(inputHm);       
         
-        //Concurrent version
-        //HashMap<String,String> gpos2proHm = fou.convertgpso2proHmMT(inputHm);
-        /*
         this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
         System.out.println("gpos to protein Count:"+allSqlCount);
-        */
+        
         
         /*
         for (int i = 0; i <= this.allSqlCount; i++) {
