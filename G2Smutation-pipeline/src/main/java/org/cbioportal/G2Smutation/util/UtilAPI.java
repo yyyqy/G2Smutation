@@ -143,7 +143,7 @@ public class UtilAPI {
         List<GenomePosition> gpList = new ArrayList<>();
 
         for (String gpos : gposList) {
-        	System.out.println("Gpos:"+gpos);
+        	//System.out.println("Gpos:"+gpos);
             String chromosomeNum = gpos.split("_")[0];
             String position = gpos.split("_")[1];
 
@@ -160,7 +160,7 @@ public class UtilAPI {
                 }
                 gp.setVariantAllele(mutation);
                 gpList.add(gp);
-                System.out.println(gp.toString());
+                //System.out.println(gp.toString());
             }
         }
 
@@ -178,16 +178,16 @@ public class UtilAPI {
                 int tmpl =  tmpArray[1].split(">")[0].length();
                 String gpos = tmpArray[0]+"_"+tmpArray[1].substring(2, tmpl-1);
                 List<Transcript_consequences> list = quote.getTranscript_consequences();
-                System.out.println(quote.getVariant() + "Size:" + list.size());
+                //System.out.println(quote.getVariant() + "Size:" + list.size());
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).getProtein_start() != 0) {
-                        System.out.println("((("+list.get(i));
+                        //System.out.println("((("+list.get(i));
                         String ensp = list.get(i).getProtein_id();
                         if (en2SeqHm.containsKey(ensp)) {
                             int seqId = en2SeqHm.get(ensp);
                             int protein_index = list.get(i).getProtein_start();
                             String mutation_NO = Integer.toString(seqId) + "_" + Integer.toString(protein_index);
-                            System.out.println("&&&"+ensp + "\t" + gpos + "\t" + mutation_NO);
+                            //System.out.println("&&&"+ensp + "\t" + gpos + "\t" + mutation_NO);
                             gpos2proHm.put(gpos, mutation_NO);
                         } else {
                             // log.info(ensp + " does not included in the
