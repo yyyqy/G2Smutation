@@ -39,7 +39,7 @@ public class GenomePosition {
     
     @Override
     public String toString(){
-    	return this.chromosome+"\t"+this.getStart()+"\t"+this.getReferenceAllele()+"\t"+this.getVariantAllele();
+    	return "This GenomePosition:"+"\t"+this.chromosome+"\t"+this.getStart()+"\t"+this.getReferenceAllele()+"\t"+this.getVariantAllele();
     }
     
     

@@ -408,7 +408,7 @@ public class FileOperatingUtil {
                 count++;
             }
             if (postFlag){//POST, post process
-                uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);
+                //uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);
             }
 
         } catch (Exception ex) {

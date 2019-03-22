@@ -160,7 +160,7 @@ public class UtilAPI {
                 }
                 gp.setVariantAllele(mutation);
                 gpList.add(gp);
-                System.out.println(gp.toString());
+                //System.out.println(gp.toString());
             }
         }
 
