@@ -3,16 +3,16 @@ package org.cbioportal.G2Smutation.util.models;
 /**
  * Model of All mutation record, aggregate of 5 types
  * 
- * @author wangjue
+ * @author Juexin Wang
  *
  */
 public class AllMutationRecord {
     private String chr_pos;
-    //chr_posstart
-    
-    private String annotation_type_id;
+    // chr_posstart
+
+    // private String annotation_type_id;
     // AnnotationType:ID; e.g.dbsnp:12345;clnvar:54321
-    
+
     // Inner seqId
     private int seqId;
 
@@ -35,14 +35,6 @@ public class AllMutationRecord {
 
     public void setChr_pos(String chr_pos) {
         this.chr_pos = chr_pos;
-    }
-
-    public String getAnnotation_type_id() {
-        return annotation_type_id;
-    }
-
-    public void setAnnotation_type_id(String annotation_type_id) {
-        this.annotation_type_id = annotation_type_id;
     }
 
     public int getSeqId() {
@@ -100,7 +92,5 @@ public class AllMutationRecord {
     public void setAlignmentId(int alignmentId) {
         this.alignmentId = alignmentId;
     }
-    
-    
 
 }

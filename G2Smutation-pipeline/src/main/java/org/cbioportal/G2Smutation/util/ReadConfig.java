@@ -39,6 +39,7 @@ public class ReadConfig {
     public static String sqlDeleteFile;
     public static String rsSqlInsertFile;
     public static String gposSqlInsertFile;
+    public static String gposAlignSqlInsertFile;
     public static String blastParaEvalue;
     public static String blastParaMaxTargetSeqs;
     public static String blastParaWordSize;
@@ -109,6 +110,7 @@ public class ReadConfig {
     public static String tcgaFile;
     public static String gnApiDbsnpInnerUrl;
     public static String gnApiDbsnpInnerGposUrl;
+    public static String gnApiAlignInnerGposUrl;
     public static String callThreadsNum;
     public static String saveSpaceTag;
 
@@ -159,6 +161,7 @@ public class ReadConfig {
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
             ReadConfig.rsSqlInsertFile = prop.getProperty("rs_sql_insert_file").trim();
             ReadConfig.gposSqlInsertFile = prop.getProperty("gpos_sql_insert_file").trim();
+            ReadConfig.gposAlignSqlInsertFile = prop.getProperty("gpos_align_sql_insert_file").trim();
             ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue").trim();
             ReadConfig.blastParaMaxTargetSeqs = prop.getProperty("blast_para_max_target_seqs").trim();
             ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size").trim();
@@ -231,6 +234,7 @@ public class ReadConfig {
             ReadConfig.tcgaFile = prop.getProperty("tcga.file").trim();
             ReadConfig.gnApiDbsnpInnerUrl = prop.getProperty("gn.api.dbsnp.inner.url").trim();
             ReadConfig.gnApiDbsnpInnerGposUrl = prop.getProperty("gn.api.dbsnp.inner.gpos.url").trim();
+            ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
@@ -996,6 +1000,23 @@ public class ReadConfig {
     public static void setCallPostSize(String callPostSize) {
         ReadConfig.callPostSize = callPostSize;
     }
+
+    public static String getGposAlignSqlInsertFile() {
+        return gposAlignSqlInsertFile;
+    }
+
+    public static void setGposAlignSqlInsertFile(String gposAlignSqlInsertFile) {
+        ReadConfig.gposAlignSqlInsertFile = gposAlignSqlInsertFile;
+    }
+
+    public static String getGnApiAlignInnerGposUrl() {
+        return gnApiAlignInnerGposUrl;
+    }
+
+    public static void setGnApiAlignInnerGposUrl(String gnApiAlignInnerGposUrl) {
+        ReadConfig.gnApiAlignInnerGposUrl = gnApiAlignInnerGposUrl;
+    }
+    
     
     
 
