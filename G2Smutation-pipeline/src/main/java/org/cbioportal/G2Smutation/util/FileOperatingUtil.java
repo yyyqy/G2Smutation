@@ -389,11 +389,16 @@ public class FileOperatingUtil {
 
                 if (postFlag) {// POST
                     gposList.add(gpos);
-                    if (count % callSize == 0) {
+                    if (count ==1){//test
+                    	uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);                    	
+                    }
+                    /*
+                    if (count % callSize == 0) {                    
                         uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);
                         gposList = new ArrayList<>();
                         log.info("Deal at " + count + "th pos;Size of gpos2proHm is " + gpos2proHm.size());
                     }
+                    */
                 } else {// GET method
                     uapi.callgpos2ensemblAPIGet(en2SeqHm, gpos2proHm, gpos);
                     if (count % 10000 == 0) {

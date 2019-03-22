@@ -37,6 +37,11 @@ public class GenomePosition {
         this.variantAllele = variantAllele;
     }
     
+    @Override
+    public String toString(){
+    	return this.chromosome+"\t"+this.getStart()+"\t"+this.getReferenceAllele()+"\t"+this.getVariantAllele();
+    }
+    
     
 
 }
