@@ -178,6 +178,7 @@ public class UtilAPI {
                 int tmpl =  tmpArray[1].split(">")[0].length();
                 String gpos = tmpArray[0]+"_"+tmpArray[1].substring(2, tmpl-2);
                 List<Transcript_consequences> list = quote.getTranscript_consequences();
+                System.out.println(quote.getVariant() + "Size:" + list.size());
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).getProtein_start() != 0) {
                         System.out.println("((("+list.get(i));
