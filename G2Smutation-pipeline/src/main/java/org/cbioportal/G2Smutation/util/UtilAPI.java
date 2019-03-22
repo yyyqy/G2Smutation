@@ -143,7 +143,7 @@ public class UtilAPI {
         List<GenomePosition> gpList = new ArrayList<>();
 
         for (String gpos : gposList) {
-
+        	System.out.println("Gpos:"+gpos);
             String chromosomeNum = gpos.split("_")[0];
             String position = gpos.split("_")[1];
 
