@@ -566,10 +566,10 @@ public class PdbScriptsPipelineRunCommand {
         
         //Concurrent version
         //HashMap<String,String> gpos2proHm = fou.convertgpso2proHmMT(inputHm);
-        
+        /*
         this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
         System.out.println("gpos to protein Count:"+allSqlCount);
-        
+        */
         
         /*
         for (int i = 0; i <= this.allSqlCount; i++) {
@@ -579,6 +579,7 @@ public class PdbScriptsPipelineRunCommand {
         }
         */
         
+        /*
         // Step 13:
         log.info("********************[STEP 13]********************");
         log.info("[SQL] Import All INSERT SQL statements into the database (Warning: This step takes time)");
@@ -589,6 +590,7 @@ public class PdbScriptsPipelineRunCommand {
         
         //Another old implementation: Use Hashmap to reduce cost, over 12million SNP to call, too long
         this.allSqlCount = generateSQLfile.generateAllMappingSQLfile(inputHm);
+        */
 
         
         // Step 14:

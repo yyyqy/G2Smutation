@@ -139,7 +139,7 @@ public class UtilAPI {
     public void callgpos2ensemblAPIPost(HashMap<String, Integer> en2SeqHm, HashMap<String, String> gpos2proHm,
             List<String> gposList) throws Exception {
 
-        String url = ReadConfig.getGnApiDbsnpInnerGposUrl();
+        String url = ReadConfig.getGnApiGnPostUrl();
         List<GenomePosition> gpList = new ArrayList<>();
 
         for (String gpos : gposList) {
