@@ -389,7 +389,7 @@ public class FileOperatingUtil {
 
                 if (postFlag) {// POST
                     gposList.add(gpos);
-                    if (count ==1){//test
+                    if (count <=2){//test
                     	uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);                    	
                     }
                     /*
