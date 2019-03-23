@@ -279,10 +279,11 @@ public class PdbScriptsPipelineApiToSQL {
         int count = 0;
         for (String gpos : gpos2proHm.keySet()) {
             HashSet<String> tmpSet = gpos2proHm.get(gpos);
-            if (count % 10000 == 0) {
-                log.info("Now start working on " + count + "th SNP");
-            }
+            
             for (String mutation_NO : tmpSet) {
+                if (count % 10000 == 0) {
+                    log.info("Now start working on " + count + "th SNP");
+                }
 
                 String seqId = mutation_NO.split("_")[0];
                 String pos = mutation_NO.split("_")[1];
@@ -307,7 +308,7 @@ public class PdbScriptsPipelineApiToSQL {
                     }
                     log.info("Finished generating the " + fileCount + "th SQL file");
                     fileCount++;
-                    allsqlfilepwd = ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + fileCount;
+                    allsqlfilepwd = ReadConfig.workspace + ReadConfig.gposAlignSqlInsertFile + "." + fileCount;
                     rssqlfile = new File(allsqlfilepwd);
                     outputLines = new ArrayList<String>();
                     outputLines.add("SET autocommit = 0;");
@@ -320,19 +321,19 @@ public class PdbScriptsPipelineApiToSQL {
                     tempLines = callGposUrl(url, tempLines, gpos, mutation_NO);
                     outputLines.addAll(tempLines);
                 }
+                count++;
             }
-            count++;
-        }
-        log.info("Total mapping SNP is:" + count);
+        }       
         outputLines.add("commit;");
         try {
             FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
         } catch (IOException e) {
             log.info("input " + allsqlfilepwd + " failed");
         }
+        log.info("Total mapping protein_index from SNP is:" + count);
         log.info("Finished generating the " + fileCount + "th SQL file");
         log.info("Insert allmapping sql successful!");
-        return fileCount;
+        return fileCount+1;
     }
 
     /**
@@ -544,10 +545,10 @@ public class PdbScriptsPipelineApiToSQL {
         } catch (IOException e) {
             log.info("input " + allsqlfilepwd + " failed");
         }
-        log.info("Total mapping SNP is:" + count);
         log.info("Finished generating the " + fileCount + "th SQL file");
+        log.info("Total mapping SNP is:" + count);
         log.info("Insert allmapping sql successful!");
-        return fileCount;
+        return fileCount+1;
     }
     
     /**
@@ -609,10 +610,10 @@ public class PdbScriptsPipelineApiToSQL {
         } catch (IOException e) {
             log.info("input " + allsqlfilepwd + " failed");
         }
-        log.info("Total mapping SNP to protein is:" + count);
         log.info("Finished generating the " + fileCount + "th SQL file");
+        log.info("Total mapping SNP to protein is:" + count);
         log.info("Insert allmapping sql successful!");
-        return fileCount;
+        return fileCount+1;
     }
     
     

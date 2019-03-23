@@ -515,7 +515,7 @@ public class PdbScriptsPipelineRunCommand {
         
         PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
         
-        //Old implementation: 10days of mapping all dbSNP in millions of SNP
+        //Old implementation: 10days of mapping all dbSNP in millions of SNP, not use anymore
         //this.rsSqlCount = generateSQLfile.generateRsSQLfile();
         
         //Add multiple threads on all rs mapping
@@ -536,7 +536,7 @@ public class PdbScriptsPipelineRunCommand {
         
         
         //Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
-        log.info("********************[STEP 13]********************");
+        log.info("********************[STEP 131]********************");
         log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
         FileOperatingUtil fou = new FileOperatingUtil();
         HashMap<String,String> inputHm = new HashMap<String,String>();
@@ -545,56 +545,55 @@ public class PdbScriptsPipelineRunCommand {
             inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
         }                
                 
-        //this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
-        //System.out.println("allSql Mapping Count:"+allSqlCount);                
+        this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
+        System.out.println("allSql Mapping Count:"+allSqlCount);                
                 
-        /*
-        for (int i = 0; i <= this.allSqlCount; i++) {
+        
+        for (int i = 0; i <this.allSqlCount; i++) {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
         }
-        */
         
-        log.info("********************[STEP 13]********************");
+        
+        log.info("********************[STEP 132]********************");
         log.info("[SQL] Generate and import into the table gpos_protein_entry");
         //true for POST, false for GET, POST is better
-        HashMap<String,HashSet<String>> gpos2proHm = fou.convertgpso2proHm(inputHm,true);        
+        //HashMap<String,HashSet<String>> gpos2proHm = fou.convertgpso2proHm(inputHm,true);        
         
-        //Concurrent version,does not need it anymore, may be
-        //HashMap<String,HashSet<String>> gpos2proHm = fou.convertgpso2proHmMT(inputHm);       
+        //Concurrent version, use POST
+        HashMap<String,HashSet<String>> gpos2proHm = fou.convertgpso2proHmMT(inputHm, true);       
         
         this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
         System.out.println("gpos to protein Count:"+allSqlCount);        
         
-        /*
-        for (int i = 0; i <= this.allSqlCount; i++) {
+        
+        for (int i = 0; i < this.allSqlCount; i++) {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.gposSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
         }
-        */
-        
+
         
         // Step 13:
-        log.info("********************[STEP 13]********************");
+        log.info("********************[STEP 133]********************");
         log.info("[SQL] Import All Mapping INSERT SQL statements into table gpos_allmapping_pdb_entry (Warning: This step takes time)");
         
         //call 12million SNP through inner API, too long
         this.allSqlCount = generateSQLfile.generateAllMappingSQLfileHuge(gpos2proHm);
+        log.info("FileCount"+this.allSqlCount);
         
         //this.allSqlCount =12;
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.updateAllSnpSql);
         cu.runCommand("mysql", paralist);
         
-        /*
-        for (int i = 0; i <= this.allSqlCount; i++) {
+        
+        for (int i = 0; i < this.allSqlCount; i++) {
             paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace + ReadConfig.gposAlignSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
         }
-        */
         
         // Step 14:
         log.info("********************[STEP 14]********************");

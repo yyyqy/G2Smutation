@@ -440,29 +440,43 @@ public class FileOperatingUtil {
      * 
      * @param inputHm
      *            <chr_pos, DBSNP:123;CLINVAR:321;...>
+     * @param postFlag true for POST, false for GET
      * @return gpos2proHm <chr_pos,seqId_startindex>
      */
-    public HashMap<String, HashSet<String>> convertgpso2proHmMT(HashMap<String, String> inputHm) {
+    public HashMap<String, HashSet<String>> convertgpso2proHmMT(HashMap<String, String> inputHm, boolean postFlag) {
         ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(ReadConfig.callThreadsNum));
 
         HashMap<String, HashSet<String>> gpos2proHm = new HashMap<>();// <chr_pos,seqId_startindex>
         // Read <ensemblName,seqId> in en2SeqHm
         HashMap<String, Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
-
+        List<String> gposList = new ArrayList<>();
+        int callSize = Integer.parseInt(ReadConfig.callPostSize);
         int count = 0;
         log.info("Total locations: " + inputHm.size());
         try {
             for (String gpos : inputHm.keySet()) {
-                try {
-                    Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gpos);
+                
+                if (postFlag) {// POST
+                    gposList.add(gpos);
+                    /*
+                     * if (count ==10){//test
+                     * uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm,
+                     * gposList); }
+                     */
+                    if (count % callSize == 0) {
+                        Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gposList, true, count);
+                        executor.execute(worker);
+                        
+                        gposList = new ArrayList<>();
+                        //log.info("Deal at " + count + "th pos;Size of gpos2proHm is " + gpos2proHm.size());
+                    }
+
+                } else {// GET method
+                    Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gpos, false, count);
                     executor.execute(worker);
-                } catch (HttpClientErrorException ex) {
-                    ex.printStackTrace();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                if (count % 10000 == 0) {
-                    log.info("Deal at " + count + "pos");
+                    //if (count % 1000 == 0) {
+                    //    log.info("Deal at " + count + "pos");
+                    //}
                 }
                 count++;
             }
@@ -484,22 +498,42 @@ public class FileOperatingUtil {
      * @author juexinwang
      *
      */
-    public static class CallAPIRunnable implements Runnable {
+    public class CallAPIRunnable implements Runnable {
         private HashMap<String, Integer> en2SeqHm;
         private HashMap<String, HashSet<String>> gpos2proHm;
-        private final String gpos;
+        private String gpos;
+        private List<String> gposList;
+        private boolean postFlag;
+        private int jobStart;
 
-        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm, String gpos) {
+        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm, String gpos, boolean postFlag, int jobStart) {
             this.en2SeqHm = en2SeqHm;
             this.gpos2proHm = gpos2proHm;
             this.gpos = gpos;
+            this.postFlag = false;//use GET
+            this.jobStart = jobStart; 
+        }
+        
+        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm, List<String> gposList, boolean postFlag, int jobStart) {
+            this.en2SeqHm = en2SeqHm;
+            this.gpos2proHm = gpos2proHm;
+            this.gposList = gposList;
+            this.postFlag = true;//use POST
+            this.jobStart = jobStart; 
         }
 
         @Override
         public void run() {
             try {
+                log.info("Job start at " + jobStart);
                 UtilAPI uapi = new UtilAPI();
-                uapi.callgpos2ensemblAPIGet(en2SeqHm, gpos2proHm, gpos);
+                if(this.postFlag){//POST
+                    uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);
+                }else{ //GET
+                    uapi.callgpos2ensemblAPIGet(en2SeqHm, gpos2proHm, gpos);
+                }
+                log.info("Job finished at " + jobStart);
+                
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
