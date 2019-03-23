@@ -545,8 +545,8 @@ public class PdbScriptsPipelineRunCommand {
             inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
         }                
                 
-        this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
-        System.out.println("allSql Mapping Count:"+allSqlCount);                
+        //this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
+        //System.out.println("allSql Mapping Count:"+allSqlCount);                
                 
         /*
         for (int i = 0; i <= this.allSqlCount; i++) {
