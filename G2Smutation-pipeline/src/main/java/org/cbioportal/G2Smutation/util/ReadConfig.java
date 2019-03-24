@@ -24,6 +24,9 @@ public class ReadConfig {
     public static String workspace;
     public static String resourceDir;
     public static String tmpdir;
+    public static String initChoice;
+    public static String initTrembl;
+    public static String initConcurrent;
     public static String pdbRepo;
     public static String pdbSegMinLengthMulti;
     public static String pdbSegMinLengthSingle;
@@ -146,6 +149,9 @@ public class ReadConfig {
             ReadConfig.workspace = prop.getProperty("workspace").trim();
             ReadConfig.resourceDir = prop.getProperty("resource_dir").trim();
             ReadConfig.tmpdir = prop.getProperty("tmpdir").trim();
+            ReadConfig.initChoice = prop.getProperty("init.choice").trim();
+            ReadConfig.initTrembl = prop.getProperty("init.trembl").trim();
+            ReadConfig.initConcurrent = prop.getProperty("init.concurrent").trim();
             ReadConfig.pdbRepo = prop.getProperty("pdbRepo").trim();
             ReadConfig.pdbSegMinLengthMulti = prop.getProperty("pdb.seg.minLength.multi").trim();
             ReadConfig.pdbSegMinLengthSingle = prop.getProperty("pdb.seg.minLength.single").trim();
@@ -253,8 +259,34 @@ public class ReadConfig {
         }
         return rcObj;
     }
+    
+    
 
-    public static String getGnApiDbsnpInnerGposUrl() {
+    public static String getInitChoice() {
+		return initChoice;
+	}
+
+	public static void setInitChoice(String initChoice) {
+		ReadConfig.initChoice = initChoice;
+	}
+
+	public static String getInitTrembl() {
+		return initTrembl;
+	}
+
+	public static void setInitTrembl(String initTrembl) {
+		ReadConfig.initTrembl = initTrembl;
+	}
+
+	public static String getInitConcurrent() {
+		return initConcurrent;
+	}
+
+	public static void setInitConcurrent(String initConcurrent) {
+		ReadConfig.initConcurrent = initConcurrent;
+	}
+
+	public static String getGnApiDbsnpInnerGposUrl() {
         return gnApiDbsnpInnerGposUrl;
     }
 
