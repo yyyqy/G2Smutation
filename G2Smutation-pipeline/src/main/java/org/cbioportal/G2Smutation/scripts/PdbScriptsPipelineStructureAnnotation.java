@@ -1,18 +1,31 @@
 package org.cbioportal.G2Smutation.scripts;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.util.CommandProcessUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
+import org.cbioportal.G2Smutation.util.models.StructureAnnotationRecord;
+import org.cbioportal.G2Smutation.util.models.api.Mappings;
+import org.cbioportal.G2Smutation.util.models.api.QuoteCoor;
+import org.json.JSONObject;
+import org.springframework.http.ResponseEntity;
+
+import org.json.JSONArray;
+
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.io.PDBFileReader;
@@ -126,25 +139,86 @@ public class PdbScriptsPipelineStructureAnnotation {
         }
     }
     
-    public void getHETFromPdbFile(String filename) {
-		try {
-			PDBFileReader reader = new PDBFileReader();
-			Structure struc = reader.getStructure(ReadConfig.workspace + filename);
-			List<Group> hetGroup = new ArrayList<Group>();
-			hetGroup.addAll(struc.getHetGroups());
-			
-				log.info(hetGroup.get(4));
-				log.info(hetGroup.get(4).getPDBName());
-				//log.info(hetGroup.get(5));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-    
-    public double getDistance(float x1, float y1, float z1, float x2, float y2, float z2) {
-    	double dis=0;
-    	dis = Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2));
-    	return dis;
+    public void getDomainsUrl(String pdbId, String pdbChain, String pdbResidueIndex) throws Exception {  	
+    	String StUrlName = ReadConfig.getStructureDomainsUrl() + pdbId;
+    	URL stUrl = new URL(StUrlName);
+    	int residueIndex = Integer.parseInt(pdbResidueIndex);
+    	String s;
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(stUrl.openStream()));
+    	if ((s = reader.readLine()) != null) {
+            JSONObject jso = new JSONObject(s);
+            JSONObject name = jso.getJSONObject(pdbId);
+            JSONObject cath = name.getJSONObject("CATH");
+            Iterator caIt = cath.keySet().iterator();
+            while(caIt.hasNext()) {
+            	String caId = caIt.next().toString();
+            	// log.info(caId);
+            	JSONObject caOb = cath.getJSONObject(caId);
+            	String caName = caOb.getString("name");
+            	String caArchitecture = caOb.getString("architecture");
+            	String caIdent = caOb.getString("identifier");
+            	String caClass = caOb.getString("class");
+            	String caHomology = caOb.getString("homology");
+            	String caTopology = caOb.getString("topology");
+            	//log.info(caName+caArchitecture+caIdent+caClass+caHomology+caTopology);
+            	JSONArray caMaps = caOb.getJSONArray("mappings");
+            	for(int i = 0; i < caMaps.length(); i++) {
+            		JSONObject caMapInfo = caMaps.getJSONObject(i);
+            		String caChain = caMapInfo.getString("chain_id");
+            		String caDomianId = caMapInfo.getString("domain");
+            		if(!pdbChain.equals(caChain))
+            			continue;
+            		JSONObject caStartOb = caMapInfo.getJSONObject("start");
+            		int caStart = caStartOb.getInt("residue_number");
+            		if(residueIndex < caStart)
+            			continue;
+            		JSONObject caEndOb = caMapInfo.getJSONObject("end");
+            		int caEnd = caEndOb.getInt("residue_number");
+            		if(residueIndex > caEnd)
+            			continue;
+            		else {
+            			
+            		}
+            	}
+            }
+            JSONObject scop = name.getJSONObject("SCOP");
+            Iterator scIt = scop.keySet().iterator();
+            while(scIt.hasNext()) {
+            	String scId = scIt.next().toString();
+            	log.info(scId);
+            	JSONObject scOb = scop.getJSONObject(scId);
+            	String scDes = scOb.getString("description");
+            	String scSccs = scOb.getString("sccs");
+            	String scIdent = scOb.getString("identifier");
+            	JSONObject scClass = scOb.getJSONObject("class");
+            	int scClassSunid = scClass.getInt("sunid");
+            	String scClassDes = scClass.getString("description");
+            	JSONObject scFold = scOb.getJSONObject("fold");
+            	int scFoldSunid = scFold.getInt("sunid");
+            	String scFoldDes = scFold.getString("description");
+            	JSONObject scSF = scOb.getJSONObject("superfamily");
+            	int scSFSunid = scSF.getInt("sunid");
+            	String scSFDes = scSF.getString("description");
+            	log.info(scDes+scSccs+scIdent+scClassSunid+scClassDes+scFoldSunid+scFoldDes+scSFSunid+scSFDes);
+            	JSONArray scMaps = scOb.getJSONArray("mappings");
+            	for(int i = 0; i < scMaps.length(); i++) {
+            		JSONObject scMapInfo = scMaps.getJSONObject(i);
+            		String scChain = scMapInfo.getString("chain_id");
+            		if(!scChain.equals(scChain))
+            			continue;
+            		JSONObject scStartOb = scMapInfo.getJSONObject("start");
+            		int scStart = scStartOb.getInt("residue_number");
+            		if(residueIndex < scStart)
+            			continue;
+            		JSONObject scEndOb = scMapInfo.getJSONObject("end");
+            		int scEnd = scEndOb.getInt("residue_number");
+            		if(residueIndex > scEnd)
+            			continue;
+            		else {
+            			
+            		}
+            	}
+            }
+    	}
     }
-    
 }

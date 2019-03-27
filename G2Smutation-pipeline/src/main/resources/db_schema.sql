@@ -8,10 +8,13 @@ drop table IF EXISTS ensembl_entry;
 drop table IF EXISTS pdb_entry;
 drop table IF EXISTS seq_entry;
 drop table IF EXISTS mutation_entry;
-drop table IF EXISTS rs_mutation_entry;
+drop table IF EXISTS gpos_allmapping_entry;
+drop table IF EXISTS gpos_protein_entry;
+drop table IF EXISTS gpos_allmapping_pdb_entry;
 drop table IF EXISTS mutation_usage_table;
 drop table IF EXISTS mutation_location_entry;
 drop table IF EXISTS structure_annotation_entry;
+drop table IF EXISTS dbsnp_entry;
 drop table IF EXISTS clinvar_entry;
 drop table IF EXISTS cosmic_entry;
 drop table IF EXISTS genie_entry;
@@ -93,23 +96,6 @@ CREATE TABLE `mutation_entry` (
   FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
 );
 
-CREATE TABLE `rs_mutation_entry` (
-  `ID` int NOT NULL AUTO_INCREMENT,
-  `RS_SNP_ID` int(255) NOT NULL,
-  `SEQ_ID` int(255) NOT NULL,
-  `SEQ_INDEX` int NOT NULL,
-  `SEQ_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `PDB_NO` VARCHAR(12) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `PDB_INDEX` int NOT NULL,
-  `PDB_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `ALIGNMENT_ID` int NOT NULL,
-  PRIMARY KEY(`ID`),
-  KEY(`RS_SNP_ID`,`SEQ_ID`,`PDB_NO`,`ALIGNMENT_ID`),
-  FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`),
-  FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
-  FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
-);
-
 CREATE TABLE `mutation_usage_table` (
   `MUTATION_ID` int NOT NULL AUTO_INCREMENT,
   `MUTATION_NO` VARCHAR(50) NOT NULL,
@@ -131,28 +117,18 @@ CREATE TABLE `mutation_usage_table` (
 
 CREATE TABLE `mutation_location_entry` (
   `MUTATION_ID` int,
-  `MUTATION_NO` VARCHAR(50) NOT NULL,
-  `SEQ_ID` int(255) NOT NULL,
-  `SEQ_NAME` text,
-  `SEQ_INDEX` int NOT NULL,
-  `SEQ_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, --CHR_POSSTART_POSEND
+  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART_POSEND
   `CHR` VARCHAR(2) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, 
   `POS_START` int(255) NOT NULL,
   `POS_END` int(255),
-  `REF` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
-  `ALT` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
-  `WIDETYPE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `MUTATED` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   PRIMARY KEY(`MUTATION_ID`),
-  KEY(`MUTATION_NO`,`CHR_POS`,`SEQ_ID`,`CHR_POS`),
-  FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`)
+  KEY(`CHR_POS`)
 );
 
 -- Annotation
 CREATE TABLE `structure_annotation_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
-  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, --CHR_POSSTART_POSEND
+  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART_POSEND
   `MUTATION_ID` int,
   `PDB_NO` VARCHAR(12) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `PDB_INDEX` int NOT NULL,
@@ -176,15 +152,72 @@ CREATE TABLE `structure_annotation_entry` (
   `CHIRALITY` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
   `BETA_BRIDGE_LABELA` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
   `BETA_BRIDGE_LABELB` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
-  `BPA` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
-  `BPB` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
+  `BPA` int,
+  `BPB` int,
   `BETA_SHEET_LABEL` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
-  `ACC` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin,
+  `ACC` int,
   `LIGAND_BINDING_PROTEIN` int, -- From HET, LPC, 1 for true, 0 for false 
   `LIGAND_BINDING_DIRECT` int, -- Direct binding, 1 for true, 0 for false 
-  `LIGAND_NAME` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin  
+  `LIGAND_NAME` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin, 
+  `INTERPRO_ID` VARCHAR(9) CHARACTER SET utf8 COLLATE utf8_bin,
+  `INTERPRO_NAME` TEXT,
+  `INTERPRO_IDENTIFIER` TEXT,
+  `INTERPRO_START` int,
+  `INTERPRO_END` int,
+  `PFAM_ID` VARCHAR(7) CHARACTER SET utf8 COLLATE utf8_bin,
+  `PFAM_NAME` TEXT,
+  `PFAM_DESCRIPTION` TEXT,
+  `PFAM_IDENTIFIER` TEXT,
+  `PFAM_START` int,
+  `PFAM_END` int,
+  `CATH_ID` VARCHAR(16) CHARACTER SET utf8 COLLATE utf8_bin,
+  `CATH_ARCHITECTURE` TEXT,
+  `CATH_CLASS` TEXT,
+  `CATH_HOMOLOGY` TEXT,
+  `CATH_IDENTIFIER` TEXT,
+  `CATH_NAME` TEXT,
+  `CATH_TOPOLOGY` TEXT,
+  `CATH_DOMAIN_ID` TEXT,
+  `CATH_DOMAIN_START` int, 
+  `CATH_DOMAIN_END` int,
+  `SCOP_ID` int,
+  `SCOP_DESCRIPTION` TEXT, 
+  `SCOP_IDENTIFIER` TEXT, 
+  `SCOP_SCCS` VARCHAR(16) CHARACTER SET utf8 COLLATE utf8_bin, 
+  `SCOP_CLASS_SUNID` int,
+  `SCOP_CLASS_DESCRIPTION` TEXT, 
+  `SCOP_FOLD_SUNID` int,
+  `SCOP_FOLD_DESCRIPTION` TEXT,
+  `SCOP_SUPERFAMILY_SUNID` int,
+  `SCOP_SUPERFAMILY_DESCRIPTION` TEXT,
+  `SCOP_START` int,
+  `SCOP_END` int,
   PRIMARY KEY(`ID`),
   KEY(`CHR_POS`,`MUTATION_ID`)
+);
+
+CREATE TABLE `gpos_allmapping_entry` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
+  `DBSNP_ID` VARCHAR(50) default '',
+  `CLINVAR_ID` VARCHAR(50) default '',
+  `COSMIC_ID` VARCHAR(50) default '',
+  `GENIE_ID` VARCHAR(50) default '',
+  `TCGA_ID` VARCHAR(50) default '',
+  PRIMARY KEY(`ID`),
+  KEY(`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)
+);
+
+
+CREATE TABLE `gpos_protein_entry` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
+  `MUTATION_NO` VARCHAR(50) NOT NULL, -- same as MUTATION_NO in table mutation_usage_table: SEQID_INDEX
+  `SEQ_ID` int NOT NULL,
+  `SEQ_INDEX` int NOT NULL,
+  PRIMARY KEY(`ID`),
+  KEY(`CHR_POS`,`MUTATION_NO`,`SEQ_ID`),
+  FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`) 
 );
 
 CREATE TABLE `update_record` (
@@ -195,4 +228,3 @@ CREATE TABLE `update_record` (
   `ALIGNMENT_NUM` int(255),
   PRIMARY KEY(`ID`)
 );
-

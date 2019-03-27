@@ -1,7 +1,10 @@
 package org.cbioportal.G2Smutation.scripts;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +36,11 @@ import org.cbioportal.G2Smutation.util.blast.IterationHits;
 import org.cbioportal.G2Smutation.util.models.MutationRecord;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
 import org.cbioportal.G2Smutation.util.models.StructureAnnotationRecord;
+import org.cbioportal.G2Smutation.util.models.api.Mappings;
+import org.cbioportal.G2Smutation.util.models.api.QuoteCoor;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * SQL Insert statements Generation
@@ -1555,17 +1563,17 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            int testcount = 0;
+            int testcount = 0; //test
             for(int mutationId : mutationIdHm.keySet()) {
-            	testcount++;
-            	if(testcount>10) {
-            		break;
-            	}
+            	testcount++; //test
+            	if(testcount>10) { //test
+            		break; //test
+            	} //test
             	sar.setChrPos(mutationIdHm.get(mutationId));
             	sar.setMutationId(mutationId);
             	sar.setPdbNo(residueHm.get(mutationId));
             	sar.setPdbResidueIndex(Integer.parseInt(residueHm.get(mutationId).split("_")[2]));    
-            	log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
+            	//log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
             	strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],residueHm.get(mutationId).split("_")[1],residueHm.get(mutationId).split("_")[2]);
             	sar.setBuried(Integer.parseInt(strNaccess.substring(86,87)));
             	sar.setAllAtomsABS(Float.parseFloat(strNaccess.substring(16,22)));
@@ -1593,6 +1601,7 @@ public class PdbScriptsPipelineMakeSQL {
             	sar.setBetaSheetLabel(strDSSP.charAt(33));
             	sar.setAcc(stringToInt(strDSSP.substring(35,38)));
             	getHETInfo(sar,residueHm.get(mutationId).split("_")[0],residueHm.get(mutationId).split("_")[1],residueHm.get(mutationId).split("_")[2]);
+            	getDomainsUrl(sar,residueHm.get(mutationId).split("_")[0],residueHm.get(mutationId).split("_")[1],residueHm.get(mutationId).split("_")[2]);
             	outputlist.add(makeTable_structureAnnotation_insert(sar));
             }         
             outputlist.add("commit;");
@@ -1608,7 +1617,13 @@ public class PdbScriptsPipelineMakeSQL {
     			+ "`BURIED`,`ALL_ATOMS_ABS`,`ALL_ATOMS_REL`,`TOTAL_SIDE_ABS`,`TOTAL_SIDE_REL`,`MAIN_CHAIN_ABS`,`MAIN_CHAIN_REL`,"
     			+ "`NON_POLAR_ABS`,`NON_POLAR_REL`,`ALL_POLAR_ABS`,`ALL_POLAR_REL`,`SEC_STRUCTURE`,`THREE_TURN_HELIX`,"
     			+ "`FOUR_TURN_HELIX`,`FIVE_TURN_HELIX`,`GEOMETRICAL_BEND`,`CHIRALITY`,`BETA_BRIDGE_LABELA`,`BETA_BRIDGE_LABELB`,"
-    			+ "`BPA`,`BPB`,`BETA_SHEET_LABEL`,`ACC`,`LIGAND_BINDING_PROTEIN`,`LIGAND_BINDING_DIRECT`,`LIGAND_NAME`)VALUES ('"
+    			+ "`BPA`,`BPB`,`BETA_SHEET_LABEL`,`ACC`,`LIGAND_BINDING_PROTEIN`,`LIGAND_BINDING_DIRECT`,`LIGAND_NAME`,`INTERPRO_ID`,"
+    			+ "`INTERPRO_NAME`,`INTERPRO_IDENTIFIER`,`INTERPRO_START`,`INTERPRO_END`,`PFAM_ID`,`PFAM_NAME`,"
+    			+ "`PFAM_DESCRIPTION`,`PFAM_IDENTIFIER`,`PFAM_START`,`PFAM_END`,`CATH_ID`,`CATH_ARCHITECTURE`,`CATH_CLASS`,"
+    			+ "`CATH_HOMOLOGY`,`CATH_IDENTIFIER`,`CATH_NAME`,`CATH_TOPOLOGY`,`CATH_DOMAIN_ID`,`CATH_DOMAIN_START`,"
+    			+ "`CATH_DOMAIN_END`,`SCOP_ID`,`SCOP_DESCRIPTION`,`SCOP_IDENTIFIER`,`SCOP_SCCS`,`SCOP_CLASS_SUNID`,"
+    			+ "`SCOP_CLASS_DESCRIPTION`,`SCOP_FOLD_SUNID`,`SCOP_FOLD_DESCRIPTION`,`SCOP_SUPERFAMILY_SUNID`,"
+    			+ "`SCOP_SUPERFAMILY_DESCRIPTION`,`SCOP_START`,`SCOP_END`)VALUES ('"
     			+ sar.getChrPos() + "'," + sar.getMutationId() + ",'" + sar.getPdbNo() + "'," + sar.getPdbResidueIndex() + ",'"
     			+ sar.getPdbResidueName() + "'," + sar.getBuried() + "," + sar.getAllAtomsABS() + "," +sar.getAllAtomsREL() + ","
     			+ sar.getTotalSideABS() + "," + sar.getTotalSideREL() + "," + sar.getMainChainABS() + "," +sar.getMainChainREL() + ","
@@ -1617,7 +1632,18 @@ public class PdbScriptsPipelineMakeSQL {
     			+ sar.getFiveTurnHelix() + "','" + sar.getGeometricalBend() + "','" + sar.getChirality() + "','"
     			+ sar.getBetaBridgeLabela() + "','" + sar.getBetaBridgeLabelb() + "','" + sar.getBpa() + "','"
     			+ sar.getBpb() + "','" + sar.getBetaSheetLabel() + "','" + sar.getAcc() + "'," + sar.getLigandBindingProtein() + ","
-    			+ sar.getLigandBindingdirect() + ",'" + sar.getLigandName() + "');\n";
+    			+ sar.getLigandBindingdirect() + ",'" + sar.getLigandName() + "','" + sar.getInterproId() + "','" 
+    			+ sar.getInterproName() + "','" + sar.getInterproIdentifier() + "','" + sar.getInterproStart() + "','"
+    			+ sar.getInterproEnd() + "','" + sar.getPfamId() + "','" + sar.getPfamName() + "','"
+    			+ sar.getPfamDescription() + "','" + sar.getPfamIdentifier() + "','" + sar.getPfamStart() + "',"
+    			+ sar.getPfamEnd() + "','" + sar.getCathId() + "','" + sar.getCathArchitecture() + "','"
+    			+ sar.getCathClass() + "','" + sar.getCathHomology() + "','" + sar.getCathIdentifier() + "','"
+    			+ sar.getCathName() + "','" + sar.getCathTopology() + "','" + sar.getCathDomainId() + "','"
+    			+ sar.getCathDomainStart() + "','" + sar.getCathDomainEnd() + "','" + sar.getScopId() + "','"
+    			+ sar.getScopDescription() + "','" + sar.getScopIdentifier() + "','" + sar.getScopSccs() + "','"
+    			+ sar.getScopClassSunid() + "','" + sar.getScopClassDescription() + "','" + sar.getScopFoldSunid() + "','"
+    			+ sar.getScopFoldDescription() + "','" + sar.getScopSuperfamilySunid() + "','" + sar.getScopFoldDescription() + "','"
+    			+ sar.getScopStart() + "','" + sar.getScopEnd() + "');\n";
 		return str;
     }
     
@@ -1630,7 +1656,7 @@ public class PdbScriptsPipelineMakeSQL {
 			int i = 0;
 			int index = Integer.parseInt(pdbResidueIndex);
 			int flag = 0;
-			log.info(index);
+			//log.info(index);
 			for(;i<lines.size();i++) {
 				if(lines.get(i).substring(2, 3).equals("#")) {
 					flag = 1;
@@ -1648,7 +1674,7 @@ public class PdbScriptsPipelineMakeSQL {
 				}
 			}
 			str = lines.get(i);
-			log.info(str);
+			//log.info(str);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1839,6 +1865,363 @@ public class PdbScriptsPipelineMakeSQL {
     			break;
     	}
 		return rl;	
+    }
+    
+    public void getDomainsUrl(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) throws Exception {  
+    	// get pfam and interpro info from sequence_domains
+    	String seUrlName = ReadConfig.getSequenceDomainsUrl() + pdbId;
+    	URL seUrl = new URL(seUrlName);
+    	int residueIndex = Integer.parseInt(pdbResidueIndex);
+    	String pfamIds = "";
+    	String pfamNames = "";
+    	String pfamDescriptions = "";
+    	String pfamIdentifiers = "";
+    	String pfamStarts = "";
+    	String pfamEnds = "";
+    	String s1;
+    	BufferedReader reader1 = new BufferedReader(new InputStreamReader(seUrl.openStream()));
+    	if ((s1 = reader1.readLine()) != null) {
+            JSONObject jso = new JSONObject(s1);
+            JSONObject name = jso.getJSONObject(pdbId);
+            JSONObject pfam = name.getJSONObject("Pfam");
+            Iterator pfIt = pfam.keySet().iterator();
+            int pfFlag = 0;
+            while(pfIt.hasNext()) {
+            	int pfMapFlag = 0;
+            	String pfId = pfIt.next().toString();
+            	JSONObject pfOb = pfam.getJSONObject(pfId);
+            	String pfName = pfOb.getString("name");
+            	String pfDes = pfOb.getString("description");
+            	String pfIdent = pfOb.getString("identifier");
+            	JSONArray pfMaps = pfOb.getJSONArray("mappings");
+            	String pfStartsTemp = "";
+            	String pfEndsTemp = "";
+            	for(int i = 0; i < pfMaps.length(); i++) {
+            		JSONObject pfMapInfo = pfMaps.getJSONObject(i);
+            		String pfChain = pfMapInfo.getString("chain_id");
+            		if(!pdbChain.equals(pfChain))
+            			continue;
+            		JSONObject pfStartOb = pfMapInfo.getJSONObject("start");
+            		int pfStart = pfStartOb.getInt("residue_number");
+            		if(residueIndex < pfStart)
+            			continue;
+            		JSONObject pfEndOb = pfMapInfo.getJSONObject("end");
+            		int pfEnd = pfEndOb.getInt("residue_number");
+            		if(residueIndex > pfEnd)
+            			continue;
+            		else {
+            			if(pfMapFlag == 0) {
+            				pfStartsTemp = pfStartsTemp + String.valueOf(pfStart);
+            				pfamEnds = pfamEnds + String.valueOf(pfEnd);
+            				pfMapFlag = 1;
+            			}
+            			else {
+            				pfStartsTemp = pfStartsTemp + "," + String.valueOf(pfStart);
+            				pfEndsTemp = pfEndsTemp + "," + String.valueOf(pfEnd);
+            			}
+            		}
+            	}
+            	if(pfMapFlag == 1) {
+            		if(pfFlag == 0) {
+            			pfamStarts = pfamStarts + pfStartsTemp;
+            			pfamEnds = pfamEnds + pfEndsTemp;
+            			pfamIds = pfamIds + pfId;
+            			pfamNames = pfamNames + pfName;
+            			pfamDescriptions = pfamDescriptions + pfDes;
+            			pfamIdentifiers = pfamIdentifiers + pfIdent;
+            		}
+            		else {
+            			pfamStarts =pfamStarts + ";" + pfStartsTemp;
+            			pfamEnds = pfamEnds + ";" + pfEndsTemp;
+            			pfamIds = pfamIds + ";" + pfId;
+            			pfamNames = pfamNames + ";" + pfName;
+            			pfamDescriptions = pfamDescriptions + ";" + pfDes;
+            			pfamIdentifiers = pfamIdentifiers + ";" + pfIdent;
+            		}
+            	}
+            }
+            sar.setPfamId(pfamIds);
+            sar.setPfamName(pfamNames);
+            sar.setPfamIdentifier(pfamIdentifiers);
+            sar.setPfamDescription(pfamDescriptions);
+            sar.setPfamStart(pfamStarts);
+            sar.setPfamEnd(pfamEnds);
+            
+            String interproIds = "";
+        	String interproNames = "";
+        	String interproIdentifiers = "";
+        	String interproStarts = "";
+        	String interproEnds = "";
+            JSONObject interPro = name.getJSONObject("InterPro");
+            Iterator iPIt = interPro.keySet().iterator();
+            int iPFlag = 0;
+            while(iPIt.hasNext()) {
+            	int iPMapFlag = 0;
+            	String iPId = iPIt.next().toString();
+            	JSONObject iPOb = interPro.getJSONObject(iPId);
+            	String iPName = iPOb.getString("name");
+            	String iPIdent = iPOb.getString("identifier");
+            	JSONArray iPMaps = iPOb.getJSONArray("mappings");
+            	String interproStartsTemp = "";
+            	String interproEndsTemp = "";
+            	for(int i = 0; i < iPMaps.length(); i++) {
+            		JSONObject iPMapInfo = iPMaps.getJSONObject(i);
+            		String iPChain = iPMapInfo.getString("chain_id");
+            		if(!pdbChain.equals(iPChain))
+            			continue;
+            		JSONObject iPStartOb = iPMapInfo.getJSONObject("start");
+            		int iPStart = iPStartOb.getInt("residue_number");
+            		if(residueIndex < iPStart)
+            			continue;
+            		JSONObject iPEndOb = iPMapInfo.getJSONObject("end");
+            		int iPEnd = iPEndOb.getInt("residue_number");
+            		if(residueIndex > iPEnd)
+            			continue;
+            		else {
+            			if(iPMapFlag == 0) {
+            				interproStartsTemp = interproStartsTemp + String.valueOf(iPStart);
+            				interproEndsTemp = interproEndsTemp + String.valueOf(iPEnd);
+            				iPMapFlag = 1;
+            			}
+            			else {
+            				interproStartsTemp = interproStartsTemp + "," + String.valueOf(iPStart);
+            				interproEndsTemp = interproEndsTemp + "," + String.valueOf(iPEnd);
+            			}
+            		}
+            	}
+            	if(iPMapFlag == 1) {
+            		if(iPFlag == 0) {
+            			interproStarts = interproStarts + interproStartsTemp;
+            			interproEnds = interproEnds + interproEndsTemp;
+            			interproIds = interproIds + iPId;
+            			interproNames = interproNames + iPName;
+            			interproIdentifiers = interproIdentifiers + iPIdent;
+            			iPFlag = 1;
+            		}
+            		else {
+            			interproStarts = interproStarts + ";" + interproStartsTemp;
+            			interproEnds = interproEnds + ";" + interproEndsTemp;
+            			interproIds = interproIds + ";" + iPId;
+            			interproNames = interproNames + ";" + iPName;
+            			interproIdentifiers = interproIdentifiers + ";" + iPIdent;
+            		}
+            	}
+            }
+            sar.setInterproId(interproIds);
+            sar.setInterproName(interproNames);
+            sar.setInterproIdentifier(interproIdentifiers);
+            sar.setInterproStart(interproStarts);
+            sar.setInterproEnd(interproEnds);
+    	}
+    	
+    	// get cath and scop info from structure_domains
+    	String StUrlName = ReadConfig.getStructureDomainsUrl() + pdbId;
+    	URL stUrl = new URL(StUrlName);
+    	String cathIds = "";
+    	String cathNames = "";
+    	String cathIdentifiers = "";
+    	String cathArchitectures = "";
+    	String cathClasses = "";
+    	String cathHomologys = "";
+    	String cathTopologys = "";
+    	String cathDomains = "";
+    	String cathStarts = "";
+    	String cathEnds = "";
+    	String s2;
+    	BufferedReader reader2 = new BufferedReader(new InputStreamReader(stUrl.openStream()));
+    	if ((s2 = reader2.readLine()) != null) {
+            JSONObject jso = new JSONObject(s2);
+            JSONObject name = jso.getJSONObject(pdbId);
+            JSONObject cath = name.getJSONObject("CATH");
+            Iterator caIt = cath.keySet().iterator();
+            int caFlag = 0;
+            while(caIt.hasNext()) {
+            	int caMapFlag = 0;
+            	String caId = caIt.next().toString();
+            	// log.info(caId);
+            	JSONObject caOb = cath.getJSONObject(caId);
+            	String caName = caOb.getString("name");
+            	String caArchitecture = caOb.getString("architecture");
+            	String caIdent = caOb.getString("identifier");
+            	String caClass = caOb.getString("class");
+            	String caHomology = caOb.getString("homology");
+            	String caTopology = caOb.getString("topology");
+            	//log.info(caName+caArchitecture+caIdent+caClass+caHomology+caTopology);
+            	JSONArray caMaps = caOb.getJSONArray("mappings");
+            	String caStartsTemp = "";
+            	String caEndsTemp = "";
+            	String caDomainTemp = "";
+            	for(int i = 0; i < caMaps.length(); i++) {
+            		JSONObject caMapInfo = caMaps.getJSONObject(i);
+            		String caChain = caMapInfo.getString("chain_id");
+            		String caDomianId = caMapInfo.getString("domain");
+            		if(!pdbChain.equals(caChain))
+            			continue;
+            		JSONObject caStartOb = caMapInfo.getJSONObject("start");
+            		int caStart = caStartOb.getInt("residue_number");
+            		if(residueIndex < caStart)
+            			continue;
+            		JSONObject caEndOb = caMapInfo.getJSONObject("end");
+            		int caEnd = caEndOb.getInt("residue_number");
+            		if(residueIndex > caEnd)
+            			continue;
+            		else {
+            			if(caMapFlag == 0) {
+            				caStartsTemp = caStartsTemp + String.valueOf(caStart);
+            				caEndsTemp = caEndsTemp + String.valueOf(caEnd);
+            				caDomainTemp = caDomainTemp + caDomianId;
+            				caMapFlag = 1;
+            			}
+            			else {
+            				caStartsTemp = caStartsTemp + "," + String.valueOf(caStart);
+            				caEndsTemp = caEndsTemp + "," + String.valueOf(caEnd);
+            				caDomainTemp = caDomainTemp + "," + caDomianId;
+            			}
+            		}
+            	}
+            	if(caMapFlag == 1) {
+            		if(caFlag == 0) {
+            			cathStarts = cathStarts + caStartsTemp;
+            			cathEnds = cathEnds + caEndsTemp;
+            			cathDomains = cathDomains + caDomainTemp;
+            			cathIds = cathIds + caId;
+            			cathNames = cathNames + caName;
+            			cathIdentifiers = cathIdentifiers + caIdent;
+            			cathArchitectures = cathArchitectures + caArchitecture;
+            			cathClasses = cathClasses + caClass;
+            			cathHomologys = cathHomologys + caHomology;
+            			cathTopologys = cathTopologys + caTopology;
+            		}
+            		else {
+            			cathStarts = cathStarts + ";" + caStartsTemp;
+            			cathEnds = cathEnds + ";" + caEndsTemp;
+            			cathDomains = cathDomains + ";" + caDomainTemp;
+            			cathIds = cathIds + ";" + caId;
+            			cathNames = cathNames + ";" + caName;
+            			cathIdentifiers = cathIdentifiers + ";" + caIdent;
+            			cathArchitectures = cathArchitectures + ";" + caArchitecture;
+            			cathClasses = cathClasses + ";" + caClass;
+            			cathHomologys = cathHomologys + ";" + caHomology;
+            			cathTopologys = cathTopologys + ";" + caTopology;
+            		}
+            	}
+            }
+            sar.setCathId(cathIds);
+            sar.setCathName(cathNames);
+            sar.setCathIdentifier(cathIdentifiers);
+            sar.setCathArchitecture(cathArchitectures);
+            sar.setCathClass(cathClasses);
+            sar.setCathHomology(cathHomologys);
+            sar.setCathTopology(cathTopologys);
+            sar.setCathDomainStart(cathStarts);
+            sar.setCathDomainEnd(cathEnds);
+            sar.setCathDomainId(cathDomains);
+            
+            String scopIds = "";
+        	String scopSccses = "";
+        	String scopIdentifiers = "";
+        	String scopDescriptions = "";
+        	String scopClassSunids = "";
+        	String scopClassDescriptions = "";
+        	String scopFoldSunids = "";
+        	String scopFoldDescriptions = "";
+        	String scopSuperfamilySunids = "";
+        	String scopSuperfamilyDescriptions = "";
+        	String scopStarts = "";
+        	String scopEnds = "";
+            JSONObject scop = name.getJSONObject("SCOP");
+            Iterator scIt = scop.keySet().iterator();
+            int scFlag = 0;
+            while(scIt.hasNext()) {
+            	int scMapFlag = 0;
+            	String scId = scIt.next().toString();
+            	//log.info(scId);
+            	JSONObject scOb = scop.getJSONObject(scId);
+            	String scDes = scOb.getString("description");
+            	String scSccs = scOb.getString("sccs");
+            	String scIdent = scOb.getString("identifier");
+            	JSONObject scClass = scOb.getJSONObject("class");
+            	int scClassSunid = scClass.getInt("sunid");
+            	String scClassDes = scClass.getString("description");
+            	JSONObject scFold = scOb.getJSONObject("fold");
+            	int scFoldSunid = scFold.getInt("sunid");
+            	String scFoldDes = scFold.getString("description");
+            	JSONObject scSF = scOb.getJSONObject("superfamily");
+            	int scSFSunid = scSF.getInt("sunid");
+            	String scSFDes = scSF.getString("description");
+            	//log.info(scDes+scSccs+scIdent+scClassSunid+scClassDes+scFoldSunid+scFoldDes+scSFSunid+scSFDes);
+            	JSONArray scMaps = scOb.getJSONArray("mappings");
+            	String scStartsTemp = "";
+            	String scEndsTemp = "";
+            	for(int i = 0; i < scMaps.length(); i++) {
+            		JSONObject scMapInfo = scMaps.getJSONObject(i);
+            		String scChain = scMapInfo.getString("chain_id");
+            		if(!scChain.equals(scChain))
+            			continue;
+            		JSONObject scStartOb = scMapInfo.getJSONObject("start");
+            		int scStart = scStartOb.getInt("residue_number");
+            		if(residueIndex < scStart)
+            			continue;
+            		JSONObject scEndOb = scMapInfo.getJSONObject("end");
+            		int scEnd = scEndOb.getInt("residue_number");
+            		if(residueIndex > scEnd)
+            			continue;
+            		else {
+            			if(scMapFlag == 0) {
+            				scStartsTemp = scStartsTemp + String.valueOf(scStart);
+            				scEndsTemp = scEndsTemp + String.valueOf(scEnd);
+            				scMapFlag = 1;
+            			}
+            			else {
+            				scStartsTemp = scStartsTemp + "," + String.valueOf(scStart);
+            				scEndsTemp = scEndsTemp + "," + String.valueOf(scEnd);
+            			}
+            		}
+            	}
+            	if(scMapFlag == 1) {
+            		if(scFlag == 0) {
+            			scopStarts = scopStarts + scStartsTemp;
+            			scopEnds = scopEnds + scEndsTemp;
+            			scopIds = scopIds + scId;
+            			scopSccses = scopSccses + scSccs;
+            			scopIdentifiers = scopIdentifiers + scIdent;
+            			scopDescriptions = scopDescriptions + scDes;
+            			scopClassSunids = scopClassSunids + String.valueOf(scClassSunid);
+            			scopClassDescriptions = scopClassDescriptions + scClassDes;
+            			scopFoldSunids = scopFoldSunids + String.valueOf(scFoldSunid);
+            			scopFoldDescriptions = scopFoldDescriptions + scFoldDes;
+            			scopSuperfamilySunids = scopSuperfamilySunids + String.valueOf(scSFSunid);
+            			scopSuperfamilyDescriptions = scopSuperfamilyDescriptions + scSFDes;
+            		}
+            		else {
+            			scopStarts = scopStarts + ";" + scStartsTemp;
+            			scopEnds = scopEnds + ";" + scEndsTemp;
+            			scopIds = scopIds + ";" + scId;
+            			scopSccses = scopSccses + ";" + scSccs;
+            			scopIdentifiers = scopIdentifiers + ";" + scIdent;
+            			scopDescriptions = scopDescriptions + ";" + scDes;
+            			scopClassSunids = scopClassSunids + ";" + String.valueOf(scClassSunid);
+            			scopClassDescriptions = scopClassDescriptions + ";" + scClassDes;
+            			scopFoldSunids = scopFoldSunids + ";" + String.valueOf(scFoldSunid);
+            			scopFoldDescriptions = scopFoldDescriptions + ";" + scFoldDes;
+            			scopSuperfamilySunids = scopSuperfamilySunids + ";" + String.valueOf(scSFSunid);
+            			scopSuperfamilyDescriptions = scopSuperfamilyDescriptions + ";" + scSFDes;
+            		}
+            	}
+            }
+            sar.setScopId(scopIds);
+            sar.setScopSccs(scopSccses);
+            sar.setScopIdentifier(scopIdentifiers);
+            sar.setScopDescription(scopDescriptions);
+            sar.setScopClassSunid(scopClassSunids);
+            sar.setScopClassDescription(scopClassDescriptions);
+            sar.setScopFoldSunid(scopFoldSunids);
+            sar.setScopFoldDescription(scopFoldDescriptions);
+            sar.setScopSuperfamilySunid(scopSuperfamilySunids);
+            sar.setScopSuperfamilyDescription(scopSuperfamilyDescriptions);
+            sar.setScopStart(scopStarts);
+            sar.setScopEnd(scopEnds);
+    	}
     }
     
     public int stringToInt(String str) {

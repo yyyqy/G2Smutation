@@ -72,6 +72,72 @@ public class StructureAnnotationRecord {
     
     private String ligandName;
     
+    private String interproId;
+    
+    private String interproName;
+    
+    private String interproIdentifier;
+    
+    private String interproStart;
+    
+    private String interproEnd;
+    
+    private String pfamId;
+    
+    private String pfamName;
+    
+    private String pfamDescription;
+    
+    private String pfamIdentifier;
+    
+    private String pfamStart;
+    
+    private String pfamEnd;
+    
+    private String cathId;
+    
+    private String cathArchitecture;
+    
+    private String cathClass;
+    
+    private String cathHomology;
+    
+    private String cathIdentifier;
+    
+    private String cathName;
+    
+    private String cathTopology;
+    
+    private String cathDomainId;
+    
+    private String cathDomainStart;
+    
+    private String cathDomainEnd;
+    
+    private String scopId;
+    
+    private String scopDescription;
+    
+    private String scopIdentifier;
+    
+    private String scopSccs;
+    
+    private String scopClassSunid;
+    
+    private String scopClassDescription;
+    
+    private String scopFoldSunid;
+    
+    private String scopFoldDescription;
+    
+    private String scopSuperfamilySunid;
+    
+    private String scopSuperfamilyDescription;
+    
+    private String scopStart;
+    
+    private String scopEnd;
+    
 
     /*
      * getter and setter methods
@@ -324,4 +390,270 @@ public class StructureAnnotationRecord {
 	public void setLigandName(String ligandName) {
 		this.ligandName = ligandName;
 	}
+
+	public String getInterproId() {
+		return interproId;
+	}
+
+	public void setInterproId(String interproId) {
+		this.interproId = interproId;
+	}
+
+	public String getInterproName() {
+		return interproName;
+	}
+
+	public void setInterproName(String interproName) {
+		this.interproName = interproName;
+	}
+
+	public String getInterproIdentifier() {
+		return interproIdentifier;
+	}
+
+	public void setInterproIdentifier(String interproIdentifier) {
+		this.interproIdentifier = interproIdentifier;
+	}
+
+	public String getInterproStart() {
+		return interproStart;
+	}
+
+	public void setInterproStart(String interproStart) {
+		this.interproStart = interproStart;
+	}
+
+	public String getInterproEnd() {
+		return interproEnd;
+	}
+
+	public void setInterproEnd(String interproEnd) {
+		this.interproEnd = interproEnd;
+	}
+
+	public String getPfamId() {
+		return pfamId;
+	}
+
+	public void setPfamId(String pfamId) {
+		this.pfamId = pfamId;
+	}
+
+	public String getPfamName() {
+		return pfamName;
+	}
+
+	public void setPfamName(String pfamName) {
+		this.pfamName = pfamName;
+	}
+
+	public String getPfamDescription() {
+		return pfamDescription;
+	}
+
+	public void setPfamDescription(String pfamDescription) {
+		this.pfamDescription = pfamDescription;
+	}
+
+	public String getPfamIdentifier() {
+		return pfamIdentifier;
+	}
+
+	public void setPfamIdentifier(String pfamIdentifier) {
+		this.pfamIdentifier = pfamIdentifier;
+	}
+
+	public String getPfamStart() {
+		return pfamStart;
+	}
+
+	public void setPfamStart(String pfamStart) {
+		this.pfamStart = pfamStart;
+	}
+
+	public String getPfamEnd() {
+		return pfamEnd;
+	}
+
+	public void setPfamEnd(String pfamEnd) {
+		this.pfamEnd = pfamEnd;
+	}
+
+	public String getCathId() {
+		return cathId;
+	}
+
+	public void setCathId(String cathId) {
+		this.cathId = cathId;
+	}
+
+	public String getCathArchitecture() {
+		return cathArchitecture;
+	}
+
+	public void setCathArchitecture(String cathArchitecture) {
+		this.cathArchitecture = cathArchitecture;
+	}
+
+	public String getCathClass() {
+		return cathClass;
+	}
+
+	public void setCathClass(String cathClass) {
+		this.cathClass = cathClass;
+	}
+
+	public String getCathHomology() {
+		return cathHomology;
+	}
+
+	public void setCathHomology(String cathHomology) {
+		this.cathHomology = cathHomology;
+	}
+
+	public String getCathIdentifier() {
+		return cathIdentifier;
+	}
+
+	public void setCathIdentifier(String cathIdentifier) {
+		this.cathIdentifier = cathIdentifier;
+	}
+
+	public String getCathName() {
+		return cathName;
+	}
+
+	public void setCathName(String cathName) {
+		this.cathName = cathName;
+	}
+
+	public String getCathTopology() {
+		return cathTopology;
+	}
+
+	public void setCathTopology(String cathTopology) {
+		this.cathTopology = cathTopology;
+	}
+
+	public String getCathDomainId() {
+		return cathDomainId;
+	}
+
+	public void setCathDomainId(String cathDomainId) {
+		this.cathDomainId = cathDomainId;
+	}
+
+	public String getCathDomainStart() {
+		return cathDomainStart;
+	}
+
+	public void setCathDomainStart(String cathDomainStart) {
+		this.cathDomainStart = cathDomainStart;
+	}
+
+	public String getCathDomainEnd() {
+		return cathDomainEnd;
+	}
+
+	public void setCathDomainEnd(String cathDomainEnd) {
+		this.cathDomainEnd = cathDomainEnd;
+	}
+
+	public String getScopId() {
+		return scopId;
+	}
+
+	public void setScopId(String scopId) {
+		this.scopId = scopId;
+	}
+
+	public String getScopDescription() {
+		return scopDescription;
+	}
+
+	public void setScopDescription(String scopDescription) {
+		this.scopDescription = scopDescription;
+	}
+
+	public String getScopIdentifier() {
+		return scopIdentifier;
+	}
+
+	public void setScopIdentifier(String scopIdentifier) {
+		this.scopIdentifier = scopIdentifier;
+	}
+
+	public String getScopSccs() {
+		return scopSccs;
+	}
+
+	public void setScopSccs(String scopSccs) {
+		this.scopSccs = scopSccs;
+	}
+
+	public String getScopClassSunid() {
+		return scopClassSunid;
+	}
+
+	public void setScopClassSunid(String scopClassSunid) {
+		this.scopClassSunid = scopClassSunid;
+	}
+
+	public String getScopClassDescription() {
+		return scopClassDescription;
+	}
+
+	public void setScopClassDescription(String scopClassDescription) {
+		this.scopClassDescription = scopClassDescription;
+	}
+
+	public String getScopFoldSunid() {
+		return scopFoldSunid;
+	}
+
+	public void setScopFoldSunid(String scopFoldSunid) {
+		this.scopFoldSunid = scopFoldSunid;
+	}
+
+	public String getScopFoldDescription() {
+		return scopFoldDescription;
+	}
+
+	public void setScopFoldDescription(String scopFoldDescription) {
+		this.scopFoldDescription = scopFoldDescription;
+	}
+
+	public String getScopSuperfamilySunid() {
+		return scopSuperfamilySunid;
+	}
+
+	public void setScopSuperfamilySunid(String scopSuperfamilySunid) {
+		this.scopSuperfamilySunid = scopSuperfamilySunid;
+	}
+
+	public String getScopSuperfamilyDescription() {
+		return scopSuperfamilyDescription;
+	}
+
+	public void setScopSuperfamilyDescription(String scopSuperfamilyDescription) {
+		this.scopSuperfamilyDescription = scopSuperfamilyDescription;
+	}
+
+	public String getScopStart() {
+		return scopStart;
+	}
+
+	public void setScopStart(String scopStart) {
+		this.scopStart = scopStart;
+	}
+
+	public String getScopEnd() {
+		return scopEnd;
+	}
+
+	public void setScopEnd(String scopEnd) {
+		this.scopEnd = scopEnd;
+	}
+	
+	
 }

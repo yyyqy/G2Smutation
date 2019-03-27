@@ -112,6 +112,8 @@ public class ReadConfig {
     public static String insertStructureAnnotationSQL;
     public static String naccessFileSuffix;
     public static String dsspFileSuffix;
+    public static String sequenceDomainsUrl;
+    public static String structureDomainsUrl;
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -233,6 +235,8 @@ public class ReadConfig {
             ReadConfig.insertStructureAnnotationSQL = prop.getProperty("insert_structureAnnotation_SQL").trim();
             ReadConfig.naccessFileSuffix = prop.getProperty("naccess_file_suffix").trim();
             ReadConfig.dsspFileSuffix = prop.getProperty("deep_file_suffix").trim();
+            ReadConfig.sequenceDomainsUrl = prop.getProperty("sequence.domains.url").trim();
+            ReadConfig.structureDomainsUrl = prop.getProperty("structure.domains.url").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
             ex.printStackTrace();
@@ -1008,5 +1012,22 @@ public class ReadConfig {
 		ReadConfig.dsspFileSuffix = dsspFileSuffix;
 	}
 
+	public static String getSequenceDomainsUrl() {
+		return sequenceDomainsUrl;
+	}
+
+	public static void setSequenceDomainsUrl(String sequenceDomainsUrl) {
+		ReadConfig.sequenceDomainsUrl = sequenceDomainsUrl;
+	}
+
+	public static String getStructureDomainsUrl() {
+		return structureDomainsUrl;
+	}
+
+	public static void setStructureDomainsUrl(String structureDomainsUrl) {
+		ReadConfig.structureDomainsUrl = structureDomainsUrl;
+	}
+	
+	
 	
 }

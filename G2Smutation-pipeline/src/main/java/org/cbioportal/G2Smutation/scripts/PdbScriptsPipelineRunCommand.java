@@ -388,7 +388,8 @@ public class PdbScriptsPipelineRunCommand {
             ex.printStackTrace();
         }
         
-        // 
+        // show key + val
+        /*
         HashMap<Integer, String> murid = mUsageRecord.getMutationIdHm();
         HashMap<Integer, String> mured = mUsageRecord.getResidueHm();
         int j=0;
@@ -399,6 +400,7 @@ public class PdbScriptsPipelineRunCommand {
         	if(j>9)
         		break;
         }
+        */
         
         // Step 13: 
         /*
@@ -936,21 +938,29 @@ public class PdbScriptsPipelineRunCommand {
 //        generateSQLfile.generateRsSQLfile();
          
         PdbScriptsPipelineStructureAnnotation sar = new PdbScriptsPipelineStructureAnnotation();
-        sar.runNaccessFromLocal("5k0b.pdb");
-        sar.runNaccessFromLocal("1o1d.pdb");
-        sar.runNaccessFromLocal("5hd4.pdb");
-        sar.runNaccessFromLocal("3u81.pdb");
-        sar.runNaccessFromLocal("4xrj.pdb");
+        String pdbid = "1cbs";
         try {
-			sar.generateBuriedAtomicFile("5k0b.rsa");
-			sar.generateBuriedAtomicFile("1o1d.rsa");
-			sar.generateBuriedAtomicFile("5hd4.rsa");
-			sar.generateBuriedAtomicFile("3u81.rsa");
-			sar.generateBuriedAtomicFile("4xrj.rsa");
-		} catch (IOException e) {
+			sar.getDomainsUrl(pdbid, "A", "25");
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+//        sar.runNaccessFromLocal("5k0b.pdb");
+//        sar.runNaccessFromLocal("1o1d.pdb");
+//        sar.runNaccessFromLocal("5hd4.pdb");
+//        sar.runNaccessFromLocal("3u81.pdb");
+//        sar.runNaccessFromLocal("4xrj.pdb");
+//        try {
+//			sar.generateBuriedAtomicFile("5k0b.rsa");
+//			sar.generateBuriedAtomicFile("1o1d.rsa");
+//			sar.generateBuriedAtomicFile("5hd4.rsa");
+//			sar.generateBuriedAtomicFile("3u81.rsa");
+//			sar.generateBuriedAtomicFile("4xrj.rsa");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+        
     }
 }
 
