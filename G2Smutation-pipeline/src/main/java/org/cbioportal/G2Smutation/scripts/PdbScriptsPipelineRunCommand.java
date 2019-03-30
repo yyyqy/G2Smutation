@@ -21,6 +21,7 @@ import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.blast.BlastDataBase;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
 import org.cbioportal.G2Smutation.util.models.SNPAnnotationType;
+import org.cbioportal.G2Smutation.util.models.StructureAnnotationRecord;
 
 /**
  * Main function from entrance of G2Smutation pipeline
@@ -776,16 +777,21 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("mysql", paralist);
           
         log.info("********************[STEP 3.3]********************");
-        log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");
-        /*
-        // TODO: Structural annotation for table structure_annotation_entry
-        // Qinyuan       
+        log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");      
         parseprocess.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
-       
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);
         cu.runCommand("mysql", paralist);
-        */
+        
+        PdbScriptsPipelineStructureAnnotation sar = new PdbScriptsPipelineStructureAnnotation();
+        String pdbid = "1cbs";
+        try {
+			sar.getDomainsUrl(pdbid, "A", "25");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
         
         //dbsnp, clinvar, cosmic, genie, tcga annotation  
         log.info("********************[STEP 3.4]********************");
@@ -978,6 +984,5 @@ public class PdbScriptsPipelineRunCommand {
 //          cu.runCommand("rm", paralist);
 //         }
     }
-
 }
 

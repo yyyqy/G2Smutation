@@ -116,6 +116,15 @@ public class ReadConfig {
     public static String gnApiAlignInnerGposUrl;
     public static String callThreadsNum;
     public static String saveSpaceTag;
+    public static String naccessInstallFile;
+    public static String naccessRunFile;
+    public static String relativeRatio;
+    public static String dsspLocalDataFile;
+    public static String insertStructureAnnotationSQL;
+    public static String naccessFileSuffix;
+    public static String dsspFileSuffix;
+    public static String sequenceDomainsUrl;
+    public static String structureDomainsUrl;
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -243,6 +252,15 @@ public class ReadConfig {
             ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
+            ReadConfig.naccessInstallFile = prop.getProperty("naccess_install_file").trim();
+            ReadConfig.naccessRunFile = prop.getProperty("naccess_run_file").trim();
+            ReadConfig.relativeRatio = prop.getProperty("relative_ratio").trim();
+            ReadConfig.dsspLocalDataFile = prop.getProperty("dssp_localData_file").trim();
+            ReadConfig.insertStructureAnnotationSQL = prop.getProperty("insert_structureAnnotation_SQL").trim();
+            ReadConfig.naccessFileSuffix = prop.getProperty("naccess_file_suffix").trim();
+            ReadConfig.dsspFileSuffix = prop.getProperty("deep_file_suffix").trim();
+            ReadConfig.sequenceDomainsUrl = prop.getProperty("sequence.domains.url").trim();
+            ReadConfig.structureDomainsUrl = prop.getProperty("structure.domains.url").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
             ex.printStackTrace();
@@ -1049,7 +1067,76 @@ public class ReadConfig {
         ReadConfig.gnApiAlignInnerGposUrl = gnApiAlignInnerGposUrl;
     }
     
-    
-    
+	public static String getNaccessInstallFile() {
+		return naccessInstallFile;
+	}
 
+	public static void setNaccessInstallFile(String naccessInstallFile) {
+		ReadConfig.naccessInstallFile = naccessInstallFile;
+	}
+
+	public static String getNaccessRunFile() {
+		return naccessRunFile;
+	}
+
+	public static void setNaccessRunFile(String naccessRunFile) {
+		ReadConfig.naccessRunFile = naccessRunFile;
+	}
+
+	public static String getRelativeRatio() {
+		return relativeRatio;
+	}
+
+	public static void setRelativeRatio(String relativeRatio) {
+		ReadConfig.relativeRatio = relativeRatio;
+	}
+
+	public static String getDsspLocalDataFile() {
+		return dsspLocalDataFile;
+	}
+
+	public static void setDsspLocalDataFile(String dsspLocalDataFile) {
+		ReadConfig.dsspLocalDataFile = dsspLocalDataFile;
+	}
+
+	public static String getInsertStructureAnnotationSQL() {
+		return insertStructureAnnotationSQL;
+	}
+
+	public static void setInsertStructureAnnotationSQL(String insertStructureAnnotationSQL) {
+		ReadConfig.insertStructureAnnotationSQL = insertStructureAnnotationSQL;
+	}
+
+	public static String getNaccessFileSuffix() {
+		return naccessFileSuffix;
+	}
+
+	public static void setNaccessFileSuffix(String naccessFileSuffix) {
+		ReadConfig.naccessFileSuffix = naccessFileSuffix;
+	}
+
+	public static String getDsspFileSuffix() {
+		return dsspFileSuffix;
+	}
+
+	public static void setDsspFileSuffix(String dsspFileSuffix) {
+		ReadConfig.dsspFileSuffix = dsspFileSuffix;
+	}
+
+	public static String getSequenceDomainsUrl() {
+		return sequenceDomainsUrl;
+	}
+
+	public static void setSequenceDomainsUrl(String sequenceDomainsUrl) {
+		ReadConfig.sequenceDomainsUrl = sequenceDomainsUrl;
+	}
+
+	public static String getStructureDomainsUrl() {
+		return structureDomainsUrl;
+	}
+
+	public static void setStructureDomainsUrl(String structureDomainsUrl) {
+		ReadConfig.structureDomainsUrl = structureDomainsUrl;
+	}
+	
 }
