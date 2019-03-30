@@ -6,7 +6,7 @@ CREATE TABLE `clinvar_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART_POSEND
   `MUTATION_ID` int,
-  `CLINVAR_ID` int, -- key
+  `CLINVAR_ID` int, -- key in clinvar
   `REF` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
   `ALT` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
   `AF_ESP` float DEFAULT -1,

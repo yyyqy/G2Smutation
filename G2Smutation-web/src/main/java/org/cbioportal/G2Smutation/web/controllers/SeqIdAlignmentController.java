@@ -46,7 +46,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController // shorthand for @Controller, @ResponseBody
 // @CrossOrigin(origins = "*") // allow all cross-domain requests
 // @Api(tags = "QueryInnerID", description = "Inner ID")
-// @RequestMapping(value = "/api/")
+//@RequestMapping(value = "/api/") //invisible for inner usage
 public class SeqIdAlignmentController {
 
     @Autowired
@@ -155,6 +155,11 @@ public class SeqIdAlignmentController {
      * @param positionList
      * @return
      */
+    //header added for inner usage, can directly use it, but not visible outside 
+    //http://localhost:8080/inner/2/100/residueMapping
+    @RequestMapping(value = "/inner/{seqId}/{position:.+}/residueMapping", method = { RequestMethod.GET,
+            RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("POST PDB Residue Mapping by ProteinId")
     public List<Alignment> getPdbResidueBySeqId(
             @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId,
             @ApiParam(required = true, value = "Input Residue Position e.g. 100") @PathVariable String position) {

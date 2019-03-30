@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * Model of structure annotation
  * 
+ * @author Qingyuan Yang
  *
  */
 

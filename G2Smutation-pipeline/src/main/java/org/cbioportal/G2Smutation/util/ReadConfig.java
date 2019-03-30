@@ -24,6 +24,9 @@ public class ReadConfig {
     public static String workspace;
     public static String resourceDir;
     public static String tmpdir;
+    public static String initChoice;
+    public static String initTrembl;
+    public static String initConcurrent;
     public static String pdbRepo;
     public static String pdbSegMinLengthMulti;
     public static String pdbSegMinLengthSingle;
@@ -38,6 +41,8 @@ public class ReadConfig {
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
     public static String rsSqlInsertFile;
+    public static String gposSqlInsertFile;
+    public static String gposAlignSqlInsertFile;
     public static String blastParaEvalue;
     public static String blastParaMaxTargetSeqs;
     public static String blastParaWordSize;
@@ -53,7 +58,7 @@ public class ReadConfig {
     public static String releaseTag;
     public static String releaseTagResult;
     public static String updateStatisticsSQL;
-    public static String updateRsSql;
+    public static String updateAllSnpSql;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
     public static String swissprotWholeSource;
@@ -98,12 +103,18 @@ public class ReadConfig {
     public static String alignFilterStatsSQL;
     public static String alignFilterStatsResult;
     public static String protein2GenomicURL;
+    public static String gnApiGnUrl;
+    public static String gnApiGnPostUrl;
+    public static String callPostSize;
     public static String dbsnpFile;
     public static String clinvarFile;
     public static String cosmicFile;
     public static String genieFile;
     public static String tcgaFile;
     public static String gnApiDbsnpInnerUrl;
+    public static String gnApiDbsnpInnerGposUrl;
+    public static String gnApiAlignInnerGposUrl;
+    public static String callThreadsNum;
     public static String saveSpaceTag;
     public static String naccessInstallFile;
     public static String naccessRunFile;
@@ -147,6 +158,9 @@ public class ReadConfig {
             ReadConfig.workspace = prop.getProperty("workspace").trim();
             ReadConfig.resourceDir = prop.getProperty("resource_dir").trim();
             ReadConfig.tmpdir = prop.getProperty("tmpdir").trim();
+            ReadConfig.initChoice = prop.getProperty("init.choice").trim();
+            ReadConfig.initTrembl = prop.getProperty("init.trembl").trim();
+            ReadConfig.initConcurrent = prop.getProperty("init.concurrent").trim();
             ReadConfig.pdbRepo = prop.getProperty("pdbRepo").trim();
             ReadConfig.pdbSegMinLengthMulti = prop.getProperty("pdb.seg.minLength.multi").trim();
             ReadConfig.pdbSegMinLengthSingle = prop.getProperty("pdb.seg.minLength.single").trim();
@@ -161,6 +175,8 @@ public class ReadConfig {
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
             ReadConfig.rsSqlInsertFile = prop.getProperty("rs_sql_insert_file").trim();
+            ReadConfig.gposSqlInsertFile = prop.getProperty("gpos_sql_insert_file").trim();
+            ReadConfig.gposAlignSqlInsertFile = prop.getProperty("gpos_align_sql_insert_file").trim();
             ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue").trim();
             ReadConfig.blastParaMaxTargetSeqs = prop.getProperty("blast_para_max_target_seqs").trim();
             ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size").trim();
@@ -175,7 +191,7 @@ public class ReadConfig {
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
             ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
-            ReadConfig.updateRsSql = prop.getProperty("update.rsMutation.sql").trim();
+            ReadConfig.updateAllSnpSql = prop.getProperty("update.allSnpMutation.sql").trim();
             ReadConfig.updateStatisticsSQL = prop.getProperty("update.statistics.sql").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
             ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
@@ -203,8 +219,10 @@ public class ReadConfig {
             ReadConfig.mutationGenerateSQL = prop.getProperty("mutation_generate_SQL").trim();
             ReadConfig.mutationResult = prop.getProperty("mutation_result").trim();
             ReadConfig.mutationInjectSQLUsage = prop.getProperty("mutation_inject_SQL_mutation_usage_table").trim();
-            ReadConfig.mutationInjectSQLLocation = prop.getProperty("mutation_inject_SQL_mutation_location_entry").trim();
-            ReadConfig.mutationInjectSQLStructure = prop.getProperty("mutation_inject_SQL_structure_annotation_entry").trim();
+            ReadConfig.mutationInjectSQLLocation = prop.getProperty("mutation_inject_SQL_mutation_location_entry")
+                    .trim();
+            ReadConfig.mutationInjectSQLStructure = prop.getProperty("mutation_inject_SQL_structure_annotation_entry")
+                    .trim();
             ReadConfig.mutationInjectSQLDbsnp = prop.getProperty("mutation_inject_SQL_dbsnp_entry").trim();
             ReadConfig.mutationInjectSQLClinvar = prop.getProperty("mutation_inject_SQL_clinvar_entry").trim();
             ReadConfig.mutationInjectSQLCosmic = prop.getProperty("mutation_inject_SQL_cosmic_entry").trim();
@@ -213,7 +231,7 @@ public class ReadConfig {
             ReadConfig.annotationDbsnpSQL = prop.getProperty("annotation_dbsnp_SQL").trim();
             ReadConfig.annotationClinvarSQL = prop.getProperty("annotation_clinvar_SQL").trim();
             ReadConfig.annotationCosmicSQL = prop.getProperty("annotation_cosmic_SQL").trim();
-            ReadConfig.annotationGenieSQL= prop.getProperty("annotation_genie_SQL").trim();
+            ReadConfig.annotationGenieSQL = prop.getProperty("annotation_genie_SQL").trim();
             ReadConfig.annotationTcgaSQL = prop.getProperty("annotation_tcga_SQL").trim();
             ReadConfig.alignFilterDiffT = prop.getProperty("align.filter.diffT").trim();
             ReadConfig.alignFilterDiffP = prop.getProperty("align.filter.diffP").trim();
@@ -221,12 +239,18 @@ public class ReadConfig {
             ReadConfig.alignFilterStatsSQL = prop.getProperty("align.filter.stats.sql").trim();
             ReadConfig.alignFilterStatsResult = prop.getProperty("align.filter.stats.result").trim();
             ReadConfig.protein2GenomicURL = prop.getProperty("protein2genomic.url").trim();
+            ReadConfig.gnApiGnUrl = prop.getProperty("gn.api.genomenexus.url").trim();
+            ReadConfig.gnApiGnPostUrl = prop.getProperty("gn.api.genomenexus.post.url").trim();
+            ReadConfig.callPostSize = prop.getProperty("call.post.size").trim();
             ReadConfig.dbsnpFile = prop.getProperty("dbsnp.file").trim();
             ReadConfig.clinvarFile = prop.getProperty("clinvar.file").trim();
             ReadConfig.cosmicFile = prop.getProperty("cosmic.file").trim();
             ReadConfig.genieFile = prop.getProperty("genie.file").trim();
             ReadConfig.tcgaFile = prop.getProperty("tcga.file").trim();
             ReadConfig.gnApiDbsnpInnerUrl = prop.getProperty("gn.api.dbsnp.inner.url").trim();
+            ReadConfig.gnApiDbsnpInnerGposUrl = prop.getProperty("gn.api.dbsnp.inner.gpos.url").trim();
+            ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
+            ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
             ReadConfig.naccessInstallFile = prop.getProperty("naccess_install_file").trim();
             ReadConfig.naccessRunFile = prop.getProperty("naccess_run_file").trim();
@@ -253,10 +277,41 @@ public class ReadConfig {
         }
         return rcObj;
     }
+    
+    
 
-    
-    
-    
+    public static String getInitChoice() {
+		return initChoice;
+	}
+
+	public static void setInitChoice(String initChoice) {
+		ReadConfig.initChoice = initChoice;
+	}
+
+	public static String getInitTrembl() {
+		return initTrembl;
+	}
+
+	public static void setInitTrembl(String initTrembl) {
+		ReadConfig.initTrembl = initTrembl;
+	}
+
+	public static String getInitConcurrent() {
+		return initConcurrent;
+	}
+
+	public static void setInitConcurrent(String initConcurrent) {
+		ReadConfig.initConcurrent = initConcurrent;
+	}
+
+	public static String getGnApiDbsnpInnerGposUrl() {
+        return gnApiDbsnpInnerGposUrl;
+    }
+
+    public static void setGnApiDbsnpInnerGposUrl(String gnApiDbsnpInnerGposUrl) {
+        ReadConfig.gnApiDbsnpInnerGposUrl = gnApiDbsnpInnerGposUrl;
+    }
+
     public static String getClinvarWholeSource() {
         return clinvarWholeSource;
     }
@@ -940,12 +995,12 @@ public class ReadConfig {
         ReadConfig.mutationResult = mutationResult;
     }
 
-    public static String getUpdateRsSql() {
-        return updateRsSql;
+    public static String getUpdateAllSnpSql() {
+        return updateAllSnpSql;
     }
 
-    public static void setUpdateRsSql(String updateRsSql) {
-        ReadConfig.updateRsSql = updateRsSql;
+    public static void setUpdateAllSnpSql(String updateAllSnpSql) {
+        ReadConfig.updateAllSnpSql = updateAllSnpSql;
     }
 
     public static String getUpdateRsSqlFileNum() {
@@ -956,6 +1011,62 @@ public class ReadConfig {
         ReadConfig.updateRsSqlFileNum = updateRsSqlFileNum;
     }
 
+	public static String getGnApiGnUrl() {
+		return gnApiGnUrl;
+	}
+
+	public static void setGnApiGnUrl(String gnApiGnUrl) {
+		ReadConfig.gnApiGnUrl = gnApiGnUrl;
+	}
+
+	public static String getGposSqlInsertFile() {
+		return gposSqlInsertFile;
+	}
+
+	public static void setGposSqlInsertFile(String gposSqlInsertFile) {
+		ReadConfig.gposSqlInsertFile = gposSqlInsertFile;
+	}
+
+	public static String getCallThreadsNum() {
+		return callThreadsNum;
+	}
+
+	public static void setCallThreadsNum(String callThreadsNum) {
+		ReadConfig.callThreadsNum = callThreadsNum;
+	}
+
+    public static String getGnApiGnPostUrl() {
+        return gnApiGnPostUrl;
+    }
+
+    public static void setGnApiGnPostUrl(String gnApiGnPostUrl) {
+        ReadConfig.gnApiGnPostUrl = gnApiGnPostUrl;
+    }
+
+    public static String getCallPostSize() {
+        return callPostSize;
+    }
+
+    public static void setCallPostSize(String callPostSize) {
+        ReadConfig.callPostSize = callPostSize;
+    }
+
+    public static String getGposAlignSqlInsertFile() {
+        return gposAlignSqlInsertFile;
+    }
+
+    public static void setGposAlignSqlInsertFile(String gposAlignSqlInsertFile) {
+        ReadConfig.gposAlignSqlInsertFile = gposAlignSqlInsertFile;
+    }
+
+    public static String getGnApiAlignInnerGposUrl() {
+        return gnApiAlignInnerGposUrl;
+    }
+
+    public static void setGnApiAlignInnerGposUrl(String gnApiAlignInnerGposUrl) {
+        ReadConfig.gnApiAlignInnerGposUrl = gnApiAlignInnerGposUrl;
+    }
+    
 	public static String getNaccessInstallFile() {
 		return naccessInstallFile;
 	}
@@ -1027,7 +1138,5 @@ public class ReadConfig {
 	public static void setStructureDomainsUrl(String structureDomainsUrl) {
 		ReadConfig.structureDomainsUrl = structureDomainsUrl;
 	}
-	
-	
 	
 }
