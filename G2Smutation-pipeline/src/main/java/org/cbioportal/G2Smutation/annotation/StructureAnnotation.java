@@ -3,11 +3,13 @@ package org.cbioportal.G2Smutation.annotation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.io.PDBFileReader;
+import org.cbioportal.G2Smutation.util.CommandProcessUtil;
 import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
 import org.cbioportal.G2Smutation.util.models.StructureAnnotationRecord;
@@ -25,7 +28,7 @@ import org.json.JSONObject;
 /**
  * Structure Annotation as a class
  * 
- * @author Qinyuan Yang
+ * @author Qinyuan Yang, Juexin Wang
  *
  */
 public class StructureAnnotation {
@@ -52,7 +55,7 @@ public class StructureAnnotation {
             for(int mutationId : mutationIdHm.keySet()) {            	
             	sar.setChrPos(mutationIdHm.get(mutationId));
             	sar.setMutationId(mutationId);
-            	sar.setPdbNo(residueHm.get(mutationId));
+            	sar.setPdbNo(residueHm.get(mutationId));//?
             	sar.setPdbResidueIndex(Integer.parseInt(residueHm.get(mutationId).split("_")[2]));    
             	//log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
             	strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],residueHm.get(mutationId).split("_")[1],residueHm.get(mutationId).split("_")[2]);
@@ -138,7 +141,7 @@ public class StructureAnnotation {
     }
     
     public String getDSSPInfo(String pdbId, String pdbChain, String pdbResidueIndex){
-    	String resfilepwd = new String(ReadConfig.workspace + ReadConfig.dsspLocalDataFile + pdbId + ReadConfig.dsspFileSuffix);
+    	String resfilepwd = new String(ReadConfig.dsspLocalDataFile + pdbId + ReadConfig.dsspFileSuffix);
 		File resfile = new File(resfilepwd);
 		String str = null;
 		try {
@@ -173,7 +176,7 @@ public class StructureAnnotation {
     }
     
     public String getNaccessInfo(String pdbId, String pdbChain, String pdbResidueIndex){
-    	String resfilepwd = new String(ReadConfig.workspace + pdbId + ReadConfig.naccessFileSuffix);
+    	String resfilepwd = new String(ReadConfig.tmpdir + pdbId + ReadConfig.naccessFileSuffix);
 		File resfile = new File(resfilepwd);
 		String str = null;
 		try {
@@ -193,7 +196,7 @@ public class StructureAnnotation {
     public void getHETInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) {
 		try {
 			double x1, x2, y1, y2, z1, z2, ra, rl, dis;
-			String asafilepwd = new String(ReadConfig.workspace + pdbId + ".asa");
+			String asafilepwd = new String(ReadConfig.tmpdir + pdbId + ".asa");
 			File asafile = new File(asafilepwd);
 			List<String> lines = FileUtils.readLines(asafile, StandardCharsets.UTF_8.name());
 			int k = 0;
@@ -723,5 +726,203 @@ public class StructureAnnotation {
     	pos = Integer.parseInt(str.substring(i, str.length()));
     	return pos;
     }
+    
+    /**
+     * Using naccess to generate results
+     * @param mUsageRecord
+     */
+    public void generateNaccessResults(MutationUsageRecord mUsageRecord){
+    	HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
+    	HashSet<String> pdbSet = new HashSet<>();
+    	int count = 0;
+    	for(int mutationId : residueHm.keySet()) {
+    		String pdbNo = residueHm.get(mutationId).split("_")[0];
+    		if(!pdbSet.contains(pdbNo)){
+    			runNaccessFromLocal(pdbNo); 
+    		}
+    		if(count%1000==0){
+    			log.info("Finish "+count+"th in naccess");
+    		}
+    		count++;
+    	}    	
+    }
+    
+	/**
+     * run Naccess on a pdb file
+     * 
+     * @param input pdbfile ep. 2acf.pdb
+     * @return .asa .log .rsa
+     */
+	public int runNaccessFromLocal(String pdbNo) {
+		int shellReturnCode = 0;
+		try {
+			CommandProcessUtil cu = new CommandProcessUtil();
+			String inputFilename = ReadConfig.tmpdir+pdbNo+".pdb";
+			ArrayList<String> paralist = new ArrayList<String>();
+			if(Boolean.parseBoolean(ReadConfig.readLocalPDBinNaccess)){
+				String foldername = pdbNo.substring(1,3).toLowerCase();
+				String pdburl = ReadConfig.pdbRepo+foldername+"/pdb"+pdbNo.toLowerCase()+".ent.gz";				
+				paralist = new ArrayList<String>();
+		        paralist.add(pdburl);
+		        paralist.add(inputFilename);
+		        cu.runCommand("gunzip", paralist);
+			}else{
+				String pdburl = ReadConfig.pdbStructureService+pdbNo.toUpperCase()+".pdb";			
+				paralist = new ArrayList<String>();
+		        paralist.add(pdburl);
+		        paralist.add(inputFilename);
+		        cu.runCommand("wget", paralist);				
+			}
+			paralist = new ArrayList<String>();
+	        paralist.add(inputFilename);
+	        cu.runCommand("naccess", paralist);			
+		}catch (Exception ex) {
+            log.error("[SHELL] Fatal Error: Could not Successfully process command, exit the program now");
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+            //System.exit(0);
+        }
+		return shellReturnCode;
+	}
+	
+	/**
+     * find burried residue in .rsa file
+     * 
+     * @param input pdb.rsa
+     * @return pdb.showburied
+     */
+	public void generateBuriedAtomicFile(String pdbNo) {
+		try {
+			String rsafilepwd = new String(ReadConfig.tmpdir + pdbNo + ".rsa");
+			File rsafile = new File(rsafilepwd);
+			String resfilepwd = new String(ReadConfig.tmpdir + pdbNo + ".showburied");
+			File resfile = new File(resfilepwd);
+			List<String> lines = FileUtils.readLines(rsafile, StandardCharsets.UTF_8.name());
+			int linesNum = lines.size();
+			// log.info(lines.size());
+			HashMap<String, String> absHM = new HashMap<>();
+			// float sum1 = 0, sum2 = 0;
+			for (int i = linesNum - 1; i >= 0; i--) {
+				// log.info(lines.get(i).split("\\s+")[0]);
+				if (lines.get(i).split("\\s+")[0].equals("CHAIN")) {
+					absHM.put(lines.get(i).split("\\s+")[2], lines.get(i).split("\\s+")[3]);
+					// log.info(lines.get(i).split("\\s+")[2] + " " +
+					// lines.get(i).split("\\s+")[3]);
+				}
+				if (lines.get(i).split("\\s+")[0].equals("RES")) {
+					// log.info(Float.parseFloat(lines.get(i).split("\\s+")[4]));
+					if (Float.parseFloat(lines.get(i).split("\\s+")[5]) < Float.parseFloat(ReadConfig.relativeRatio)) {
+						lines.set(i, lines.get(i) + "      1");
+					} else {
+						lines.set(i, lines.get(i) + "      0");
+					}
+					// if(lines.get(i).split("\\s+")[2].equals("A")) {
+					// sum1 += Float.parseFloat(lines.get(i).split("\\s+")[4]);
+					// sum2 += Float.parseFloat(lines.get(i).split("\\s+")[5]);
+					// }
+				}
+				if (lines.get(i).split("\\s+")[0].equals("REM") && lines.get(i).split("\\s+")[1].equals("ABS")) {
+					lines.set(i, lines.get(i) + "   IFBURIED");
+				} else
+					continue;
+			}
+			// log.info(sum1 + " " + sum2);
+			FileUtils.writeLines(resfile, StandardCharsets.UTF_8.name(), lines);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}	
+
+    /**
+     * Call URL
+     * 
+     * @param pdbId
+     * @param pdbChain
+     * @param pdbResidueIndex
+     * @throws Exception
+     */
+    public void getDomainsUrl(String pdbId, String pdbChain, String pdbResidueIndex) throws Exception {  	
+    	String StUrlName = ReadConfig.getStructureDomainsUrl() + pdbId;
+    	URL stUrl = new URL(StUrlName);
+    	int residueIndex = Integer.parseInt(pdbResidueIndex);
+    	String s;
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(stUrl.openStream()));
+    	if ((s = reader.readLine()) != null) {
+            JSONObject jso = new JSONObject(s);
+            JSONObject name = jso.getJSONObject(pdbId);
+            JSONObject cath = name.getJSONObject("CATH");
+            Iterator caIt = cath.keySet().iterator();
+            while(caIt.hasNext()) {
+            	String caId = caIt.next().toString();
+            	// log.info(caId);
+            	JSONObject caOb = cath.getJSONObject(caId);
+            	String caName = caOb.getString("name");
+            	String caArchitecture = caOb.getString("architecture");
+            	String caIdent = caOb.getString("identifier");
+            	String caClass = caOb.getString("class");
+            	String caHomology = caOb.getString("homology");
+            	String caTopology = caOb.getString("topology");
+            	//log.info(caName+caArchitecture+caIdent+caClass+caHomology+caTopology);
+            	JSONArray caMaps = caOb.getJSONArray("mappings");
+            	for(int i = 0; i < caMaps.length(); i++) {
+            		JSONObject caMapInfo = caMaps.getJSONObject(i);
+            		String caChain = caMapInfo.getString("chain_id");
+            		String caDomianId = caMapInfo.getString("domain");
+            		if(!pdbChain.equals(caChain))
+            			continue;
+            		JSONObject caStartOb = caMapInfo.getJSONObject("start");
+            		int caStart = caStartOb.getInt("residue_number");
+            		if(residueIndex < caStart)
+            			continue;
+            		JSONObject caEndOb = caMapInfo.getJSONObject("end");
+            		int caEnd = caEndOb.getInt("residue_number");
+            		if(residueIndex > caEnd)
+            			continue;
+            		else {
+            			
+            		}
+            	}
+            }
+            JSONObject scop = name.getJSONObject("SCOP");
+            Iterator scIt = scop.keySet().iterator();
+            while(scIt.hasNext()) {
+            	String scId = scIt.next().toString();
+            	log.info(scId);
+            	JSONObject scOb = scop.getJSONObject(scId);
+            	String scDes = scOb.getString("description");
+            	String scSccs = scOb.getString("sccs");
+            	String scIdent = scOb.getString("identifier");
+            	JSONObject scClass = scOb.getJSONObject("class");
+            	int scClassSunid = scClass.getInt("sunid");
+            	String scClassDes = scClass.getString("description");
+            	JSONObject scFold = scOb.getJSONObject("fold");
+            	int scFoldSunid = scFold.getInt("sunid");
+            	String scFoldDes = scFold.getString("description");
+            	JSONObject scSF = scOb.getJSONObject("superfamily");
+            	int scSFSunid = scSF.getInt("sunid");
+            	String scSFDes = scSF.getString("description");
+            	log.info(scDes+scSccs+scIdent+scClassSunid+scClassDes+scFoldSunid+scFoldDes+scSFSunid+scSFDes);
+            	JSONArray scMaps = scOb.getJSONArray("mappings");
+            	for(int i = 0; i < scMaps.length(); i++) {
+            		JSONObject scMapInfo = scMaps.getJSONObject(i);
+            		String scChain = scMapInfo.getString("chain_id");
+            		if(!scChain.equals(scChain))
+            			continue;
+            		JSONObject scStartOb = scMapInfo.getJSONObject("start");
+            		int scStart = scStartOb.getInt("residue_number");
+            		if(residueIndex < scStart)
+            			continue;
+            		JSONObject scEndOb = scMapInfo.getJSONObject("end");
+            		int scEnd = scEndOb.getInt("residue_number");
+            		if(residueIndex > scEnd)
+            			continue;
+            		else {
+            			
+            		}
+            	}
+            }
+    	}
+    }
+    
 
 }

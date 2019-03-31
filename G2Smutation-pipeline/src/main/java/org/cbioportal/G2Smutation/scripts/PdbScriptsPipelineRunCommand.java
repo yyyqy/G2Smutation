@@ -334,8 +334,7 @@ public class PdbScriptsPipelineRunCommand {
         // Step 9: Delete and create a new rsMutation table
         log.info("********************[STEP 9]********************");
         log.info("[SQL] Total update mutation_usage_table by Drop and create data schema");
-        
-        //TODO: update mutation_entry        
+               
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.mutationGenerateSQL);
         paralist.add(ReadConfig.workspace + ReadConfig.mutationResult);
@@ -779,19 +778,23 @@ public class PdbScriptsPipelineRunCommand {
         log.info("********************[STEP 3.3]********************");
         log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");      
         StructureAnnotation sanno = new StructureAnnotation();
+        
+        log.info("[STRUCTURE] Start running naccess"); 
+        sanno.generateNaccessResults(mUsageRecord);
+        
+        log.info("[STRUCTURE] naccess complete and start parsing"); 
         sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);
         cu.runCommand("mysql", paralist);
         
-        PdbScriptsPipelineStructureAnnotation sar = new PdbScriptsPipelineStructureAnnotation();
-        String pdbid = "1cbs";
-        try {
-			sar.getDomainsUrl(pdbid, "A", "25");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//        String pdbid = "1cbs";
+//        try {
+//			sanno.getDomainsUrl(pdbid, "A", "25");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
         
         /*
         //dbsnp, clinvar, cosmic, genie, tcga annotation  
