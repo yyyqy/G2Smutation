@@ -780,7 +780,7 @@ public class PdbScriptsPipelineRunCommand {
         StructureAnnotation sanno = new StructureAnnotation();
         
         log.info("[STRUCTURE] Start running naccess"); 
-        sanno.generateNaccessResults(mUsageRecord);
+//        sanno.generateNaccessResults(mUsageRecord);
         
         log.info("[STRUCTURE] naccess complete and start parsing"); 
         sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
