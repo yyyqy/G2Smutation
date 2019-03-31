@@ -99,6 +99,7 @@ public class CommandProcessUtil {
         	if (paralist.size() != 2){
         		checkFlag = false;
         	}
+        	break;
         default:
             log.error("[SHELL] Command " + commandName + " does not support now");
             break;
