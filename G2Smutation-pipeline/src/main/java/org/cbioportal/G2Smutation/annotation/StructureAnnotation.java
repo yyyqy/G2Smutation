@@ -739,6 +739,7 @@ public class StructureAnnotation {
     		String pdbNo = residueHm.get(mutationId).split("_")[0];
     		if(!pdbSet.contains(pdbNo)){
     			runNaccessFromLocal(pdbNo); 
+    			pdbSet.add(pdbNo);
     		}
     		if(count%1000==0){
     			log.info("Finish "+count+"th in naccess");
@@ -775,6 +776,7 @@ public class StructureAnnotation {
 			}
 			paralist = new ArrayList<String>();
 	        paralist.add(inputFilename);
+	        paralist.add(ReadConfig.tmpdir);
 	        cu.runCommand("naccess", paralist);			
 		}catch (Exception ex) {
             log.error("[SHELL] Fatal Error: Could not Successfully process command, exit the program now");

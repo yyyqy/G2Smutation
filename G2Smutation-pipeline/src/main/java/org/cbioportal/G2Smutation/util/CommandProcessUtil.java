@@ -96,7 +96,7 @@ public class CommandProcessUtil {
             }
             break;
         case "naccess":
-        	if (paralist.size() != 1){
+        	if (paralist.size() != 2){
         		checkFlag = false;
         	}
         default:
@@ -172,8 +172,9 @@ public class CommandProcessUtil {
                 pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));
                 break;
             case "naccess":
-            	log.info("[SHELL] Running naccess command at" + paralist.get(0) + "...");
+            	log.info("[SHELL] Running naccess command at" + paralist.get(0) + " at folder "+paralist.get(1) + "...");
                 pb = new ProcessBuilder(makeNaccessCommand(paralist.get(0)));
+                pb.directory(new File(paralist.get(1)));
                 break;
             default:
                 log.error("[SHELL] Command " + commandName + " does not support now");
