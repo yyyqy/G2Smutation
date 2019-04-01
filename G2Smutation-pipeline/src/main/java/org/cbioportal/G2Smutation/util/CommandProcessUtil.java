@@ -95,6 +95,11 @@ public class CommandProcessUtil {
                 checkFlag = false;
             }
             break;
+        case "naccess":
+        	if (paralist.size() != 2){
+        		checkFlag = false;
+        	}
+        	break;
         default:
             log.error("[SHELL] Command " + commandName + " does not support now");
             break;
@@ -166,6 +171,11 @@ public class CommandProcessUtil {
                 pb = new ProcessBuilder(makeDBCommand());
                 pb.redirectInput(ProcessBuilder.Redirect.from(new File(paralist.get(0))));
                 pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));
+                break;
+            case "naccess":
+            	log.info("[SHELL] Running naccess command at" + paralist.get(0) + " at folder "+paralist.get(1) + "...");
+                pb = new ProcessBuilder(makeNaccessCommand(paralist.get(0)));
+                pb.directory(new File(paralist.get(1)));
                 break;
             default:
                 log.error("[SHELL] Command " + commandName + " does not support now");
@@ -362,5 +372,17 @@ public class CommandProcessUtil {
         list.add("rsync.rcsb.org::ftp_data/structures/divided/pdb/");
         list.add(inFilename);
         return list;
+    }
+    
+    /**
+     * generate naccess command to get naccess files
+     * @param inFilename
+     * @return
+     */
+    private List<String> makeNaccessCommand(String inFilename){
+    	List<String> list = new ArrayList<String>();
+    	list.add("naccess");
+    	list.add(inFilename);
+    	return list;
     }
 }

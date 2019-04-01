@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
+import org.cbioportal.G2Smutation.annotation.StructureAnnotation;
 import org.cbioportal.G2Smutation.util.CommandProcessUtil;
 import org.cbioportal.G2Smutation.util.FTPClientUtil;
 import org.cbioportal.G2Smutation.util.FileOperatingUtil;
@@ -93,26 +94,26 @@ public class PdbScriptsPipelineRunCommand {
      * main steps of init pipeline
      */
     public void runInit() {
-    	
+
     	log.info("********************[STEP 0]********************");
         log.info("Delete old sql files in the workspace");
-        cleanupG2S();
+        //cleanupG2S();
     	       
         log.info("********************[STEP 1]********************");
         log.info("Initialize G2S service for alignments and residue mapping");
-        initializeG2S();
+        //initializeG2S();
         
         log.info("********************[STEP 2]********************");
         log.info("Find mutation using G2S service");
-        generateMutation();
-        
+        //generateMutation();
+
         log.info("********************[STEP 3]********************");
         log.info("Annotate mutation");
         generateAnnotation();
         
         log.info("********************[STEP 14]********************");
         log.info("[FileSystem] Clean Up");
-        postCleanup();
+        //postCleanup();
     }
 
     /**
@@ -333,16 +334,13 @@ public class PdbScriptsPipelineRunCommand {
         // Step 9: Delete and create a new rsMutation table
         log.info("********************[STEP 9]********************");
         log.info("[SQL] Total update mutation_usage_table by Drop and create data schema");
-        
-        //TODO: update mutation_entry
-        
+               
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.mutationGenerateSQL);
         paralist.add(ReadConfig.workspace + ReadConfig.mutationResult);
         cu.runCommand("releaseTag", paralist);
 
-        //regenerate everything
-        
+        //regenerate everything        
         // Step 10: Clean up
         if (ReadConfig.saveSpaceTag.equals("true")) {
             log.info("[PIPELINE] Start cleaning up in filesystem");
@@ -351,7 +349,6 @@ public class PdbScriptsPipelineRunCommand {
                 paralist = new ArrayList<String>();
                 paralist.add(currentDir + ReadConfig.sqlInsertFile);
                 cu.runCommand("gzip", paralist);
-
             }
 
             paralist = new ArrayList<String>();
@@ -741,6 +738,7 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         
+        /*
         log.info("********************[STEP 3.1]********************");
         log.info("[File] Read results from file, generate HashMap for usage"); 
         FileOperatingUtil fou = new FileOperatingUtil();
@@ -756,7 +754,7 @@ public class PdbScriptsPipelineRunCommand {
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        
+        */
         // Deserialize!!!!
         String filename = ReadConfig.workspace + "mUsageRecord.ser";
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
@@ -766,8 +764,8 @@ public class PdbScriptsPipelineRunCommand {
         }catch(Exception ex){
             ex.printStackTrace();
         } 
-        */
-                 
+        
+        /*         
         log.info("********************[STEP 3.2]********************");
         log.info("[SQL] Use mutation results, update table mutation_location_entry)");        
         parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);       
@@ -775,24 +773,33 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLLocation);
         cu.runCommand("mysql", paralist);
-          
+        */  
+        
         log.info("********************[STEP 3.3]********************");
         log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");      
-        parseprocess.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
+        StructureAnnotation sanno = new StructureAnnotation();
+        
+        log.info("[STRUCTURE] Start running naccess"); 
+//        sanno.generateNaccessResults(mUsageRecord);
+        
+        log.info("[STRUCTURE] Start processing naccess rsa results");
+//        sanno.generateNaccessResultsBuried(mUsageRecord);
+        
+        log.info("[STRUCTURE] naccess complete and start parsing"); 
+        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);
         cu.runCommand("mysql", paralist);
         
-        PdbScriptsPipelineStructureAnnotation sar = new PdbScriptsPipelineStructureAnnotation();
-        String pdbid = "1cbs";
-        try {
-			sar.getDomainsUrl(pdbid, "A", "25");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//        String pdbid = "1cbs";
+//        try {
+//			sanno.getDomainsUrl(pdbid, "A", "25");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
         
-        
+        /*
         //dbsnp, clinvar, cosmic, genie, tcga annotation  
         log.info("********************[STEP 3.4]********************");
         log.info("[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
@@ -891,7 +898,8 @@ public class PdbScriptsPipelineRunCommand {
             cu.runCommand("mysql", paralist);
         }
         */
-                
+          
+        /*
         //Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
         log.info("********************[STEP 3.9]********************");
         log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
@@ -948,7 +956,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.gposAlignSqlInsertFile + "." + new Integer(i).toString());
             cu.runCommand("mysql", paralist);
         }
-    	
+    	*/
     }
     
     void postCleanup(){

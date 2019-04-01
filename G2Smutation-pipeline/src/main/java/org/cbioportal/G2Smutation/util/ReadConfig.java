@@ -59,6 +59,7 @@ public class ReadConfig {
     public static String releaseTagResult;
     public static String updateStatisticsSQL;
     public static String updateAllSnpSql;
+    public static String pdbStructureService;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
     public static String swissprotWholeSource;
@@ -116,8 +117,8 @@ public class ReadConfig {
     public static String gnApiAlignInnerGposUrl;
     public static String callThreadsNum;
     public static String saveSpaceTag;
-    public static String naccessInstallFile;
-    public static String naccessRunFile;
+    public static String naccess;
+    public static String readLocalPDBinNaccess;
     public static String relativeRatio;
     public static String dsspLocalDataFile;
     public static String insertStructureAnnotationSQL;
@@ -193,6 +194,7 @@ public class ReadConfig {
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
             ReadConfig.updateAllSnpSql = prop.getProperty("update.allSnpMutation.sql").trim();
             ReadConfig.updateStatisticsSQL = prop.getProperty("update.statistics.sql").trim();
+            ReadConfig.pdbStructureService = prop.getProperty("pdb.structureService").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
             ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
             ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource").trim();
@@ -252,8 +254,8 @@ public class ReadConfig {
             ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
-            ReadConfig.naccessInstallFile = prop.getProperty("naccess_install_file").trim();
-            ReadConfig.naccessRunFile = prop.getProperty("naccess_run_file").trim();
+            ReadConfig.naccess = prop.getProperty("naccess").trim();
+            ReadConfig.readLocalPDBinNaccess = prop.getProperty("readLocalPDBinNaccess").trim();
             ReadConfig.relativeRatio = prop.getProperty("relative_ratio").trim();
             ReadConfig.dsspLocalDataFile = prop.getProperty("dssp_localData_file").trim();
             ReadConfig.insertStructureAnnotationSQL = prop.getProperty("insert_structureAnnotation_SQL").trim();
@@ -1066,21 +1068,21 @@ public class ReadConfig {
     public static void setGnApiAlignInnerGposUrl(String gnApiAlignInnerGposUrl) {
         ReadConfig.gnApiAlignInnerGposUrl = gnApiAlignInnerGposUrl;
     }
-    
-	public static String getNaccessInstallFile() {
-		return naccessInstallFile;
+
+	public static String getNaccess() {
+		return naccess;
 	}
 
-	public static void setNaccessInstallFile(String naccessInstallFile) {
-		ReadConfig.naccessInstallFile = naccessInstallFile;
+	public static void setNaccess(String naccess) {
+		ReadConfig.naccess = naccess;
 	}
 
-	public static String getNaccessRunFile() {
-		return naccessRunFile;
+	public static String getReadLocalPDBinNaccess() {
+		return readLocalPDBinNaccess;
 	}
 
-	public static void setNaccessRunFile(String naccessRunFile) {
-		ReadConfig.naccessRunFile = naccessRunFile;
+	public static void setReadLocalPDBinNaccess(String readLocalPDBinNaccess) {
+		ReadConfig.readLocalPDBinNaccess = readLocalPDBinNaccess;
 	}
 
 	public static String getRelativeRatio() {
@@ -1138,5 +1140,14 @@ public class ReadConfig {
 	public static void setStructureDomainsUrl(String structureDomainsUrl) {
 		ReadConfig.structureDomainsUrl = structureDomainsUrl;
 	}
+
+	public static String getPdbStructureService() {
+		return pdbStructureService;
+	}
+
+	public static void setPdbStructureService(String pdbStructureService) {
+		ReadConfig.pdbStructureService = pdbStructureService;
+	}
+	
 	
 }
