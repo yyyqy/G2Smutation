@@ -143,7 +143,7 @@ public class StructureAnnotation {
     public String getDSSPInfo(String pdbId, String pdbChain, String pdbResidueIndex){   	
     	String resfilepwd = new String(ReadConfig.dsspLocalDataFile + pdbId + ReadConfig.dsspFileSuffix);
 		File resfile = new File(resfilepwd);
-		log.info(resfilepwd);//debug
+		log.info(pdbId+"\t"+pdbChain+"\t"+pdbResidueIndex);//debug
 		String str = null;
 		try {
 			List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
