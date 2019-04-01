@@ -208,7 +208,7 @@ public class StructureAnnotation {
 			z1 = Double.parseDouble(lines.get(k).substring(46, 54));
 			ra = Double.parseDouble(lines.get(k).substring(64, 68));
 			PDBFileReader reader = new PDBFileReader();
-			Structure struc = reader.getStructure(ReadConfig.workspace + pdbId + ".pdb");
+			Structure struc = reader.getStructure(ReadConfig.tmpdir + pdbId + ".pdb");
 			List<Group> hetGroup = new ArrayList<Group>();
 			String ligantNames = "";
 			hetGroup.addAll(struc.getHetGroups());
@@ -763,8 +763,8 @@ public class StructureAnnotation {
     			generateBuriedAtomicFile(pdbNo); 
     			pdbSet.add(pdbNo);
     		}
-    		if(count%1000==0){
-    			log.info("Finish "+count+"th rsa in naccess to showburied");
+    		if(count%100000==0){
+    			log.info("Finish "+count+"th mutation in rsa in naccess to showburied");
     		}
     		count++;
     	}
