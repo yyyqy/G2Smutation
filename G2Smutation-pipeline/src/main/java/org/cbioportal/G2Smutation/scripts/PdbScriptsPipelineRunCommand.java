@@ -782,6 +782,9 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[STRUCTURE] Start running naccess"); 
 //        sanno.generateNaccessResults(mUsageRecord);
         
+        log.info("[STRUCTURE] Start processing naccess rsa results");
+        sanno.generateNaccessResultsBuried(mUsageRecord);
+        
         log.info("[STRUCTURE] naccess complete and start parsing"); 
         sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure);       
         paralist = new ArrayList<String>();

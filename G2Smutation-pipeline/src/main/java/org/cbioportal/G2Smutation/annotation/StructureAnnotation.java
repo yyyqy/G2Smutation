@@ -728,7 +728,7 @@ public class StructureAnnotation {
     }
     
     /**
-     * Using naccess to generate results
+     * Using naccess to generate results .rsa
      * @param mUsageRecord
      */
     public void generateNaccessResults(MutationUsageRecord mUsageRecord){
@@ -746,6 +746,29 @@ public class StructureAnnotation {
     		}
     		count++;
     	}    	
+    }
+    
+    
+    /**
+     * Dealing with .rsa get results.
+     * @param mUsageRecord
+     */
+    public void generateNaccessResultsBuried(MutationUsageRecord mUsageRecord){
+    	HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
+    	HashSet<String> pdbSet = new HashSet<>();
+    	int count = 0;
+    	for(int mutationId : residueHm.keySet()) {
+    		String pdbNo = residueHm.get(mutationId).split("_")[0];
+    		if(!pdbSet.contains(pdbNo)){
+    			generateBuriedAtomicFile(pdbNo); 
+    			pdbSet.add(pdbNo);
+    		}
+    		if(count%1000==0){
+    			log.info("Finish "+count+"th rsa in naccess to showburied");
+    		}
+    		count++;
+    	}
+    	
     }
     
 	/**
