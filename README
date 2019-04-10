@@ -1,1 +1,13 @@
-a
+DSSP guide:
+
+Download local database command: 
+rsync -avz rsync://rsync.cmbi.ru.nl/dssp/ “/path_to_dssp/“
+
+Update command:
+rsync -avz --delete rsync://rsync.cmbi.ru.nl/dssp/ “/path_to_dssp/“
+
+
+Need to do with Naccess:
+1. change "install.scr" 25th line, "f77" -> "gfortran"
+2. changge "accall.f" 255th and 258th line, "write(4,*)
+

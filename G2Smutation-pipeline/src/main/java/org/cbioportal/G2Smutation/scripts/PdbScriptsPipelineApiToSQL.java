@@ -33,7 +33,7 @@ import net.sf.json.JSONObject;
  */
 public class PdbScriptsPipelineApiToSQL {
     final static Logger log = Logger.getLogger(PdbScriptsPipelineMakeSQL.class);
-
+    
     /**
      * Obsolete! Paired with function generateRsSQLfile()
      * 

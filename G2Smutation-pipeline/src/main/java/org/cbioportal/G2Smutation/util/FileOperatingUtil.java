@@ -36,10 +36,12 @@ public class FileOperatingUtil {
      * parse mutation result from inputFile and generate MutationUsageRecord
      * 
      * @param inputFilename
-     * @return MutationUsageRecord contains (1)HashMap<String, String>
-     *         mutationIdHm, key:MUTATION_ID, value: chr_start_end
-     *         (2)HashMap<String, List<Integer>> mutationIdRHm, key:chr_pos,
-     *         value: List of mutationId (3)HashMap<Integer, String> residueHm,
+     * @return MutationUsageRecord contains 
+     * 		   (1)HashMap<String, String> mutationIdHm, 
+     *         key:MUTATION_ID, value: chr_start_end
+     *         (2)HashMap<String, List<Integer>> mutationIdRHm, 
+     *         key:chr_pos, value: List of mutationId 
+     *         (3)HashMap<Integer, String> residueHm,
      *         key:MUTATION_ID, value:XXXX_Chain_INDEX
      * 
      */
@@ -145,7 +147,7 @@ public class FileOperatingUtil {
         mur.setResidueHm(residueHm);
         return mur;
     }
-
+    
     /**
      * Convert clinvar contents line as string to HashMap Using table
      * clinvar_entry as the model
@@ -394,12 +396,13 @@ public class FileOperatingUtil {
      * 
      * @param inputHm
      *            <chr_pos, DBSNP:123;CLINVAR:321;...>
+     * @param gpos2proHm
+     *            <chr_pos,seqId_startindex>
      * @param postFlag
      *            true for using POST, false for using GET
      * @return gpos2proHm key:chr_pos value:HashSet<String> seqId_startindex;...
      */
-    public HashMap<String, HashSet<String>> convertgpso2proHm(HashMap<String, String> inputHm, boolean postFlag) {
-        HashMap<String, HashSet<String>> gpos2proHm = new HashMap<>();// <chr_pos,seqId_startindex>
+    public Map convertgpso2proHm(HashMap<String, String> inputHm, Map gpos2proHm, boolean postFlag) {
         // Read <ensemblName,seqId> in en2SeqHm
         HashMap<String, Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
         UtilAPI uapi = new UtilAPI();
@@ -446,16 +449,13 @@ public class FileOperatingUtil {
      * 
      * @param inputHm
      *            <chr_pos, DBSNP:123;CLINVAR:321;...>
+     * @param gpos2proHm
+     *            <chr_pos,seqId_startindex>
      * @param postFlag true for POST, false for GET
      * @return gpos2proHm <chr_pos,seqId_startindex>
      */
-    public Map convertgpso2proHmMT(HashMap<String, String> inputHm, boolean postFlag) {
-        ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(ReadConfig.callThreadsNum));
-
-        DB db = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.gpos2proHmDbFile).make();
-        ConcurrentMap gpos2proHm = db.hashMap("map").createOrOpen();
-        //map.put("something", "here");
-        
+    public Map convertgpso2proHmMT(HashMap<String, String> inputHm, Map gpos2proHm, boolean postFlag) {
+        ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(ReadConfig.callThreadsNum));       
         
         //HashMap<String, HashSet<String>> gpos2proHm = new HashMap<>();// <chr_pos,seqId_startindex>
         // Read <ensemblName,seqId> in en2SeqHm
@@ -500,7 +500,6 @@ public class FileOperatingUtil {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        db.close();
         return gpos2proHm;
     }
 

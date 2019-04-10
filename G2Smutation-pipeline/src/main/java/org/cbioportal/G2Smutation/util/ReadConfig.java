@@ -24,6 +24,9 @@ public class ReadConfig {
     public static String workspace;
     public static String resourceDir;
     public static String tmpdir;
+    public static String initChoice;
+    public static String initTrembl;
+    public static String initConcurrent;
     public static String pdbRepo;
     public static String pdbSegMinLengthMulti;
     public static String pdbSegMinLengthSingle;
@@ -37,6 +40,7 @@ public class ReadConfig {
     public static String seqFastaFile;
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
+    public static String sqlMutationInsertFile;
     public static String rsSqlInsertFile;
     public static String gposSqlInsertFile;
     public static String gposAlignSqlInsertFile;
@@ -56,6 +60,7 @@ public class ReadConfig {
     public static String releaseTagResult;
     public static String updateStatisticsSQL;
     public static String updateAllSnpSql;
+    public static String pdbStructureService;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
     public static String swissprotWholeSource;
@@ -114,6 +119,15 @@ public class ReadConfig {
     public static String callThreadsNum;
     public static String gpos2proHmDbFile;
     public static String saveSpaceTag;
+    public static String naccess;
+    public static String readLocalPDBinNaccess;
+    public static String relativeRatio;
+    public static String dsspLocalDataFile;
+    public static String insertStructureAnnotationSQL;
+    public static String naccessFileSuffix;
+    public static String dsspFileSuffix;
+    public static String sequenceDomainsUrl;
+    public static String structureDomainsUrl;
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -147,6 +161,9 @@ public class ReadConfig {
             ReadConfig.workspace = prop.getProperty("workspace").trim();
             ReadConfig.resourceDir = prop.getProperty("resource_dir").trim();
             ReadConfig.tmpdir = prop.getProperty("tmpdir").trim();
+            ReadConfig.initChoice = prop.getProperty("init.choice").trim();
+            ReadConfig.initTrembl = prop.getProperty("init.trembl").trim();
+            ReadConfig.initConcurrent = prop.getProperty("init.concurrent").trim();
             ReadConfig.pdbRepo = prop.getProperty("pdbRepo").trim();
             ReadConfig.pdbSegMinLengthMulti = prop.getProperty("pdb.seg.minLength.multi").trim();
             ReadConfig.pdbSegMinLengthSingle = prop.getProperty("pdb.seg.minLength.single").trim();
@@ -158,6 +175,7 @@ public class ReadConfig {
             ReadConfig.tremblDownloadFile = prop.getProperty("trembl_download_file").trim();
             ReadConfig.isoformDownloadFile = prop.getProperty("isoform_download_file").trim();
             ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file").trim();
+            ReadConfig.sqlMutationInsertFile = prop.getProperty("insert_mutation.sql").trim();
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
             ReadConfig.rsSqlInsertFile = prop.getProperty("rs_sql_insert_file").trim();
@@ -179,6 +197,7 @@ public class ReadConfig {
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
             ReadConfig.updateAllSnpSql = prop.getProperty("update.allSnpMutation.sql").trim();
             ReadConfig.updateStatisticsSQL = prop.getProperty("update.statistics.sql").trim();
+            ReadConfig.pdbStructureService = prop.getProperty("pdb.structureService").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
             ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
             ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource").trim();
@@ -239,6 +258,15 @@ public class ReadConfig {
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHm.db").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
+            ReadConfig.naccess = prop.getProperty("naccess").trim();
+            ReadConfig.readLocalPDBinNaccess = prop.getProperty("readLocalPDBinNaccess").trim();
+            ReadConfig.relativeRatio = prop.getProperty("relative_ratio").trim();
+            ReadConfig.dsspLocalDataFile = prop.getProperty("dssp_localData_file").trim();
+            ReadConfig.insertStructureAnnotationSQL = prop.getProperty("insert_structureAnnotation_SQL").trim();
+            ReadConfig.naccessFileSuffix = prop.getProperty("naccess_file_suffix").trim();
+            ReadConfig.dsspFileSuffix = prop.getProperty("deep_file_suffix").trim();
+            ReadConfig.sequenceDomainsUrl = prop.getProperty("sequence.domains.url").trim();
+            ReadConfig.structureDomainsUrl = prop.getProperty("structure.domains.url").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
             ex.printStackTrace();
@@ -255,8 +283,34 @@ public class ReadConfig {
         }
         return rcObj;
     }
+    
+    
 
-    public static String getGnApiDbsnpInnerGposUrl() {
+    public static String getInitChoice() {
+		return initChoice;
+	}
+
+	public static void setInitChoice(String initChoice) {
+		ReadConfig.initChoice = initChoice;
+	}
+
+	public static String getInitTrembl() {
+		return initTrembl;
+	}
+
+	public static void setInitTrembl(String initTrembl) {
+		ReadConfig.initTrembl = initTrembl;
+	}
+
+	public static String getInitConcurrent() {
+		return initConcurrent;
+	}
+
+	public static void setInitConcurrent(String initConcurrent) {
+		ReadConfig.initConcurrent = initConcurrent;
+	}
+
+	public static String getGnApiDbsnpInnerGposUrl() {
         return gnApiDbsnpInnerGposUrl;
     }
 
@@ -1025,11 +1079,96 @@ public class ReadConfig {
 
     public static void setGpos2proHmDbFile(String gpos2proHmDbFile) {
         ReadConfig.gpos2proHmDbFile = gpos2proHmDbFile;
-    }
-    
-    
-    
-    
-    
+    }   
 
+	public static String getNaccess() {
+		return naccess;
+	}
+
+	public static void setNaccess(String naccess) {
+		ReadConfig.naccess = naccess;
+	}
+
+	public static String getReadLocalPDBinNaccess() {
+		return readLocalPDBinNaccess;
+	}
+
+	public static void setReadLocalPDBinNaccess(String readLocalPDBinNaccess) {
+		ReadConfig.readLocalPDBinNaccess = readLocalPDBinNaccess;
+	}
+
+	public static String getRelativeRatio() {
+		return relativeRatio;
+	}
+
+	public static void setRelativeRatio(String relativeRatio) {
+		ReadConfig.relativeRatio = relativeRatio;
+	}
+
+	public static String getDsspLocalDataFile() {
+		return dsspLocalDataFile;
+	}
+
+	public static void setDsspLocalDataFile(String dsspLocalDataFile) {
+		ReadConfig.dsspLocalDataFile = dsspLocalDataFile;
+	}
+
+	public static String getInsertStructureAnnotationSQL() {
+		return insertStructureAnnotationSQL;
+	}
+
+	public static void setInsertStructureAnnotationSQL(String insertStructureAnnotationSQL) {
+		ReadConfig.insertStructureAnnotationSQL = insertStructureAnnotationSQL;
+	}
+
+	public static String getNaccessFileSuffix() {
+		return naccessFileSuffix;
+	}
+
+	public static void setNaccessFileSuffix(String naccessFileSuffix) {
+		ReadConfig.naccessFileSuffix = naccessFileSuffix;
+	}
+
+	public static String getDsspFileSuffix() {
+		return dsspFileSuffix;
+	}
+
+	public static void setDsspFileSuffix(String dsspFileSuffix) {
+		ReadConfig.dsspFileSuffix = dsspFileSuffix;
+	}
+
+	public static String getSequenceDomainsUrl() {
+		return sequenceDomainsUrl;
+	}
+
+	public static void setSequenceDomainsUrl(String sequenceDomainsUrl) {
+		ReadConfig.sequenceDomainsUrl = sequenceDomainsUrl;
+	}
+
+	public static String getStructureDomainsUrl() {
+		return structureDomainsUrl;
+	}
+
+	public static void setStructureDomainsUrl(String structureDomainsUrl) {
+		ReadConfig.structureDomainsUrl = structureDomainsUrl;
+	}
+
+	public static String getPdbStructureService() {
+		return pdbStructureService;
+	}
+
+	public static void setPdbStructureService(String pdbStructureService) {
+		ReadConfig.pdbStructureService = pdbStructureService;
+	}
+
+	public static String getSqlMutationInsertFile() {
+		return sqlMutationInsertFile;
+	}
+
+	public static void setSqlMutationInsertFile(String sqlMutationInsertFile) {
+		ReadConfig.sqlMutationInsertFile = sqlMutationInsertFile;
+	}
+	
+	
+	
 }
