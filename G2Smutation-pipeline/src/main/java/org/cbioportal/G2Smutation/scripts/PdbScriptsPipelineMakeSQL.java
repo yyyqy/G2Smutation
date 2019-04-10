@@ -57,6 +57,7 @@ public class PdbScriptsPipelineMakeSQL {
     private int seqFileCount;
     private String workspace;
     private String sqlInsertFile;
+    private String sqlMutationInsertFile;
     private String sqlInsertOutputInterval;
     private String sqlDeleteFile;
     private String insertSequenceSQL;
@@ -76,6 +77,7 @@ public class PdbScriptsPipelineMakeSQL {
         this.seqFileCount = app.getSeqFileCount();
         this.workspace = ReadConfig.workspace;
         this.sqlInsertFile = ReadConfig.sqlInsertFile;
+        this.sqlMutationInsertFile = ReadConfig.sqlMutationInsertFile;
         this.sqlInsertOutputInterval = ReadConfig.sqlInsertOutputInterval;
         this.sqlDeleteFile = ReadConfig.sqlDeleteFile;
         this.insertSequenceSQL = ReadConfig.insertSequenceSQL;
@@ -153,8 +155,10 @@ public class PdbScriptsPipelineMakeSQL {
      *            multiple SQL or not
      * @param currentDir
      *            on which directory to store this sql
+     * @param mutationTag
+     * 			  false for original G2S, true for mutation
      */
-    public void parse2sql(boolean oneInputTag, String currentDir, int countnum) {
+    public void parse2sql(boolean oneInputTag, String currentDir, int countnum, boolean mutationTag) {
         // System.out.println(this.updateTag);
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
@@ -174,7 +178,7 @@ public class PdbScriptsPipelineMakeSQL {
             } else {
                 HashMap<String, String> pdbHm = new HashMap<String, String>();
                 for (int i = 0; i < this.seqFileCount; i++) {
-                    parseblastresultsSmallMem(i, pdbHm, false);
+                    parseblastresultsSmallMem(i, pdbHm, mutationTag);
                 }
             }
         } else {
@@ -192,9 +196,11 @@ public class PdbScriptsPipelineMakeSQL {
      * @param currentDir
      * @param countnum
      * @param i
+     * @param pdbHm
+     * @param mutationTag True for mutation, False for original G2S
      */
     public void parse2sqlPartition(boolean oneInputTag, String currentDir, int countnum, int i,
-            HashMap<String, String> pdbHm) {
+            HashMap<String, String> pdbHm, boolean mutationTag) {
         // System.out.println(this.updateTag);
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
@@ -212,7 +218,7 @@ public class PdbScriptsPipelineMakeSQL {
             if (this.seqFileCount == -1) {
                 parseblastresultsSmallMem();
             } else {
-                parseblastresultsSmallMem(i, pdbHm, true);
+                parseblastresultsSmallMem(i, pdbHm, mutationTag);
             }
         } else {
             // test for small datasets: single input, single sql generated in
@@ -261,9 +267,17 @@ public class PdbScriptsPipelineMakeSQL {
             File outputfile;
             // Check whether multiple files existed
             if (this.seqFileCount != -1) {
-                outputfile = new File(this.workspace + this.sqlInsertFile + "." + filecount);
+            	if (mutationFlag){
+            		outputfile = new File(this.workspace + this.sqlMutationInsertFile + "." + filecount);
+            	}else{
+            		outputfile = new File(this.workspace + this.sqlInsertFile + "." + filecount);
+            	}               
             } else {
-                outputfile = new File(this.workspace + this.sqlInsertFile);
+            	if(mutationFlag){
+            		outputfile = new File(this.workspace + this.sqlMutationInsertFile);
+            	}else{
+            		outputfile = new File(this.workspace + this.sqlInsertFile);
+            	}               
             }
             int count = 0;
             if (mutationFlag) {
@@ -599,7 +613,7 @@ public class PdbScriptsPipelineMakeSQL {
     public void genereateSQLstatementsSmallMem(MutationAlignmentResult results, HashMap<String, String> pdbHm,
             long count, File outputfile) {
         try {
-            log.info("[SHELL] Start Write insert.sql File from Alignment " + count + "...");
+            log.info("[SHELL] Start Write mutation insert.sql File from Alignment " + count + "...");
             if (count == 1) {
                 // check, if starts, make sure it is empty
                 if (outputfile.exists()) {
@@ -659,6 +673,9 @@ public class PdbScriptsPipelineMakeSQL {
         // Add transaction
         outputlist.add("SET autocommit = 0;");
         outputlist.add("start transaction;");
+        /*
+         * This part is covered in the original G2S
+         *
         // First generate alignments SQL files
         List<BlastResult> al = results.getAlignmentList();
         for (BlastResult br : al) {
@@ -676,17 +693,12 @@ public class PdbScriptsPipelineMakeSQL {
                 outputlist.add(makeTable_pdb_seq_insert(br));
             }
         }
-        // Then generate mutation SQL files
+        */
+        
+        // Generate mutation SQL files
         List<MutationRecord> ml = results.getMutationList();
         for (MutationRecord mr : ml) {
-            // If it is update, then call function
-            if (this.updateTag) {
-                // TODO
-                // outputlist.add(makeTable_mutation_insert_Update(mr));
-                // If it is init, generate INSERT statements
-            } else {
-                outputlist.add(makeTable_mutation_insert(mr));
-            }
+            outputlist.add(makeTable_mutation_insert(mr));           
         }
         outputlist.add("commit;");
         return outputlist;

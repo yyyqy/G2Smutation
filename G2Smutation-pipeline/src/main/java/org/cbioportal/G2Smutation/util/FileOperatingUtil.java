@@ -30,10 +30,12 @@ public class FileOperatingUtil {
      * parse mutation result from inputFile and generate MutationUsageRecord
      * 
      * @param inputFilename
-     * @return MutationUsageRecord contains (1)HashMap<String, String>
-     *         mutationIdHm, key:MUTATION_ID, value: chr_start_end
-     *         (2)HashMap<String, List<Integer>> mutationIdRHm, key:chr_pos,
-     *         value: List of mutationId (3)HashMap<Integer, String> residueHm,
+     * @return MutationUsageRecord contains 
+     * 		   (1)HashMap<String, String> mutationIdHm, 
+     *         key:MUTATION_ID, value: chr_start_end
+     *         (2)HashMap<String, List<Integer>> mutationIdRHm, 
+     *         key:chr_pos, value: List of mutationId 
+     *         (3)HashMap<Integer, String> residueHm,
      *         key:MUTATION_ID, value:XXXX_Chain_INDEX
      * 
      */
@@ -139,7 +141,7 @@ public class FileOperatingUtil {
         mur.setResidueHm(residueHm);
         return mur;
     }
-
+    
     /**
      * Convert clinvar contents line as string to HashMap Using table
      * clinvar_entry as the model

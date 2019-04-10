@@ -40,6 +40,7 @@ public class ReadConfig {
     public static String seqFastaFile;
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
+    public static String sqlMutationInsertFile;
     public static String rsSqlInsertFile;
     public static String gposSqlInsertFile;
     public static String gposAlignSqlInsertFile;
@@ -173,6 +174,7 @@ public class ReadConfig {
             ReadConfig.tremblDownloadFile = prop.getProperty("trembl_download_file").trim();
             ReadConfig.isoformDownloadFile = prop.getProperty("isoform_download_file").trim();
             ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file").trim();
+            ReadConfig.sqlMutationInsertFile = prop.getProperty("insert_mutation.sql").trim();
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
             ReadConfig.rsSqlInsertFile = prop.getProperty("rs_sql_insert_file").trim();
@@ -1148,6 +1150,15 @@ public class ReadConfig {
 	public static void setPdbStructureService(String pdbStructureService) {
 		ReadConfig.pdbStructureService = pdbStructureService;
 	}
+
+	public static String getSqlMutationInsertFile() {
+		return sqlMutationInsertFile;
+	}
+
+	public static void setSqlMutationInsertFile(String sqlMutationInsertFile) {
+		ReadConfig.sqlMutationInsertFile = sqlMutationInsertFile;
+	}
+	
 	
 	
 }
