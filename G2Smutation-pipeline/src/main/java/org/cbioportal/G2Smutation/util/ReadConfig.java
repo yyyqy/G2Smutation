@@ -112,6 +112,7 @@ public class ReadConfig {
     public static String gnApiDbsnpInnerGposUrl;
     public static String gnApiAlignInnerGposUrl;
     public static String callThreadsNum;
+    public static String gpos2proHmDbFile;
     public static String saveSpaceTag;
 
     public static boolean isPositiveInteger(String str) {
@@ -236,6 +237,7 @@ public class ReadConfig {
             ReadConfig.gnApiDbsnpInnerGposUrl = prop.getProperty("gn.api.dbsnp.inner.gpos.url").trim();
             ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
+            ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHm.db").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
@@ -1016,6 +1018,16 @@ public class ReadConfig {
     public static void setGnApiAlignInnerGposUrl(String gnApiAlignInnerGposUrl) {
         ReadConfig.gnApiAlignInnerGposUrl = gnApiAlignInnerGposUrl;
     }
+
+    public static String getGpos2proHmDbFile() {
+        return gpos2proHmDbFile;
+    }
+
+    public static void setGpos2proHmDbFile(String gpos2proHmDbFile) {
+        ReadConfig.gpos2proHmDbFile = gpos2proHmDbFile;
+    }
+    
+    
     
     
     

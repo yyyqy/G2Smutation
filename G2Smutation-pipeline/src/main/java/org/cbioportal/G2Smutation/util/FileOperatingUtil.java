@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -15,6 +17,10 @@ import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
 import org.cbioportal.G2Smutation.util.models.SNPAnnotationType;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
+import org.mapdb.serializer.SerializerClass;
 import org.springframework.web.client.HttpClientErrorException;
 
 /**
@@ -443,10 +449,15 @@ public class FileOperatingUtil {
      * @param postFlag true for POST, false for GET
      * @return gpos2proHm <chr_pos,seqId_startindex>
      */
-    public HashMap<String, HashSet<String>> convertgpso2proHmMT(HashMap<String, String> inputHm, boolean postFlag) {
+    public Map convertgpso2proHmMT(HashMap<String, String> inputHm, boolean postFlag) {
         ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(ReadConfig.callThreadsNum));
 
-        HashMap<String, HashSet<String>> gpos2proHm = new HashMap<>();// <chr_pos,seqId_startindex>
+        DB db = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.gpos2proHmDbFile).make();
+        ConcurrentMap gpos2proHm = db.hashMap("map").createOrOpen();
+        //map.put("something", "here");
+        
+        
+        //HashMap<String, HashSet<String>> gpos2proHm = new HashMap<>();// <chr_pos,seqId_startindex>
         // Read <ensemblName,seqId> in en2SeqHm
         HashMap<String, Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
         List<String> gposList = new ArrayList<>();
@@ -489,6 +500,7 @@ public class FileOperatingUtil {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        db.close();
         return gpos2proHm;
     }
 
@@ -500,13 +512,13 @@ public class FileOperatingUtil {
      */
     public class CallAPIRunnable implements Runnable {
         private HashMap<String, Integer> en2SeqHm;
-        private HashMap<String, HashSet<String>> gpos2proHm;
+        private Map gpos2proHm;
         private String gpos;
         private List<String> gposList;
         private boolean postFlag;
         private int jobStart;
 
-        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm, String gpos, boolean postFlag, int jobStart) {
+        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, Map gpos2proHm, String gpos, boolean postFlag, int jobStart) {
             this.en2SeqHm = en2SeqHm;
             this.gpos2proHm = gpos2proHm;
             this.gpos = gpos;
@@ -514,7 +526,7 @@ public class FileOperatingUtil {
             this.jobStart = jobStart; 
         }
         
-        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm, List<String> gposList, boolean postFlag, int jobStart) {
+        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, Map gpos2proHm, List<String> gposList, boolean postFlag, int jobStart) {
             this.en2SeqHm = en2SeqHm;
             this.gpos2proHm = gpos2proHm;
             this.gposList = gposList;

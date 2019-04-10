@@ -9,7 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -264,7 +266,7 @@ public class PdbScriptsPipelineApiToSQL {
      * @param gpos2proHm <chr_pos,seq_index>
      * @return
      */
-    public int generateAllMappingSQLfileHuge(HashMap<String, HashSet<String>> gpos2proHm) {
+    public int generateAllMappingSQLfileHuge(Map gpos2proHm) {
         List<String> tempLines = new ArrayList<String>();
         int fileCount = 0;
         String allsqlfilepwd = new String(ReadConfig.workspace + ReadConfig.gposAlignSqlInsertFile + "." + fileCount);
@@ -277,8 +279,12 @@ public class PdbScriptsPipelineApiToSQL {
         log.info("Total gpos number: " + gpos2proHm.size());
 
         int count = 0;
-        for (String gpos : gpos2proHm.keySet()) {
-            HashSet<String> tmpSet = gpos2proHm.get(gpos);
+        Iterator it = gpos2proHm.entrySet().iterator();
+        //for (String gpos : gpos2proHm.keySet()) {
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            String gpos = (String)pair.getKey();
+            HashSet<String> tmpSet = (HashSet<String>)gpos2proHm.get(gpos);
             
             for (String mutation_NO : tmpSet) {
                 if (count % 10000 == 0) {
@@ -557,7 +563,7 @@ public class PdbScriptsPipelineApiToSQL {
      * @param gpos2proHm
      * @return
      */
-    public int generateGposProteinSQLfile(HashMap<String, HashSet<String>> gpos2proHm) {
+    public int generateGposProteinSQLfile(Map gpos2proHm) {
         List<String> tempLines = new ArrayList<String>();
         int fileCount = 0;
         String allsqlfilepwd = new String(ReadConfig.workspace + ReadConfig.gposSqlInsertFile + "." + fileCount);
@@ -570,8 +576,12 @@ public class PdbScriptsPipelineApiToSQL {
         log.info("Total gpos number has protein loc: "+ gpos2proHm.size());
 
         int count = 0;
-        for (String gpos : gpos2proHm.keySet()) {
-            HashSet<String> tmpSet = gpos2proHm.get(gpos);
+        Iterator it = gpos2proHm.entrySet().iterator();
+        //for (String gpos : gpos2proHm.keySet()) {
+        while (it.hasNext()){
+            Map.Entry <String, HashSet<String>> pair = (Map.Entry)it.next();
+            String gpos = pair.getKey();
+            HashSet<String> tmpSet = (HashSet<String>)gpos2proHm.get(gpos);
             for(String mutation_NO:tmpSet){
                 if (count % 100000 == 0) {
                     log.info("Now start working on " + count + "th SNP");

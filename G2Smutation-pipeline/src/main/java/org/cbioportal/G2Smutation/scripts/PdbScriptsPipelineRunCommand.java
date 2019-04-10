@@ -9,6 +9,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+
+import org.mapdb.*;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -99,8 +103,6 @@ public class PdbScriptsPipelineRunCommand {
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         ArrayList<String> paralist = new ArrayList<String>();
         
-
-        /*
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -540,10 +542,12 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
         FileOperatingUtil fou = new FileOperatingUtil();
         HashMap<String,String> inputHm = new HashMap<String,String>();
+        
         //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
         for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
             inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
-        }                
+        } 
+        
                 
         this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
         System.out.println("allSql Mapping Count:"+allSqlCount);                
@@ -562,11 +566,14 @@ public class PdbScriptsPipelineRunCommand {
         //HashMap<String,HashSet<String>> gpos2proHm = fou.convertgpso2proHm(inputHm,true);        
         
         //Concurrent version, use POST
-        HashMap<String,HashSet<String>> gpos2proHm = fou.convertgpso2proHmMT(inputHm, true);       
+        Map gpos2proHm = fou.convertgpso2proHmMT(inputHm, true);
+        inputHm = null;
         
+        //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
+        DB db = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.gpos2proHmDbFile).make();
+        gpos2proHm = db.hashMap("map").createOrOpen();
         this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
-        System.out.println("gpos to protein Count:"+allSqlCount);        
-        
+        System.out.println("gpos to protein Count:"+allSqlCount);               
         
         for (int i = 0; i < this.allSqlCount; i++) {
             paralist = new ArrayList<String>();
@@ -582,6 +589,7 @@ public class PdbScriptsPipelineRunCommand {
         //call 12million SNP through inner API, too long
         this.allSqlCount = generateSQLfile.generateAllMappingSQLfileHuge(gpos2proHm);
         log.info("FileCount"+this.allSqlCount);
+        db.close();
         
         //this.allSqlCount =12;
         paralist = new ArrayList<String>();

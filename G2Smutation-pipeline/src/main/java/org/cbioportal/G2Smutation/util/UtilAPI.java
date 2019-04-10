@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.util.models.NucleotideType;
@@ -79,7 +80,7 @@ public class UtilAPI {
      *            chr_pos
      * @throws Exception
      */
-    public void callgpos2ensemblAPIGet(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm,
+    public void callgpos2ensemblAPIGet(HashMap<String, Integer> en2SeqHm, Map gpos2proHm,
             String gpos) throws Exception {
 
         String chromosomeNum = gpos.split("_")[0];
@@ -114,7 +115,7 @@ public class UtilAPI {
                             // +mutation_NO);
                             HashSet<String> tmpSet = new HashSet<>();
                             if (gpos2proHm.containsKey(gpos)) {
-                                tmpSet = gpos2proHm.get(gpos);
+                                tmpSet = (HashSet<String>)gpos2proHm.get(gpos);
                             }
                             tmpSet.add(mutation_NO);
                             gpos2proHm.put(gpos, tmpSet);
@@ -148,7 +149,7 @@ public class UtilAPI {
      *            chr_pos
      * @throws Exception
      */
-    public void callgpos2ensemblAPIPost(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm,
+    public void callgpos2ensemblAPIPost(HashMap<String, Integer> en2SeqHm, Map gpos2proHm,
             List<String> gposList) throws Exception {
 
         String url = ReadConfig.getGnApiGnPostUrl();
@@ -204,7 +205,7 @@ public class UtilAPI {
                             // "\t" + mutation_NO);
                             HashSet<String> tmpSet = new HashSet<>();
                             if (gpos2proHm.containsKey(gpos)) {
-                                tmpSet = gpos2proHm.get(gpos);
+                                tmpSet = (HashSet<String>)gpos2proHm.get(gpos);
                             }
                             tmpSet.add(mutation_NO);
                             gpos2proHm.put(gpos, tmpSet);
