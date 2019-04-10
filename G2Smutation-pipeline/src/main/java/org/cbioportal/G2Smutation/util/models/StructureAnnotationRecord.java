@@ -19,53 +19,53 @@ public class StructureAnnotationRecord {
 
     private int pdbResidueIndex;
 
-    private char pdbResidueName;
+    private String pdbResidueName;
     
-    private int buried;
+    private String buried;
     
-    private float allAtomsABS;
+    private String allAtomsABS;
     
-    private float allAtomsREL;
+    private String allAtomsREL;
     
-    private float totalSideABS;
+    private String totalSideABS;
     
-    private float totalSideREL;
+    private String totalSideREL;
     
-    private float mainChainABS;
+    private String mainChainABS;
     
-    private float mainChainREL;
+    private String mainChainREL;
     
-    private float nonPolarABS;
+    private String nonPolarABS;
     
-    private float nonPolarREL;
+    private String nonPolarREL;
     
-    private float allPolarABS;
+    private String allPolarABS;
     
-    private float allPolarREL;
+    private String allPolarREL;
     
-    private char secStructure;
+    private String secStructure;
     
-    private char threeTurnHelix;
+    private String threeTurnHelix;
     
-    private char fourTurnHelix;
+    private String fourTurnHelix;
     
-    private char fiveTurnHelix;
+    private String fiveTurnHelix;
     
-    private char geometricalBend;
+    private String geometricalBend;
     
-    private char chirality;
+    private String chirality;
     
-    private char betaBridgeLabela;
+    private String betaBridgeLabela;
     
-    private char betaBridgeLabelb;
+    private String betaBridgeLabelb;
     
-    private int bpa;
+    private String bpa;
     
-    private int bpb;
+    private String bpb;
     
-    private char betaSheetLabel;
+    private String betaSheetLabel;
     
-    private int acc;
+    private String acc;
     
     private int ligandBindingProtein;
     
@@ -176,195 +176,195 @@ public class StructureAnnotationRecord {
 		this.pdbResidueIndex = pdbResidueIndex;
 	}
 
-	public char getPdbResidueName() {
+	public String getPdbResidueName() {
 		return pdbResidueName;
 	}
 
-	public void setPdbResidueName(char pdbResidueName) {
+	public void setPdbResidueName(String pdbResidueName) {
 		this.pdbResidueName = pdbResidueName;
 	}
 
-	public int getBuried() {
+	public String getBuried() {
 		return buried;
 	}
 
-	public void setBuried(int buried) {
+	public void setBuried(String buried) {
 		this.buried = buried;
 	}
 
-	public float getAllAtomsABS() {
+	public String getAllAtomsABS() {
 		return allAtomsABS;
 	}
 
-	public void setAllAtomsABS(float allAtomsABS) {
+	public void setAllAtomsABS(String allAtomsABS) {
 		this.allAtomsABS = allAtomsABS;
 	}
 
-	public float getAllAtomsREL() {
+	public String getAllAtomsREL() {
 		return allAtomsREL;
 	}
 
-	public void setAllAtomsREL(float allAtomsREL) {
+	public void setAllAtomsREL(String allAtomsREL) {
 		this.allAtomsREL = allAtomsREL;
 	}
 
-	public float getTotalSideABS() {
+	public String getTotalSideABS() {
 		return totalSideABS;
 	}
 
-	public void setTotalSideABS(float totalSideABS) {
+	public void setTotalSideABS(String totalSideABS) {
 		this.totalSideABS = totalSideABS;
 	}
 
-	public float getTotalSideREL() {
+	public String getTotalSideREL() {
 		return totalSideREL;
 	}
 
-	public void setTotalSideREL(float totalSideREL) {
+	public void setTotalSideREL(String totalSideREL) {
 		this.totalSideREL = totalSideREL;
 	}
 
-	public float getMainChainABS() {
+	public String getMainChainABS() {
 		return mainChainABS;
 	}
 
-	public void setMainChainABS(float mainChainABS) {
+	public void setMainChainABS(String mainChainABS) {
 		this.mainChainABS = mainChainABS;
 	}
 
-	public float getMainChainREL() {
+	public String getMainChainREL() {
 		return mainChainREL;
 	}
 
-	public void setMainChainREL(float mainChainREL) {
+	public void setMainChainREL(String mainChainREL) {
 		this.mainChainREL = mainChainREL;
 	}
 
-	public float getNonPolarABS() {
+	public String getNonPolarABS() {
 		return nonPolarABS;
 	}
 
-	public void setNonPolarABS(float nonPolarABS) {
+	public void setNonPolarABS(String nonPolarABS) {
 		this.nonPolarABS = nonPolarABS;
 	}
 
-	public float getNonPolarREL() {
+	public String getNonPolarREL() {
 		return nonPolarREL;
 	}
 
-	public void setNonPolarREL(float nonPolarREL) {
+	public void setNonPolarREL(String nonPolarREL) {
 		this.nonPolarREL = nonPolarREL;
 	}
 
-	public float getAllPolarABS() {
+	public String getAllPolarABS() {
 		return allPolarABS;
 	}
 
-	public void setAllPolarABS(float allPolarABS) {
+	public void setAllPolarABS(String allPolarABS) {
 		this.allPolarABS = allPolarABS;
 	}
 
-	public float getAllPolarREL() {
+	public String getAllPolarREL() {
 		return allPolarREL;
 	}
 
-	public void setAllPolarREL(float allPolarREL) {
+	public void setAllPolarREL(String allPolarREL) {
 		this.allPolarREL = allPolarREL;
 	}
 
-	public char getSecStructure() {
+	public String getSecStructure() {
 		return secStructure;
 	}
 
-	public void setSecStructure(char secStructure) {
+	public void setSecStructure(String secStructure) {
 		this.secStructure = secStructure;
 	}
 
-	public char getThreeTurnHelix() {
+	public String getThreeTurnHelix() {
 		return threeTurnHelix;
 	}
 
-	public void setThreeTurnHelix(char threeTurnHelix) {
+	public void setThreeTurnHelix(String threeTurnHelix) {
 		this.threeTurnHelix = threeTurnHelix;
 	}
 
-	public char getFourTurnHelix() {
+	public String getFourTurnHelix() {
 		return fourTurnHelix;
 	}
 
-	public void setFourTurnHelix(char fourTurnHelix) {
+	public void setFourTurnHelix(String fourTurnHelix) {
 		this.fourTurnHelix = fourTurnHelix;
 	}
 
-	public char getFiveTurnHelix() {
+	public String getFiveTurnHelix() {
 		return fiveTurnHelix;
 	}
 
-	public void setFiveTurnHelix(char fiveTurnHelix) {
+	public void setFiveTurnHelix(String fiveTurnHelix) {
 		this.fiveTurnHelix = fiveTurnHelix;
 	}
 
-	public char getGeometricalBend() {
+	public String getGeometricalBend() {
 		return geometricalBend;
 	}
 
-	public void setGeometricalBend(char geometricalBend) {
+	public void setGeometricalBend(String geometricalBend) {
 		this.geometricalBend = geometricalBend;
 	}
 
-	public char getChirality() {
+	public String getChirality() {
 		return chirality;
 	}
 
-	public void setChirality(char chirality) {
+	public void setChirality(String chirality) {
 		this.chirality = chirality;
 	}
 
-	public char getBetaBridgeLabela() {
+	public String getBetaBridgeLabela() {
 		return betaBridgeLabela;
 	}
 
-	public void setBetaBridgeLabela(char betaBridgeLabela) {
+	public void setBetaBridgeLabela(String betaBridgeLabela) {
 		this.betaBridgeLabela = betaBridgeLabela;
 	}
 
-	public char getBetaBridgeLabelb() {
+	public String getBetaBridgeLabelb() {
 		return betaBridgeLabelb;
 	}
 
-	public void setBetaBridgeLabelb(char betaBridgeLabelb) {
+	public void setBetaBridgeLabelb(String betaBridgeLabelb) {
 		this.betaBridgeLabelb = betaBridgeLabelb;
 	}
 
-	public int getBpa() {
+	public String getBpa() {
 		return bpa;
 	}
 
-	public void setBpa(int bpa) {
+	public void setBpa(String bpa) {
 		this.bpa = bpa;
 	}
 
-	public int getBpb() {
+	public String getBpb() {
 		return bpb;
 	}
 
-	public void setBpb(int bpb) {
+	public void setBpb(String bpb) {
 		this.bpb = bpb;
 	}
 
-	public char getBetaSheetLabel() {
+	public String getBetaSheetLabel() {
 		return betaSheetLabel;
 	}
 
-	public void setBetaSheetLabel(char betaSheetLabel) {
+	public void setBetaSheetLabel(String betaSheetLabel) {
 		this.betaSheetLabel = betaSheetLabel;
 	}
 
-	public int getAcc() {
+	public String getAcc() {
 		return acc;
 	}
 
-	public void setAcc(int acc) {
+	public void setAcc(String acc) {
 		this.acc = acc;
 	}
 
