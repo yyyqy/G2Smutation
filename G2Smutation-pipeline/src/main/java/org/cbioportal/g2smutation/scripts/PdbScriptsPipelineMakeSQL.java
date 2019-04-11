@@ -316,7 +316,7 @@ public class PdbScriptsPipelineMakeSQL {
     public int parsexml(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
         int count = 1;
         try {
-            JAXBContext jc = JAXBContext.newInstance("org.cbioportal.G2Smutation.util.blast");
+            JAXBContext jc = JAXBContext.newInstance("org.cbioportal.g2smutation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
             u.setSchema(null);
             BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
@@ -363,7 +363,7 @@ public class PdbScriptsPipelineMakeSQL {
     public int parsexmlMutation(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
         int count = 1;
         try {
-            JAXBContext jc = JAXBContext.newInstance("org.cbioportal.G2Smutation.util.blast");
+            JAXBContext jc = JAXBContext.newInstance("org.cbioportal.g2smutation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
             u.setSchema(null);
             BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
@@ -718,7 +718,7 @@ public class PdbScriptsPipelineMakeSQL {
         try {
             log.info("[BLAST] Read blast results from xml file...");
             File blastresults = new File(currentDir + this.db.resultfileName);
-            JAXBContext jc = JAXBContext.newInstance("org.cbioportal.G2Smutation.util.blast");
+            JAXBContext jc = JAXBContext.newInstance("org.cbioportal.g2smutation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
             u.setSchema(null);
             BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
@@ -1044,7 +1044,7 @@ public class PdbScriptsPipelineMakeSQL {
     /**
      * Check whether the alignment itself has high quality, define the condition
      * here, this function is for test Refer to
-     * https://github.com/juexinwang/G2Smutation/issues/14
+     * https://github.com/juexinwang/g2smutation/issues/14
      * 
      * - 2 3 (1-3) - 3 2 (4-5) - 4 2 (6-7) - 2&&(3&&4) 3*2*2 (8-19) - 2&&(3||4)
      * 3*2*2 (20-31) - 2&&3 3*2 (32-37) - 2&&4 3*2 (38-43) - 2||(3&&4) 3*2*2
