@@ -114,11 +114,11 @@ public class PdbScriptsPipelineRunCommand {
         
         log.info("********************[Init STEP 2]********************");
         log.info("Find mutation using G2S service");
-        generateMutation(parseprocess);
+        //generateMutation(parseprocess);
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
-        //generateAnnotation(parseprocess, false);
+        generateAnnotation(parseprocess, false);
         
         log.info("********************[Init STEP 4]********************");
         log.info("[FileSystem] Clean Up");
@@ -661,7 +661,6 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("mysql", paralist);  
         */         
 
-
         // Step 2.3:
         log.info("********************[STEP 2.3]********************");
         log.info("[SQL] Import mutation INSERT SQL statements into the database (Warning: This step takes time)");
@@ -753,14 +752,6 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.mutationInjectSQLStructure);
         cu.runCommand("mysql", paralist);
-        
-//        String pdbid = "1cbs";
-//        try {
-//			sanno.getDomainsUrl(pdbid, "A", "25");
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
         
         //dbsnp, clinvar, cosmic, genie, tcga annotation         
         if (!updateTag){
