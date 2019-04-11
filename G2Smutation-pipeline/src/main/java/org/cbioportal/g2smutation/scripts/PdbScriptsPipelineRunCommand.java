@@ -642,6 +642,7 @@ public class PdbScriptsPipelineRunCommand {
     void generateMutation(PdbScriptsPipelineMakeSQL parseprocess){
     	ArrayList<String> paralist = new ArrayList<String>();
         CommandProcessUtil cu = new CommandProcessUtil();
+        this.seqFileCount =10;
         
     	// Step 2.1:
         log.info("********************[STEP 2.1]********************");
