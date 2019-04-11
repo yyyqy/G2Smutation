@@ -263,7 +263,7 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public void parseblastresultsSmallMem(int filecount, HashMap<String, String> pdbHm, boolean mutationFlag) {
         try {
-            log.info("[BLAST] Read blast results from " + filecount + "th xml file...");
+            log.info("[BLAST] Read blast results from " + this.workspace + this.db.resultfileName + "." + filecount + " as the xml file...");
             File blastresults = new File(this.workspace + this.db.resultfileName + "." + filecount);
             File outputfile;
             // Check whether multiple files existed

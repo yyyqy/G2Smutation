@@ -460,6 +460,7 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         boolean mutationTag = false;
         
+        /*
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -601,8 +602,9 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
+        */
         
-        //this.seqFileCount = 10;       
+        this.seqFileCount = 10;       
         // Step 7:
         log.info("********************[STEP 1.7]********************");
         log.info("[PrepareSQL] Parse results and output as input sql statments");
