@@ -391,7 +391,7 @@ public class PdbScriptsPipelineMakeSQL {
             }
             maresult.setAlignmentList(alignmentList);
             maresult.setMutationList(mutationList);
-            log.info("[BLAST] " + sequence_count + " sequences have blast results");
+            log.info("[BLAST] " + sequence_count + " sequences have blast results in " + mutationList.size() + "mutations");
             // output remaining contents to the SQL file
             // Not output now
             genereateSQLstatementsSmallMem(maresult, pdbHm, count, outputfile);

@@ -106,19 +106,19 @@ public class PdbScriptsPipelineRunCommand {
 
     	log.info("********************[Init STEP 0]********************");
         log.info("Delete old sql files in the workspace");
-        cleanupG2S();
+        //cleanupG2S();
     	       
         log.info("********************[Init STEP 1]********************");
         log.info("Initialize G2S service for alignments and residue mapping");
-        initializeG2S(preprocess, parseprocess);
+        //initializeG2S(preprocess, parseprocess);
         
         log.info("********************[Init STEP 2]********************");
         log.info("Find mutation using G2S service");
-        generateMutation(parseprocess);
+        //generateMutation(parseprocess);
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
-        //generateAnnotation(parseprocess, false);
+        generateAnnotation(parseprocess, false);
         
         log.info("********************[Init STEP 4]********************");
         log.info("[FileSystem] Clean Up");
@@ -461,7 +461,6 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         boolean mutationTag = false;
         
-        /*
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -603,9 +602,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
-        */
-        
-        this.seqFileCount = 10;       
+               
         // Step 7:
         log.info("********************[STEP 1.7]********************");
         log.info("[PrepareSQL] Parse results and output as input sql statments");
