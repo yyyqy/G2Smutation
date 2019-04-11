@@ -81,7 +81,7 @@ public class FileOperatingUtil {
                         // Calling GenomeNexus
                         // https://grch37.rest.ensembl.org/map/translation/ENSP00000356671.3/167..167?content-type=application/json
                         try {
-                            log.info(count);
+//                            log.info(count);
                             gpos = uapi.callAPICoor(proteinName, proteinIndex);
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -95,9 +95,12 @@ public class FileOperatingUtil {
                                                            // be ""
 
                 } else {
-                    log.info("Not found ENSP in " + strArray[3]);
+//                    log.info("Not found ENSP in " + strArray[3]);
                     count++;
                     continue;
+                }
+                if(count%10000==0){
+                	log.info("Works on " + count + " th records in finding coordinates");
                 }
                 count++;
             }
