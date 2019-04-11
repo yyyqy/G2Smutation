@@ -175,7 +175,7 @@ public class ReadConfig {
             ReadConfig.tremblDownloadFile = prop.getProperty("trembl_download_file").trim();
             ReadConfig.isoformDownloadFile = prop.getProperty("isoform_download_file").trim();
             ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file").trim();
-            ReadConfig.sqlMutationInsertFile = prop.getProperty("insert_mutation.sql").trim();
+            ReadConfig.sqlMutationInsertFile = prop.getProperty("sql_mutation_insert_file").trim();
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
             ReadConfig.rsSqlInsertFile = prop.getProperty("rs_sql_insert_file").trim();
