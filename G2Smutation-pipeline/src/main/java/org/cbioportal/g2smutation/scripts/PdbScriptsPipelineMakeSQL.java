@@ -64,8 +64,18 @@ public class PdbScriptsPipelineMakeSQL {
     private boolean updateTag;// if update, then true;
 
     private int testcase;// use for test cases
+    
+    
 
-    /**
+    public BlastDataBase getDb() {
+		return db;
+	}
+
+	public void setDb(BlastDataBase db) {
+		this.db = db;
+	}
+
+	/**
      * 
      * Constructor
      * 

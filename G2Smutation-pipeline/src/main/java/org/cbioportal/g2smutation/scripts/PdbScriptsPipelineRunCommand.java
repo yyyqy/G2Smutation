@@ -456,6 +456,7 @@ public class PdbScriptsPipelineRunCommand {
     
     void initializeG2S(PdbScriptsPipelinePreprocessing preprocess, PdbScriptsPipelineMakeSQL parseprocess){
     	this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile); 
+    	parseprocess.setDb(this.db);
         ArrayList<String> paralist = new ArrayList<String>();
         CommandProcessUtil cu = new CommandProcessUtil();
         boolean mutationTag = false;
