@@ -640,6 +640,8 @@ public class PdbScriptsPipelineRunCommand {
     }
 
     void generateMutation(PdbScriptsPipelineMakeSQL parseprocess){
+    	this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile); 
+    	parseprocess.setDb(this.db);
     	ArrayList<String> paralist = new ArrayList<String>();
         CommandProcessUtil cu = new CommandProcessUtil();
         this.seqFileCount =10;
