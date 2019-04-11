@@ -63,7 +63,7 @@ public class PdbScriptsPipelineMakeSQL {
     private String insertSequenceSQL;
     private boolean updateTag;// if update, then true;
 
-    private int testcase;// use for test cases
+    private int testcase=1;// use for test cases, default 1
     
     
 
@@ -391,7 +391,7 @@ public class PdbScriptsPipelineMakeSQL {
             }
             maresult.setAlignmentList(alignmentList);
             maresult.setMutationList(mutationList);
-            log.info("[BLAST] " + sequence_count + " sequences have blast results in " + mutationList.size() + "mutations");
+            log.info("[BLAST] " + sequence_count + " sequences have blast results in " + mutationList.size() + " mutations");
             // output remaining contents to the SQL file
             // Not output now
             genereateSQLstatementsSmallMem(maresult, pdbHm, count, outputfile);
