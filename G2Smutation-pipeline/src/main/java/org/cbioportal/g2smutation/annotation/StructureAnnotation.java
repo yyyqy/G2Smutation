@@ -180,7 +180,7 @@ public class StructureAnnotation {
     public String getDSSPInfo(String pdbId, String pdbChain, String pdbResidueIndex) {
         String resfilepwd = new String(ReadConfig.dsspLocalDataFile + pdbId + ReadConfig.dsspFileSuffix);
         File resfile = new File(resfilepwd);
-        log.info(pdbId + "\t" + pdbChain + "\t" + pdbResidueIndex);// debug
+//        log.info(pdbId + "\t" + pdbChain + "\t" + pdbResidueIndex);// debug
         String str = null;
         try {
             List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
@@ -780,7 +780,7 @@ public class StructureAnnotation {
                 sar.setScopEnd(scopEnds);
             }
         } catch (Exception e2) {
-            log.error(e2);
+//            log.error(e2);
             sar.setCathId(cathIds);
             sar.setCathName(cathNames);
             sar.setCathIdentifier(cathIdentifiers);
