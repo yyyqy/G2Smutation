@@ -291,7 +291,11 @@ public class StructureAnnotation {
                 sar.setLigandName(ligantNames);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            log.error(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find HET information!");
+            sar.setLigandBindingdirect(0);
+            sar.setLigandBindingProtein(0);
+            sar.setLigandName("");
         }
     }
 
