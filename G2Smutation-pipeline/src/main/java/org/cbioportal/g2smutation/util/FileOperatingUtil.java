@@ -112,7 +112,7 @@ public class FileOperatingUtil {
         for (Integer mutationId : mutationIdHm.keySet()) {
             String gpos = mutationIdHm.get(mutationId);
             if (!gpos.equals("")) {
-                System.out.println(mutationId + " " + gpos);
+//                System.out.println(mutationId + " " + gpos);
                 // Corner Case:
                 // HSCHR6_MHC_MCF_29989718_29989720
                 // https://grch37.rest.ensembl.org/map/translation/ENSP00000403922.1/176..176?content-type=application/json
@@ -136,6 +136,7 @@ public class FileOperatingUtil {
                 }
             }
         }
+        log.info("Size of mutationIdHm is" + mutationIdHm.size());
         mur.setMutationIdHm(mutationIdHm);
         mur.setMutationIdRHm(mutationIdRHm);
         mur.setResidueHm(residueHm);

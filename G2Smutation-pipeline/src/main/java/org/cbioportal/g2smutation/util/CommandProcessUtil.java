@@ -173,8 +173,9 @@ public class CommandProcessUtil {
                 pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));
                 break;
             case "naccess":
-                log.info("[SHELL] Running naccess command at" + paralist.get(0) + " at folder " + paralist.get(1)
-                        + "...");
+            	// Don't print it out for we have many of them
+//                log.info("[SHELL] Running naccess command at" + paralist.get(0) + " at folder " + paralist.get(1)
+//                        + "...");
                 pb = new ProcessBuilder(makeNaccessCommand(paralist.get(0)));
                 pb.directory(new File(paralist.get(1)));
                 break;
@@ -186,7 +187,10 @@ public class CommandProcessUtil {
             pc.waitFor();
             shellReturnCode = pc.exitValue();
             outputProcessError(pc, shellReturnCode, commandName);
-            log.info("[SHELL] Command " + commandName + " completed");
+            // naccess will proceed many times, so not print out
+            if (!commandName.equals("naccess")){
+            	log.info("[SHELL] Command " + commandName + " completed");
+            }
         } catch (Exception ex) {
             log.error("[SHELL] Fatal Error: Could not Successfully process command, exit the program now");
             log.error(ex.getMessage());

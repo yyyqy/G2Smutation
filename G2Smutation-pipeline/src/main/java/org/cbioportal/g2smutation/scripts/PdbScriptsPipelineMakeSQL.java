@@ -1547,10 +1547,18 @@ public class PdbScriptsPipelineMakeSQL {
                 String chr_pos = mutationIdHm.get(mutationId);
                 if (!chr_pos.equals("")) {
                     // chr_pos may be "" if API return 500 error.
-                    String[] strArray = chr_pos.split("_");
+                	
+                	// Corner Case:
+                    // HSCHR6_MHC_MCF_29989718_29989720
+                	String[] strArray = chr_pos.split("_");
+                    String chr = strArray[0];
+					for (int i = 1; i < strArray.length - 2; i++) {
+						chr = chr + strArray[i] + "_";
+					}
+                                        
                     String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
-                            + mutationId + "','" + chr_pos + "','" + strArray[0] + "','" + strArray[1] + "','"
-                            + strArray[2] + "');\n";
+                            + mutationId + "','" + chr_pos + "','" + chr + "','" + strArray[strArray.length - 2] + "','"
+                            + strArray[strArray.length - 1] + "');\n";
                     outputlist.add(str);
                 }
             }
