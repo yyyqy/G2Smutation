@@ -731,21 +731,21 @@ public class PdbScriptsPipelineRunCommand {
                  
         log.info("********************[STEP 3.2]********************");
         log.info("[SQL] Use mutation results, update table mutation_location_entry)");        
-        parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLLocation);       
+//        parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLLocation);       
         
-        paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
-        cu.runCommand("mysql", paralist);  
+//        paralist = new ArrayList<String>();
+//        paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
+//        cu.runCommand("mysql", paralist);  
         
         log.info("********************[STEP 3.3]********************");
         log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");      
         StructureAnnotation sanno = new StructureAnnotation();
         
         log.info("[STRUCTURE] Start running naccess"); 
-        sanno.generateNaccessResults(mUsageRecord);
+//        sanno.generateNaccessResults(mUsageRecord);
         
         log.info("[STRUCTURE] Start processing naccess rsa results");
-        sanno.generateNaccessResultsBuried(mUsageRecord);
+//        sanno.generateNaccessResultsBuried(mUsageRecord);
         
         log.info("[STRUCTURE] naccess complete and start parsing"); 
         sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,currentDir + ReadConfig.mutationInjectSQLStructure);       

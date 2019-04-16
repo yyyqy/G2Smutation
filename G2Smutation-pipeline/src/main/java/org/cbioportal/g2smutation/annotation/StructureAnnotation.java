@@ -36,6 +36,7 @@ public class StructureAnnotation {
 
     /**
      * generate structure annotation for strucure_annotation_entry
+     * Generate results first and then write to sql file
      * 
      * @param MutationUsageRecord
      * @param outputFilename
@@ -45,15 +46,14 @@ public class StructureAnnotation {
         HashMap<Integer, String> mutationIdHm = mUsageRecord.getMutationIdHm();
         HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
         try {
-            List<String> outputlist = new ArrayList<String>();
-            StructureAnnotationRecord sar = new StructureAnnotationRecord();
+            List<StructureAnnotationRecord> sarList = new ArrayList<>();
+            
             String strNaccess = null;
             String strDSSP = null;
-            // Add transaction
-            outputlist.add("SET autocommit = 0;");
-            outputlist.add("start transaction;");
+            
             int count = 0;
             for (int mutationId : mutationIdHm.keySet()) {
+                StructureAnnotationRecord sar = new StructureAnnotationRecord();
                 sar.setChrPos(mutationIdHm.get(mutationId));
                 sar.setMutationId(mutationId);
                 sar.setPdbNo(residueHm.get(mutationId));// ?
@@ -121,16 +121,40 @@ public class StructureAnnotation {
                         residueHm.get(mutationId).split("_")[2]);
                 getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
                         residueHm.get(mutationId).split("_")[2]);
-                outputlist.add(makeTable_structureAnnotation_insert(sar));
-                if (count % 1000 == 0) {
+                sarList.add(sar);
+                if (count % 10000 == 0) {
                     log.info("Processing " + count + "th");
                 }
                 count++;
             }
+            
+            generateMutationResultSQL4StructureAnnotation(sarList,outputFilename);
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Generate sql file for table structrue_annotation_entry
+     * 
+     * @param sarList
+     * @param outputFilename
+     */
+    public void generateMutationResultSQL4StructureAnnotation(List<StructureAnnotationRecord> sarList,
+            String outputFilename) {
+        try {
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(StructureAnnotationRecord sar:sarList){
+                outputlist.add(makeTable_structureAnnotation_insert(sar));
+            }
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
+            
         } catch (Exception ex) {
-            log.error(ex.getMessage());
             ex.printStackTrace();
         }
     }
