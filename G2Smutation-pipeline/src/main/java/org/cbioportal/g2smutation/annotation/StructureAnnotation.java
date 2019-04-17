@@ -117,10 +117,10 @@ public class StructureAnnotation {
                     sar.setBetaSheetLabel("");
                     sar.setAcc("");
                 }
-                getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-                        residueHm.get(mutationId).split("_")[2]);
-                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-                        residueHm.get(mutationId).split("_")[2]);
+//                getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+//                        residueHm.get(mutationId).split("_")[2]);
+//                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+//                        residueHm.get(mutationId).split("_")[2]);
                 sarList.add(sar);
                 if (count % 10000 == 0) {
                     log.info("Processing " + count + "th");
