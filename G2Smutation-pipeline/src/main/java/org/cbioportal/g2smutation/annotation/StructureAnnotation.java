@@ -48,8 +48,8 @@ public class StructureAnnotation {
         try {
             List<StructureAnnotationRecord> sarList = new ArrayList<>();
             
-            String strNaccess = null;
-            String strDSSP = null;
+            String strNaccess = "";
+            String strDSSP = "";
             
             int count = 0;
             for (int mutationId : mutationIdHm.keySet()) {
@@ -61,7 +61,7 @@ public class StructureAnnotation {
                 // log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
                 strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],
                         residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
-                if (strNaccess != null) {
+                if (strNaccess != "") {
                     sar.setBuried(strNaccess.substring(86, 87));
                     sar.setAllAtomsABS(strNaccess.substring(16, 22));
                     sar.setAllAtomsREL(strNaccess.substring(23, 28));
@@ -88,7 +88,7 @@ public class StructureAnnotation {
                 }
                 strDSSP = getDSSPInfo(residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
                         residueHm.get(mutationId).split("_")[2]);
-                if (strDSSP != null) {
+                if (strDSSP != "") {
                     sar.setPdbResidueName(strDSSP.substring(13, 14));
                     sar.setSecStructure(strDSSP.substring(16, 17));
                     sar.setThreeTurnHelix(strDSSP.substring(18, 19));
@@ -206,7 +206,7 @@ public class StructureAnnotation {
         String resfilepwd = new String(ReadConfig.dsspLocalDataFile + pdbId + ReadConfig.dsspFileSuffix);
         File resfile = new File(resfilepwd);
 //        log.info(pdbId + "\t" + pdbChain + "\t" + pdbResidueIndex);// debug
-        String str = null;
+        String str = "";
         try {
             List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
             int i = 0;
@@ -248,7 +248,7 @@ public class StructureAnnotation {
     public String getNaccessInfo(String pdbId, String pdbChain, String pdbResidueIndex) {
         String resfilepwd = new String(ReadConfig.tmpdir + pdbId + ReadConfig.naccessFileSuffix);
         File resfile = new File(resfilepwd);
-        String str = null;
+        String str = "";
         // log.info(pdbId + pdbChain + pdbResidueIndex);
         try {
             List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
