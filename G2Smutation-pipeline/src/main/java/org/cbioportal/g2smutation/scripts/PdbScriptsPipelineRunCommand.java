@@ -748,98 +748,98 @@ public class PdbScriptsPipelineRunCommand {
 //        sanno.generateNaccessResultsBuried(mUsageRecord);
         
         log.info("[STRUCTURE] naccess complete and start parsing"); 
-        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,currentDir + ReadConfig.mutationInjectSQLStructure);       
-        paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.mutationInjectSQLStructure);
-        cu.runCommand("mysql", paralist);
+//        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,currentDir + ReadConfig.mutationInjectSQLStructure);       
+//        paralist = new ArrayList<String>();
+//        paralist.add(currentDir + ReadConfig.mutationInjectSQLStructure);
+//        cu.runCommand("mysql", paralist);
         
 //        //dbsnp, clinvar, cosmic, genie, tcga annotation         
-//        if (!updateTag){
-//        	//TODO Update Clinvar later, next version
-//        	log.info("********************[STEP 3.4]********************");
-//            log.info("[SQL] Clinvar: Download weekly Clinvar, parsing annotation file and inject to table clinvar_entry)");
-//            
-//            FTPClientUtil fc = new FTPClientUtil();
-//            fc.downloadFilefromFTP(ReadConfig.clinvarWholeSource, currentDir
-//                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
-//            System.out.println(currentDir
-//                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
-//            
-//            paralist = new ArrayList<String>();
-//            paralist.add(currentDir
-//                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
-//            paralist.add(currentDir + ReadConfig.clinvarFile);
-//            cu.runCommand("gunzip", paralist);      
-//            
-//            parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(mUsageRecord, currentDir + ReadConfig.clinvarFile, currentDir + ReadConfig.mutationInjectSQLClinvar);       
-//           
-//            paralist = new ArrayList<String>();
-//            paralist.add(ReadConfig.resourceDir + ReadConfig.annotationClinvarSQL);
-//            cu.runCommand("mysql", paralist);
-//            
-//            paralist = new ArrayList<String>();
-//            paralist.add(currentDir + ReadConfig.mutationInjectSQLClinvar);
-//            cu.runCommand("mysql", paralist);
-//        	
-//			log.info("********************[STEP 3.5]********************");
-//			log.info(
-//					"[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
-//			parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(mUsageRecord,
-//					currentDir + ReadConfig.dbsnpFile,
-//					currentDir + ReadConfig.mutationInjectSQLDbsnp);
-//
-//			paralist = new ArrayList<String>();
-//			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationDbsnpSQL);
-//			cu.runCommand("mysql", paralist);
-//
-//			paralist = new ArrayList<String>();
-//			paralist.add(currentDir + ReadConfig.mutationInjectSQLDbsnp);
-//			cu.runCommand("mysql", paralist);
-//
-//			log.info("********************[STEP 3.6]********************");
-//			log.info(
-//					"[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
-//			parseprocess.parseGenerateMutationResultSQL4CosmicEntry(mUsageRecord,
-//					currentDir + ReadConfig.cosmicFile,
-//					currentDir + ReadConfig.mutationInjectSQLCosmic);
-//
-//			paralist = new ArrayList<String>();
-//			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationCosmicSQL);
-//			cu.runCommand("mysql", paralist);
-//
-//			paralist = new ArrayList<String>();
-//			paralist.add(currentDir + ReadConfig.mutationInjectSQLCosmic);
-//			cu.runCommand("mysql", paralist);
-//
-//			log.info("********************[STEP 3.7]********************");
-//			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
-//			parseprocess.parseGenerateMutationResultSQL4GenieEntry(mUsageRecord,
-//					currentDir + ReadConfig.genieFile,
-//					currentDir + ReadConfig.mutationInjectSQLGenie);
-//
-//			paralist = new ArrayList<String>();
-//			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationGenieSQL);
-//			cu.runCommand("mysql", paralist);
-//
-//			paralist = new ArrayList<String>();
-//			paralist.add(currentDir + ReadConfig.mutationInjectSQLGenie);
-//			cu.runCommand("mysql", paralist);
-//
-//			log.info("********************[STEP 3.8]********************");
-//			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table tcga_entry)");
-//			parseprocess.parseGenerateMutationResultSQL4TcgaEntry(mUsageRecord,
-//					currentDir + ReadConfig.tcgaFile,
-//					currentDir + ReadConfig.mutationInjectSQLTcga);
-//
-//			paralist = new ArrayList<String>();
-//			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationTcgaSQL);
-//			cu.runCommand("mysql", paralist);
-//
-//			paralist = new ArrayList<String>();
-//			paralist.add(currentDir + ReadConfig.mutationInjectSQLTcga);
-//			cu.runCommand("mysql", paralist);
-//
-//        }
+        if (!updateTag){
+        	//TODO Update Clinvar later, next version
+        	log.info("********************[STEP 3.4]********************");
+            log.info("[SQL] Clinvar: Download weekly Clinvar, parsing annotation file and inject to table clinvar_entry)");
+            
+            FTPClientUtil fc = new FTPClientUtil();
+            fc.downloadFilefromFTP(ReadConfig.clinvarWholeSource, currentDir
+                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+            System.out.println(currentDir
+                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+            
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir
+                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+            paralist.add(currentDir + ReadConfig.clinvarFile);
+            cu.runCommand("gunzip", paralist);      
+            
+            parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(mUsageRecord, currentDir + ReadConfig.clinvarFile, currentDir + ReadConfig.mutationInjectSQLClinvar);       
+           
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.resourceDir + ReadConfig.annotationClinvarSQL);
+            cu.runCommand("mysql", paralist);
+            
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.mutationInjectSQLClinvar);
+            cu.runCommand("mysql", paralist);
+        	
+			log.info("********************[STEP 3.5]********************");
+			log.info(
+					"[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
+			parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(mUsageRecord,
+					currentDir + ReadConfig.dbsnpFile,
+					currentDir + ReadConfig.mutationInjectSQLDbsnp);
+
+			paralist = new ArrayList<String>();
+			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationDbsnpSQL);
+			cu.runCommand("mysql", paralist);
+
+			paralist = new ArrayList<String>();
+			paralist.add(currentDir + ReadConfig.mutationInjectSQLDbsnp);
+			cu.runCommand("mysql", paralist);
+
+			log.info("********************[STEP 3.6]********************");
+			log.info(
+					"[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
+			parseprocess.parseGenerateMutationResultSQL4CosmicEntry(mUsageRecord,
+					currentDir + ReadConfig.cosmicFile,
+					currentDir + ReadConfig.mutationInjectSQLCosmic);
+
+			paralist = new ArrayList<String>();
+			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationCosmicSQL);
+			cu.runCommand("mysql", paralist);
+
+			paralist = new ArrayList<String>();
+			paralist.add(currentDir + ReadConfig.mutationInjectSQLCosmic);
+			cu.runCommand("mysql", paralist);
+
+			log.info("********************[STEP 3.7]********************");
+			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
+			parseprocess.parseGenerateMutationResultSQL4GenieEntry(mUsageRecord,
+					currentDir + ReadConfig.genieFile,
+					currentDir + ReadConfig.mutationInjectSQLGenie);
+
+			paralist = new ArrayList<String>();
+			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationGenieSQL);
+			cu.runCommand("mysql", paralist);
+
+			paralist = new ArrayList<String>();
+			paralist.add(currentDir + ReadConfig.mutationInjectSQLGenie);
+			cu.runCommand("mysql", paralist);
+
+			log.info("********************[STEP 3.8]********************");
+			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table tcga_entry)");
+			parseprocess.parseGenerateMutationResultSQL4TcgaEntry(mUsageRecord,
+					currentDir + ReadConfig.tcgaFile,
+					currentDir + ReadConfig.mutationInjectSQLTcga);
+
+			paralist = new ArrayList<String>();
+			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationTcgaSQL);
+			cu.runCommand("mysql", paralist);
+
+			paralist = new ArrayList<String>();
+			paralist.add(currentDir + ReadConfig.mutationInjectSQLTcga);
+			cu.runCommand("mysql", paralist);
+
+        }
 //        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
 //        /*
 //         * Old implementation: 10days of mapping all dbSNP in millions of SNP, not use anymore
