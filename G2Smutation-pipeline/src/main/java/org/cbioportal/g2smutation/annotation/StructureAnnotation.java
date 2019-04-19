@@ -181,7 +181,7 @@ public class StructureAnnotation {
                 + "`CATH_HOMOLOGY`,`CATH_IDENTIFIER`,`CATH_NAME`,`CATH_TOPOLOGY`,`CATH_DOMAIN_ID`,`CATH_DOMAIN_START`,"
                 + "`CATH_DOMAIN_END`,`SCOP_ID`,`SCOP_DESCRIPTION`,`SCOP_IDENTIFIER`,`SCOP_SCCS`,`SCOP_CLASS_SUNID`,"
                 + "`SCOP_CLASS_DESCRIPTION`,`SCOP_FOLD_SUNID`,`SCOP_FOLD_DESCRIPTION`,`SCOP_SUPERFAMILY_SUNID`,"
-                + "`SCOP_SUPERFAMILY_DESCRIPTION`,`SCOP_START`,`SCOP_END`)VALUES ('" + sar.getChrPos() + "',"
+                + "`SCOP_SUPERFAMILY_DESCRIPTION`,`SCOP_START`,`SCOP_END`)VALUES('" + sar.getChrPos() + "',"
                 + sar.getMutationId() + ",'" + sar.getPdbNo() + "'," + sar.getPdbResidueIndex() + ",'"
                 + sar.getPdbResidueName() + "','" + sar.getBuried() + "','" + sar.getAllAtomsABS() + "','"
                 + sar.getAllAtomsREL() + "','" + sar.getTotalSideABS() + "','" + sar.getTotalSideREL() + "','"
@@ -195,7 +195,7 @@ public class StructureAnnotation {
                 + "','" + sar.getInterproId() + "','" + sar.getInterproName() + "','" + sar.getInterproIdentifier()
                 + "','" + sar.getInterproStart() + "','" + sar.getInterproEnd() + "','" + sar.getPfamId() + "','"
                 + sar.getPfamName() + "','" + sar.getPfamDescription() + "','" + sar.getPfamIdentifier() + "','"
-                + sar.getPfamStart() + "'," + sar.getPfamEnd() + "','" + sar.getCathId() + "','"
+                + sar.getPfamStart() + "','" + sar.getPfamEnd() + "','" + sar.getCathId() + "','"
                 + sar.getCathArchitecture() + "','" + sar.getCathClass() + "','" + sar.getCathHomology() + "','"
                 + sar.getCathIdentifier() + "','" + sar.getCathName() + "','" + sar.getCathTopology() + "','"
                 + sar.getCathDomainId() + "','" + sar.getCathDomainStart() + "','" + sar.getCathDomainEnd() + "','"
