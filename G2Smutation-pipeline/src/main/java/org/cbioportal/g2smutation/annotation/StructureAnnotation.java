@@ -117,10 +117,15 @@ public class StructureAnnotation {
                     sar.setBetaSheetLabel("");
                     sar.setAcc("");
                 }
+                //Use placeholder now
+                //TODO will change later
+                getHETInfoPlaceholder(sar);
+                getDomainUrlPlaceholder(sar);
 //                getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
 //                        residueHm.get(mutationId).split("_")[2]);
 //                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
 //                        residueHm.get(mutationId).split("_")[2]);
+                
                 sarList.add(sar);
                 if (count % 10000 == 0) {
                     log.info("Processing " + count + "th");
@@ -271,6 +276,17 @@ public class StructureAnnotation {
             e.printStackTrace();
         }
         return str;
+    }
+    
+    /**
+     * Add placeholder in HET
+     * 
+     * @param sar
+     */
+    public void getHETInfoPlaceholder(StructureAnnotationRecord sar) {
+        sar.setLigandBindingdirect(0);
+        sar.setLigandBindingProtein(0);
+        sar.setLigandName("");
     }
 
     public void getHETInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) {
@@ -444,6 +460,49 @@ public class StructureAnnotation {
         return rl;
     }
 
+    /**
+     * Add placeholder in domain
+     * TODO: will change that when we have local installation
+     * @param sar
+     */
+    public void getDomainUrlPlaceholder(StructureAnnotationRecord sar){
+        sar.setPfamId("");
+        sar.setPfamName("");
+        sar.setPfamIdentifier("");
+        sar.setPfamDescription("");
+        sar.setPfamStart("");
+        sar.setPfamEnd("");
+        sar.setInterproId("");
+        sar.setInterproName("");
+        sar.setInterproIdentifier("");
+        sar.setInterproStart("");
+        sar.setInterproEnd("");
+        sar.setCathId("");
+        sar.setCathName("");
+        sar.setCathIdentifier("");
+        sar.setCathArchitecture("");
+        sar.setCathClass("");
+        sar.setCathHomology("");
+        sar.setCathTopology("");
+        sar.setCathDomainStart("");
+        sar.setCathDomainEnd("");
+        sar.setCathDomainId("");
+        sar.setScopId("");
+        sar.setScopSccs("");
+        sar.setScopIdentifier("");
+        sar.setScopDescription("");
+        sar.setScopClassSunid("");
+        sar.setScopClassDescription("");
+        sar.setScopFoldSunid("");
+        sar.setScopFoldDescription("");
+        sar.setScopSuperfamilySunid("");
+        sar.setScopSuperfamilyDescription("");
+        sar.setScopStart("");
+        sar.setScopEnd("");
+        
+        
+    }
+    
     public void getDomainsUrl(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex)
             throws Exception {
         // get pfam and interpro info from sequence_domains
