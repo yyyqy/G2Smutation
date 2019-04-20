@@ -870,23 +870,23 @@ public class PdbScriptsPipelineRunCommand {
         // Serialize the MutationUsageRecord into the tmpfile!!!!
         if(!this.updateTag){
         	//Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
-            log.info("********************[STEP 3.9]********************");
-            log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
-            HashMap<String,String> inputHm = new HashMap<String,String>();
-            //Test here
-            //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
-            for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
-                inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
-            }                
-                    
-            this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
-            System.out.println("allSql Mapping Count:"+allSqlCount);                
-            
-            for (int i = 0; i <this.allSqlCount; i++) {
-                paralist = new ArrayList<String>();
-                paralist.add(currentDir + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("mysql", paralist);
-            }      
+//            log.info("********************[STEP 3.9]********************");
+//            log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
+//            HashMap<String,String> inputHm = new HashMap<String,String>();
+//            //Test here
+//            //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
+//            for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
+//                inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
+//            }                
+//                    
+//            this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
+//            System.out.println("allSql Mapping Count:"+allSqlCount);                
+//            
+//            for (int i = 0; i <this.allSqlCount; i++) {
+//                paralist = new ArrayList<String>();
+//                paralist.add(currentDir + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+//                cu.runCommand("mysql", paralist);
+//            }      
             
 //            log.info("********************[STEP 3.10]********************");
 //            log.info("[SQL] Generate and import into the table gpos_protein_entry, this step is very slow for querying lots of API");
@@ -905,14 +905,14 @@ public class PdbScriptsPipelineRunCommand {
             // gpos2proHmdb gpos2proHm are there
         }
         
-//        this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
-//        log.info("gpos to protein Count: "+allSqlCount);
-//        
-//        for (int i = 0; i < this.allSqlCount; i++) {
-//            paralist = new ArrayList<String>();
-//            paralist.add(currentDir + ReadConfig.gposSqlInsertFile + "." + new Integer(i).toString());
-//            cu.runCommand("mysql", paralist);
-//        }
+        this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
+        log.info("gpos to protein Count: "+allSqlCount);
+        
+        for (int i = 0; i < this.allSqlCount; i++) {
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.gposSqlInsertFile + "." + new Integer(i).toString());
+            cu.runCommand("mysql", paralist);
+        }
 //
 //        log.info("********************[STEP 3.11]********************");
 //        log.info("[SQL] Import All Mapping INSERT SQL statements into table gpos_allmapping_pdb_entry (Warning: This step takes time)");
