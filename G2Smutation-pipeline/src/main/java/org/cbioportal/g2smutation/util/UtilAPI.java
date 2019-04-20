@@ -199,6 +199,12 @@ public class UtilAPI {
                         String ensp = list.get(i).getProtein_id();
                         if (en2SeqHm.containsKey(ensp)) {
                             int seqId = en2SeqHm.get(ensp);
+                            //debug
+                            //TODO, found error and stop
+                            if(seqId>92781){
+                                System.out.println("Error!:"+ensp+"\t"+seqId);
+                                System.exit(0);
+                            }
                             int protein_index = list.get(i).getProtein_start();
                             String mutation_NO = Integer.toString(seqId) + "_" + Integer.toString(protein_index);
                             // System.out.println("&&&"+ensp + "\t" + gpos +
