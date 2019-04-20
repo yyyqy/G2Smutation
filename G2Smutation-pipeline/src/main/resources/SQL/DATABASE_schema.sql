@@ -179,8 +179,8 @@ CREATE TABLE `structure_annotation_entry` (
 
 CREATE TABLE `gpos_allmapping_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
-  `CHR_POS` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
-  `DBSNP_ID` VARCHAR(50) default '',
+  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
+  `DBSNP_ID` VARCHAR(255) default '',
   `CLINVAR_ID` VARCHAR(255) default '',
   `COSMIC_ID` VARCHAR(255) default '',
   `GENIE_ID` VARCHAR(255) default '',

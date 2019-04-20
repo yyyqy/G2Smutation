@@ -888,23 +888,23 @@ public class PdbScriptsPipelineRunCommand {
                 cu.runCommand("mysql", paralist);
             }      
             
-            log.info("********************[STEP 3.10]********************");
-            log.info("[SQL] Generate and import into the table gpos_protein_entry");
-            
-            if(Boolean.parseBoolean(ReadConfig.initConcurrent)){
-            	//Concurrent version, use POST
-                gpos2proHm = fou.convertgpso2proHmMT(inputHm, gpos2proHm, true);       
-            }else{
-            	//true for POST, false for GET, POST is better
-                gpos2proHm = fou.convertgpso2proHm(inputHm, gpos2proHm, true);         	
-            }
+//            log.info("********************[STEP 3.10]********************");
+//            log.info("[SQL] Generate and import into the table gpos_protein_entry, this step is very slow for querying lots of API");
+//            
+//            if(Boolean.parseBoolean(ReadConfig.initConcurrent)){
+//            	//Concurrent version, use POST
+//                gpos2proHm = fou.convertgpso2proHmMT(inputHm, gpos2proHm, true);       
+//            }else{
+//            	//true for POST, false for GET, POST is better
+//                gpos2proHm = fou.convertgpso2proHm(inputHm, gpos2proHm, true);         	
+//            }
       	
         }else{
 			// Deserialize use mapdb!!!!
             //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
             // gpos2proHmdb gpos2proHm are there
         }
-//        
+        
 //        this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
 //        log.info("gpos to protein Count: "+allSqlCount);
 //        
