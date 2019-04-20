@@ -466,23 +466,23 @@ public class PdbScriptsPipelineApiToSQL {
         for (SNPAnnotationType type : SNPAnnotationType.values()) {
             str = str + ",`" + type.toString() + "_ID`";
         }
-        str = str + ")VALUES ('" + chr_pos + "'";
-        for (SNPAnnotationType type : SNPAnnotationType.values()) {
-            String contentStr = "";
-            int count = 0;
+        str = str + ")VALUES('" + chr_pos + "'";
+        String outputstr = "";
+        String individualStr = str;
+        int count = 0;
+        for (SNPAnnotationType type : SNPAnnotationType.values()) {           
             for (String cStr : hm.get(type).keySet()) {
-                if (count == 0) {
-                    contentStr = cStr;
-                } else {
-                    contentStr = contentStr + ";" + cStr;
+                String afterstr = individualStr + ",'" + cStr + "'";
+                for (int i=count+1; i<SNPAnnotationType.values().length;i++){
+                    afterstr = afterstr + ",''";
                 }
-                count++;
+                afterstr = afterstr + ");\n";
+                outputstr = outputstr + afterstr;               
             }
-            str = str + ",'" + contentStr + "'";
-        }
-        str = str + ");\n";
-        ;
-        return str;
+            individualStr = individualStr + ",''";
+            count++;
+        }       
+        return outputstr;
     }
 
     /**

@@ -705,7 +705,7 @@ public class PdbScriptsPipelineRunCommand {
         log.info("********************[STEP 3.1]********************");
         log.info("[File] Read results from file, generate HashMap for usage"); 
         FileOperatingUtil fou = new FileOperatingUtil();
-        MutationUsageRecord mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult);
+//        MutationUsageRecord mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult);
         
         /**
         log.info("********************[STEP 3.1.1]********************");
@@ -754,156 +754,156 @@ public class PdbScriptsPipelineRunCommand {
 //        cu.runCommand("mysql", paralist);
         
 //        //dbsnp, clinvar, cosmic, genie, tcga annotation         
-        if (!updateTag){
-        	//TODO Update Clinvar later, next version
-        	log.info("********************[STEP 3.4]********************");
-            log.info("[SQL] Clinvar: Download weekly Clinvar, parsing annotation file and inject to table clinvar_entry)");
-            
-            FTPClientUtil fc = new FTPClientUtil();
-            fc.downloadFilefromFTP(ReadConfig.clinvarWholeSource, currentDir
-                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
-            System.out.println(currentDir
-                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
-            
-            paralist = new ArrayList<String>();
-            paralist.add(currentDir
-                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
-            paralist.add(currentDir + ReadConfig.clinvarFile);
-            cu.runCommand("gunzip", paralist);      
-            
-            parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(mUsageRecord, currentDir + ReadConfig.clinvarFile, currentDir + ReadConfig.mutationInjectSQLClinvar);       
-           
-            paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.resourceDir + ReadConfig.annotationClinvarSQL);
-            cu.runCommand("mysql", paralist);
-            
-            paralist = new ArrayList<String>();
-            paralist.add(currentDir + ReadConfig.mutationInjectSQLClinvar);
-            cu.runCommand("mysql", paralist);
-        	
-			log.info("********************[STEP 3.5]********************");
-			log.info(
-					"[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
-			parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(mUsageRecord,
-					currentDir + ReadConfig.dbsnpFile,
-					currentDir + ReadConfig.mutationInjectSQLDbsnp);
-
-			paralist = new ArrayList<String>();
-			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationDbsnpSQL);
-			cu.runCommand("mysql", paralist);
-
-			paralist = new ArrayList<String>();
-			paralist.add(currentDir + ReadConfig.mutationInjectSQLDbsnp);
-			cu.runCommand("mysql", paralist);
-
-			log.info("********************[STEP 3.6]********************");
-			log.info(
-					"[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
-			parseprocess.parseGenerateMutationResultSQL4CosmicEntry(mUsageRecord,
-					currentDir + ReadConfig.cosmicFile,
-					currentDir + ReadConfig.mutationInjectSQLCosmic);
-
-			paralist = new ArrayList<String>();
-			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationCosmicSQL);
-			cu.runCommand("mysql", paralist);
-
-			paralist = new ArrayList<String>();
-			paralist.add(currentDir + ReadConfig.mutationInjectSQLCosmic);
-			cu.runCommand("mysql", paralist);
-
-			log.info("********************[STEP 3.7]********************");
-			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
-			parseprocess.parseGenerateMutationResultSQL4GenieEntry(mUsageRecord,
-					currentDir + ReadConfig.genieFile,
-					currentDir + ReadConfig.mutationInjectSQLGenie);
-
-			paralist = new ArrayList<String>();
-			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationGenieSQL);
-			cu.runCommand("mysql", paralist);
-
-			paralist = new ArrayList<String>();
-			paralist.add(currentDir + ReadConfig.mutationInjectSQLGenie);
-			cu.runCommand("mysql", paralist);
-
-			log.info("********************[STEP 3.8]********************");
-			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table tcga_entry)");
-			parseprocess.parseGenerateMutationResultSQL4TcgaEntry(mUsageRecord,
-					currentDir + ReadConfig.tcgaFile,
-					currentDir + ReadConfig.mutationInjectSQLTcga);
-
-			paralist = new ArrayList<String>();
-			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationTcgaSQL);
-			cu.runCommand("mysql", paralist);
-
-			paralist = new ArrayList<String>();
-			paralist.add(currentDir + ReadConfig.mutationInjectSQLTcga);
-			cu.runCommand("mysql", paralist);
-
-        }
-//        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
-//        /*
-//         * Old implementation: 10days of mapping all dbSNP in millions of SNP, not use anymore
-//         *
-//         *
-//        log.info("********************[STEP 3.9]********************");
-//        log.info("[PrepareSQL] Call url and output as input rs sql statments on all possible rsSNPs Caution: Very Slow now");        
-//
-//        this.rsSqlCount = generateSQLfile.generateRsSQLfile();
-//        
-//        //Add multiple threads on all rs mapping
-//        //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
-//               
-//        this.rsSqlCount =237;
-//        // Step 13:
-//        log.info("********************[STEP 13]********************");
-//        log.info("[SQL] Import RS INSERT SQL statements into the database (Warning: This step takes time)");
-//        for (int i = 0; i < this.rsSqlCount; i++) {
+//        if (!updateTag){
+//        	//TODO Update Clinvar later, next version
+//        	log.info("********************[STEP 3.4]********************");
+//            log.info("[SQL] Clinvar: Download weekly Clinvar, parsing annotation file and inject to table clinvar_entry)");
+//            
+//            FTPClientUtil fc = new FTPClientUtil();
+//            fc.downloadFilefromFTP(ReadConfig.clinvarWholeSource, currentDir
+//                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+//            System.out.println(currentDir
+//                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+//            
 //            paralist = new ArrayList<String>();
-//            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+//            paralist.add(currentDir
+//                    + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
+//            paralist.add(currentDir + ReadConfig.clinvarFile);
+//            cu.runCommand("gunzip", paralist);      
+//            
+//            parseprocess.parseGenerateMutationResultSQL4ClinvarEntry(mUsageRecord, currentDir + ReadConfig.clinvarFile, currentDir + ReadConfig.mutationInjectSQLClinvar);       
+//           
+//            paralist = new ArrayList<String>();
+//            paralist.add(ReadConfig.resourceDir + ReadConfig.annotationClinvarSQL);
 //            cu.runCommand("mysql", paralist);
+//            
+//            paralist = new ArrayList<String>();
+//            paralist.add(currentDir + ReadConfig.mutationInjectSQLClinvar);
+//            cu.runCommand("mysql", paralist);
+//        	
+//			log.info("********************[STEP 3.5]********************");
+//			log.info(
+//					"[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
+//			parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(mUsageRecord,
+//					currentDir + ReadConfig.dbsnpFile,
+//					currentDir + ReadConfig.mutationInjectSQLDbsnp);
+//
+//			paralist = new ArrayList<String>();
+//			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationDbsnpSQL);
+//			cu.runCommand("mysql", paralist);
+//
+//			paralist = new ArrayList<String>();
+//			paralist.add(currentDir + ReadConfig.mutationInjectSQLDbsnp);
+//			cu.runCommand("mysql", paralist);
+//
+//			log.info("********************[STEP 3.6]********************");
+//			log.info(
+//					"[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
+//			parseprocess.parseGenerateMutationResultSQL4CosmicEntry(mUsageRecord,
+//					currentDir + ReadConfig.cosmicFile,
+//					currentDir + ReadConfig.mutationInjectSQLCosmic);
+//
+//			paralist = new ArrayList<String>();
+//			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationCosmicSQL);
+//			cu.runCommand("mysql", paralist);
+//
+//			paralist = new ArrayList<String>();
+//			paralist.add(currentDir + ReadConfig.mutationInjectSQLCosmic);
+//			cu.runCommand("mysql", paralist);
+//
+//			log.info("********************[STEP 3.7]********************");
+//			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
+//			parseprocess.parseGenerateMutationResultSQL4GenieEntry(mUsageRecord,
+//					currentDir + ReadConfig.genieFile,
+//					currentDir + ReadConfig.mutationInjectSQLGenie);
+//
+//			paralist = new ArrayList<String>();
+//			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationGenieSQL);
+//			cu.runCommand("mysql", paralist);
+//
+//			paralist = new ArrayList<String>();
+//			paralist.add(currentDir + ReadConfig.mutationInjectSQLGenie);
+//			cu.runCommand("mysql", paralist);
+//
+//			log.info("********************[STEP 3.8]********************");
+//			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table tcga_entry)");
+//			parseprocess.parseGenerateMutationResultSQL4TcgaEntry(mUsageRecord,
+//					currentDir + ReadConfig.tcgaFile,
+//					currentDir + ReadConfig.mutationInjectSQLTcga);
+//
+//			paralist = new ArrayList<String>();
+//			paralist.add(ReadConfig.resourceDir + ReadConfig.annotationTcgaSQL);
+//			cu.runCommand("mysql", paralist);
+//
+//			paralist = new ArrayList<String>();
+//			paralist.add(currentDir + ReadConfig.mutationInjectSQLTcga);
+//			cu.runCommand("mysql", paralist);
+//
 //        }
-//        */
-//                 
-//        //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
-//        DB gpos2proHmdb = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.gpos2proHmDbFile).make();
-//        Map gpos2proHm = gpos2proHmdb.hashMap("map").createOrOpen();
-//        // Serialize the MutationUsageRecord into the tmpfile!!!!
-//        if(!this.updateTag){
-//        	//Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
-//            log.info("********************[STEP 3.9]********************");
-//            log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
-//            HashMap<String,String> inputHm = new HashMap<String,String>();
-//            //Test here
-//            //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
-//            for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
-//                inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
-//            }                
-//                    
-//            this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
-//            System.out.println("allSql Mapping Count:"+allSqlCount);                
-//            
-//            for (int i = 0; i <this.allSqlCount; i++) {
-//                paralist = new ArrayList<String>();
-//                paralist.add(currentDir + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
-//                cu.runCommand("mysql", paralist);
-//            }      
-//            
-//            log.info("********************[STEP 3.10]********************");
-//            log.info("[SQL] Generate and import into the table gpos_protein_entry");
-//            
-//            if(Boolean.parseBoolean(ReadConfig.initConcurrent)){
-//            	//Concurrent version, use POST
-//                gpos2proHm = fou.convertgpso2proHmMT(inputHm, gpos2proHm, true);       
-//            }else{
-//            	//true for POST, false for GET, POST is better
-//                gpos2proHm = fou.convertgpso2proHm(inputHm, gpos2proHm, true);         	
-//            }
-//      	
-//        }else{
-//			// Deserialize use mapdb!!!!
-//            //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
-//            // gpos2proHmdb gpos2proHm are there
-//        }
+        PdbScriptsPipelineApiToSQL generateSQLfile = new PdbScriptsPipelineApiToSQL();
+        /*
+         * Old implementation: 10days of mapping all dbSNP in millions of SNP, not use anymore
+         *
+         *
+        log.info("********************[STEP 3.9]********************");
+        log.info("[PrepareSQL] Call url and output as input rs sql statments on all possible rsSNPs Caution: Very Slow now");        
+
+        this.rsSqlCount = generateSQLfile.generateRsSQLfile();
+        
+        //Add multiple threads on all rs mapping
+        //this.rsSqlCount = generateSQLfile.generateRsSQLfileMT();
+               
+        this.rsSqlCount =237;
+        // Step 13:
+        log.info("********************[STEP 13]********************");
+        log.info("[SQL] Import RS INSERT SQL statements into the database (Warning: This step takes time)");
+        for (int i = 0; i < this.rsSqlCount; i++) {
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+            cu.runCommand("mysql", paralist);
+        }
+        */
+                 
+        //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
+        DB gpos2proHmdb = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.gpos2proHmDbFile).make();
+        Map gpos2proHm = gpos2proHmdb.hashMap("map").createOrOpen();
+        // Serialize the MutationUsageRecord into the tmpfile!!!!
+        if(!this.updateTag){
+        	//Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
+            log.info("********************[STEP 3.9]********************");
+            log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
+            HashMap<String,String> inputHm = new HashMap<String,String>();
+            //Test here
+            //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
+            for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
+                inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
+            }                
+                    
+            this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
+            System.out.println("allSql Mapping Count:"+allSqlCount);                
+            
+            for (int i = 0; i <this.allSqlCount; i++) {
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("mysql", paralist);
+            }      
+            
+            log.info("********************[STEP 3.10]********************");
+            log.info("[SQL] Generate and import into the table gpos_protein_entry");
+            
+            if(Boolean.parseBoolean(ReadConfig.initConcurrent)){
+            	//Concurrent version, use POST
+                gpos2proHm = fou.convertgpso2proHmMT(inputHm, gpos2proHm, true);       
+            }else{
+            	//true for POST, false for GET, POST is better
+                gpos2proHm = fou.convertgpso2proHm(inputHm, gpos2proHm, true);         	
+            }
+      	
+        }else{
+			// Deserialize use mapdb!!!!
+            //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
+            // gpos2proHmdb gpos2proHm are there
+        }
 //        
 //        this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
 //        log.info("gpos to protein Count: "+allSqlCount);
