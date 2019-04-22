@@ -1,8 +1,50 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"></link>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"></link>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+</head>
+
 <body>
+	<nav style="margin:0px" class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">G2S Web Service</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    		<span class="navbar-toggler-icon"></span>
+  		</button>
+  		
+  		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    		<ul class="navbar-nav mr-auto">
+      			
+      			<li class="nav-item dropdown">
+        			<a style="font-size:1.2em" class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Databases</a>
+        				<div class="dropdown-menu" aria-labelledby="dropdown01">
+          					<a class="dropdown-item" th:href="@{/database}" href="database.html">Usage Database</a>
+          					<a class="dropdown-item" th:href="@{/rs}" href="rs.html">RS Databases</a>
+        				</div>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/sequence}" href="sequence.html">Sequence</a>
+      			</li>
+      		
+    		</ul>
+  		</div>
+	</nav>
+	
+	<div class="container">
 	<h1 layout:fragment="header">Statistics of G2S databases:</h1>
 	<div layout:fragment="content" class="container-fluid">
 
@@ -74,6 +116,7 @@
 			sequences in new release of Uniprot/Ensembl, and during
 			re-initialization an all-against-all alignment process is executed.
 		</p>
+	</div>
 	</div>
 </body>
 </html>
