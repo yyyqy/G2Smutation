@@ -458,15 +458,6 @@ public class MainController {
         return new ModelAndView("database");
     }
     
-    @GetMapping("/databasedemo")    
-    public ModelAndView databasedemoInfo(@RequestParam(value="number",defaultValue = "1") Integer number,Model model){
-    	List<mutation_usage_table> datapage=mutationRepository.findTop20BymutationIdGreaterThan(1);
-        model.addAttribute("data", datapage);
-        model.addAttribute("number",number);
-        model.addAttribute("totaldata", totaldata);
-        return new ModelAndView("databasedemo");
-    }
-    
     // For search
     public List<mutation_usage_table> searchData;
     public Integer searchPerPage = 10;
