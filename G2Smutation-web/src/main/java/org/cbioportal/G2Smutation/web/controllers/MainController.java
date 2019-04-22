@@ -501,6 +501,7 @@ public class MainController {
         Integer number = 1;
         int toIndex = Math.min(totalCount, (0 + 1) * searchPerPage);
         List<mutation_usage_table> subList = datafind.subList(0, toIndex);
+        
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("number",number);
     	model.addAttribute("data", subList);
