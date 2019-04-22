@@ -1,10 +1,27 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	  layout:decorator="layout">
+<html>
 <head>
-	<script src=".../jquery.min.js?t=1484026799191" charset="utf-8"></script>
+	<meta charset="utf-8"></meta>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
 	
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"></link>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    
+	<!-- For dataTables -->
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"></link>
+	<link rel="stylesheet" type="text/css" href="/css/datatable.css"></link>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	
+	<!-- For Lobipanel -->
+	<link rel="stylesheet" href="/css/jquery-ui.min.css"/>
+	<link rel="stylesheet" href="/css/lobipanel.min.css"/>
+	<script src="/js/jquery-ui.min.js"></script>
+	<script src="/js/lobipanel.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+
 	<script>
 		var searchChoose = 1;
 		function getChoose(choose) {
@@ -33,135 +50,297 @@
 			//document.getElementById("pdbUnion").style.display = 'block';
 			//}
 		}
-
 	</script>
+    
 </head>
 
+
 <body>
+	<nav style="margin:0px" class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">G2S Web Service</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    		<span class="navbar-toggler-icon"></span>
+  		</button>
+  		
+  		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    		<ul class="navbar-nav mr-auto">
+      			
+      			<li class="nav-item dropdown">
+        			<a style="font-size:1.2em" class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Databases</a>
+        				<div class="dropdown-menu" aria-labelledby="dropdown01">
+          					<a class="dropdown-item" th:href="@{/database}" href="database.html">Usage Database</a>
+          					<a class="dropdown-item" th:href="@{/rs}" href="rs.html">RS Databases</a>
+        				</div>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/sequence}" href="sequence.html">Sequence</a>
+      			</li>
+      		
+    		</ul>
+  		</div>
+	</nav>
+
+	<div style="margin-top:1%;padding:1%" class="container-fluid">
 	
-<div layout:fragment="content" class="form-group">
-	<h1 style="margin-bottom: 0.6em">Database Display</h1>
-	<!-- <label for="sex1" class="control-label"></label> -->
+		<select class="custom-select" style="width:200px;height:35px;margin-bottom:1em" onchange="getChoose(this.value)">
+			<option value="1" >SEQ_ID</option>
+			<option value="2" >SEQ_INDEX</option>
+			<option value="3" >SEQ_ID + SEQ_INDEX</option>
+			<option value="4" >PDB_NO</option>
+			<option value="5" >PDB_INDEX</option>
+			<!-- <option value="6" >PDB_NO + PDB_INDEX</option> -->
+		</select>
+		<button style="width:80px;height:35px;margin-bottom:0.7em" class="btn btn-primary" onclick="getDisplay()">Start</button>
+    	<!-- <input class="btn btn-primary" type="button" style="width:200px;margin-bottom:2em" value="Start" onclick="getDisplay()"/> -->
 	
-	<select style="margin-bottom:0px" onchange="getChoose(this.value)">
-		<option value="1" >SEQ_ID</option>
-		<option value="2" >SEQ_INDEX</option>
-		<option value="3" >SEQ_ID + SEQ_INDEX</option>
-		<option value="4" >PDB_NO</option>
-		<option value="5" >PDB_INDEX</option>
-		<!-- <option value="6" >PDB_NO + PDB_INDEX</option> -->
-	</select>
-	<input type="button" style="width:200px;height:30px" value="Search Filter" onclick="getDisplay()"/>
+		<div id="seqId" style="display:none">
+			<form action="#" th:action="@{/search/SEQID}" method="post">
+  				<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="SEQID" placeholder="e.g. 35" style="width:200px;height:35px;margin-bottom:1em"/>	
+  				<input class="btn btn-primary" type="submit" value="Search" style="width:80px;height:35px;margin-bottom:0.2em"/>
+			</form>
+		</div>
+		<div id="seqIndex" style="display:none">
+			<form action="#" th:action="@{/search/SEQINDEX}" method="post">
+		  		<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="SEQINDEX" placeholder="e.g. 143" style="width:200px;height:35px;margin-bottom:1em"/>	
+		  		<input class="btn btn-primary" type="submit" value="Search" style="width:80px;height:35px;margin-bottom:0.2em"/>
+			</form>
+		</div>
+		<div id="seqUnion" style="display:none">
+			<form action="#" th:action="@{/search/SEQUNION}" method="post">
+		  		<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="SEQID" placeholder="Search for SEQ_ID" title=" e.g. 35" style="width:200px;height:35px;margin-bottom:1em"/><br/>
+		  		<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="SEQINDEX" placeholder="Search for SEQ_INDEX" title=" e.g. 143" style="width:200px;height:35px;margin-bottom:1em"/>
+		  		<input class="btn btn-primary" type="submit" value="Search" style="width:80px;height:35px;margin-bottom:0.2em"/><br/>
+			</form>
+		</div>
+		<div id="pdbNo" style="display:none">
+			<form action="#" th:action="@{/search/PDBNO}" method="post">
+		  		<input required="required" type="text" name="PDBNO" placeholder="e.g. 2afy" style="width:200px;height:35px;margin-bottom:1em"/>	
+		  		<input class="btn btn-primary" type="submit" value="Search" style="width:80px;height:35px;margin-bottom:0.2em"/>
+			</form>
+		</div>
+		<div id="pdbIndex" style="display:none">
+			<form action="#" th:action="@{/search/PDBINDEX}" method="post">
+		  		<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="PDBINDEX" placeholder="e.g. 134" style="width:200px;height:35px;margin-bottom:1em"/>	
+		  		<input class="btn btn-primary" type="submit" value="Search" style="width:80px;height:35px;margin-bottom:0.2em"/>
+			</form>
+		</div>
 	
-	<div id="seqId" style="display:none;margin-top:10px">
-		<form action="#" th:action="@{/search/SEQID}" method="post">
-  			<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="SEQID" placeholder="e.g. 35" style="margin-bottom:0px"/>	
-  			<input type="submit" value="Search for SEQ_ID" style="width:200px; height:30px;"/>
-		</form>
-	</div>
-	<div id="seqIndex" style="display:none;margin-top:10px">
-		<form action="#" th:action="@{/search/SEQINDEX}" method="post">
-  			<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="SEQINDEX" placeholder="e.g. 143" style="margin-bottom:0px"/>	
-  			<input type="submit" value="Search for SEQ_INDEX" style="width:200px; height:30px;"/>
-		</form>
-	</div>
-	<div id="seqUnion" style="display:none;margin-top:10px">
-		<form action="#" th:action="@{/search/SEQUNION}" method="post">
-  			<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="SEQID" placeholder="Search for SEQ_ID" title=" e.g. 35" style="margin-bottom:10px"/><br/>
-  			<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="SEQINDEX" placeholder="Search for SEQ_INDEX" title=" e.g. 143" style="margin-bottom:10px"/>
-  			<input type="submit" value="Search" style="width:200px; height:30px;margin-bottom:10px"/><br/>
-		</form>
-	</div>
-	
-	<div id="pdbNo" style="display:none;margin-top:10px">
-		<form action="#" th:action="@{/search/PDBNO}" method="post">
-  			<input required="required" type="text" name="PDBNO" placeholder="e.g. 2afy" style="margin-bottom:0px"/>	
-  			<input type="submit" value="Search for PDB_NO" style="width:200px; height:30px;"/>
-		</form>
-	</div>
-	<div id="pdbIndex" style="display:none;margin-top:10px">
-		<form action="#" th:action="@{/search/PDBINDEX}" method="post">
-  			<input required="required" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" name="PDBINDEX" placeholder="e.g. 134" style="margin-bottom:0px"/>	
-  			<input type="submit" value="Search for PDB_INDEX" style="width:200px; height:30px;"/>
-		</form>
-	</div>
-	<!-- 
-	<div id="pdbUnion" style="display:none;margin-top:10px">
-		<form action="#" th:action="@{/search/PDBUNION}" method="post">
-  			<input type="text" name="PDBNO" placeholder="Search for PDB_NO" title=" e.g. 2afy" style="margin-bottom:10px"/><br/>
-  			<input type="text" name="PDBINDEX" placeholder="Search for PDB_INDEX" title=" e.g. 134" style="margin-bottom:10px"/>
-  			<input type="submit" value="Search" style="width:200px; height:30px;margin-bottom:10px"/><br/>
-		</form>
+
+		<table id="database" class="table table-striped table-bordered" style="width:100%">
+    		<thead>
+			    <tr>
+			       <th style="text-align:center;font-size:10px">MUTATION_NO</th>
+			       <th style="text-align:center;font-size:10px">Link</th>
+			       <th style="text-align:center;font-size:10px">SEQ_INDEX</th>
+			       <th style="text-align:center;font-size:10px">SEQ_RESIDUE</th>
+			       <th style="text-align:center;font-size:10px">PDB_RESIDUE</th>
+			       <th style="text-align:center;font-size:10px">PDB_NO</th>
+			       <th style="text-align:center;font-size:10px">PDB_INDEX</th>
+			       <!-- <th style="text-align:center;font-size:10px">3Dmol</th>-->
+			       <th style="text-align:center;font-size:10px">Ngl</th>
+			       <!-- 
+			       <th style="text-align:center;font-size:10px">ALIGNMENT_ID</th>
+			        -->
+			       <th style="text-align:center;font-size:10px">ALIGNMENT Details</th>
+			       <th style="text-align:center;font-size:10px">Check to Compare</th>
+			    </tr>
+			</thead>
+    		<tbody>
+			    <tr th:each="datum : ${data}">
+			        <!-- 
+			        <td style="text-align:center;font-size:16px" th:text="'SEQ_INDEX:&nbsp;'+${datum.seqIndex}+'&nbsp;&nbsp;&nbsp;&nbsp;SEQ_RESIDUE:&nbsp;'+${datum.seqResidue}"></td>
+			        -->
+			        <!-- 
+					<td style="text-align:center;font-size:16px">
+			        	<table class="table table-bordered">
+			        		<tr th:each="url:${#strings.arraySplit(datum.seqName, ';')}">
+			        			<td style="text-align:center"><a href="#" target="_blank" th:href="@{'/seqNameUrl?urlInfo='+${url}}">
+			        				<div th:if="${#strings.length(url)} &gt; 20" ><span th:text="${#strings.substring(url,18,22)}"></span></div>
+			        				<div th:if="${#strings.length(url)} &lt; 20" ><span th:text="${#strings.substring(url,9)}"></span></div>
+			        			</a></td>
+				 			</tr> 0, 0, 0
+			        	</table>
+			        </td>
+			         -->
+			         <td style="text-align:center;font-size:16px" th:text="${datum.mutationNo}"></td>
+			         <td style="text-align:center;font-size:14px">
+			        	<table align="center" valign="middle">
+			        		<tr th:each="url:${#strings.arraySplit(datum.seqName, ';')}">
+			        			<td><a target="_blank" href="#" th:href="@{'/seqNameUrl?urlInfo='+${url}}">
+			        			<div th:if="${#strings.length(url)} &lt; 22" ><span th:text="${#strings.substring(url,9)}"></span></div>
+			        			<div th:if="${#strings.length(url)} &gt; 22" ><span th:text="${#strings.substring(url,18,22)}"></span></div>
+			        			</a></td>
+				 			</tr>
+			        	</table>
+			        </td>
+			
+			        <td style="text-align:center;font-size:16px" th:text="${datum.seqIndex}"></td>
+			        <td style="text-align:center;font-size:16px" th:text="${datum.seqResidue}"></td>
+			        <td style="text-align:center;font-size:16px" th:text="${datum.pdbResidue}"></td>
+			        <td style="text-align:center;font-size:16px" th:text="${#strings.substring(datum.pdbNo,0,4)}"></td>
+			        <td style="text-align:center;font-size:16px" th:text="${datum.pdbIndex}"></td>
+			        <!-- 
+			        <td style="text-align:center;font-size:16px"><a type="button" class="btn btn-primary" target="_blank" th:href="@{'/3Dmol?pdbInfo='+${datum.pdbNo}+${datum.pdbIndex}}">3Dmol</a></td>
+			        -->
+					<!--
+			        <td style="text-align:center;font-size:16px"><a type="button" class="btn btn-primary" target="_blank" th:href="@{'/ngl?pdbInfo2='+${datum.pdbNo}+${datum.pdbIndex}}">Ngl</a></td> 
+			 		-->
+			       	
+			       	<td style="text-align:center"><a style="margin:1%" type="button" class="btn btn-primary" target="_blank" data-toggle="collapse" data-parent="#accordion" th:href="'#3d' + ${datum.alignmentId}" th:text="'3D Model'"></a>
+					<div th:id="'3d' + ${datum.alignmentId}" class="panel-collapse collapse">
+			  		<div class="panel panel-warning">
+			        <div class="panel-heading">
+			            <div class="panel-title">
+			                <h4 th:text="${datum.alignmentId}"></h4>
+			            </div>
+			        </div>
+			        <div class="panel-body">
+			        	<!--  <object data="'https://localhost:8443/ngl?pdbInfo2=' + ${datum.pdbNo} + ${datum.pdbIndex}"></object>-->
+			        	<embed th:src="'https://localhost:8443/ngl?pdbInfo2='+${datum.pdbNo+datum.pdbIndex}"></embed>
+			    	</div>
+			    	</div>
+			    	<script>
+			   		$(function(){
+			        	$('.panel').lobiPanel({
+			        		reload: false,
+			        		close: false,
+			        		editTitle: false,
+			        		minimize: false
+			        	});
+			    	});
+					</script>
+					</div>
+					</td>
+			 	
+			        <!-- 
+			        <td style="text-align:center;font-size:16px" th:text="${datum.alignmentId}"></td>
+			         -->
+					<!-- 
+					<td style="text-align:center"><a type="button" class="btn btn-primary" target="_blank" th:href="@{'/AlignmentIdPage?AlignmentId='+${datum.alignmentId}}">More Details</a></td>
+					-->
+			
+					<td style="text-align:center"><a style="margin:1%" type="button" class="btn btn-primary" target="_blank" data-toggle="collapse" data-parent="#accordion" th:href="'#alignment' + ${datum.alignmentId}" th:text="'Alignment Details'"></a>
+						<div th:id="'alignment' + ${datum.alignmentId}" class="panel-collapse collapse">
+			  				<table class="table table-striped">
+			 				<thead>
+			    				<tr>
+				      				 <th style="text-align:center">Tpyes</th>
+							         <th style="text-align:center">Content</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							  	<tr>
+						        	<th style="text-align:center">Alignment Id</th>
+						        	<td style="text-align:center;font-size:16px" th:text="${datum.alignmentId}"></td>
+			    				</tr>
+			    				<tr>
+			    					<th style="text-align:center">Evalue</th>
+						        	<td style="text-align:center" th:text="${datum.evalue}"></td>
+			    				</tr>  
+			    				<tr>
+			    					<th style="text-align:center">Bitscore</th>
+						        	<td style="text-align:center" th:text="${datum.bitscore}"></td>
+			    				</tr>  
+			    				<tr>
+			    					<th style="text-align:center">Identity</th>
+						        	<td style="text-align:center" th:text="${datum.identity}"></td>
+			    				</tr>  
+			    				<tr>
+			    					<th style="text-align:center">Identp</th>
+						        	<td style="text-align:center" th:text="${datum.identp}"></td>
+			    				</tr>  
+							</tbody>
+							</table>
+						</div>
+					</td>
+			
+			        <!-- 
+			        <td style="text-align:center">
+			        	<input name="${datum.pdbNo}" value="http://www.google.com" type="checkbox" onclick="if(this.checked){OpenWindow(this.value)}else{OpenWindow('http://www.codingforums.com/forumdisplay.php?f=2')}"></input>
+			        </td>
+			        <td style="text-align:center"><a type="button" class="btn btn-primary" target="_blank" th:href="@{'/AlignmentIdPage?AlignmentId='+${datum.alignmentId}}">Compare</a></td>
+					-->
+					
+					<td style="text-align:center"><a style="margin:1%" type="button" class="btn btn-primary" target="_blank" data-toggle="collapse" data-parent="#accordion" th:href="'#compare' + ${datum.alignmentId}" th:text="'Details to Compare'"></a>
+						<div th:id="'compare' + ${datum.alignmentId}" class="panel-collapse collapse">
+			  				<div class="panel panel-warning">
+			        			<div class="panel-heading">
+			            			<div class="panel-title"><h4 th:text="'Alignment:'+${datum.alignmentId}"></h4></div>
+			        			</div>
+			        			<div class="panel-body">
+						            <div class="card mb-3">
+						  				<div class="row no-gutters">
+						      			<div class="card-body">
+						        			<h5 class="card-title">Content Title</h5>
+						        			<p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+						      			</div>
+						  			</div>
+			            
+						   			<div style="margin-top:10px" class="panel-group" id="accordion">
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Content 1</a></h4>
+											</div>
+											<div id="collapseOne" class="panel-collapse collapse">
+												<div class="panel-body">
+													For Content 1
+												</div>
+											</div>
+										</div>
+										
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Content 2</a></h4>
+											</div>
+											<div id="collapseTwo" class="panel-collapse collapse">
+												<div class="panel-body">
+													For Content 2
+												</div>
+											</div>
+										</div>
+								
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Content 3</a></h4>
+											</div>
+											<div id="collapseThree" class="panel-collapse collapse">
+											<div class="panel-body">
+													For Content 3
+											</div>
+											</div>
+										</div>
+										</div>
+			  						</div>
+			   		 			</div>
+			    			</div>
+			    			<script>
+					   		$(function(){
+					        	$('.panel').lobiPanel({
+					        		reload: false,
+					        		close: false,
+					        		editTitle: false,
+					        		minimize: false
+					        	});
+					    	});
+							</script>
+						</div>
+					</td>
+			    </tr>
+    	</tbody>
+	</table>
+	<script type="text/javascript" src="/js/databasetable.js"></script>
+	<!--
+    <div id="panel-reminders" data-inner-id="ndb-dashboard-reminders" class="panel panel-default">
+		<div class="panel-heading"></div>
+		<div id="panel-reminders-body" class="panel-body"><object width="100%" height="500px" data="https://getbootstrap.com/"></object></div>
 	</div>
 	-->
 	
-	<div style="margin-top:40px">
-	<h3 th:inline="text" style="display:inline-block">Total number of data: </h3><h3 style="display:inline-block;color:red" th:text="${totaldata}"></h3>
-	<table class="table table-bordered">
-    <tr style="color:red">
-       <th style="text-align:center;font-size:10px">MUTATION_ID</th>
-       <th style="text-align:center;font-size:10px">SEQ_ID</th>
-       <th style="text-align:center;font-size:10px">SEQ_NAME</th>
-       <th style="text-align:center;font-size:10px">SEQ_INDEX</th>
-       <th style="text-align:center;font-size:10px">SEQ_RESIDUE</th>
-       <th style="text-align:center;font-size:10px">PDB_NO</th>
-       <th style="text-align:center;font-size:10px">CHAIN</th>
-       <th style="text-align:center;font-size:10px">PDB_INDEX</th>
-       <th style="text-align:center;font-size:10px">PDB_RESIDUE</th>
-       <th style="text-align:center;font-size:10px">3Dmol</th>
-       <th style="text-align:center;font-size:10px">Ngl</th>
-       <th style="text-align:center;font-size:10px">ALIGNMENT_ID</th>
-       <th style="text-align:center;font-size:10px">ALIGNMENT Details</th>
-       
-    </tr>
-    
-    <tr th:each="datum : ${data}">
-        <td style="text-align:center;font-size:16px" th:text="${datum.mutationId}"></td>
-        <td style="text-align:center;font-size:16px" th:text="${datum.seqId}"></td>
-        <td>
-        	<table style="margin-bottom:0px" class="table table-bordered">
-        		<tr th:each="url:${#strings.arraySplit(datum.seqName, ';')}">
-        			<td style="font-size:14px;padding:0px"><a href="#" target="_blank" th:href="@{'/seqNameUrl?urlInfo='+${url}}" th:text="${url}"></a></td>
-	 			</tr>
-        	</table>
-        </td>
-        
-        <td style="text-align:center;font-size:16px" th:text="${datum.seqIndex}"></td>
-        <td style="text-align:center;font-size:16px" th:text="${datum.seqResidue}"></td>
-        <td style="text-align:center;font-size:16px" th:text="${#strings.substring(datum.pdbNo,0,4)}"></td>
-        <td style="text-align:center;font-size:16px" th:text="${#strings.substring(datum.pdbNo,5,6)}"></td>
-        <td style="text-align:center;font-size:16px" th:text="${datum.pdbIndex}"></td>
-        <td style="text-align:center;font-size:16px" th:text="${datum.pdbResidue}"></td>
-        <td style="text-align:center;font-size:16px"><a target="_blank" th:href="@{'/3Dmol?pdbInfo='+${datum.pdbNo}+${datum.pdbIndex}}">3Dmol</a></td>
-		<td style="text-align:center;font-size:16px"><a target="_blank" th:href="@{'/ngl?pdbInfo2='+${datum.pdbNo}+${datum.pdbIndex}}">Ngl</a></td> 
-        <td style="text-align:center;font-size:16px" th:text="${datum.alignmentId}"></td>
-		<td style="text-align:center"><a type="button" class="btn btn-info" target="_blank" th:href="@{'/AlignmentIdPage?AlignmentId='+${datum.alignmentId}}">More Details</a></td>
-        <!-- 
-        <td>
-			<table>
-				<tr style="color:red">
-					<td>EVALUE</td>
-					<td>BITSCORE</td>
-					<td>IDENTITY</td>
-					<td>IDENTP</td>
-					<td>More Details</td>
-				</tr>
-				<tr>
-					<td style="text-align:center;font-size:14px" th:text="${datum.evalue}"></td>
-					<td style="text-align:center;font-size:14px" th:text="${datum.bitscore}"></td>
-					<td style="text-align:center;font-size:14px" th:text="${datum.identity}"></td>
-					<td style="text-align:center;font-size:14px" th:text="${datum.identp}"></td>
-					<td style="text-align:center"><a type="button" class="btn btn-info" target="_blank" th:href="@{'/AlignmentIdPage?AlignmentId='+${datum.alignmentId}}">More Details</a></td>
-				</tr>
-			</table>
-        </td>
-        -->
-        <!--
-        <td style="text-align:center"><a title="For more details" th:text="${datum.alignmentId}" th:href="@{'/AlignmentIdPage?AlignmentId='+${datum.alignmentId}}"></a></td>
-        -->
-    </tr>  
-	</table>
+	
 	</div>
-	</div>
+
 </body>
 </html>
