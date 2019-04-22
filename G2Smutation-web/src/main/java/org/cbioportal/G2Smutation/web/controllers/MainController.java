@@ -505,6 +505,7 @@ public class MainController {
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("number",number);
     	model.addAttribute("data", subList);
+        
         return new ModelAndView("databasesearch");	
     }
     
