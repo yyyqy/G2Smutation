@@ -868,42 +868,42 @@ public class PdbScriptsPipelineRunCommand {
         DB gpos2proHmdb = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.gpos2proHmDbFile).make();
         Map gpos2proHm = gpos2proHmdb.hashMap("map").createOrOpen();
         // Serialize the MutationUsageRecord into the tmpfile!!!!
-        if(!this.updateTag){
-        	//Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
-            log.info("********************[STEP 3.9]********************");
-            log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
-            HashMap<String,String> inputHm = new HashMap<String,String>();
-            //Test here
-            //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
-            for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
-                inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
-            }                
-                    
-            this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
-            System.out.println("allSql Mapping Count:"+allSqlCount);                
-            
-            for (int i = 0; i <this.allSqlCount; i++) {
-                paralist = new ArrayList<String>();
-                paralist.add(currentDir + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("mysql", paralist);
-            }      
-            
-            log.info("********************[STEP 3.10]********************");
-            log.info("[SQL] Generate and import into the table gpos_protein_entry, this step is very slow for querying lots of API");
-            
-            if(Boolean.parseBoolean(ReadConfig.initConcurrent)){
-            	//Concurrent version, use POST
-                gpos2proHm = fou.convertgpso2proHmMT(inputHm, gpos2proHm, true);       
-            }else{
-            	//true for POST, false for GET, POST is better
-                gpos2proHm = fou.convertgpso2proHm(inputHm, gpos2proHm, true);         	
-            }
-      	
-        }else{
-			// Deserialize use mapdb!!!!
-            //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
-            // gpos2proHmdb gpos2proHm are there
-        }
+//        if(!this.updateTag){
+//        	//Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
+//            log.info("********************[STEP 3.9]********************");
+//            log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
+//            HashMap<String,String> inputHm = new HashMap<String,String>();
+//            //Test here
+//            //inputHm = fou.collectAllSNPs2Map(inputHm, SNPAnnotationType.CLINVAR);
+//            for(SNPAnnotationType snpCollectionName: SNPAnnotationType.values()){
+//                inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
+//            }                
+//                    
+//            this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
+//            System.out.println("allSql Mapping Count:"+allSqlCount);                
+//            
+//            for (int i = 0; i <this.allSqlCount; i++) {
+//                paralist = new ArrayList<String>();
+//                paralist.add(currentDir + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+//                cu.runCommand("mysql", paralist);
+//            }      
+//            
+//            log.info("********************[STEP 3.10]********************");
+//            log.info("[SQL] Generate and import into the table gpos_protein_entry, this step is very slow for querying lots of API");
+//            
+//            if(Boolean.parseBoolean(ReadConfig.initConcurrent)){
+//            	//Concurrent version, use POST
+//                gpos2proHm = fou.convertgpso2proHmMT(inputHm, gpos2proHm, true);       
+//            }else{
+//            	//true for POST, false for GET, POST is better
+//                gpos2proHm = fou.convertgpso2proHm(inputHm, gpos2proHm, true);         	
+//            }
+//      	
+//        }else{
+//			// Deserialize use mapdb!!!!
+//            //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
+//            // gpos2proHmdb gpos2proHm are there
+//        }
         
         this.allSqlCount = generateSQLfile.generateGposProteinSQLfile(gpos2proHm);
         log.info("gpos to protein Count: "+allSqlCount);
