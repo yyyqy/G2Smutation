@@ -237,11 +237,6 @@ public class MainController {
         return new ModelAndView("contact");
     }
     
-    @GetMapping("/beta")
-    public ModelAndView betaInfo() {
-        return new ModelAndView("beta");
-    }
-    
     @GetMapping("/detail")
     public ModelAndView detailInfo(Model model) {
         return new ModelAndView("detail");
