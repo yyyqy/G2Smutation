@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.util;
+package org.cbioportal.g2smutation.util;
 
 import java.io.File;
 import java.io.InputStream;
@@ -96,10 +96,10 @@ public class CommandProcessUtil {
             }
             break;
         case "naccess":
-        	if (paralist.size() != 2){
-        		checkFlag = false;
-        	}
-        	break;
+            if (paralist.size() != 2) {
+                checkFlag = false;
+            }
+            break;
         default:
             log.error("[SHELL] Command " + commandName + " does not support now");
             break;
@@ -173,7 +173,9 @@ public class CommandProcessUtil {
                 pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));
                 break;
             case "naccess":
-            	log.info("[SHELL] Running naccess command at" + paralist.get(0) + " at folder "+paralist.get(1) + "...");
+            	// Don't print it out for we have many of them
+//                log.info("[SHELL] Running naccess command at" + paralist.get(0) + " at folder " + paralist.get(1)
+//                        + "...");
                 pb = new ProcessBuilder(makeNaccessCommand(paralist.get(0)));
                 pb.directory(new File(paralist.get(1)));
                 break;
@@ -185,7 +187,10 @@ public class CommandProcessUtil {
             pc.waitFor();
             shellReturnCode = pc.exitValue();
             outputProcessError(pc, shellReturnCode, commandName);
-            log.info("[SHELL] Command " + commandName + " completed");
+            // naccess will proceed many times, so not print out
+            if (!commandName.equals("naccess")){
+            	log.info("[SHELL] Command " + commandName + " completed");
+            }
         } catch (Exception ex) {
             log.error("[SHELL] Fatal Error: Could not Successfully process command, exit the program now");
             log.error(ex.getMessage());
@@ -373,16 +378,17 @@ public class CommandProcessUtil {
         list.add(inFilename);
         return list;
     }
-    
+
     /**
      * generate naccess command to get naccess files
+     * 
      * @param inFilename
      * @return
      */
-    private List<String> makeNaccessCommand(String inFilename){
-    	List<String> list = new ArrayList<String>();
-    	list.add("naccess");
-    	list.add(inFilename);
-    	return list;
+    private List<String> makeNaccessCommand(String inFilename) {
+        List<String> list = new ArrayList<String>();
+        list.add("naccess");
+        list.add(inFilename);
+        return list;
     }
 }

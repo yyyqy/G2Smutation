@@ -1,11 +1,53 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"></link>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"></link>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+</head>
+
 <body>
-	<h1 layout:fragment="header">Workflow of G2S Web Service</h1>
-	<div layout:fragment="content" class="container-fluid">
-		<p>
+	<nav style="margin:0px" class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">G2S Web Service</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    		<span class="navbar-toggler-icon"></span>
+  		</button>
+  		
+  		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    		<ul class="navbar-nav mr-auto">
+      			
+      			<li class="nav-item dropdown">
+        			<a style="font-size:1.2em" class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Databases</a>
+        				<div class="dropdown-menu" aria-labelledby="dropdown01">
+          					<a class="dropdown-item" th:href="@{/database}" href="database.html">Usage Database</a>
+          					<a class="dropdown-item" th:href="@{/rs}" href="rs.html">RS Databases</a>
+        				</div>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/sequence}" href="sequence.html">Sequence</a>
+      			</li>
+      		
+    		</ul>
+  		</div>
+	</nav>
+	
+	<div class="container">
+		<h2>Workflow of G2S Web Service</h2>
+		<div style="padding:0px" class="container-fluid">
+		<p style="text-align:justify;font-size:1.2em">
 			The goal of G2S is to offer a high-accuracy, high-reliable,
 			auto-updating computational services providing protein sequence to
 			tertiary structure alignments in residue level. The workflow and
@@ -13,15 +55,11 @@
 			in <b>Initiate</b> workflow, dash lines are in <b>Update</b>
 			workflow.
 		</p>
-		<img th:src="@{/images/workflow.png}" />
-		<p>
+		<img th:src="@{/images/workflow.png}" class="img-fluid" alt="Responsive image"/>
 		<h4>
-			<b>Figure 1</b>: Initiate/Update Workflow and Architecture of G2S Web
-			Service
+			<b>Figure 1</b>: Initiate/Update Workflow and Architecture of G2S Web Service
 		</h4>
-		</p>
-		<p></p>
-		<p>
+		<p style="text-align:justify;font-size:1.2em">
 			To initiate the G2S web service, manually reviewed Uniprot
 			(Swiss-Prot) sequences are integrated with Isoform sequences in
 			recent release (2016_11) of UniProt (www.uniprot.org ), all sequences
@@ -49,7 +87,8 @@
 			minimum length of Segment is set as 10, and the maximum Linker length
 			is set as 5.
 		</p>
-		<p>Once both Query and Target sequences are established, the Query
+		<p style="text-align:justify;font-size:1.2em">
+			Once both Query and Target sequences are established, the Query
 			Sequences are aligned with Target Sequences by BLASTP with predefined
 			parameters. To avoid unnecessary non-informational results, each
 			Query Sequence has maximum 50 alignments from Target Sequences sorted
@@ -62,8 +101,9 @@
 			user-defined protein sequences could also be accepted and calculated
 			in real time by the Sequence Web Interface. These input sequences
 			will be aligned against up-to-date Target Sequences parsing form PDB
-			files by BLASTP with user-defined parameters.</p>
-		<p>
+			files by BLASTP with user-defined parameters.
+		</p>
+		<p style="text-align:justify;font-size:1.2em">
 			G2S has the capability of <b>auto-updating</b> of alignments from
 			updating protein sequences against updating PDB. When PDB archive
 			updates every Wednesday, the alignments of the obsolete and modified
@@ -77,6 +117,13 @@
 			whole database will be replaced with new alignments between the Query
 			Sequences and Target Sequences.
 		</p>
+	</div>
+	
+	<div>
+		<footer>
+		<p>© 2017 G2S Web Service</p>
+		</footer>
+	</div>
 	</div>
 </body>
 </html>

@@ -1,10 +1,10 @@
-package org.cbioportal.G2Smutation.util;
+package org.cbioportal.g2smutation.util;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -13,9 +13,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
-import org.cbioportal.G2Smutation.util.models.MutationUsageRecord;
-import org.cbioportal.G2Smutation.util.models.SNPAnnotationType;
-import org.springframework.web.client.HttpClientErrorException;
+import org.cbioportal.g2smutation.util.models.MutationUsageRecord;
+import org.cbioportal.g2smutation.util.models.SNPAnnotationType;
 
 /**
  * Read mutation_result.txt etc, and output results
@@ -82,7 +81,7 @@ public class FileOperatingUtil {
                         // Calling GenomeNexus
                         // https://grch37.rest.ensembl.org/map/translation/ENSP00000356671.3/167..167?content-type=application/json
                         try {
-                            log.info(count);
+//                            log.info(count);
                             gpos = uapi.callAPICoor(proteinName, proteinIndex);
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -96,9 +95,12 @@ public class FileOperatingUtil {
                                                            // be ""
 
                 } else {
-                    log.info("Not found ENSP in " + strArray[3]);
+//                    log.info("Not found ENSP in " + strArray[3]);
                     count++;
                     continue;
+                }
+                if(count%10000==0){
+                	log.info("Works on " + count + " th records in finding coordinates");
                 }
                 count++;
             }
@@ -110,7 +112,7 @@ public class FileOperatingUtil {
         for (Integer mutationId : mutationIdHm.keySet()) {
             String gpos = mutationIdHm.get(mutationId);
             if (!gpos.equals("")) {
-                System.out.println(mutationId + " " + gpos);
+//                System.out.println(mutationId + " " + gpos);
                 // Corner Case:
                 // HSCHR6_MHC_MCF_29989718_29989720
                 // https://grch37.rest.ensembl.org/map/translation/ENSP00000403922.1/176..176?content-type=application/json
@@ -134,6 +136,7 @@ public class FileOperatingUtil {
                 }
             }
         }
+        log.info("Size of mutationIdHm is" + mutationIdHm.size());
         mur.setMutationIdHm(mutationIdHm);
         mur.setMutationIdRHm(mutationIdRHm);
         mur.setResidueHm(residueHm);
@@ -388,12 +391,13 @@ public class FileOperatingUtil {
      * 
      * @param inputHm
      *            <chr_pos, DBSNP:123;CLINVAR:321;...>
+     * @param gpos2proHm
+     *            <chr_pos,seqId_startindex>
      * @param postFlag
      *            true for using POST, false for using GET
      * @return gpos2proHm key:chr_pos value:HashSet<String> seqId_startindex;...
      */
-    public HashMap<String, HashSet<String>> convertgpso2proHm(HashMap<String, String> inputHm, boolean postFlag) {
-        HashMap<String, HashSet<String>> gpos2proHm = new HashMap<>();// <chr_pos,seqId_startindex>
+    public Map convertgpso2proHm(HashMap<String, String> inputHm, Map gpos2proHm, boolean postFlag) {
         // Read <ensemblName,seqId> in en2SeqHm
         HashMap<String, Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
         UtilAPI uapi = new UtilAPI();
@@ -440,13 +444,17 @@ public class FileOperatingUtil {
      * 
      * @param inputHm
      *            <chr_pos, DBSNP:123;CLINVAR:321;...>
-     * @param postFlag true for POST, false for GET
+     * @param gpos2proHm
+     *            <chr_pos,HashSet<String>>: seqId_startindex
+     * @param postFlag
+     *            true for POST, false for GET
      * @return gpos2proHm <chr_pos,seqId_startindex>
      */
-    public HashMap<String, HashSet<String>> convertgpso2proHmMT(HashMap<String, String> inputHm, boolean postFlag) {
+    public Map convertgpso2proHmMT(HashMap<String, String> inputHm, Map gpos2proHm, boolean postFlag) {
         ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(ReadConfig.callThreadsNum));
 
-        HashMap<String, HashSet<String>> gpos2proHm = new HashMap<>();// <chr_pos,seqId_startindex>
+        // HashMap<String, HashSet<String>> gpos2proHm = new HashMap<>();//
+        // <chr_pos,seqId_startindex>
         // Read <ensemblName,seqId> in en2SeqHm
         HashMap<String, Integer> en2SeqHm = readEnsembl2SeqIdHm(ReadConfig.workspace + ReadConfig.seqFastaFile);
         List<String> gposList = new ArrayList<>();
@@ -455,7 +463,7 @@ public class FileOperatingUtil {
         log.info("Total locations: " + inputHm.size());
         try {
             for (String gpos : inputHm.keySet()) {
-                
+
                 if (postFlag) {// POST
                     gposList.add(gpos);
                     /*
@@ -466,17 +474,18 @@ public class FileOperatingUtil {
                     if (count % callSize == 0) {
                         Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gposList, true, count);
                         executor.execute(worker);
-                        
+
                         gposList = new ArrayList<>();
-                        //log.info("Deal at " + count + "th pos;Size of gpos2proHm is " + gpos2proHm.size());
+                        // log.info("Deal at " + count + "th pos;Size of
+                        // gpos2proHm is " + gpos2proHm.size());
                     }
 
                 } else {// GET method
                     Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gpos, false, count);
                     executor.execute(worker);
-                    //if (count % 1000 == 0) {
-                    //    log.info("Deal at " + count + "pos");
-                    //}
+                    // if (count % 1000 == 0) {
+                    // log.info("Deal at " + count + "pos");
+                    // }
                 }
                 count++;
             }
@@ -500,26 +509,28 @@ public class FileOperatingUtil {
      */
     public class CallAPIRunnable implements Runnable {
         private HashMap<String, Integer> en2SeqHm;
-        private HashMap<String, HashSet<String>> gpos2proHm;
+        private Map gpos2proHm;
         private String gpos;
         private List<String> gposList;
         private boolean postFlag;
         private int jobStart;
 
-        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm, String gpos, boolean postFlag, int jobStart) {
+        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, Map gpos2proHm, String gpos, boolean postFlag,
+                int jobStart) {
             this.en2SeqHm = en2SeqHm;
             this.gpos2proHm = gpos2proHm;
             this.gpos = gpos;
-            this.postFlag = false;//use GET
-            this.jobStart = jobStart; 
+            this.postFlag = false;// use GET
+            this.jobStart = jobStart;
         }
-        
-        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm, List<String> gposList, boolean postFlag, int jobStart) {
+
+        CallAPIRunnable(HashMap<String, Integer> en2SeqHm, Map gpos2proHm, List<String> gposList, boolean postFlag,
+                int jobStart) {
             this.en2SeqHm = en2SeqHm;
             this.gpos2proHm = gpos2proHm;
             this.gposList = gposList;
-            this.postFlag = true;//use POST
-            this.jobStart = jobStart; 
+            this.postFlag = true;// use POST
+            this.jobStart = jobStart;
         }
 
         @Override
@@ -527,13 +538,13 @@ public class FileOperatingUtil {
             try {
                 log.info("Job start at " + jobStart);
                 UtilAPI uapi = new UtilAPI();
-                if(this.postFlag){//POST
+                if (this.postFlag) {// POST
                     uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm, gposList);
-                }else{ //GET
+                } else { // GET
                     uapi.callgpos2ensemblAPIGet(en2SeqHm, gpos2proHm, gpos);
                 }
                 log.info("Job finished at " + jobStart);
-                
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

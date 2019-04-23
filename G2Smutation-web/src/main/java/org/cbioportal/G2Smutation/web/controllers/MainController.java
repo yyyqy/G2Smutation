@@ -233,7 +233,12 @@ public class MainController {
     public ModelAndView contactInfo() {
         return new ModelAndView("contact");
     }
-
+    
+    @GetMapping("/beta")
+    public ModelAndView betaInfo() {
+        return new ModelAndView("beta");
+    }
+    
     @GetMapping("/detail")
     public ModelAndView detailInfo(Model model) {
         return new ModelAndView("detail");
@@ -456,7 +461,16 @@ public class MainController {
         model.addAttribute("totaldata", totaldata);
         return new ModelAndView("database");
     }
-
+    
+    @GetMapping("/databasedemo")    
+    public ModelAndView databasedemoInfo(@RequestParam(value="number",defaultValue = "1") Integer number,Model model){
+    	List<mutation_usage_table> datapage=mutationRepository.findTop20BymutationIdGreaterThan(1);
+        model.addAttribute("data", datapage);
+        model.addAttribute("number",number);
+        model.addAttribute("totaldata", totaldata);
+        return new ModelAndView("databasedemo");
+    }
+    
     // For search
     public List<mutation_usage_table> searchData;
     public Integer searchPerPage = 10;
@@ -502,8 +516,9 @@ public class MainController {
         List<mutation_usage_table> subList = datafind.subList(0, toIndex);
 
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("number", number);
-        model.addAttribute("data", subList);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+    	
         return new ModelAndView("databasesearch");
     }
 
@@ -526,9 +541,10 @@ public class MainController {
         List<mutation_usage_table> subList = datafind.subList(0, toIndex);
 
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("number", number);
-        model.addAttribute("data", subList);
-        return new ModelAndView("databasesearch");
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+    	
+        return new ModelAndView("databasesearch");	
     }
 
     @RequestMapping("/search/PDBNO")
@@ -548,8 +564,9 @@ public class MainController {
         List<mutation_usage_table> subList = datafind.subList(0, toIndex);
 
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("number", number);
-        model.addAttribute("data", subList);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+    	
         return new ModelAndView("databasesearch");
     }
 
@@ -559,6 +576,7 @@ public class MainController {
         List<mutation_usage_table> datafind = mutationRepository.findBypdbIndex(Integer.parseInt(PDBINDEX));
 
         searchData = datafind;
+  
         totalCount = searchData.size();
         Integer requestCount = totalCount / searchPerPage == 0 ? 1 : totalCount / searchPerPage + 1;
         searchMaxPage = Math.max(1, requestCount);
@@ -570,8 +588,9 @@ public class MainController {
         List<mutation_usage_table> subList = datafind.subList(0, toIndex);
 
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("number", number);
-        model.addAttribute("data", subList);
+        model.addAttribute("number",number);
+    	model.addAttribute("data", subList);
+    	
         return new ModelAndView("databasesearch");
     }
 

@@ -1,5 +1,11 @@
-package org.cbioportal.G2Smutation.util.models.api;
+package org.cbioportal.g2smutation.util.models.api;
 
+/**
+ * Model of GenomePosition
+ * 
+ * @author Juexin Wang
+ *
+ */
 public class GenomePosition {
     private String chromosome;
     private int start;

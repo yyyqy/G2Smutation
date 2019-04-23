@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.util;
+package org.cbioportal.g2smutation.util;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,14 +9,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.cbioportal.G2Smutation.util.models.NucleotideType;
-import org.cbioportal.G2Smutation.util.models.api.GenomePosition;
-import org.cbioportal.G2Smutation.util.models.api.Mappings;
-import org.cbioportal.G2Smutation.util.models.api.QuoteCoor;
-import org.cbioportal.G2Smutation.util.models.api.QuotePro;
-import org.cbioportal.G2Smutation.util.models.api.Transcript_consequences;
+import org.cbioportal.g2smutation.util.models.NucleotideType;
+import org.cbioportal.g2smutation.util.models.api.GenomePosition;
+import org.cbioportal.g2smutation.util.models.api.Mappings;
+import org.cbioportal.g2smutation.util.models.api.QuoteCoor;
+import org.cbioportal.g2smutation.util.models.api.QuotePro;
+import org.cbioportal.g2smutation.util.models.api.Transcript_consequences;
 
 /**
  * All API calling
@@ -79,8 +80,8 @@ public class UtilAPI {
      *            chr_pos
      * @throws Exception
      */
-    public void callgpos2ensemblAPIGet(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm,
-            String gpos) throws Exception {
+    public void callgpos2ensemblAPIGet(HashMap<String, Integer> en2SeqHm, Map gpos2proHm, String gpos)
+            throws Exception {
 
         String chromosomeNum = gpos.split("_")[0];
         String position = gpos.split("_")[1];
@@ -114,7 +115,7 @@ public class UtilAPI {
                             // +mutation_NO);
                             HashSet<String> tmpSet = new HashSet<>();
                             if (gpos2proHm.containsKey(gpos)) {
-                                tmpSet = gpos2proHm.get(gpos);
+                                tmpSet = (HashSet<String>) gpos2proHm.get(gpos);
                             }
                             tmpSet.add(mutation_NO);
                             gpos2proHm.put(gpos, tmpSet);
@@ -148,8 +149,8 @@ public class UtilAPI {
      *            chr_pos
      * @throws Exception
      */
-    public void callgpos2ensemblAPIPost(HashMap<String, Integer> en2SeqHm, HashMap<String, HashSet<String>> gpos2proHm,
-            List<String> gposList) throws Exception {
+    public void callgpos2ensemblAPIPost(HashMap<String, Integer> en2SeqHm, Map gpos2proHm, List<String> gposList)
+            throws Exception {
 
         String url = ReadConfig.getGnApiGnPostUrl();
         List<GenomePosition> gpList = new ArrayList<>();
@@ -198,13 +199,19 @@ public class UtilAPI {
                         String ensp = list.get(i).getProtein_id();
                         if (en2SeqHm.containsKey(ensp)) {
                             int seqId = en2SeqHm.get(ensp);
+                            //debug
+                            //TODO, found error and stop
+                            if(seqId>92781){
+                                System.out.println("Error!:"+ensp+"\t"+seqId);
+                                System.exit(0);
+                            }
                             int protein_index = list.get(i).getProtein_start();
                             String mutation_NO = Integer.toString(seqId) + "_" + Integer.toString(protein_index);
                             // System.out.println("&&&"+ensp + "\t" + gpos +
                             // "\t" + mutation_NO);
                             HashSet<String> tmpSet = new HashSet<>();
                             if (gpos2proHm.containsKey(gpos)) {
-                                tmpSet = gpos2proHm.get(gpos);
+                                tmpSet = (HashSet<String>) gpos2proHm.get(gpos);
                             }
                             tmpSet.add(mutation_NO);
                             gpos2proHm.put(gpos, tmpSet);

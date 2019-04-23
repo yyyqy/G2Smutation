@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.util.pdb;
+package org.cbioportal.g2smutation.util.pdb;
 
 /**
  * Segment Model for PDB sequences

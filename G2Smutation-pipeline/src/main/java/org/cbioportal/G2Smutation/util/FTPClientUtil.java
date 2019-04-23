@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.util;
+package org.cbioportal.g2smutation.util;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

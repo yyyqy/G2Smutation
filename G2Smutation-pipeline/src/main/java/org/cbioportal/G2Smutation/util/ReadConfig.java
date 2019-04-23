@@ -1,9 +1,9 @@
-package org.cbioportal.G2Smutation.util;
+package org.cbioportal.g2smutation.util;
 
 import java.util.*;
 
 import org.apache.log4j.Logger;
-import org.cbioportal.G2Smutation.scripts.PdbScriptsPipelineStarter;
+import org.cbioportal.g2smutation.scripts.PdbScriptsPipelineStarter;
 
 /**
  *
@@ -40,6 +40,7 @@ public class ReadConfig {
     public static String seqFastaFile;
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
+    public static String sqlMutationInsertFile;
     public static String rsSqlInsertFile;
     public static String gposSqlInsertFile;
     public static String gposAlignSqlInsertFile;
@@ -116,6 +117,7 @@ public class ReadConfig {
     public static String gnApiDbsnpInnerGposUrl;
     public static String gnApiAlignInnerGposUrl;
     public static String callThreadsNum;
+    public static String gpos2proHmDbFile;
     public static String saveSpaceTag;
     public static String naccess;
     public static String readLocalPDBinNaccess;
@@ -173,6 +175,7 @@ public class ReadConfig {
             ReadConfig.tremblDownloadFile = prop.getProperty("trembl_download_file").trim();
             ReadConfig.isoformDownloadFile = prop.getProperty("isoform_download_file").trim();
             ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file").trim();
+            ReadConfig.sqlMutationInsertFile = prop.getProperty("sql_mutation_insert_file").trim();
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
             ReadConfig.rsSqlInsertFile = prop.getProperty("rs_sql_insert_file").trim();
@@ -253,6 +256,7 @@ public class ReadConfig {
             ReadConfig.gnApiDbsnpInnerGposUrl = prop.getProperty("gn.api.dbsnp.inner.gpos.url").trim();
             ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
+            ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHmDbFile").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
             ReadConfig.naccess = prop.getProperty("naccess").trim();
             ReadConfig.readLocalPDBinNaccess = prop.getProperty("readLocalPDBinNaccess").trim();
@@ -279,34 +283,32 @@ public class ReadConfig {
         }
         return rcObj;
     }
-    
-    
 
     public static String getInitChoice() {
-		return initChoice;
-	}
+        return initChoice;
+    }
 
-	public static void setInitChoice(String initChoice) {
-		ReadConfig.initChoice = initChoice;
-	}
+    public static void setInitChoice(String initChoice) {
+        ReadConfig.initChoice = initChoice;
+    }
 
-	public static String getInitTrembl() {
-		return initTrembl;
-	}
+    public static String getInitTrembl() {
+        return initTrembl;
+    }
 
-	public static void setInitTrembl(String initTrembl) {
-		ReadConfig.initTrembl = initTrembl;
-	}
+    public static void setInitTrembl(String initTrembl) {
+        ReadConfig.initTrembl = initTrembl;
+    }
 
-	public static String getInitConcurrent() {
-		return initConcurrent;
-	}
+    public static String getInitConcurrent() {
+        return initConcurrent;
+    }
 
-	public static void setInitConcurrent(String initConcurrent) {
-		ReadConfig.initConcurrent = initConcurrent;
-	}
+    public static void setInitConcurrent(String initConcurrent) {
+        ReadConfig.initConcurrent = initConcurrent;
+    }
 
-	public static String getGnApiDbsnpInnerGposUrl() {
+    public static String getGnApiDbsnpInnerGposUrl() {
         return gnApiDbsnpInnerGposUrl;
     }
 
@@ -1013,29 +1015,29 @@ public class ReadConfig {
         ReadConfig.updateRsSqlFileNum = updateRsSqlFileNum;
     }
 
-	public static String getGnApiGnUrl() {
-		return gnApiGnUrl;
-	}
+    public static String getGnApiGnUrl() {
+        return gnApiGnUrl;
+    }
 
-	public static void setGnApiGnUrl(String gnApiGnUrl) {
-		ReadConfig.gnApiGnUrl = gnApiGnUrl;
-	}
+    public static void setGnApiGnUrl(String gnApiGnUrl) {
+        ReadConfig.gnApiGnUrl = gnApiGnUrl;
+    }
 
-	public static String getGposSqlInsertFile() {
-		return gposSqlInsertFile;
-	}
+    public static String getGposSqlInsertFile() {
+        return gposSqlInsertFile;
+    }
 
-	public static void setGposSqlInsertFile(String gposSqlInsertFile) {
-		ReadConfig.gposSqlInsertFile = gposSqlInsertFile;
-	}
+    public static void setGposSqlInsertFile(String gposSqlInsertFile) {
+        ReadConfig.gposSqlInsertFile = gposSqlInsertFile;
+    }
 
-	public static String getCallThreadsNum() {
-		return callThreadsNum;
-	}
+    public static String getCallThreadsNum() {
+        return callThreadsNum;
+    }
 
-	public static void setCallThreadsNum(String callThreadsNum) {
-		ReadConfig.callThreadsNum = callThreadsNum;
-	}
+    public static void setCallThreadsNum(String callThreadsNum) {
+        ReadConfig.callThreadsNum = callThreadsNum;
+    }
 
     public static String getGnApiGnPostUrl() {
         return gnApiGnPostUrl;
@@ -1069,85 +1071,100 @@ public class ReadConfig {
         ReadConfig.gnApiAlignInnerGposUrl = gnApiAlignInnerGposUrl;
     }
 
-	public static String getNaccess() {
-		return naccess;
-	}
+    public static String getGpos2proHmDbFile() {
+        return gpos2proHmDbFile;
+    }
 
-	public static void setNaccess(String naccess) {
-		ReadConfig.naccess = naccess;
-	}
+    public static void setGpos2proHmDbFile(String gpos2proHmDbFile) {
+        ReadConfig.gpos2proHmDbFile = gpos2proHmDbFile;
+    }
 
-	public static String getReadLocalPDBinNaccess() {
-		return readLocalPDBinNaccess;
-	}
+    public static String getNaccess() {
+        return naccess;
+    }
 
-	public static void setReadLocalPDBinNaccess(String readLocalPDBinNaccess) {
-		ReadConfig.readLocalPDBinNaccess = readLocalPDBinNaccess;
-	}
+    public static void setNaccess(String naccess) {
+        ReadConfig.naccess = naccess;
+    }
 
-	public static String getRelativeRatio() {
-		return relativeRatio;
-	}
+    public static String getReadLocalPDBinNaccess() {
+        return readLocalPDBinNaccess;
+    }
 
-	public static void setRelativeRatio(String relativeRatio) {
-		ReadConfig.relativeRatio = relativeRatio;
-	}
+    public static void setReadLocalPDBinNaccess(String readLocalPDBinNaccess) {
+        ReadConfig.readLocalPDBinNaccess = readLocalPDBinNaccess;
+    }
 
-	public static String getDsspLocalDataFile() {
-		return dsspLocalDataFile;
-	}
+    public static String getRelativeRatio() {
+        return relativeRatio;
+    }
 
-	public static void setDsspLocalDataFile(String dsspLocalDataFile) {
-		ReadConfig.dsspLocalDataFile = dsspLocalDataFile;
-	}
+    public static void setRelativeRatio(String relativeRatio) {
+        ReadConfig.relativeRatio = relativeRatio;
+    }
 
-	public static String getInsertStructureAnnotationSQL() {
-		return insertStructureAnnotationSQL;
-	}
+    public static String getDsspLocalDataFile() {
+        return dsspLocalDataFile;
+    }
 
-	public static void setInsertStructureAnnotationSQL(String insertStructureAnnotationSQL) {
-		ReadConfig.insertStructureAnnotationSQL = insertStructureAnnotationSQL;
-	}
+    public static void setDsspLocalDataFile(String dsspLocalDataFile) {
+        ReadConfig.dsspLocalDataFile = dsspLocalDataFile;
+    }
 
-	public static String getNaccessFileSuffix() {
-		return naccessFileSuffix;
-	}
+    public static String getInsertStructureAnnotationSQL() {
+        return insertStructureAnnotationSQL;
+    }
 
-	public static void setNaccessFileSuffix(String naccessFileSuffix) {
-		ReadConfig.naccessFileSuffix = naccessFileSuffix;
-	}
+    public static void setInsertStructureAnnotationSQL(String insertStructureAnnotationSQL) {
+        ReadConfig.insertStructureAnnotationSQL = insertStructureAnnotationSQL;
+    }
 
-	public static String getDsspFileSuffix() {
-		return dsspFileSuffix;
-	}
+    public static String getNaccessFileSuffix() {
+        return naccessFileSuffix;
+    }
 
-	public static void setDsspFileSuffix(String dsspFileSuffix) {
-		ReadConfig.dsspFileSuffix = dsspFileSuffix;
-	}
+    public static void setNaccessFileSuffix(String naccessFileSuffix) {
+        ReadConfig.naccessFileSuffix = naccessFileSuffix;
+    }
 
-	public static String getSequenceDomainsUrl() {
-		return sequenceDomainsUrl;
-	}
+    public static String getDsspFileSuffix() {
+        return dsspFileSuffix;
+    }
 
-	public static void setSequenceDomainsUrl(String sequenceDomainsUrl) {
-		ReadConfig.sequenceDomainsUrl = sequenceDomainsUrl;
-	}
+    public static void setDsspFileSuffix(String dsspFileSuffix) {
+        ReadConfig.dsspFileSuffix = dsspFileSuffix;
+    }
 
-	public static String getStructureDomainsUrl() {
-		return structureDomainsUrl;
-	}
+    public static String getSequenceDomainsUrl() {
+        return sequenceDomainsUrl;
+    }
 
-	public static void setStructureDomainsUrl(String structureDomainsUrl) {
-		ReadConfig.structureDomainsUrl = structureDomainsUrl;
-	}
+    public static void setSequenceDomainsUrl(String sequenceDomainsUrl) {
+        ReadConfig.sequenceDomainsUrl = sequenceDomainsUrl;
+    }
 
-	public static String getPdbStructureService() {
-		return pdbStructureService;
-	}
+    public static String getStructureDomainsUrl() {
+        return structureDomainsUrl;
+    }
 
-	public static void setPdbStructureService(String pdbStructureService) {
-		ReadConfig.pdbStructureService = pdbStructureService;
-	}
-	
-	
+    public static void setStructureDomainsUrl(String structureDomainsUrl) {
+        ReadConfig.structureDomainsUrl = structureDomainsUrl;
+    }
+
+    public static String getPdbStructureService() {
+        return pdbStructureService;
+    }
+
+    public static void setPdbStructureService(String pdbStructureService) {
+        ReadConfig.pdbStructureService = pdbStructureService;
+    }
+
+    public static String getSqlMutationInsertFile() {
+        return sqlMutationInsertFile;
+    }
+
+    public static void setSqlMutationInsertFile(String sqlMutationInsertFile) {
+        ReadConfig.sqlMutationInsertFile = sqlMutationInsertFile;
+    }
+
 }

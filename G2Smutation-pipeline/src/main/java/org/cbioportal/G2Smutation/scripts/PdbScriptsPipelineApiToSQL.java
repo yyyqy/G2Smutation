@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.scripts;
+package org.cbioportal.g2smutation.scripts;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,15 +9,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.cbioportal.G2Smutation.util.ReadConfig;
-import org.cbioportal.G2Smutation.util.models.AllMutationRecord;
-import org.cbioportal.G2Smutation.util.models.RSMutationRecord;
-import org.cbioportal.G2Smutation.util.models.SNPAnnotationType;
+import org.cbioportal.g2smutation.util.ReadConfig;
+import org.cbioportal.g2smutation.util.models.AllMutationRecord;
+import org.cbioportal.g2smutation.util.models.RSMutationRecord;
+import org.cbioportal.g2smutation.util.models.SNPAnnotationType;
 import org.apache.log4j.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -31,7 +31,7 @@ import net.sf.json.JSONObject;
  */
 public class PdbScriptsPipelineApiToSQL {
     final static Logger log = Logger.getLogger(PdbScriptsPipelineMakeSQL.class);
-    
+
     /**
      * Obsolete! Paired with function generateRsSQLfile()
      * 
@@ -183,8 +183,8 @@ public class PdbScriptsPipelineApiToSQL {
     }
 
     /**
-     * Old, can be deleted, used for only mapping dbSNP SNPs
-     * paried with generateRsSQLfile()
+     * Old, can be deleted, used for only mapping dbSNP SNPs paried with
+     * generateRsSQLfile()
      * 
      * @param rmr
      * @return
@@ -257,14 +257,16 @@ public class PdbScriptsPipelineApiToSQL {
         }
         return bufferLines;
     }
-    
+
     /**
-     * Use POST to call all snps: input chr and pos, get inner seqId and protein index
+     * Use POST to call all snps: input chr and pos, get inner seqId and protein
+     * index
      * 
-     * @param gpos2proHm <chr_pos,seq_index>
+     * @param gpos2proHm
+     *            <chr_pos,seq_index>
      * @return
      */
-    public int generateAllMappingSQLfileHuge(HashMap<String, HashSet<String>> gpos2proHm) {
+    public int generateAllMappingSQLfileHuge(Map gpos2proHm) {
         List<String> tempLines = new ArrayList<String>();
         int fileCount = 0;
         String allsqlfilepwd = new String(ReadConfig.workspace + ReadConfig.gposAlignSqlInsertFile + "." + fileCount);
@@ -277,9 +279,13 @@ public class PdbScriptsPipelineApiToSQL {
         log.info("Total gpos number: " + gpos2proHm.size());
 
         int count = 0;
-        for (String gpos : gpos2proHm.keySet()) {
-            HashSet<String> tmpSet = gpos2proHm.get(gpos);
-            
+        Iterator it = gpos2proHm.entrySet().iterator();
+        // for (String gpos : gpos2proHm.keySet()) {
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            String gpos = (String) pair.getKey();
+            HashSet<String> tmpSet = (HashSet<String>) gpos2proHm.get(gpos);
+
             for (String mutation_NO : tmpSet) {
                 if (count % 10000 == 0) {
                     log.info("Now start working on " + count + "th SNP");
@@ -323,7 +329,7 @@ public class PdbScriptsPipelineApiToSQL {
                 }
                 count++;
             }
-        }       
+        }
         outputLines.add("commit;");
         try {
             FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
@@ -333,12 +339,13 @@ public class PdbScriptsPipelineApiToSQL {
         log.info("Total mapping protein_index from SNP is:" + count);
         log.info("Finished generating the " + fileCount + "th SQL file");
         log.info("Insert allmapping sql successful!");
-        return fileCount+1;
+        return fileCount + 1;
     }
 
     /**
-     * Old, can be deleted. It works for original usage for dbSNP mapping
-     * Call all mapping
+     * Old, can be deleted. It works for original usage for dbSNP mapping Call
+     * all mapping
+     * 
      * @param inputHm
      *            key: chr_posstart_end value: dbsnp:123;clinvar:321;...
      * @return
@@ -353,7 +360,7 @@ public class PdbScriptsPipelineApiToSQL {
         outputLines.add("SET autocommit = 0;");
         outputLines.add("start transaction;");
         log.info("Begin to generate sql file");
-        log.info("Total gpos number: "+ inputHm.size());
+        log.info("Total gpos number: " + inputHm.size());
 
         int count = 0;
         for (String gpos : inputHm.keySet()) {
@@ -417,63 +424,67 @@ public class PdbScriptsPipelineApiToSQL {
      */
     public String makeTable_all_mutation_insert(AllMutationRecord armr) {
         String str = "INSERT INTO `gpos_allmapping_pdb_entry` (`CHR_POS`,`SEQ_ID`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
-                + armr.getChr_pos() + "'," + armr.getSeqId() + ","
-                + armr.getSeqResidueIndex() + ",'" + armr.getSeqResidueName() + "','" + armr.getPdbNo() + "',"
-                + armr.getPdbResidueIndex() + ",'" + armr.getPdbResidueName() + "'," + armr.getAlignmentId() + ");\n";
+                + armr.getChr_pos() + "'," + armr.getSeqId() + "," + armr.getSeqResidueIndex() + ",'"
+                + armr.getSeqResidueName() + "','" + armr.getPdbNo() + "'," + armr.getPdbResidueIndex() + ",'"
+                + armr.getPdbResidueName() + "'," + armr.getAlignmentId() + ");\n";
         return str;
     }
-    
+
     /**
      * Generate gpos_allmapping_entry tables sql file
+     * 
      * @param chr_pos
      * @param annotationTypeIds
      * @return
      */
     public String makeTable_gpos_allmapping_insert(String chr_pos, String annotationTypeIds) {
-    	HashMap<SNPAnnotationType,HashMap<String,String>> hm = new HashMap<>();
-    	for (SNPAnnotationType type: SNPAnnotationType.values()){
-    		hm.put(type, new HashMap<String,String>());
-    	}
-    	if(annotationTypeIds.contains(";")){
-    		String[] strArray = annotationTypeIds.split(";");
-    		for(String str: strArray){
-    			String typestr = str.split(":")[0];
-    			String idstr = str.split(":")[1];
-    			HashMap<String,String> tmpHm = hm.get(SNPAnnotationType.valueOf(typestr));
-    			tmpHm.put(idstr, "");
-    			hm.put(SNPAnnotationType.valueOf(typestr), tmpHm);
-    		}
-    	}else{
-    		String typestr = annotationTypeIds.split(":")[0];
-			String idstr = annotationTypeIds.split(":")[1];
-			HashMap<String,String> tmpHm = hm.get(SNPAnnotationType.valueOf(typestr));
-			tmpHm.put(idstr, "");
-			hm.put(SNPAnnotationType.valueOf(typestr), tmpHm);    		
-    	}
-        //String str = "INSERT INTO `gpos_allmapping_entry` (`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)VALUES ("
-        //        + chr_pos + "," + armr.getChr_pos() + ");\n";        
-    	String str = "INSERT INTO `gpos_allmapping_entry` (`CHR_POS`";
-    	for (SNPAnnotationType type: SNPAnnotationType.values()){
-    		str = str + ",`"+type.toString() +"_ID`";
-    	}
-    	str = str + ")VALUES ('" + chr_pos + "'";
-    	for (SNPAnnotationType type: SNPAnnotationType.values()){
-    	    String contentStr = "";
-    	    int count = 0;
-    	    for(String cStr: hm.get(type).keySet()){
-    	        if (count == 0){
-    	            contentStr = cStr;
-    	        }else{
-    	            contentStr = contentStr + ";" + cStr;
-    	        }
-    	        count++;
+        HashMap<SNPAnnotationType, HashMap<String, String>> hm = new HashMap<>();
+        for (SNPAnnotationType type : SNPAnnotationType.values()) {
+            hm.put(type, new HashMap<String, String>());
+        }
+        if (annotationTypeIds.contains(";")) {
+            String[] strArray = annotationTypeIds.split(";");
+            for (String str : strArray) {
+                String typestr = str.split(":")[0];
+                String idstr = str.split(":")[1];
+                HashMap<String, String> tmpHm = hm.get(SNPAnnotationType.valueOf(typestr));
+                tmpHm.put(idstr, "");
+                hm.put(SNPAnnotationType.valueOf(typestr), tmpHm);
             }
-    		str = str + ",'"+contentStr +"'";
-    	}
-    	str = str + ");\n";;
-    	return str;
+        } else {
+            String typestr = annotationTypeIds.split(":")[0];
+            String idstr = annotationTypeIds.split(":")[1];
+            HashMap<String, String> tmpHm = hm.get(SNPAnnotationType.valueOf(typestr));
+            tmpHm.put(idstr, "");
+            hm.put(SNPAnnotationType.valueOf(typestr), tmpHm);
+        }
+        // String str = "INSERT INTO `gpos_allmapping_entry`
+        // (`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)VALUES
+        // ("
+        // + chr_pos + "," + armr.getChr_pos() + ");\n";
+        String str = "INSERT INTO `gpos_allmapping_entry` (`CHR_POS`";
+        for (SNPAnnotationType type : SNPAnnotationType.values()) {
+            str = str + ",`" + type.toString() + "_ID`";
+        }
+        str = str + ")VALUES('" + chr_pos + "'";
+        String outputstr = "";
+        String individualStr = str;
+        int count = 0;
+        for (SNPAnnotationType type : SNPAnnotationType.values()) {           
+            for (String cStr : hm.get(type).keySet()) {
+                String afterstr = individualStr + ",'" + cStr + "'";
+                for (int i=count+1; i<SNPAnnotationType.values().length;i++){
+                    afterstr = afterstr + ",''";
+                }
+                afterstr = afterstr + ");\n";
+                outputstr = outputstr + afterstr;               
+            }
+            individualStr = individualStr + ",''";
+            count++;
+        }       
+        return outputstr;
     }
-    
+
     /**
      * generate insert sentences of table gpos_protein_entry
      * 
@@ -482,17 +493,18 @@ public class PdbScriptsPipelineApiToSQL {
      * @return
      */
     public String makeTable_gpos_protein_insert(String gpos, String mutation_NO) {
-    	String seqId = mutation_NO.split("_")[0];
-    	String proteinIndex = mutation_NO.split("_")[1];
-        String str = "INSERT INTO `gpos_protein_entry` (`CHR_POS`,`MUTATION_NO`,`SEQ_ID`,`SEQ_INDEX`)VALUES ('"
-                + gpos + "','" + mutation_NO + "','" + seqId + "','" +proteinIndex + "');\n";
+        String seqId = mutation_NO.split("_")[0];
+        String proteinIndex = mutation_NO.split("_")[1];
+        String str = "INSERT INTO `gpos_protein_entry` (`CHR_POS`,`MUTATION_NO`,`SEQ_ID`,`SEQ_INDEX`)VALUES ('" + gpos
+                + "','" + mutation_NO + "','" + seqId + "','" + proteinIndex + "');\n";
         return str;
     }
-    
+
     /**
      * Generate gpos_allmapping_entry tables
+     * 
      * @param inputHm
-     * key: chr_posstart_end value: dbsnp:123;clinvar:321;...
+     *            key: chr_posstart_end value: dbsnp:123;clinvar:321;...
      * @return
      */
     public int generateGposAllMappingSQLfile(HashMap<String, String> inputHm) {
@@ -505,7 +517,7 @@ public class PdbScriptsPipelineApiToSQL {
         outputLines.add("SET autocommit = 0;");
         outputLines.add("start transaction;");
         log.info("Begin to generate gpos_allmapping file");
-        log.info("Total gpos number: "+ inputHm.size());
+        log.info("Total gpos number: " + inputHm.size());
 
         int count = 0;
         for (String gpos : inputHm.keySet()) {
@@ -538,7 +550,7 @@ public class PdbScriptsPipelineApiToSQL {
             }
             count++;
         }
-        
+
         outputLines.add("commit;");
         try {
             FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
@@ -548,16 +560,16 @@ public class PdbScriptsPipelineApiToSQL {
         log.info("Finished generating the " + fileCount + "th SQL file");
         log.info("Total mapping SNP is:" + count);
         log.info("Insert allmapping sql successful!");
-        return fileCount+1;
+        return fileCount + 1;
     }
-    
+
     /**
      * Generate sql file table gpos_protein_entry
      * 
      * @param gpos2proHm
      * @return
      */
-    public int generateGposProteinSQLfile(HashMap<String, HashSet<String>> gpos2proHm) {
+    public int generateGposProteinSQLfile(Map gpos2proHm) {
         List<String> tempLines = new ArrayList<String>();
         int fileCount = 0;
         String allsqlfilepwd = new String(ReadConfig.workspace + ReadConfig.gposSqlInsertFile + "." + fileCount);
@@ -567,12 +579,16 @@ public class PdbScriptsPipelineApiToSQL {
         outputLines.add("SET autocommit = 0;");
         outputLines.add("start transaction;");
         log.info("Begin to generate gpos_protein file");
-        log.info("Total gpos number has protein loc: "+ gpos2proHm.size());
+        log.info("Total gpos number has protein loc: " + gpos2proHm.size());
 
         int count = 0;
-        for (String gpos : gpos2proHm.keySet()) {
-            HashSet<String> tmpSet = gpos2proHm.get(gpos);
-            for(String mutation_NO:tmpSet){
+        Iterator it = gpos2proHm.entrySet().iterator();
+        // for (String gpos : gpos2proHm.keySet()) {
+        while (it.hasNext()) {
+            Map.Entry<String, HashSet<String>> pair = (Map.Entry) it.next();
+            String gpos = pair.getKey();
+            HashSet<String> tmpSet = (HashSet<String>) gpos2proHm.get(gpos);
+            for (String mutation_NO : tmpSet) {
                 if (count % 100000 == 0) {
                     log.info("Now start working on " + count + "th SNP");
                 }
@@ -600,10 +616,10 @@ public class PdbScriptsPipelineApiToSQL {
                     outputLines.addAll(tempLines);
                 }
             }
-                       
+
             count++;
         }
-        
+
         outputLines.add("commit;");
         try {
             FileUtils.writeLines(rssqlfile, StandardCharsets.UTF_8.name(), outputLines);
@@ -613,20 +629,14 @@ public class PdbScriptsPipelineApiToSQL {
         log.info("Finished generating the " + fileCount + "th SQL file");
         log.info("Total mapping SNP to protein is:" + count);
         log.info("Insert allmapping sql successful!");
-        return fileCount+1;
+        return fileCount + 1;
     }
-    
-    
+
     synchronized boolean isFinished(StringBuffer sb, int count) {
         if (sb.toString().length() > count || count == 0) {
             return true;
         }
         return false;
     }
-    
-    
 
 }
-
-
-

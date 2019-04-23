@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.scripts;
+package org.cbioportal.g2smutation.scripts;
 
 import java.util.TimerTask;
 import org.slf4j.Logger;

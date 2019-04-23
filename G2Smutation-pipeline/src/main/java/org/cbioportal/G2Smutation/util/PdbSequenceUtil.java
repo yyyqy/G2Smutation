@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.util;
+package org.cbioportal.g2smutation.util;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,7 +23,7 @@ import org.biojava.nbio.structure.Chain;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.StructureIO;
-import org.cbioportal.G2Smutation.util.pdb.SegmentRecord;
+import org.cbioportal.g2smutation.util.pdb.SegmentRecord;
 
 /**
  * Read PDB files Utils using bioJava

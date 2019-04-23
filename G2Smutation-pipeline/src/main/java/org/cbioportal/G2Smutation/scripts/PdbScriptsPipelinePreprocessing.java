@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.scripts;
+package org.cbioportal.g2smutation.scripts;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -12,9 +12,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
-import org.cbioportal.G2Smutation.util.FTPClientUtil;
-import org.cbioportal.G2Smutation.util.PdbSequenceUtil;
-import org.cbioportal.G2Smutation.util.ReadConfig;
+import org.cbioportal.g2smutation.util.FTPClientUtil;
+import org.cbioportal.g2smutation.util.PdbSequenceUtil;
+import org.cbioportal.g2smutation.util.ReadConfig;
 
 /**
  * Preprocessing the input PDB, Ensembl and Uniprot files, both in init and

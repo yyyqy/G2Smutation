@@ -1,12 +1,12 @@
-package org.cbioportal.G2Smutation.scripts;
+package org.cbioportal.g2smutation.scripts;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Timer;
 
-import org.cbioportal.G2Smutation.util.*;
 import org.apache.log4j.Logger;
+import org.cbioportal.g2smutation.util.*;
 
 /**
  * Main Entrance of the project G2Smutation pipeline Preliminary script,

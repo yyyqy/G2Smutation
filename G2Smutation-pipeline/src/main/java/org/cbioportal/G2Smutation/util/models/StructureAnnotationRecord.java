@@ -1,7 +1,4 @@
-package org.cbioportal.G2Smutation.util.models;
-
-import java.util.HashMap;
-import java.util.List;
+package org.cbioportal.g2smutation.util.models;
 
 /**
  * Model of structure annotation

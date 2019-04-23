@@ -6,7 +6,7 @@
 //
 
 
-package org.cbioportal.G2Smutation.util.blast;
+package org.cbioportal.g2smutation.util.blast;
 
 import java.util.ArrayList;
 import java.util.List;

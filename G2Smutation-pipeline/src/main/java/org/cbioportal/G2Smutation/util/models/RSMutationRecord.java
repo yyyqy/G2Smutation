@@ -1,9 +1,9 @@
-package org.cbioportal.G2Smutation.util.models;
+package org.cbioportal.g2smutation.util.models;
 
 /**
  * Model of DBSNP RS mutation record
  * 
- * @author wangjue
+ * @author Juexin Wang
  *
  */
 public class RSMutationRecord {

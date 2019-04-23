@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.util.models.api;
+package org.cbioportal.g2smutation.util.models.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

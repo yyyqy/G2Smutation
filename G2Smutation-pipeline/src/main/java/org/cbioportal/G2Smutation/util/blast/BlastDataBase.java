@@ -1,8 +1,9 @@
-package org.cbioportal.G2Smutation.util.blast;
+package org.cbioportal.g2smutation.util.blast;
 
 /**
  * Model of Blast database
- * @author wangjue
+ * 
+ * @author Juexin Wang
  *
  */
 public class BlastDataBase {

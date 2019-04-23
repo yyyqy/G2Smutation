@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.util.models;
+package org.cbioportal.g2smutation.util.models;
 
 import java.io.Serializable;
 import java.util.HashMap;
