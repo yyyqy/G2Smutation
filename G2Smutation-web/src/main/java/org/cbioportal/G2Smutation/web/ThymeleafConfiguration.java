@@ -7,7 +7,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 /**
- * For Thymeleaf
+ * For Thymeleaf Control
  * 
  * @author Juexin Wang
  *

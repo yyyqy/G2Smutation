@@ -7,6 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
+/**
+ * Update record and statistics weekly
+ * @author Juexin Wang
+ *
+ */
 @Entity
 @Table(name = "update_record")
 public class Statistics {

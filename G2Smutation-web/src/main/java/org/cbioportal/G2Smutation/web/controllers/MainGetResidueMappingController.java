@@ -120,16 +120,16 @@ public class MainGetResidueMappingController {
             if (id.length() == 6 && id.split("_").length != 2) {// Accession:
                 // P04637
                 if (positionList == null) {
-                    outList.addAll(seqController.getPdbResidueByUniprotAccessionIso(id,"1"));
+                    outList.addAll(seqController.getPdbResidueByUniprotAccessionIso(id, "1"));
                 } else {
-                    outList.addAll(seqController.getPdbResidueByUniprotAccessionIso(id,"1", positionList));
+                    outList.addAll(seqController.getPdbResidueByUniprotAccessionIso(id, "1", positionList));
                 }
 
             } else if (id.split("_").length == 2) {// ID: P53_HUMAN
                 if (positionList == null) {
-                    outList.addAll(seqController.getPdbResidueByUniprotIdIso(id,"1"));
+                    outList.addAll(seqController.getPdbResidueByUniprotIdIso(id, "1"));
                 } else {
-                    outList.addAll(seqController.getPdbResidueByUniprotIdIso(id,"1", positionList));
+                    outList.addAll(seqController.getPdbResidueByUniprotIdIso(id, "1", positionList));
                 }
 
             } else {
@@ -185,14 +185,12 @@ public class MainGetResidueMappingController {
             outList.addAll(
                     seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
 
-        }else if (id_type.equals("dbsnp")){
+        } else if (id_type.equals("dbsnp")) {
             // https://www.genomenexus.org/beta/annotation/dbsnp/rs116035550
             // https://www.genomenexus.org/beta/annotation/dbsnp/dbSNPID
-            System.out.println("dbsnp: "+id);
-            outList.addAll(
-                    seqController.getPdbResidueByEnsemblIddbSNPID(id));
-        } 
-        else {
+            System.out.println("dbsnp: " + id);
+            outList.addAll(seqController.getPdbResidueByEnsemblIddbSNPID(id));
+        } else {
             log.info("Error in Input. id_type:" + id_type + " id: " + id + " position:" + positionList);
         }
         return outList;
@@ -288,11 +286,11 @@ public class MainGetResidueMappingController {
 
                 List<Alignment> list = new ArrayList<Alignment>();
 
-                    if (positionList == null) {
-                        list = seqController.getPdbResidueByUniprotAccessionIso(id,"1");
-                    } else {
-                        list = seqController.getPdbResidueByUniprotAccessionIso(id,"1", positionList);
-                    }
+                if (positionList == null) {
+                    list = seqController.getPdbResidueByUniprotAccessionIso(id, "1");
+                } else {
+                    list = seqController.getPdbResidueByUniprotAccessionIso(id, "1", positionList);
+                }
 
                 for (Alignment re : list) {
                     String pd = re.getPdbId().toLowerCase();
@@ -304,11 +302,11 @@ public class MainGetResidueMappingController {
 
             } else if (id.split("_").length == 2) {// ID: P53_HUMAN
 
-		List<Alignment> list = null;
+                List<Alignment> list = null;
                 if (positionList == null) {
-                    list = seqController.getPdbResidueByUniprotIdIso(id,"1");
+                    list = seqController.getPdbResidueByUniprotIdIso(id, "1");
                 } else {
-                    list = seqController.getPdbResidueByUniprotIdIso(id,"1", positionList);
+                    list = seqController.getPdbResidueByUniprotIdIso(id, "1", positionList);
                 }
 
                 for (Alignment re : list) {

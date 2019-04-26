@@ -9,7 +9,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
- * This is for web sequence interfaces
+ * This is for web sequence interfaces for blast
  * 
  * @author wangjue
  *

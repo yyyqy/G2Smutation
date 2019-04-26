@@ -14,6 +14,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Call outside API
+ * 
+ * @author wangjue
+ *
+ */
+
 @ConfigurationProperties
 public class UtilAPI {
     @Value("${gn.api.url}")
@@ -66,10 +73,9 @@ public class UtilAPI {
         url = url.replace("MUTATION", mutation);
         System.out.println("APIURL:\t" + url);
 
-        return(callURLAPI(url,true,true));
+        return (callURLAPI(url, true, true));
     }
-    
-    
+
     /**
      * Calling by dbSNPID
      * 
@@ -80,23 +86,25 @@ public class UtilAPI {
     public List<GenomeResidueInput> calldbSNPAPI(String dbSNPID) throws Exception {
         ReadConfig rc = ReadConfig.getInstance();
         // System.out.println("ReadURL:\t"+rc.getGnApiUrl());
-        
+
         String url = rc.getGnApiGnSNPUrl();
         url = url.replace("DBSNPID", dbSNPID);
-        
+
         System.out.println("APIURL:\t" + url);
-        return(callURLAPI(url,false,false));
+        return (callURLAPI(url, false, false));
     }
-    
+
     /**
      * Call Endpoints of API by URL
      * 
      * @param url
-     * @param redundancyTag: True:Allow redundancy, False: does not allow redundancy
+     * @param redundancyTag:
+     *            True:Allow redundancy, False: does not allow redundancy
      * @return
      * @throws Exception
      */
-    public List<GenomeResidueInput> callURLAPI(String url, boolean redundancyTag, boolean multipleTag) throws Exception{
+    public List<GenomeResidueInput> callURLAPI(String url, boolean redundancyTag, boolean multipleTag)
+            throws Exception {
         List<GenomeResidueInput> outlist = new ArrayList<GenomeResidueInput>();
         HashMap<String, String> hm = new HashMap<String, String>();
 
@@ -114,14 +122,15 @@ public class UtilAPI {
             }
             hm = null;
         } catch (Exception ex) {
-            //Once get error from calling upstream API from cbioportal or ensembl, using try/catch to catch this error and return [], otherwise will get 500 error finally
+            // Once get error from calling upstream API from cbioportal or
+            // ensembl, using try/catch to catch this error and return [],
+            // otherwise will get 500 error finally
             ex.printStackTrace();
         }
 
-        return outlist;       
+        return outlist;
     }
-    
-    
+
     /**
      * Call Endpoints core of API by URL
      * 
@@ -133,44 +142,44 @@ public class UtilAPI {
      * @return
      * @throws Exception
      */
-    public List<GenomeResidueInput> callURLAPIcore(String url, boolean redundancyTag, List<GenomeResidueInput> outlist, HashMap<String,String> hm, Quote quote) throws Exception{
-        
-            List<Transcript_consequences> list = quote.getTranscript_consequences();
-            for (int i = 0; i < list.size(); i++) {
-                //System.out.println(list.size()+":"+i+"\t"+list.get(i).getProtein_start());
-                if (list.get(i).getProtein_start() != 0) {
-                    // if (list.get(i).getBiotype().equals("protein_coding") &&
-                    // list.get(i).getProtein_start() != 0) {
-                    GenomeResidueInput gr = new GenomeResidueInput();
-                    Residue residue = new Residue();
-                    residue.setResidueNum(list.get(i).getProtein_start());
-                    gr.setResidue(residue);
+    public List<GenomeResidueInput> callURLAPIcore(String url, boolean redundancyTag, List<GenomeResidueInput> outlist,
+            HashMap<String, String> hm, Quote quote) throws Exception {
 
-                    Ensembl ensembl = new Ensembl();
-                    ensembl.setEnsemblid(list.get(i).getProtein_id());// ENSP
-                    ensembl.setEnsemblgene(list.get(i).getGene_id());// ENSG
-                    ensembl.setEnsembltranscript(list.get(i).getTranscript_id());// ENST
-                    gr.setEnsembl(ensembl);
-                    
-                    /*
-                     * Check whether allow redundancy
-                     */
-                    if(redundancyTag){
+        List<Transcript_consequences> list = quote.getTranscript_consequences();
+        for (int i = 0; i < list.size(); i++) {
+            // System.out.println(list.size()+":"+i+"\t"+list.get(i).getProtein_start());
+            if (list.get(i).getProtein_start() != 0) {
+                // if (list.get(i).getBiotype().equals("protein_coding") &&
+                // list.get(i).getProtein_start() != 0) {
+                GenomeResidueInput gr = new GenomeResidueInput();
+                Residue residue = new Residue();
+                residue.setResidueNum(list.get(i).getProtein_start());
+                gr.setResidue(residue);
+
+                Ensembl ensembl = new Ensembl();
+                ensembl.setEnsemblid(list.get(i).getProtein_id());// ENSP
+                ensembl.setEnsemblgene(list.get(i).getGene_id());// ENSG
+                ensembl.setEnsembltranscript(list.get(i).getTranscript_id());// ENST
+                gr.setEnsembl(ensembl);
+
+                /*
+                 * Check whether allow redundancy
+                 */
+                if (redundancyTag) {
+                    outlist.add(gr);
+                } else {
+                    if (hm.containsKey(list.get(i).getProtein_id())) {
+
+                    } else {
+                        hm.put(list.get(i).getProtein_id(), "");
                         outlist.add(gr);
-                    }else{                      
-                        if(hm.containsKey(list.get(i).getProtein_id())){
-                            
-                        }else{
-                            hm.put(list.get(i).getProtein_id(), "");
-                            outlist.add(gr);
-                            System.out.println(i+"th id/location:"
-                                    +list.get(i).getProtein_id()+"\t"+list.get(i).getProtein_start());
-                        }                       
-                    }                    
-                    
+                        System.out.println(i + "th id/location:" + list.get(i).getProtein_id() + "\t"
+                                + list.get(i).getProtein_start());
+                    }
                 }
+
             }
-        
+        }
 
         return outlist;
     }
