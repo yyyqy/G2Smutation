@@ -13,10 +13,8 @@ public class Mutation {
     
     //MUTATION_NO and MUTATION_ID is not here
     private String proteinName; //SEQ_NAME
-    private int proteinPos;  //SEQ_INDEX
-    private String proteinResidue; //SEQ_RESIDUE
     
-    private List<MutatedResidue> mutatedResidue; //PDB_NO, PDB_INDEX
+    private List<MutatedPosition> mutatedPosition;
 
     public String getProteinName() {
         return proteinName;
@@ -26,29 +24,16 @@ public class Mutation {
         this.proteinName = proteinName;
     }
 
-    public int getProteinPos() {
-        return proteinPos;
+    public List<MutatedPosition> getMutatedPosition() {
+        return mutatedPosition;
     }
 
-    public void setProteinPos(int proteinPos) {
-        this.proteinPos = proteinPos;
+    public void setMutatedPosition(List<MutatedPosition> mutatedPosition) {
+        this.mutatedPosition = mutatedPosition;
     }
+    
+    
 
-    public List<MutatedResidue> getMutatedResidue() {
-        return mutatedResidue;
-    }
-
-    public void setMutatedResidue(List<MutatedResidue> mutatedResidue) {
-        this.mutatedResidue = mutatedResidue;
-    }
-
-    public String getProteinResidue() {
-        return proteinResidue;
-    }
-
-    public void setProteinResidue(String proteinResidue) {
-        this.proteinResidue = proteinResidue;
-    }
     
     
 

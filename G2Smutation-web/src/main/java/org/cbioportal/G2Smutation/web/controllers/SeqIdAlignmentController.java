@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.cbioportal.G2Smutation.web.domain.AlignmentRepository;
 import org.cbioportal.G2Smutation.web.domain.EnsemblRepository;
@@ -18,6 +20,7 @@ import org.cbioportal.G2Smutation.web.models.GenomeResidueInput;
 import org.cbioportal.G2Smutation.web.models.Uniprot;
 import org.cbioportal.G2Smutation.web.models.api.UtilAPI;
 import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
+import org.cbioportal.G2Smutation.web.models.mutation.MutatedPosition;
 import org.cbioportal.G2Smutation.web.models.mutation.MutatedResidue;
 import org.cbioportal.G2Smutation.web.models.mutation.Mutation;
 import org.cbioportal.G2Smutation.web.controllers.SeqIdAlignmentController;
@@ -744,17 +747,22 @@ public class SeqIdAlignmentController {
             hm.put(key, list);           
         }
         
-        for (String key: hm.keySet()){
-            Mutation entry = new Mutation();
+        Mutation entry = new Mutation();
+        entry.setProteinName(proteinName);
+        List<MutatedPosition> mplist = new ArrayList<>();
+        
+        SortedSet<String> keys = new TreeSet<>(hm.keySet());
+        for (String key: keys){            
             int proteinPos = Integer.parseInt(key.split("\t")[0]);
             String proteinResidue = key.split("\t")[1];
-            entry.setProteinName(proteinName);
-            entry.setProteinPos(proteinPos);
-            entry.setProteinResidue(proteinResidue);
-            entry.setMutatedResidue(hm.get(key));
-            outit.add(entry);
+            MutatedPosition mp = new MutatedPosition();            
+            mp.setProteinPos(proteinPos);
+            mp.setProteinResidue(proteinResidue);
+            mp.setMutatedResidue(hm.get(key));
+            mplist.add(mp);
         }
-        
+        entry.setMutatedPosition(mplist);
+        outit.add(entry);
         return outit;
     }
     
@@ -799,16 +807,21 @@ public class SeqIdAlignmentController {
             }                     
         }
         
-        for (String key: hm.keySet()){
-            Mutation entry = new Mutation();
+        Mutation entry = new Mutation();
+        entry.setProteinName(proteinName);
+        List<MutatedPosition> mplist = new ArrayList<>();
+        SortedSet<String> keys = new TreeSet<>(hm.keySet());
+        for (String key: keys){           
             int proteinPos = Integer.parseInt(key.split("\t")[0]);
             String proteinResidue = key.split("\t")[1];
-            entry.setProteinName(proteinName);
-            entry.setProteinPos(proteinPos);
-            entry.setProteinResidue(proteinResidue);
-            entry.setMutatedResidue(hm.get(key));
-            outit.add(entry);
+            MutatedPosition mp = new MutatedPosition();            
+            mp.setProteinPos(proteinPos);
+            mp.setProteinResidue(proteinResidue);
+            mp.setMutatedResidue(hm.get(key));
+            mplist.add(mp);
         }
+        entry.setMutatedPosition(mplist);
+        outit.add(entry);
         
         return outit;
     }
