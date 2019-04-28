@@ -1,6 +1,7 @@
 package org.cbioportal.G2Smutation.web.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -9,12 +10,16 @@ import java.util.Set;
 import org.cbioportal.G2Smutation.web.domain.AlignmentRepository;
 import org.cbioportal.G2Smutation.web.domain.EnsemblRepository;
 import org.cbioportal.G2Smutation.web.domain.GeneSequenceRepository;
+import org.cbioportal.G2Smutation.web.domain.MutationUsageTableRepository;
 import org.cbioportal.G2Smutation.web.domain.UniprotRepository;
 import org.cbioportal.G2Smutation.web.models.Alignment;
 import org.cbioportal.G2Smutation.web.models.Ensembl;
 import org.cbioportal.G2Smutation.web.models.GenomeResidueInput;
 import org.cbioportal.G2Smutation.web.models.Uniprot;
 import org.cbioportal.G2Smutation.web.models.api.UtilAPI;
+import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
+import org.cbioportal.G2Smutation.web.models.mutation.MutatedResidue;
+import org.cbioportal.G2Smutation.web.models.mutation.Mutation;
 import org.cbioportal.G2Smutation.web.controllers.SeqIdAlignmentController;
 import org.cbioportal.G2Smutation.web.models.ResidueMapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +64,9 @@ public class SeqIdAlignmentController {
     private EnsemblRepository ensemblRepository;
     @Autowired
     private SeqIdAlignmentController seqController;
+    @Autowired
+    private MutationUsageTableRepository mutationUsageTableRepository;
+    
 
     @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by Protein SeqId")
@@ -699,5 +707,111 @@ public class SeqIdAlignmentController {
 
         return outlist;
     }
+    
+    
+    //Mutation Related:
+    /**
+     * "Get All MutationUsageTable by Protein SeqId
+     * 
+     * @param seqId
+     * @return
+     */
+    public List<Mutation> getMutationUsageBySeqId(
+            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
+        
+        List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
+        List<Mutation> outit = new ArrayList<>();
+        
+        HashMap<String,List<MutatedResidue>> hm = new HashMap<>();
+        
+        String proteinName = "";
+        for(MutationUsageTable entry: it){
+            proteinName = entry.getSeqName();
+            String key = Integer.toString(entry.getSeqIndex())+"\t"+entry.getSeqResidue();
+            MutatedResidue mr = new MutatedResidue();
+            String[] pdbNoUse = entry.getPdbNo().split("_");
+            //System.out.println(pdbNoUse[0]+"_"+pdbNoUse[1]);
+            mr.setPdbNo(pdbNoUse[0]+"_"+pdbNoUse[1]);
+            mr.setPdbPos(entry.getPdbIndex());
+            mr.setPdbResidue(entry.getPdbResidue());
+            List<MutatedResidue> list = new ArrayList<>();
+            if (hm.containsKey(key)){
+                list = hm.get(key);
+                list.add(mr);
+            }else{
+                list.add(mr);
+            }
+            hm.put(key, list);           
+        }
+        
+        for (String key: hm.keySet()){
+            Mutation entry = new Mutation();
+            int proteinPos = Integer.parseInt(key.split("\t")[0]);
+            String proteinResidue = key.split("\t")[1];
+            entry.setProteinName(proteinName);
+            entry.setProteinPos(proteinPos);
+            entry.setProteinResidue(proteinResidue);
+            entry.setMutatedResidue(hm.get(key));
+            outit.add(entry);
+        }
+        
+        return outit;
+    }
+    
+    /**
+     * "Get All MutationUsageTable by Protein SeqId, only output specific position
+     * 
+     * @param seqId
+     * @return
+     */
+    public List<Mutation> getMutationUsageBySeqId(
+            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId,
+            @ApiParam(required = true, value = "Input Residue Position e.g. 99,100") @PathVariable List<String> positionList) {
+        
+        List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
+        List<Mutation> outit = new ArrayList<>();
+        
+        HashMap<String,List<MutatedResidue>> hm = new HashMap<>();
+        
+        HashSet<String> posSet = new HashSet<>();
+        for(String pos: positionList){
+            posSet.add(pos);
+        }
+        
+        String proteinName = "";
+        for(MutationUsageTable entry: it){
+            if(posSet.contains(Integer.toString(entry.getSeqIndex()))){
+                proteinName = entry.getSeqName();
+                String key = Integer.toString(entry.getSeqIndex())+"\t"+entry.getSeqResidue();
+                MutatedResidue mr = new MutatedResidue();
+                String[] pdbNoUse = entry.getPdbNo().split("_");
+                mr.setPdbNo(pdbNoUse[0]+"_"+pdbNoUse[1]);
+                mr.setPdbPos(entry.getPdbIndex());
+                mr.setPdbResidue(entry.getPdbResidue());
+                List<MutatedResidue> list = new ArrayList<>();
+                if (hm.containsKey(key)){
+                    list = hm.get(key);
+                    list.add(mr);
+                }else{
+                    list.add(mr);
+                }
+                hm.put(key, list);                 
+            }                     
+        }
+        
+        for (String key: hm.keySet()){
+            Mutation entry = new Mutation();
+            int proteinPos = Integer.parseInt(key.split("\t")[0]);
+            String proteinResidue = key.split("\t")[1];
+            entry.setProteinName(proteinName);
+            entry.setProteinPos(proteinPos);
+            entry.setProteinResidue(proteinResidue);
+            entry.setMutatedResidue(hm.get(key));
+            outit.add(entry);
+        }
+        
+        return outit;
+    }
+    
 
 }
