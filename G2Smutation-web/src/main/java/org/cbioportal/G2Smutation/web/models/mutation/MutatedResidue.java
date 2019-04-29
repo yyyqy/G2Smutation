@@ -8,7 +8,7 @@ package org.cbioportal.G2Smutation.web.models.mutation;
  */
 public class MutatedResidue {
     
-    private String pdbNo;  //PDB_NO, Be careful! only PDB and chain
+    private String pdbNo;  //PDB_NO, "XXXX_X_1": Be careful! only return PDB and chain
     private int pdbPos; //PDB_INDEX
     private String pdbResidue; //PDB_RESIDUE
     
