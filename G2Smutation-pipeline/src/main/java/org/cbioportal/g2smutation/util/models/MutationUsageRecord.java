@@ -17,6 +17,7 @@ public class MutationUsageRecord implements Serializable{
     private HashMap<Integer, String> mutationIdHm;//key:MUTATION_ID, value: chr_start_end
     private HashMap<String, List<Integer>> mutationIdRHm;//key:chr_pos, value: List of MUTATION_ID //reverse mutationIdHm key and value 
     private HashMap<Integer, String> residueHm;  //key:MUTATION_ID, value:XXXX_Chain_INDEX
+    private HashMap<Integer, String> mutationNoIdRHm; //key:MUTATION_ID, value: MUTATION_NO
     
     public HashMap<Integer, String> getMutationIdHm() {
         return mutationIdHm;
@@ -36,20 +37,12 @@ public class MutationUsageRecord implements Serializable{
     public void setResidueHm(HashMap<Integer, String> residueHm) {
         this.residueHm = residueHm;
     }
-    
-
-    
-    
-    
-    
-    
-
-    
-    
-    
-
-    
-    
-    
+    public HashMap<Integer, String> getMutationNoIdRHm() {
+        return mutationNoIdRHm;
+    }
+    public void setMutationNoIdRHm(HashMap<Integer, String> mutationNoIdRHm) {
+        this.mutationNoIdRHm = mutationNoIdRHm;
+    }
+     
 
 }

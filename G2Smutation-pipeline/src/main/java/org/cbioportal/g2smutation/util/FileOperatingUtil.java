@@ -29,20 +29,30 @@ public class FileOperatingUtil {
      * parse mutation result from inputFile and generate MutationUsageRecord
      * 
      * @param inputFilename
-     * @return MutationUsageRecord contains (1)HashMap<String, String>
+     * @return MutationUsageRecord contains 
+     *         (1)HashMap<String, String>
      *         mutationIdHm, key:MUTATION_ID, value: chr_start_end
      *         (2)HashMap<String, List<Integer>> mutationIdRHm, key:chr_pos,
-     *         value: List of mutationId (3)HashMap<Integer, String> residueHm,
+     *         value: List of mutationId
+     *         (3)HashMap<Integer, String> residueHm,
      *         key:MUTATION_ID, value:XXXX_Chain_INDEX
+     *         (4)HashMap<Integer, String> mutationNoIdRHm, key:mutationId,
+     *         value: mutationNo 
      * 
      */
     public MutationUsageRecord readMutationResult2MutationUsageRecord(String inputFilename) {
         MutationUsageRecord mur = new MutationUsageRecord();
         HashMap<String, List<Integer>> genomicCoorHm = new HashMap<>();
+        
+        //<mutation_NO, gpos>
         HashMap<String, String> mutationHm = new HashMap<>();// save time for
-                                                             // calling API
+                                                             // calling API        
         HashMap<Integer, String> mutationIdHm = new HashMap<>();
         HashMap<String, List<Integer>> mutationIdRHm = new HashMap<>();
+        
+        //Reverse of mutationNoIdHm
+        HashMap<Integer, String> mutationNoIdRHm = new HashMap<>();
+        
         HashMap<Integer, String> residueHm = new HashMap<>();
 
         try {
@@ -93,7 +103,8 @@ public class FileOperatingUtil {
                     mutationIdHm.put(mutationID, gpos); // gpos could be ""
                     genomicCoorHm.put(gpos, mutationList); // mutationList could
                                                            // be ""
-
+                    mutationNoIdRHm.put(mutationID, mutationNO);
+                    
                 } else {
 //                    log.info("Not found ENSP in " + strArray[3]);
                     count++;
@@ -140,6 +151,7 @@ public class FileOperatingUtil {
         mur.setMutationIdHm(mutationIdHm);
         mur.setMutationIdRHm(mutationIdRHm);
         mur.setResidueHm(residueHm);
+        mur.setMutationNoIdRHm(mutationNoIdRHm);
         return mur;
     }
 
