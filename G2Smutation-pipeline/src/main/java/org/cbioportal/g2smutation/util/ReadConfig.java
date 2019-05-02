@@ -260,7 +260,7 @@ public class ReadConfig {
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHmDbFile").trim();
             ReadConfig.mutationHmFile = prop.getProperty("mutationHmFile").trim();
-            ReadConfig.pdbSetFile = prop.getProperty("pdbSet.ser").trim();
+            ReadConfig.pdbSetFile = prop.getProperty("pdbSetFile").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
             ReadConfig.naccess = prop.getProperty("naccess").trim();
             ReadConfig.readLocalPDBinNaccess = prop.getProperty("readLocalPDBinNaccess").trim();
