@@ -259,7 +259,7 @@ public class ReadConfig {
             ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHmDbFile").trim();
-            ReadConfig.mutationHmFile = prop.getProperty("mutationHm.ser").trim();
+            ReadConfig.mutationHmFile = prop.getProperty("mutationHmFile").trim();
             ReadConfig.pdbSetFile = prop.getProperty("pdbSet.ser").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
             ReadConfig.naccess = prop.getProperty("naccess").trim();
