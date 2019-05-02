@@ -811,9 +811,21 @@ public class PdbScriptsPipelineRunCommand {
         
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
-        cu.runCommand("mysql", paralist);  
+        cu.runCommand("mysql", paralist); 
         
         log.info("********************[STEP 3.3]********************");
+        log.info("[STRUCTURE] Update PDBrepo");      
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.dsspLocalDataFile);
+        cu.runCommand("rsyncdssp", paralist);
+        
+        log.info("********************[STEP 3.4]********************");
+        log.info("[STRUCTURE] Update DSSPrepo");      
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.pdbRepo);
+        cu.runCommand("rsync", paralist);
+        
+        log.info("********************[STEP 3.5]********************");
         log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry. Rebuild in updates");      
         StructureAnnotation sanno = new StructureAnnotation();
         
@@ -851,7 +863,7 @@ public class PdbScriptsPipelineRunCommand {
         //dbsnp, clinvar, cosmic, genie, tcga annotation, only need update in initial G2S        
         if (!updateTag){
         	//TODO Update Clinvar later, next version
-        	log.info("********************[STEP 3.4]********************");
+        	log.info("********************[STEP 3.6]********************");
             log.info("[SQL] Clinvar: Download weekly Clinvar, parsing annotation file and inject to table clinvar_entry)");
             
             FTPClientUtil fc = new FTPClientUtil();
@@ -876,7 +888,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + ReadConfig.mutationInjectSQLClinvar);
             cu.runCommand("mysql", paralist);
         	
-			log.info("********************[STEP 3.5]********************");
+			log.info("********************[STEP 3.7]********************");
 			log.info(
 					"[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
 			parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(mUsageRecord,
@@ -891,7 +903,7 @@ public class PdbScriptsPipelineRunCommand {
 			paralist.add(currentDir + ReadConfig.mutationInjectSQLDbsnp);
 			cu.runCommand("mysql", paralist);
 
-			log.info("********************[STEP 3.6]********************");
+			log.info("********************[STEP 3.8]********************");
 			log.info(
 					"[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
 			parseprocess.parseGenerateMutationResultSQL4CosmicEntry(mUsageRecord,
@@ -906,7 +918,7 @@ public class PdbScriptsPipelineRunCommand {
 			paralist.add(currentDir + ReadConfig.mutationInjectSQLCosmic);
 			cu.runCommand("mysql", paralist);
 
-			log.info("********************[STEP 3.7]********************");
+			log.info("********************[STEP 3.9]********************");
 			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
 			parseprocess.parseGenerateMutationResultSQL4GenieEntry(mUsageRecord,
 					currentDir + ReadConfig.genieFile,
@@ -920,7 +932,7 @@ public class PdbScriptsPipelineRunCommand {
 			paralist.add(currentDir + ReadConfig.mutationInjectSQLGenie);
 			cu.runCommand("mysql", paralist);
 
-			log.info("********************[STEP 3.8]********************");
+			log.info("********************[STEP 3.10]********************");
 			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table tcga_entry)");
 			parseprocess.parseGenerateMutationResultSQL4TcgaEntry(mUsageRecord,
 					currentDir + ReadConfig.tcgaFile,
@@ -965,7 +977,7 @@ public class PdbScriptsPipelineRunCommand {
         // Serialize the MutationUsageRecord into the tmpfile!!!!
         if(!this.updateTag){
         	//Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
-            log.info("********************[STEP 3.9]********************");
+            log.info("********************[STEP 3.11]********************");
             log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
             HashMap<String,String> inputHm = new HashMap<String,String>();
             //Test here
@@ -983,7 +995,7 @@ public class PdbScriptsPipelineRunCommand {
                 cu.runCommand("mysql", paralist);
             }      
             
-            log.info("********************[STEP 3.10]********************");
+            log.info("********************[STEP 3.12]********************");
             log.info("[SQL] Generate and import into the table gpos_protein_entry, this step is very slow for querying lots of API");
             
             if(Boolean.parseBoolean(ReadConfig.initConcurrent)){
@@ -1003,7 +1015,7 @@ public class PdbScriptsPipelineRunCommand {
                 cu.runCommand("mysql", paralist);
             }
         }
-        log.info("********************[STEP 3.11]********************");
+        log.info("********************[STEP 3.13]********************");
         log.info("[SQL] Rebuild all Mapping INSERT SQL statements into table gpos_allmapping_pdb_entry (Warning: This step takes time)");
         
         //call 12million SNP through inner API, should start G2Smutation-web
