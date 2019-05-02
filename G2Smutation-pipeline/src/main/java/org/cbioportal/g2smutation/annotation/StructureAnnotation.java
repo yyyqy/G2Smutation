@@ -154,10 +154,7 @@ public class StructureAnnotation {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            // Regenerate table struture_annotation_entry
-            outputlist.add("SET FOREIGN_KEY_CHECKS = 0;\n"
-                    +"drop table IF EXISTS gpos_allmapping_pdb_entry;\n"
-                    +"SET FOREIGN_KEY_CHECKS = 1;");
+            
             for(StructureAnnotationRecord sar:sarList){
                 outputlist.add(makeTable_structureAnnotation_insert(sar));
             }

@@ -1589,10 +1589,7 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            // delete table mutation_location_entry
-            outputlist.add("SET FOREIGN_KEY_CHECKS = 0;\n" 
-                    + "drop table IF EXISTS mutation_location_entry;\n"
-                    + "SET FOREIGN_KEY_CHECKS = 1;\n");
+            
             for (int mutationId : mutationIdHm.keySet()) {
                 String chr_pos = mutationIdHm.get(mutationId);
                 // chr_pos may be "" if API return 500 error.

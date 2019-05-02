@@ -99,6 +99,8 @@ public class ReadConfig {
     public static String annotationCosmicSQL;
     public static String annotationGenieSQL;
     public static String annotationTcgaSQL;
+    public static String annotationStrctureSQL;
+    public static String mutationLocationSQL;
     public static String alignFilterDiffT;
     public static String alignFilterDiffP;
     public static String alignFilterRatio;
@@ -240,6 +242,8 @@ public class ReadConfig {
             ReadConfig.annotationCosmicSQL = prop.getProperty("annotation_cosmic_SQL").trim();
             ReadConfig.annotationGenieSQL = prop.getProperty("annotation_genie_SQL").trim();
             ReadConfig.annotationTcgaSQL = prop.getProperty("annotation_tcga_SQL").trim();
+            ReadConfig.annotationStrctureSQL = prop.getProperty("annotation_strcture_SQL").trim();
+            ReadConfig.mutationLocationSQL = prop.getProperty("mutation_location_SQL").trim();
             ReadConfig.alignFilterDiffT = prop.getProperty("align.filter.diffT").trim();
             ReadConfig.alignFilterDiffP = prop.getProperty("align.filter.diffP").trim();
             ReadConfig.alignFilterRatio = prop.getProperty("align.filter.ratio").trim();
@@ -1186,5 +1190,23 @@ public class ReadConfig {
     public static void setPdbSetFile(String pdbSetFile) {
         ReadConfig.pdbSetFile = pdbSetFile;
     }
+
+    public static String getAnnotationStrctureSQL() {
+        return annotationStrctureSQL;
+    }
+
+    public static void setAnnotationStrctureSQL(String annotationStrctureSQL) {
+        ReadConfig.annotationStrctureSQL = annotationStrctureSQL;
+    }
+
+    public static String getMutationLocationSQL() {
+        return mutationLocationSQL;
+    }
+
+    public static void setMutationLocationSQL(String mutationLocationSQL) {
+        ReadConfig.mutationLocationSQL = mutationLocationSQL;
+    }
+    
+    
 
 }
