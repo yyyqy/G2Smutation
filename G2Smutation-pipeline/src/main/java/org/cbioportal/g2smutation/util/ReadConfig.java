@@ -118,6 +118,8 @@ public class ReadConfig {
     public static String gnApiAlignInnerGposUrl;
     public static String callThreadsNum;
     public static String gpos2proHmDbFile;
+    public static String mutationHmFile;
+    public static String pdbSetFile;
     public static String saveSpaceTag;
     public static String naccess;
     public static String readLocalPDBinNaccess;
@@ -257,6 +259,8 @@ public class ReadConfig {
             ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHmDbFile").trim();
+            ReadConfig.mutationHmFile = prop.getProperty("mutationHm.ser").trim();
+            ReadConfig.pdbSetFile = prop.getProperty("pdbSet.ser").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
             ReadConfig.naccess = prop.getProperty("naccess").trim();
             ReadConfig.readLocalPDBinNaccess = prop.getProperty("readLocalPDBinNaccess").trim();
@@ -1165,6 +1169,22 @@ public class ReadConfig {
 
     public static void setSqlMutationInsertFile(String sqlMutationInsertFile) {
         ReadConfig.sqlMutationInsertFile = sqlMutationInsertFile;
+    }
+
+    public static String getMutationHmFile() {
+        return mutationHmFile;
+    }
+
+    public static void setMutationHmFile(String mutationHmFile) {
+        ReadConfig.mutationHmFile = mutationHmFile;
+    }
+
+    public static String getPdbSetFile() {
+        return pdbSetFile;
+    }
+
+    public static void setPdbSetFile(String pdbSetFile) {
+        ReadConfig.pdbSetFile = pdbSetFile;
     }
 
 }

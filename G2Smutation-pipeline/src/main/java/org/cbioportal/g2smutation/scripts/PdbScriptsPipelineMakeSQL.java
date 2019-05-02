@@ -1321,7 +1321,7 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
-     * generate sql in delete
+     * generate sql in delete in V1
      * 
      * @param currentDir
      * @param list
@@ -1349,6 +1349,62 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * generate mutation sql in delete, in use
+     * 
+     * @param currentDir
+     * @param list
+     */
+    public void generateDeleteMutationSql(String currentDir, List<String> list) {
+        try {
+            log.info("[PIPELINE] Generating delete SQL mutation statements");
+            File outfile = new File(currentDir + this.sqlDeleteFile);
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for (String pdbName : list) {
+                
+                //Actually, these tables are rebuild every week, so we could directly delete them
+                /*
+                //Delete mutation related annotation first for their foreign key restrains
+                String str1 = "DELETE FROM gpos_allmapping_pdb_entry WHERE PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str1);              
+                
+                String str2 = "DELETE mutation_location_entry FROM mutation_location_entry inner join mutation_entry on mutation_location_entry.MUTATION_ID=mutation_entry.MUTATION_ID WHERE mutation_entry.PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str2);
+                
+                //delete from MUTATION_ID, we could also check from PDB_NO
+                String str3 = "DELETE structure_annotation_entry FROM structure_annotation_entry inner join mutation_entry on structure_annotation_entry.MUTATION_ID=mutation_entry.MUTATION_ID WHERE mutation_entry.PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str3);
+                */
+             
+                //Then delete Foreign Key based tables, order is important. Mutation, alignment then PDB
+                //delete from MUTATION_ID
+                String str4 = "DELETE FROM mutation_entry WHERE PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str4);               
+                
+                String str5 = "DELETE pdb_seq_alignment FROM pdb_seq_alignment inner join pdb_entry on pdb_entry.pdb_no=pdb_seq_alignment.pdb_no WHERE pdb_seq_alignment.pdb_id='"
+                        + pdbName + "';\n";
+                outputlist.add(str5);
+                
+                String str6 = "DELETE FROM pdb_entry WHERE PDB_ID='" + pdbName + "';\n";
+                outputlist.add(str6);
+            }
+            outputlist.add("commit;");
+            FileUtils.writeLines(outfile, outputlist, "");
+            log.info("[SHELL] Totally delete " + list.size() + " obsolete and modified alignments");
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    
 
     public HashMap<String, String> BuildSNPHM(HashMap<String, String> SNPHM) {
         try {
@@ -1533,12 +1589,16 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
+            // delete table mutation_location_entry
+            outputlist.add("SET FOREIGN_KEY_CHECKS = 0;\n" 
+                    + "drop table IF EXISTS mutation_location_entry;\n"
+                    + "SET FOREIGN_KEY_CHECKS = 1;\n");
             for (int mutationId : mutationIdHm.keySet()) {
                 String chr_pos = mutationIdHm.get(mutationId);
                 // chr_pos may be "" if API return 500 error.
-                
+
                 String mutationNo = mutationNoIdRHm.get(mutationId);
-                	
+
                 // Corner Case:
                 // HSCHR6_MHC_MCF_29989718_29989720
                 String[] strArray = chr_pos.split("_");
@@ -1551,7 +1611,7 @@ public class PdbScriptsPipelineMakeSQL {
                         + mutationId + "','" + mutationNo + "','" + chr_pos + "','" + chr + "','"
                         + strArray[strArray.length - 2] + "','" + strArray[strArray.length - 1] + "');\n";
                 outputlist.add(str);
-                
+
             }
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);

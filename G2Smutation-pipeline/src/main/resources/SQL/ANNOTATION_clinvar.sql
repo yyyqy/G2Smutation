@@ -1,6 +1,7 @@
 --
 -- database `g2smutation`
 --
+-- Build only when Init, may rebuild in weekly update later for clinvar update every week
 drop table IF EXISTS clinvar_entry;
 CREATE TABLE `clinvar_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,

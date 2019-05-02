@@ -1,6 +1,7 @@
 --
 -- database `g2smutation`
 --
+-- Build only when Init
 drop table IF EXISTS tcga_entry;
 -- Most shared with genie table, but only the end
 CREATE TABLE `tcga_entry` (

@@ -1,6 +1,7 @@
 --
 -- database `g2smutation`
 --
+-- Build only when Init
 drop table IF EXISTS dbsnp_entry;
 CREATE TABLE `dbsnp_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,

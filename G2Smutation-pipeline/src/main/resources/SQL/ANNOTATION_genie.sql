@@ -1,6 +1,7 @@
 --
 -- database `g2smutation`
 --
+-- Build only when Init
 drop table IF EXISTS genie_entry;
 CREATE TABLE `genie_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,

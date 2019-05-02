@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 import org.cbioportal.g2smutation.util.models.MutationUsageRecord;
 import org.cbioportal.g2smutation.util.models.SNPAnnotationType;
@@ -29,6 +30,7 @@ public class FileOperatingUtil {
      * parse mutation result from inputFile and generate MutationUsageRecord
      * 
      * @param inputFilename
+     * @param mutationHm <mutation_NO, gpos> // save time for calling API
      * @return MutationUsageRecord contains 
      *         (1)HashMap<String, String>
      *         mutationIdHm, key:MUTATION_ID, value: chr_start_end
@@ -40,13 +42,11 @@ public class FileOperatingUtil {
      *         value: mutationNo 
      * 
      */
-    public MutationUsageRecord readMutationResult2MutationUsageRecord(String inputFilename) {
+    public MutationUsageRecord readMutationResult2MutationUsageRecord(String inputFilename, HashMap<String, String> mutationHm) {
         MutationUsageRecord mur = new MutationUsageRecord();
         HashMap<String, List<Integer>> genomicCoorHm = new HashMap<>();
         
-        //<mutation_NO, gpos>
-        HashMap<String, String> mutationHm = new HashMap<>();// save time for
-                                                             // calling API        
+                
         HashMap<Integer, String> mutationIdHm = new HashMap<>();
         HashMap<String, List<Integer>> mutationIdRHm = new HashMap<>();
         
@@ -119,6 +119,16 @@ public class FileOperatingUtil {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        
+        //save mutationHm<String,String>: <mutationId,gpos> as mutationHm.ser
+        String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
+        try{
+            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(mutationHm));
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        
         // Construct Reverse HashMap mutationIdRHm for mutationIdHm
         for (Integer mutationId : mutationIdHm.keySet()) {
             String gpos = mutationIdHm.get(mutationId);

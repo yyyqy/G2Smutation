@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.Structure;
@@ -153,6 +154,10 @@ public class StructureAnnotation {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
+            // Regenerate table struture_annotation_entry
+            outputlist.add("SET FOREIGN_KEY_CHECKS = 0;\n"
+                    +"drop table IF EXISTS gpos_allmapping_pdb_entry;\n"
+                    +"SET FOREIGN_KEY_CHECKS = 1;");
             for(StructureAnnotationRecord sar:sarList){
                 outputlist.add(makeTable_structureAnnotation_insert(sar));
             }
@@ -911,10 +916,11 @@ public class StructureAnnotation {
      * Using naccess to generate results .rsa
      * 
      * @param mUsageRecord
+     * @param HashSet<String> pdbSet
+     * 
      */
-    public void generateNaccessResults(MutationUsageRecord mUsageRecord) {
+    public void generateNaccessResults(MutationUsageRecord mUsageRecord, HashSet<String> pdbSet) {
         HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
-        HashSet<String> pdbSet = new HashSet<>();
         int count = 0;
         for (int mutationId : residueHm.keySet()) {
             String pdbNo = residueHm.get(mutationId).split("_")[0];
@@ -927,16 +933,24 @@ public class StructureAnnotation {
             }
             count++;
         }
+        
+        //save HashSet<String>: pdb as pdbSet.ser
+        String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
+        try{
+            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(pdbSet));
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     /**
      * Dealing with .rsa get results.
      * 
      * @param mUsageRecord
+     * @param HashSet<String> pdbSet
      */
-    public void generateNaccessResultsBuried(MutationUsageRecord mUsageRecord) {
+    public void generateNaccessResultsBuried(MutationUsageRecord mUsageRecord, HashSet<String> pdbSet) {
         HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
-        HashSet<String> pdbSet = new HashSet<>();
         int count = 0;
         for (int mutationId : residueHm.keySet()) {
             String pdbNo = residueHm.get(mutationId).split("_")[0];

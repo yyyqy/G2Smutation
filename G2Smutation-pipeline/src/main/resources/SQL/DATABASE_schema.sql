@@ -96,6 +96,7 @@ CREATE TABLE `mutation_entry` (
   FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
 );
 
+-- Rebuilt in weekly update
 CREATE TABLE `mutation_location_entry` (
   `MUTATION_ID` int,
   `MUTATION_NO` VARCHAR(50) NOT NULL,
@@ -108,6 +109,7 @@ CREATE TABLE `mutation_location_entry` (
 );
 
 -- Annotation
+-- Rebuilt in weekly update
 CREATE TABLE `structure_annotation_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin, -- CHR_POSSTART_POSEND
@@ -178,6 +180,7 @@ CREATE TABLE `structure_annotation_entry` (
   KEY(`CHR_POS`,`MUTATION_ID`)
 );
 
+-- Build only when Init
 CREATE TABLE `gpos_allmapping_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
@@ -190,7 +193,7 @@ CREATE TABLE `gpos_allmapping_entry` (
   KEY(`CHR_POS`,`DBSNP_ID`,`CLINVAR_ID`,`COSMIC_ID`,`GENIE_ID`,`TCGA_ID`)
 );
 
-
+-- Build only when Init
 CREATE TABLE `gpos_protein_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART
