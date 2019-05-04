@@ -982,7 +982,7 @@ public class PdbScriptsPipelineRunCommand {
         */
                  
         //mapdb: https://github.com/jankotek/mapdb/ off-heap solutions, for it is so huge
-        DB gpos2proHmdb = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.gpos2proHmDbFile).make();
+        DB gpos2proHmdb = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.gpos2proHmDbFile).checksumHeaderBypass().make();        
         Map gpos2proHm = gpos2proHmdb.hashMap("map").createOrOpen();
         // Serialize the MutationUsageRecord into the tmpfile!!!!
         if(!this.updateTag){
