@@ -996,14 +996,14 @@ public class PdbScriptsPipelineRunCommand {
                 inputHm = fou.collectAllSNPs2Map(inputHm, snpCollectionName);
             }                
                     
-            this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
-            System.out.println("allSql Mapping Count:"+allSqlCount);                
-            
-            for (int i = 0; i <this.allSqlCount; i++) {
-                paralist = new ArrayList<String>();
-                paralist.add(currentDir + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("mysql", paralist);
-            }      
+//            this.allSqlCount = generateSQLfile.generateGposAllMappingSQLfile(inputHm);
+//            System.out.println("allSql Mapping Count:"+allSqlCount);                
+//            
+//            for (int i = 0; i <this.allSqlCount; i++) {
+//                paralist = new ArrayList<String>();
+//                paralist.add(currentDir + ReadConfig.rsSqlInsertFile + "." + new Integer(i).toString());
+//                cu.runCommand("mysql", paralist);
+//            }      
             
             log.info("********************[STEP 3.12]********************");
             log.info("[SQL] Generate and import into the table gpos_protein_entry, this step is very slow for querying lots of API");
