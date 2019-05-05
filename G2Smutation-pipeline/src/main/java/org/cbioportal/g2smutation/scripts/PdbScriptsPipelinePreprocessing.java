@@ -15,6 +15,7 @@ import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.cbioportal.g2smutation.util.FTPClientUtil;
 import org.cbioportal.g2smutation.util.PdbSequenceUtil;
 import org.cbioportal.g2smutation.util.ReadConfig;
+import org.cbioportal.g2smutation.util.models.ListUpdate;
 
 /**
  * Preprocessing the input PDB, Ensembl and Uniprot files, both in init and
@@ -474,8 +475,9 @@ public class PdbScriptsPipelinePreprocessing {
      * @param delPDB
      * @return
      */
-    public List<String> prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB) {
+    public ListUpdate prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB) {
         List<String> listOld = new ArrayList<String>();
+        List<String> listNew = new ArrayList<String>();
         FTPClientUtil fcu = new FTPClientUtil();
         try {
             log.info("[PIPELINE] Weekly Update: Create deleted list");
@@ -486,7 +488,7 @@ public class PdbScriptsPipelinePreprocessing {
             List<String> listAdd = fcu.readFTPfile2List(ReadConfig.updateAdded);
             List<String> listMod = fcu.readFTPfile2List(ReadConfig.updateModified);
             List<String> listObs = fcu.readFTPfile2List(ReadConfig.updateObsolete);
-            List<String> listNew = new ArrayList<String>(listAdd);
+            listNew = new ArrayList<String>(listAdd);
             listNew.addAll(listMod);
             listOld = new ArrayList<String>(listMod);
             listOld.addAll(listObs);
@@ -504,7 +506,11 @@ public class PdbScriptsPipelinePreprocessing {
             log.error("[SHELL] Error in fetching weekly updates: " + ex.getMessage());
             ex.printStackTrace();
         }
-        return listOld;
+        
+        ListUpdate lu = new ListUpdate();
+        lu.setListNew(listNew);
+        lu.setListOld(listOld);
+        return lu;
     }
 
     /**

@@ -99,6 +99,8 @@ public class ReadConfig {
     public static String annotationCosmicSQL;
     public static String annotationGenieSQL;
     public static String annotationTcgaSQL;
+    public static String annotationStrctureSQL;
+    public static String mutationLocationSQL;
     public static String alignFilterDiffT;
     public static String alignFilterDiffP;
     public static String alignFilterRatio;
@@ -118,6 +120,8 @@ public class ReadConfig {
     public static String gnApiAlignInnerGposUrl;
     public static String callThreadsNum;
     public static String gpos2proHmDbFile;
+    public static String mutationHmFile;
+    public static String pdbSetFile;
     public static String saveSpaceTag;
     public static String naccess;
     public static String readLocalPDBinNaccess;
@@ -242,6 +246,8 @@ public class ReadConfig {
             ReadConfig.annotationCosmicSQL = prop.getProperty("annotation_cosmic_SQL").trim();
             ReadConfig.annotationGenieSQL = prop.getProperty("annotation_genie_SQL").trim();
             ReadConfig.annotationTcgaSQL = prop.getProperty("annotation_tcga_SQL").trim();
+            ReadConfig.annotationStrctureSQL = prop.getProperty("annotation_strcture_SQL").trim();
+            ReadConfig.mutationLocationSQL = prop.getProperty("mutation_location_SQL").trim();
             ReadConfig.alignFilterDiffT = prop.getProperty("align.filter.diffT").trim();
             ReadConfig.alignFilterDiffP = prop.getProperty("align.filter.diffP").trim();
             ReadConfig.alignFilterRatio = prop.getProperty("align.filter.ratio").trim();
@@ -261,6 +267,8 @@ public class ReadConfig {
             ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHmDbFile").trim();
+            ReadConfig.mutationHmFile = prop.getProperty("mutationHmFile").trim();
+            ReadConfig.pdbSetFile = prop.getProperty("pdbSetFile").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
             ReadConfig.naccess = prop.getProperty("naccess").trim();
             ReadConfig.readLocalPDBinNaccess = prop.getProperty("readLocalPDBinNaccess").trim();
@@ -1207,5 +1215,37 @@ public class ReadConfig {
 		ReadConfig.cathNamesSource = cathNamesSource;
 	}
 	
+    public static String getMutationHmFile() {
+        return mutationHmFile;
+    }
+
+    public static void setMutationHmFile(String mutationHmFile) {
+        ReadConfig.mutationHmFile = mutationHmFile;
+    }
+
+    public static String getPdbSetFile() {
+        return pdbSetFile;
+    }
+
+    public static void setPdbSetFile(String pdbSetFile) {
+        ReadConfig.pdbSetFile = pdbSetFile;
+    }
+
+    public static String getAnnotationStrctureSQL() {
+        return annotationStrctureSQL;
+    }
+
+    public static void setAnnotationStrctureSQL(String annotationStrctureSQL) {
+        ReadConfig.annotationStrctureSQL = annotationStrctureSQL;
+    }
+
+    public static String getMutationLocationSQL() {
+        return mutationLocationSQL;
+    }
+
+    public static void setMutationLocationSQL(String mutationLocationSQL) {
+        ReadConfig.mutationLocationSQL = mutationLocationSQL;
+    }
+    
 
 }

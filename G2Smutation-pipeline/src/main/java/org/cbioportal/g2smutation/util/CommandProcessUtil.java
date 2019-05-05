@@ -85,6 +85,11 @@ public class CommandProcessUtil {
                 checkFlag = false;
             }
             break;
+        case "rsyncdssp":
+            if (paralist.size() != 1) {
+                checkFlag = false;
+            }
+            break;
         case "rm":
             if (paralist.size() != 1) {
                 checkFlag = false;
@@ -160,6 +165,10 @@ public class CommandProcessUtil {
             case "rsync":
                 log.info("[SHELL] Running rsync command and clone whole PDB to" + paralist.get(0) + "...");
                 pb = new ProcessBuilder(makdeRsyncCommand(paralist.get(0)));
+                break;
+            case "rsyncdssp":
+                log.info("[SHELL] Running rsync command and clone whole DSSP to" + paralist.get(0) + "...");
+                pb = new ProcessBuilder(makdeRsyncDsspCommand(paralist.get(0)));
                 break;
             case "rm":
                 log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
@@ -375,6 +384,23 @@ public class CommandProcessUtil {
         list.add("--delete");
         list.add("--port=33444");
         list.add("rsync.rcsb.org::ftp_data/structures/divided/pdb/");
+        list.add(inFilename);
+        return list;
+    }
+    
+    //rsync -avz --delete rsync://rsync.cmbi.ru.nl/dssp/ /home/labadmin/tools/dssp
+    /**
+     * generate rsync command to synchronize the dssp
+     * 
+     * @param inFilename
+     * @return
+     */
+    private List<String> makdeRsyncDsspCommand(String inFilename) {
+        List<String> list = new ArrayList<String>();
+        list.add("rsync");
+        list.add("-avz");
+        list.add("--delete");
+        list.add("rsync://rsync.cmbi.ru.nl/dssp/");
         list.add(inFilename);
         return list;
     }

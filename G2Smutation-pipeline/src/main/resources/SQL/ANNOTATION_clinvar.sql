@@ -1,11 +1,12 @@
 --
 -- database `g2smutation`
 --
+-- Build only when Init, may rebuild in weekly update later for clinvar update every week
 drop table IF EXISTS clinvar_entry;
 CREATE TABLE `clinvar_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- CHR_POSSTART_POSEND
-  `MUTATION_ID` int,
+  `MUTATION_NO` VARCHAR(50) NOT NULL,
   `CLINVAR_ID` int, -- key in clinvar
   `REF` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
   `ALT` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
@@ -26,13 +27,13 @@ CREATE TABLE `clinvar_entry` (
   `CLNVCSO` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '',
   `CLNVI` TEXT,
   `DBVARID` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '',
-  `GENEINFO` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '',
+  `GENEINFO` TEXT,
   `MC` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '',
   `ORIGIN` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '',
   `RS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '',
   `SSR` int DEFAULT -1,
   `UPDATE_DATE` DATE,
   PRIMARY KEY(`ID`),
-  KEY(`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`)
+  KEY(`CHR_POS`,`MUTATION_NO`,`CLINVAR_ID`)
 );
 

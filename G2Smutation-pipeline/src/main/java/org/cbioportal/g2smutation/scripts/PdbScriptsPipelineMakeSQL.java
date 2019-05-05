@@ -1321,7 +1321,7 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
-     * generate sql in delete
+     * generate sql in delete in V1
      * 
      * @param currentDir
      * @param list
@@ -1349,6 +1349,62 @@ public class PdbScriptsPipelineMakeSQL {
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * generate mutation sql in delete, in use
+     * 
+     * @param currentDir
+     * @param list
+     */
+    public void generateDeleteMutationSql(String currentDir, List<String> list) {
+        try {
+            log.info("[PIPELINE] Generating delete SQL mutation statements");
+            File outfile = new File(currentDir + this.sqlDeleteFile);
+            List<String> outputlist = new ArrayList<String>();
+            // Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for (String pdbName : list) {
+                
+                //Actually, these tables are rebuild every week, so we could directly delete them
+                /*
+                //Delete mutation related annotation first for their foreign key restrains
+                String str1 = "DELETE FROM gpos_allmapping_pdb_entry WHERE PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str1);              
+                
+                String str2 = "DELETE mutation_location_entry FROM mutation_location_entry inner join mutation_entry on mutation_location_entry.MUTATION_ID=mutation_entry.MUTATION_ID WHERE mutation_entry.PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str2);
+                
+                //delete from MUTATION_ID, we could also check from PDB_NO
+                String str3 = "DELETE structure_annotation_entry FROM structure_annotation_entry inner join mutation_entry on structure_annotation_entry.MUTATION_ID=mutation_entry.MUTATION_ID WHERE mutation_entry.PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str3);
+                */
+             
+                //Then delete Foreign Key based tables, order is important. Mutation, alignment then PDB
+                //delete from MUTATION_ID
+                String str4 = "DELETE FROM mutation_entry WHERE PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str4);               
+                
+                String str5 = "DELETE pdb_seq_alignment FROM pdb_seq_alignment inner join pdb_entry on pdb_entry.pdb_no=pdb_seq_alignment.pdb_no WHERE pdb_seq_alignment.pdb_id='"
+                        + pdbName + "';\n";
+                outputlist.add(str5);
+                
+                String str6 = "DELETE FROM pdb_entry WHERE PDB_ID='" + pdbName + "';\n";
+                outputlist.add(str6);
+            }
+            outputlist.add("commit;");
+            FileUtils.writeLines(outfile, outputlist, "");
+            log.info("[SHELL] Totally delete " + list.size() + " obsolete and modified alignments");
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    
 
     public HashMap<String, String> BuildSNPHM(HashMap<String, String> SNPHM) {
         try {
@@ -1487,17 +1543,6 @@ public class PdbScriptsPipelineMakeSQL {
         return transline;
     }
 
-    /*
-     * String str =
-     * "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
-     * + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" +
-     * strarrayS[2] + "','" + segStart + "','" + strarrayQ[0] + "'," +
-     * br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," +
-     * br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," +
-     * br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() + "','" +
-     * br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
-     */
-
     /**
      * parse mutation result from inputFile and generate outputfile in SQL for
      * mutation_usage_table
@@ -1538,29 +1583,32 @@ public class PdbScriptsPipelineMakeSQL {
     public void parseGenerateMutationResultSQL4MutationLocationEntry(MutationUsageRecord mUsageRecord,
             String outputFilename) {
         HashMap<Integer, String> mutationIdHm = mUsageRecord.getMutationIdHm();
+        HashMap<Integer, String> mutationNoIdRHm = mUsageRecord.getMutationNoIdRHm();
         try {
             List<String> outputlist = new ArrayList<String>();
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
+            
             for (int mutationId : mutationIdHm.keySet()) {
                 String chr_pos = mutationIdHm.get(mutationId);
-                if (!chr_pos.equals("")) {
-                    // chr_pos may be "" if API return 500 error.
-                	
-                	// Corner Case:
-                    // HSCHR6_MHC_MCF_29989718_29989720
-                	String[] strArray = chr_pos.split("_");
-                    String chr = strArray[0];
-					for (int i = 1; i < strArray.length - 2; i++) {
-						chr = chr + strArray[i] + "_";
-					}
-                                        
-                    String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
-                            + mutationId + "','" + chr_pos + "','" + chr + "','" + strArray[strArray.length - 2] + "','"
-                            + strArray[strArray.length - 1] + "');\n";
-                    outputlist.add(str);
+                // chr_pos may be "" if API return 500 error.
+
+                String mutationNo = mutationNoIdRHm.get(mutationId);
+
+                // Corner Case:
+                // HSCHR6_MHC_MCF_29989718_29989720
+                String[] strArray = chr_pos.split("_");
+                String chr = strArray[0];
+                for (int i = 1; i < strArray.length - 2; i++) {
+                    chr = chr + strArray[i] + "_";
                 }
+
+                String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`MUTATION_NO`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
+                        + mutationId + "','" + mutationNo + "','" + chr_pos + "','" + chr + "','"
+                        + strArray[strArray.length - 2] + "','" + strArray[strArray.length - 1] + "');\n";
+                outputlist.add(str);
+
             }
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
@@ -1582,7 +1630,8 @@ public class PdbScriptsPipelineMakeSQL {
         HashMap<String, List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm(); // <chr_pos,List
                                                                                         // of
                                                                                         // mutationId>
-        HashMap<Integer, String> rsHm = new HashMap<>();// <mutationId,chr_pos_snpid>
+        HashMap<Integer,String> mutationNoIdRHm = mUsageRecord.getMutationNoIdRHm();
+        HashMap<String, String> rsHm = new HashMap<>();// <mutationNo,chr_pos_snpid>
 
         try {
             LineIterator it = FileUtils.lineIterator(new File(inputFilename));
@@ -1593,7 +1642,7 @@ public class PdbScriptsPipelineMakeSQL {
                 if (mutationIdRHm.containsKey(gpos)) {
                     List<Integer> tmplist = mutationIdRHm.get(gpos);
                     for (Integer mutationId : tmplist) {
-                        rsHm.put(mutationId, gpos + "_" + strArray[2]);
+                        rsHm.put(mutationNoIdRHm.get(mutationId), gpos + "_" + strArray[2]);
                     }
                 }
             }
@@ -1602,8 +1651,8 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            for (int mutationId : rsHm.keySet()) {
-                String chr_pos_snpid = rsHm.get(mutationId);
+            for (String mutationNo : rsHm.keySet()) {
+                String chr_pos_snpid = rsHm.get(mutationNo);
                 String[] strArray = chr_pos_snpid.split("_");
                 String chr_pos = "";
                 for (int i = 0; i < strArray.length - 2; i++) {
@@ -1611,8 +1660,8 @@ public class PdbScriptsPipelineMakeSQL {
                 }
                 chr_pos = chr_pos + strArray[strArray.length - 2];
                 // System.out.println(chr_pos_snpid);
-                String str = "INSERT INTO `dbsnp_entry` (`CHR_POS`,`MUTATION_ID`,`RS_ID`)VALUES('" + chr_pos + "','"
-                        + Integer.toString(mutationId) + "','" + strArray[strArray.length - 1] + "');\n";
+                String str = "INSERT INTO `dbsnp_entry` (`CHR_POS`,`MUTATION_NO`,`RS_ID`)VALUES('" + chr_pos + "','"
+                        + mutationNo + "','" + strArray[strArray.length - 1] + "');\n";
                 outputlist.add(str);
             }
             outputlist.add("commit;");
@@ -1633,8 +1682,9 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public void parseGenerateMutationResultSQL4ClinvarEntry(MutationUsageRecord mUsageRecord, String inputFilename,
             String outputFilename) {
-        HashMap<String, List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm();
-        HashMap<Integer, String> rsHm = new HashMap<>();// <mutationId,string as
+        HashMap<String, List<Integer>> mutationIdRHm = mUsageRecord.getMutationIdRHm(); //key:chr_pos, value: List of MUTATION_ID
+        HashMap<Integer, String> mutationNoIdRHm = mUsageRecord.getMutationNoIdRHm(); //key:MUTATION_ID, value: MUTATION_NO
+        HashMap<String, String> rsHm = new HashMap<>();// <mutationNo,string as
                                                         // all information in
                                                         // the line>
         FileOperatingUtil fou = new FileOperatingUtil();
@@ -1648,7 +1698,7 @@ public class PdbScriptsPipelineMakeSQL {
                     if (mutationIdRHm.containsKey(gpos)) {
                         List<Integer> tmplist = mutationIdRHm.get(gpos);
                         for (Integer mutationId : tmplist) {
-                            rsHm.put(mutationId, str);
+                            rsHm.put(mutationNoIdRHm.get(mutationId), str);
                         }
                     }
                 }
@@ -1658,24 +1708,24 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            for (int mutationId : rsHm.keySet()) {
-                String contentStr = rsHm.get(mutationId);
+            for (String mutationNo : rsHm.keySet()) {
+                String contentStr = rsHm.get(mutationNo);
                 String[] strArray = contentStr.split("\t");
                 String chr_pos = strArray[0] + "_" + strArray[1];
                 HashMap<String, String> contentHm = fou.clinvarContentStr2Map(strArray[7]);
                 // original: manually, we change accordingly
                 // String str = "INSERT INTO `clinvar_entry`
-                // (`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`,`REF`,`ALT`,`AF_ESP`,`AF_EXAC`,`AF_TGP`,"
+                // (`CHR_POS`,`MUTATION_NO`,`CLINVAR_ID`,`REF`,`ALT`,`AF_ESP`,`AF_EXAC`,`AF_TGP`,"
                 // +
                 // "`ALLELEID`,`CLNDN`,`CLNDNINCL`,`CLNDISDB`,`CLNDISDBINCL`,`CLNHGVS`,`CLNREVSTAT`,`CLNSIG`,`CLNSIGCONF`,"
                 // +
                 // "`CLNSIGINCL`,`CLNVC`,`CLNVCSO`,`CLNVI`,`DBVARID`,`GENEINFO`,`MC`,`ORIGIN`,`RS`,`SSR`,`UPDATE_DATE`)VALUES('"
-                // + chr_pos + "','" + Integer.toString(mutationId) + "','" +
+                // + chr_pos + "','" + mutationNo + "','" +
                 // strArray[2] + "','"+ strArray[3] + "','" + strArray[4] +
                 // "','"
                 // + "',CURDATE());\n";
-                String keystr = "INSERT INTO `clinvar_entry` (`CHR_POS`,`MUTATION_ID`,`CLINVAR_ID`,`REF`,`ALT`";
-                String valstr = ",`UPDATE_DATE`)VALUES('" + chr_pos + "','" + Integer.toString(mutationId) + "','"
+                String keystr = "INSERT INTO `clinvar_entry` (`CHR_POS`,`MUTATION_NO`,`CLINVAR_ID`,`REF`,`ALT`";
+                String valstr = ",`UPDATE_DATE`)VALUES('" + chr_pos + "','" + mutationNo + "','"
                         + strArray[2] + "','" + strArray[3] + "','" + strArray[4] + "'";
 
                 for (String key : contentHm.keySet()) {
@@ -1708,12 +1758,13 @@ public class PdbScriptsPipelineMakeSQL {
                                                                                        // List
                                                                                        // of
                                                                                        // MUTATION_ID
-        HashMap<Integer, String> rsHm = new HashMap<>();// <mutationId,string as
+        HashMap<Integer,String> mutationNoIdRHm = mUsageRecord.getMutationNoIdRHm();
+        HashMap<String, String> rsHm = new HashMap<>();// <mutationNo,string as
                                                         // all information in
                                                         // the line>
-        HashMap<Integer, String> rsPosHm = new HashMap<>();// <mutationId,chr_pos>
+        HashMap<String, String> rsPosHm = new HashMap<>();// <mutationId,chr_pos>
 
-        String keystr = "INSERT INTO `cosmic_entry` (`CHR_POS`,`MUTATION_ID`";
+        String keystr = "INSERT INTO `cosmic_entry` (`CHR_POS`,`MUTATION_NO`";
         try {
             LineIterator it = FileUtils.lineIterator(new File(inputFilename));
             int count = 0;
@@ -1745,8 +1796,9 @@ public class PdbScriptsPipelineMakeSQL {
                             if (mutationIdRHm.containsKey(gpos)) {
                                 List<Integer> tmplist = mutationIdRHm.get(gpos);
                                 for (Integer mutationId : tmplist) {
-                                    rsHm.put(mutationId, contentStr);
-                                    rsPosHm.put(mutationId, gpos);
+                                    String mutationNo = mutationNoIdRHm.get(mutationId);
+                                    rsHm.put(mutationNo, contentStr);
+                                    rsPosHm.put(mutationNo, gpos);
                                 }
                             }
                         }
@@ -1775,12 +1827,12 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            for (int mutationId : rsHm.keySet()) {
-                String contentStr = rsHm.get(mutationId);
-                String chr_pos = rsPosHm.get(mutationId);
+            for (String mutationNo : rsHm.keySet()) {
+                String contentStr = rsHm.get(mutationNo);
+                String chr_pos = rsPosHm.get(mutationNo);
                 String[] strArray = contentStr.split("\t");
 
-                String valstr = chr_pos + "','" + Integer.toString(mutationId) + "'";
+                String valstr = chr_pos + "','" + mutationNo + "'";
                 for (String str : strArray) {
                     valstr = valstr + ",'" + str + "'";
                 }
@@ -1870,12 +1922,13 @@ public class PdbScriptsPipelineMakeSQL {
                                                                                        // List
                                                                                        // of
                                                                                        // MUTATION_ID
-        HashMap<Integer, String> rsHm = new HashMap<>();// <mutationId,string as
+        HashMap<Integer,String> mutationNoIdRHm = mUsageRecord.getMutationNoIdRHm();
+        HashMap<String, String> rsHm = new HashMap<>();// <mutationNo,string as
                                                         // all information in
                                                         // the line>
-        HashMap<Integer, String> rsPosHm = new HashMap<>();// <mutationId,chr_pos>
+        HashMap<String, String> rsPosHm = new HashMap<>();// <mutationNo,chr_pos>
 
-        String keystr = "INSERT INTO `" + dbTableName + "` (`CHR_POS`,`MUTATION_ID`";
+        String keystr = "INSERT INTO `" + dbTableName + "` (`CHR_POS`,`MUTATION_No`";
         try {
             LineIterator it = FileUtils.lineIterator(new File(inputFilename));
             int count = 0;
@@ -1904,8 +1957,9 @@ public class PdbScriptsPipelineMakeSQL {
                         if (mutationIdRHm.containsKey(gpos)) {
                             List<Integer> tmplist = mutationIdRHm.get(gpos);
                             for (Integer mutationId : tmplist) {
-                                rsHm.put(mutationId, contentStr);
-                                rsPosHm.put(mutationId, gpos);
+                                String mutationNo = mutationNoIdRHm.get(mutationId);
+                                rsHm.put(mutationNo, contentStr);
+                                rsPosHm.put(mutationNo, gpos);
                             }
                         }
                     }
@@ -1921,12 +1975,12 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            for (int mutationId : rsHm.keySet()) {
-                String contentStr = rsHm.get(mutationId);
-                String chr_pos = rsPosHm.get(mutationId);
+            for (String mutationNo : rsHm.keySet()) {
+                String contentStr = rsHm.get(mutationNo);
+                String chr_pos = rsPosHm.get(mutationNo);
                 String[] strArray = contentStr.split("\t");
 
-                String valstr = chr_pos + "','" + Integer.toString(mutationId) + "'";
+                String valstr = chr_pos + "','" + mutationNo + "'";
                 for (String str : strArray) {
                     // in case have 3'UTR in the text
                     if (str.contains("'")) {
