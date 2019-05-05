@@ -128,6 +128,10 @@ public class ReadConfig {
     public static String dsspFileSuffix;
     public static String sequenceDomainsUrl;
     public static String structureDomainsUrl;
+    public static String cathFile;
+    public static String cathNamesFile;
+    public static String cathAllSource;
+    public static String cathNamesSource;
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -267,6 +271,10 @@ public class ReadConfig {
             ReadConfig.dsspFileSuffix = prop.getProperty("deep_file_suffix").trim();
             ReadConfig.sequenceDomainsUrl = prop.getProperty("sequence.domains.url").trim();
             ReadConfig.structureDomainsUrl = prop.getProperty("structure.domains.url").trim();
+            ReadConfig.cathFile = prop.getProperty("cath.file").trim();
+            ReadConfig.cathNamesFile = prop.getProperty("cath.names.file").trim();
+            ReadConfig.cathAllSource = prop.getProperty("cath.allSource").trim();
+            ReadConfig.cathNamesSource = prop.getProperty("cath.namesSource").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
             ex.printStackTrace();
@@ -1166,5 +1174,38 @@ public class ReadConfig {
     public static void setSqlMutationInsertFile(String sqlMutationInsertFile) {
         ReadConfig.sqlMutationInsertFile = sqlMutationInsertFile;
     }
+
+	public static String getCathFile() {
+		return cathFile;
+	}
+
+	public static void setCathFile(String cathFile) {
+		ReadConfig.cathFile = cathFile;
+	}
+
+	public static String getCathNamesFile() {
+		return cathNamesFile;
+	}
+
+	public static void setCathNamesFile(String cathNamesFile) {
+		ReadConfig.cathNamesFile = cathNamesFile;
+	}
+
+	public static String getCathAllSource() {
+		return cathAllSource;
+	}
+
+	public static void setCathAllSource(String cathAllSource) {
+		ReadConfig.cathAllSource = cathAllSource;
+	}
+
+	public static String getCathNamesSource() {
+		return cathNamesSource;
+	}
+
+	public static void setCathNamesSource(String cathNamesSource) {
+		ReadConfig.cathNamesSource = cathNamesSource;
+	}
+	
 
 }

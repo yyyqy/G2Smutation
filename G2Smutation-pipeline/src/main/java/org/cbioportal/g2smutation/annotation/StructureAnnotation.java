@@ -121,6 +121,7 @@ public class StructureAnnotation {
                 //TODO will change later
                 getHETInfoPlaceholder(sar);
                 getDomainUrlPlaceholder(sar);
+                getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
 //                getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
 //                        residueHm.get(mutationId).split("_")[2]);
 //                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
@@ -1132,5 +1133,127 @@ public class StructureAnnotation {
             }
         }
     }
-
+    
+    public HashMap<String, List<String>> readCathAllFile() throws IOException{
+    	HashMap<String, List<String>> hm = new HashMap<>();
+		String cathpwd = new String(ReadConfig.workspace + ReadConfig.cathFile);
+		File cathfile = new File(cathpwd);
+		List<String> lines = FileUtils.readLines(cathfile, StandardCharsets.UTF_8.name());
+		for(int i=0; i<lines.size(); i++) {
+			String key = lines.get(i).substring(0, 4);
+			List<String> val = new ArrayList<>();
+			if(!hm.containsKey(key)) {
+				val.add(lines.get(i).substring(4));
+				hm.put(key, val);
+			}
+			else {
+				val = hm.get(key);
+				val.add(lines.get(i).substring(4));
+				hm.put(key, val);
+			}
+		}
+    	return hm;
+    }
+    
+    public HashMap<String, String> readCathNamesFile() throws IOException{
+    	HashMap<String, String> hm = new HashMap<>();
+		String cathNamespwd = new String(ReadConfig.workspace + ReadConfig.cathNamesFile);
+		File cathNamesfile = new File(cathNamespwd);
+		List<String> lines = FileUtils.readLines(cathNamesfile, StandardCharsets.UTF_8.name());
+		for(int i=0; i<lines.size(); i++) {
+			String key = lines.get(i).split(" ", 2)[0];
+			String val = lines.get(i).split(" ", 2)[1];
+			hm.put(key, val);
+		}
+    	return hm;
+    }
+    
+    public void getCathInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) throws Exception{
+    	String cathIds = "";
+        String cathIdentifiers = "";
+        String cathArchitectures = "";
+        String cathClasses = "";
+        String cathHomologys = "";
+        String cathTopologys = "";
+        String cathDomains = "";
+        String cathStarts = "";
+        String cathEnds = "";
+    	HashMap<String, List<String>> cathLines = new HashMap<>();
+    	HashMap<String, String> cathNamesLines = new HashMap<>();
+    	//try {
+    		//log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex);
+    		cathLines = readCathAllFile();
+    		cathNamesLines = readCathNamesFile();
+    		if(cathLines.containsKey(pdbId)) {
+    			for(int i=0; i<cathLines.get(pdbId).size(); i++) {
+    				if(cathLines.get(pdbId).get(i).substring(0, 1).equals(pdbChain)) {
+		    			String cathIdTemp = "";
+		    			String homoTemp = "";
+		    			String mapInfo = cathLines.get(pdbId).get(i).split(" ")[3];
+		    			int sectionLen = mapInfo.split(",").length;
+		    			for(int j=0; j<sectionLen; j++) {
+		    				String startEnd = mapInfo.split(",")[j].split(":")[0];
+		    				int startEndLen = startEnd.split("-").length;
+		    				String start = startEnd.split("-")[startEndLen-2];
+		    				String end = startEnd.split("-")[startEndLen-1];
+		    				String domain = pdbId + cathLines.get(pdbId).get(i).split(" ")[0];
+		    				if(Integer.parseInt(pdbResidueIndex)>=Integer.parseInt(start) && Integer.parseInt(pdbResidueIndex)<=Integer.parseInt(end)) {
+		    					cathIdTemp = cathLines.get(pdbId).get(i).split(" ")[2];
+		    					cathIds = cathIds + cathIdTemp + ";";
+		    					cathStarts = cathStarts + start + ";";
+		    					cathEnds = cathEnds + end + ";";   					
+		    					cathDomains = cathDomains + domain +";";
+		    					break;
+		    				}
+		    			}
+		    			if(!cathIdTemp.equals("")) {
+		    				//log.info(cathIdTemp);
+		    				String str1 = cathIdTemp.split("\\.")[0];
+		    				String str2 = cathIdTemp.split("\\.")[0] + "." + cathIdTemp.split("\\.")[1];
+		    				String str3 = cathIdTemp.split("\\.")[0] + "." + cathIdTemp.split("\\.")[1] + "." + cathIdTemp.split("\\.")[2];
+		    				String str4 = cathIdTemp;
+		    				if(cathNamesLines.containsKey(str1)) {
+		    					cathClasses = cathClasses + cathNamesLines.get(str1) + ";";
+		    				}
+		    				if(cathNamesLines.containsKey(str2)) {
+		    					cathArchitectures = cathArchitectures + cathNamesLines.get(str2) + ";";
+		    				}
+		    				if(cathNamesLines.containsKey(str3)) {
+		    					cathIdentifiers = cathIdentifiers + cathNamesLines.get(str3) + ";";
+		    					cathTopologys = cathTopologys + cathNamesLines.get(str3) + ";";
+		    					homoTemp = cathNamesLines.get(str3);
+		    				}
+		    				if(cathNamesLines.containsKey(str4)) {
+		    					if(!cathNamesLines.get(str4).equals("")) {
+		    						homoTemp = cathNamesLines.get(str4);
+		    					}
+		    					cathHomologys = cathHomologys + homoTemp + ";";
+		    				}
+		    			}
+		    		}
+	    		}
+    		}
+    		if(!cathIds.equals("")) {
+    			cathIds = cathIds.substring(0, cathIds.length()-1);
+    			cathIdentifiers = cathIdentifiers.substring(0, cathIdentifiers.length()-1);
+    			cathArchitectures = cathArchitectures.substring(0, cathArchitectures.length()-1);
+    			cathClasses = cathClasses.substring(0, cathClasses.length()-1);
+    			cathHomologys = cathHomologys.substring(0, cathHomologys.length()-1);
+    			cathTopologys = cathTopologys.substring(0, cathTopologys.length()-1);
+    			cathDomains = cathDomains.substring(0, cathDomains.length()-1);
+    			cathStarts = cathStarts.substring(0, cathStarts.length()-1);
+    			cathEnds = cathEnds.substring(0, cathEnds.length()-1);
+    		}
+    		sar.setCathId(cathIds);
+            sar.setCathIdentifier(cathIdentifiers);
+            sar.setCathArchitecture(cathArchitectures);
+            sar.setCathClass(cathClasses);
+            sar.setCathHomology(cathHomologys);
+            sar.setCathTopology(cathTopologys);
+            sar.setCathDomainStart(cathStarts);
+            sar.setCathDomainEnd(cathEnds);
+            sar.setCathDomainId(cathDomains);
+            //log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex + "+" + cathIds + "+" + cathIdentifiers + "+" + cathArchitectures + "+");
+            //log.info(cathClasses + "+" + cathHomologys + "+" + cathTopologys + "+" + cathStarts + "+" + cathEnds + "+" + cathDomains);
+    }
 }

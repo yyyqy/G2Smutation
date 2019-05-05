@@ -704,8 +704,8 @@ public class PdbScriptsPipelineRunCommand {
         
         log.info("********************[STEP 3.1]********************");
         log.info("[File] Read results from file, generate HashMap for usage"); 
-        FileOperatingUtil fou = new FileOperatingUtil();
-//        MutationUsageRecord mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult);
+        //FileOperatingUtil fou = new FileOperatingUtil();
+        //MutationUsageRecord mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult);
         
         /**
         log.info("********************[STEP 3.1.1]********************");
@@ -717,17 +717,17 @@ public class PdbScriptsPipelineRunCommand {
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        /*
+        */
         // Deserialize!!!!
         String filename = ReadConfig.workspace + "mUsageRecord.ser";
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
         // Deserialize the tmpfile to MutationUsageRecord
         try{           
-            mUsageRecord = (MutationUsageRecord)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
+        	mUsageRecord = (MutationUsageRecord)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        */ 
+         
                  
         log.info("********************[STEP 3.2]********************");
         log.info("[SQL] Use mutation results, update table mutation_location_entry)");        
@@ -738,7 +738,30 @@ public class PdbScriptsPipelineRunCommand {
 //        cu.runCommand("mysql", paralist);  
         
         log.info("********************[STEP 3.3]********************");
-        log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");      
+        log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");
+        log.info("[STRUCTURE] Download weekly Cath");
+        
+	        FTPClientUtil fc = new FTPClientUtil();
+	        fc.downloadFilefromFTP(ReadConfig.cathAllSource, currentDir
+	        		+ ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
+	        System.out.println(currentDir
+	        		+ ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
+	        paralist = new ArrayList<String>();
+	        paralist.add(currentDir
+	        		+ ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
+	        paralist.add(currentDir + ReadConfig.cathFile);
+	        cu.runCommand("gunzip", paralist); 
+	        
+	        fc.downloadFilefromFTP(ReadConfig.cathNamesSource, currentDir
+	        		+ ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
+	        System.out.println(currentDir
+	        		+ ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
+	        paralist = new ArrayList<String>();
+	        paralist.add(currentDir
+	        		+ ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
+	        paralist.add(currentDir + ReadConfig.cathNamesFile);
+	        cu.runCommand("gunzip", paralist); 
+	        
         StructureAnnotation sanno = new StructureAnnotation();
         
         log.info("[STRUCTURE] Start running naccess"); 
@@ -748,7 +771,7 @@ public class PdbScriptsPipelineRunCommand {
 //        sanno.generateNaccessResultsBuried(mUsageRecord);
         
         log.info("[STRUCTURE] naccess complete and start parsing"); 
-//        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,currentDir + ReadConfig.mutationInjectSQLStructure);       
+        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,currentDir + ReadConfig.mutationInjectSQLStructure);       
 //        paralist = new ArrayList<String>();
 //        paralist.add(currentDir + ReadConfig.mutationInjectSQLStructure);
 //        cu.runCommand("mysql", paralist);
