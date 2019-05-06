@@ -1367,8 +1367,8 @@ public class PdbScriptsPipelineMakeSQL {
             for (String pdbName : list) {
                 
                 //Actually, these tables are rebuild every week, so we could directly delete them
-                /*
                 //Delete mutation related annotation first for their foreign key restrains
+            	//But we have to do it for it will get fail for foreign restrain.
                 String str1 = "DELETE FROM gpos_allmapping_pdb_entry WHERE PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str1);              
@@ -1381,7 +1381,6 @@ public class PdbScriptsPipelineMakeSQL {
                 String str3 = "DELETE structure_annotation_entry FROM structure_annotation_entry inner join mutation_entry on structure_annotation_entry.MUTATION_ID=mutation_entry.MUTATION_ID WHERE mutation_entry.PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str3);
-                */
              
                 //Then delete Foreign Key based tables, order is important. Mutation, alignment then PDB
                 //delete from MUTATION_ID
