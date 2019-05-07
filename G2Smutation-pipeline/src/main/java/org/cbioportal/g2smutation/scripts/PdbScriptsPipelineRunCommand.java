@@ -811,7 +811,7 @@ public class PdbScriptsPipelineRunCommand {
         
         //Rebuild table mutation_location_entry;
         paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.mutationLocationSQL);
+        paralist.add(ReadConfig.resourceDir + ReadConfig.mutationLocationSQL);
         cu.runCommand("mysql", paralist);
         
         paralist = new ArrayList<String>();
@@ -863,7 +863,7 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[STRUCTURE] Dump mutation_inject_structure.sql to structure_annotation_entry");
         //rebuild table structure_annotation_entry
         paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.annotationStrctureSQL);
+        paralist.add(ReadConfig.resourceDir + ReadConfig.annotationStrctureSQL);
         cu.runCommand("mysql", paralist);
         
         paralist = new ArrayList<String>();
