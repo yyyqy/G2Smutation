@@ -62,6 +62,7 @@ public class PdbScriptsPipelineMakeSQL {
     private String sqlDeleteFile;
     private String insertSequenceSQL;
     private boolean updateTag;// if update, then true;
+    private int alignmentId; //alignmentId for mutation usage, keep track of alignmentId
 
     private int testcase=1;// use for test cases, default 1
     
@@ -141,6 +142,8 @@ public class PdbScriptsPipelineMakeSQL {
             } else {
                 // Usually use this, save memory and time
                 HashMap<String, String> pdbHm = new HashMap<String, String>();
+                //alignmentId for mutation:
+                this.alignmentId =1;
                 for (int i = 0; i < this.seqFileCount; i++) {
                     log.info("[Parsing] Read blast results on " + i + "th xml file");
                     parseblastresultsSmallMem(i, pdbHm, true);
@@ -361,7 +364,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @return count
      */
     public int parsexmlMutation(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
-        int count = 1;
+        int count = this.alignmentId;
         try {
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.g2smutation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
@@ -389,6 +392,7 @@ public class PdbScriptsPipelineMakeSQL {
                     count = alignmentList.size() + 1;
                 }
             }
+            this.alignmentId = count;
             maresult.setAlignmentList(alignmentList);
             maresult.setMutationList(mutationList);
             log.info("[BLAST] " + sequence_count + " sequences have blast results in " + mutationList.size() + " mutations");
