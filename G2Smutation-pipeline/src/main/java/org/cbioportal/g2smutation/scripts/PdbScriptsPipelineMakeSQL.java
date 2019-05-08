@@ -390,6 +390,7 @@ public class PdbScriptsPipelineMakeSQL {
                     alignmentList.addAll(mar.getAlignmentList());
                     mutationList.addAll(mar.getMutationList());                    
                 }
+                count++;
             }
             this.alignmentId = count;
             maresult.setAlignmentList(alignmentList);
@@ -912,6 +913,7 @@ public class PdbScriptsPipelineMakeSQL {
                     }
                 }
                 alignmentList.add(br);
+                System.out.println(count);
                 count++;
             }
         }
