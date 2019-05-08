@@ -388,9 +388,9 @@ public class PdbScriptsPipelineMakeSQL {
                 for (Hit hit : hits.getHit()) {
                     MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
                     alignmentList.addAll(mar.getAlignmentList());
-                    mutationList.addAll(mar.getMutationList());                    
+                    mutationList.addAll(mar.getMutationList()); 
+                    count = mar.getAlignmentId();
                 }
-                count++;
             }
             this.alignmentId = count;
             maresult.setAlignmentList(alignmentList);
@@ -913,7 +913,6 @@ public class PdbScriptsPipelineMakeSQL {
                     }
                 }
                 alignmentList.add(br);
-                System.out.println(count);
                 count++;
             }
         }
@@ -943,6 +942,7 @@ public class PdbScriptsPipelineMakeSQL {
         MutationAlignmentResult result = new MutationAlignmentResult();
         result.setAlignmentList(alignmentList);
         result.setMutationList(mutationList);
+        result.setAlignmentId(count);
 
         return result;
     }
@@ -2032,6 +2032,7 @@ public class PdbScriptsPipelineMakeSQL {
 class MutationAlignmentResult {
     List<BlastResult> alignmentList;
     List<MutationRecord> mutationList;
+    int alignmentId;
 
     public List<BlastResult> getAlignmentList() {
         return alignmentList;
@@ -2048,4 +2049,12 @@ class MutationAlignmentResult {
     public void setMutationList(List<MutationRecord> mutationList) {
         this.mutationList = mutationList;
     }
+
+	public int getAlignmentId() {
+		return alignmentId;
+	}
+
+	public void setAlignmentId(int alignmentId) {
+		this.alignmentId = alignmentId;
+	}
 }
