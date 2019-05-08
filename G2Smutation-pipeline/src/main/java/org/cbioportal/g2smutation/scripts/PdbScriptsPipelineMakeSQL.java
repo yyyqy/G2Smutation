@@ -388,8 +388,7 @@ public class PdbScriptsPipelineMakeSQL {
                 for (Hit hit : hits.getHit()) {
                     MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
                     alignmentList.addAll(mar.getAlignmentList());
-                    mutationList.addAll(mar.getMutationList());
-                    count = count + 1;
+                    mutationList.addAll(mar.getMutationList());                    
                 }
             }
             this.alignmentId = count;
