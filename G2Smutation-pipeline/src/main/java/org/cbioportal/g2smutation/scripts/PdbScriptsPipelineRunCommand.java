@@ -103,11 +103,11 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 0]********************");
         log.info("Delete old sql files in the workspace");
-        cleanupG2S();
+//        cleanupG2S();
 
         log.info("********************[Init STEP 1]********************");
         log.info("Initialize G2S service for alignments and residue mapping");
-        initializeG2S(preprocess, parseprocess);
+//        initializeG2S(preprocess, parseprocess);
 
         log.info("********************[Init STEP 2]********************");
         log.info("Find mutation using G2S service");
@@ -115,11 +115,11 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
-        generateAnnotation(parseprocess, false, new ListUpdate());
+//        generateAnnotation(parseprocess, false, new ListUpdate());
 
         log.info("********************[Init STEP 4]********************");
         log.info("[FileSystem] Clean Up");
-        postInitialCleanup();
+//        postInitialCleanup();
     }
 
     /**
@@ -716,22 +716,22 @@ public class PdbScriptsPipelineRunCommand {
         */         
 
         // Step 2.3:
-        log.info("********************[STEP 2.3]********************");
-        log.info("[SQL] Import mutation INSERT SQL statements into the database (Warning: This step takes time)");
-        if (this.seqFileCount != -1) {
-            for (int i = 0; i < this.seqFileCount; i++) {
-                paralist = new ArrayList<String>();
-                paralist.add(ReadConfig.workspace + ReadConfig.sqlMutationInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("mysql", paralist);
-            }
-        } else {
-            paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.workspace + ReadConfig.sqlMutationInsertFile);
-            cu.runCommand("mysql", paralist);
-        }   
-        log.info("********************[Update STEP 2.4]********************");
-        log.info("[SQL] Find Mutation Info, Output and Generate mutation_usage_table for Injection)");
-        generateMutationUsageTable(parseprocess);
+//        log.info("********************[STEP 2.3]********************");
+//        log.info("[SQL] Import mutation INSERT SQL statements into the database (Warning: This step takes time)");
+//        if (this.seqFileCount != -1) {
+//            for (int i = 0; i < this.seqFileCount; i++) {
+//                paralist = new ArrayList<String>();
+//                paralist.add(ReadConfig.workspace + ReadConfig.sqlMutationInsertFile + "." + new Integer(i).toString());
+//                cu.runCommand("mysql", paralist);
+//            }
+//        } else {
+//            paralist = new ArrayList<String>();
+//            paralist.add(ReadConfig.workspace + ReadConfig.sqlMutationInsertFile);
+//            cu.runCommand("mysql", paralist);
+//        }   
+//        log.info("********************[Update STEP 2.4]********************");
+//        log.info("[SQL] Find Mutation Info, Output and Generate mutation_usage_table for Injection)");
+//        generateMutationUsageTable(parseprocess);
     }
     
     /**

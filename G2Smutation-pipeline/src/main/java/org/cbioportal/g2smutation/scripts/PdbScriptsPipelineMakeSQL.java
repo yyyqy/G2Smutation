@@ -62,7 +62,7 @@ public class PdbScriptsPipelineMakeSQL {
     private String sqlDeleteFile;
     private String insertSequenceSQL;
     private boolean updateTag;// if update, then true;
-    private int alignmentId; //alignmentId for mutation usage, keep track of alignmentId
+    private int alignmentId=1; //alignmentId for mutation usage, keep track of alignmentId
 
     private int testcase=1;// use for test cases, default 1
     
@@ -389,7 +389,7 @@ public class PdbScriptsPipelineMakeSQL {
                     MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
                     alignmentList.addAll(mar.getAlignmentList());
                     mutationList.addAll(mar.getMutationList());
-                    count = alignmentList.size() + 1;
+                    count = count + alignmentList.size() + 1;
                 }
             }
             this.alignmentId = count;

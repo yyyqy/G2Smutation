@@ -923,7 +923,7 @@ public class StructureAnnotation {
             String pdbNo = residueHm.get(mutationId).split("_")[0];
             if (!pdbSet.contains(pdbNo)) {
                 runNaccessFromLocal(pdbNo);
-                pdbSet.add(pdbNo);
+                //pdbSet.add(pdbNo);
             }
             if (count % 1000 == 0) {
                 log.info("Finish " + count + "th in naccess");
