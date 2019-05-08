@@ -830,17 +830,6 @@ public class PdbScriptsPipelineMakeSQL {
             br.midline_align = tmp.getHspMidline();
 
             /*
-             * alignment.setSeqId(querytext.split("\\s+")[0]);
-             * alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
-             * alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]
-             * );
-             * alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]
-             * );
-             * alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2
-             * ]); alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);
-             */
-
-            /*
              * //Original solution: Include all the blast results
              * resultList.add(br); count++;
              */
@@ -880,26 +869,8 @@ public class PdbScriptsPipelineMakeSQL {
                         int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i
                                 - pdbGapCount;
                         String pdbNO = br.sseqid.split("\\s+")[0];
-                        /*
-                         * if(mutationHm.containsKey(correctProteinIndex)){
-                         * HashMap<String,String> tmpHm =
-                         * (HashMap<String,String>)mutationHm.get(
-                         * correctProteinIndex); if(tmpHm.containsKey(residue)){
-                         * String tmpstr = tmpHm.get(residue);
-                         * tmpHm.put(residue, tmpstr + pdbNO + " " +
-                         * correctPDBIndex + " " + count + ";"); }else{
-                         * tmpHm.put(residue, pdbNO + " " + correctPDBIndex +
-                         * " " + count + ";"); }
-                         * mutationHm.put(correctProteinIndex, tmpHm); }else{
-                         * HashMap<String,String> tmpHm = new
-                         * HashMap<String,String>(); tmpHm.put(residue, pdbNO +
-                         * " " + correctPDBIndex + " " + count + ";");
-                         * mutationHm.put(correctProteinIndex, tmpHm); }
-                         * inputResidueNameHm.put(correctProteinIndex,
-                         * br.seq_align.substring(i,i+1));
-                         */
+                        
                         MutationRecord mr = new MutationRecord();
-
                         mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
                         mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
                         mr.setSeqResidueIndex(correctProteinIndex);
@@ -912,32 +883,10 @@ public class PdbScriptsPipelineMakeSQL {
                         mutationList.add(mr);
                     }
                 }
-                alignmentList.add(br);
-                count++;
+                alignmentList.add(br);                
             }
+            count++;
         }
-
-        /*
-         * //enumerate the hashmap for (Map.Entry<Integer,
-         * HashMap<String,String>> entry: mutationHm.entrySet()){ int
-         * proteinResidueIndex = entry.getKey(); HashMap<String, String> tmpHm =
-         * (HashMap<String, String>)entry.getValue(); for (Map.Entry<String,
-         * String> tentry : tmpHm.entrySet()) { String pdbResidueName =
-         * tentry.getKey(); String tmpstr = tentry.getValue(); String[]
-         * tmpstrArray = tmpstr.split(";"); for (int i = 0; i <
-         * tmpstrArray.length; i++) { MutationRecord mr = new MutationRecord();
-         * String[] ttstrArray = tmpstrArray[i].split("\\s+");
-         * mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
-         * mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
-         * mr.setSeqResidueIndex(proteinResidueIndex);
-         * mr.setSeqResidueName(inputResidueNameHm.get(proteinResidueIndex));
-         * mr.setPdbNo(ttstrArray[0]);
-         * mr.setPdbResidueIndex(Integer.parseInt(ttstrArray[1]));
-         * mr.setAlignmentId(Integer.parseInt(ttstrArray[2]));
-         * mr.setPdbResidueName(pdbResidueName); mutationList.add(mr); } }
-         * 
-         * }
-         */
 
         MutationAlignmentResult result = new MutationAlignmentResult();
         result.setAlignmentList(alignmentList);
