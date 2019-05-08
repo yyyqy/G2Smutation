@@ -326,6 +326,7 @@ public class StructureAnnotation {
                         rl = getLigantRadius(hetGroup.get(i).getPDBName());
                         dis = getDistance(x1, y1, z1, x2, y2, z2, ra, rl);
                         if (dis < 0.50) {
+                        	// Threshold value from: Jianyi Yang, Ambrish Roy, Yang Zhang, BioLiP: a semi-manually curated database for biologically relevant ligand–protein interactions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D1096–D1103, https://doi.org/10.1093/nar/gks966
                             sar.setLigandBindingdirect(1);
                             ligantNames = ligantNames + hetGroup.get(i).getPDBName() + "; ";
                         }
@@ -349,6 +350,7 @@ public class StructureAnnotation {
     }
 
     public double getLigantRadius(String name) {
+    	//information from https://periodictable.com/Properties/A/VanDerWaalsRadius.v.html
         double rl = 0;
         switch (name) {
         case "H":
@@ -459,6 +461,9 @@ public class StructureAnnotation {
         case "K":
             rl = 2.75;
             break;
+        default:
+        	//if no ligand information, choose default 1.40 as C
+        	rl = 1.40;
         }
         return rl;
     }
@@ -1032,9 +1037,9 @@ public class StructureAnnotation {
                 if (lines.get(i).split("\\s+")[0].equals("RES")) {
                     // log.info(Float.parseFloat(lines.get(i).split("\\s+")[4]));
                     if (Float.parseFloat(lines.get(i).split("\\s+")[5]) < Float.parseFloat(ReadConfig.relativeRatio)) {
-                        lines.set(i, lines.get(i) + "      1");
+                        lines.set(i, lines.get(i) + "\t1");
                     } else {
-                        lines.set(i, lines.get(i) + "      0");
+                        lines.set(i, lines.get(i) + "\t0");
                     }
                     // if(lines.get(i).split("\\s+")[2].equals("A")) {
                     // sum1 += Float.parseFloat(lines.get(i).split("\\s+")[4]);
@@ -1042,7 +1047,7 @@ public class StructureAnnotation {
                     // }
                 }
                 if (lines.get(i).split("\\s+")[0].equals("REM") && lines.get(i).split("\\s+")[1].equals("ABS")) {
-                    lines.set(i, lines.get(i) + "   IFBURIED");
+                    lines.set(i, lines.get(i) + "\tIFBURIED");
                 } else
                     continue;
             }
