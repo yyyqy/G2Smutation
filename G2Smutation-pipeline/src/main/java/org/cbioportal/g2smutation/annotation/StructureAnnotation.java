@@ -923,20 +923,12 @@ public class StructureAnnotation {
             String pdbNo = residueHm.get(mutationId).split("_")[0];
             if (!pdbSet.contains(pdbNo)) {
                 runNaccessFromLocal(pdbNo);
-                //pdbSet.add(pdbNo);
+                pdbSet.add(pdbNo);
             }
             if (count % 1000 == 0) {
                 log.info("Finish " + count + "th in naccess");
             }
             count++;
-        }
-        
-        //save HashSet<String>: pdb as pdbSet.ser
-        String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
-        try{
-            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(pdbSet));
-        }catch(Exception ex){
-            ex.printStackTrace();
         }
     }
 
@@ -959,6 +951,14 @@ public class StructureAnnotation {
                 log.info("Finish " + count + "th mutation in rsa in naccess to showburied");
             }
             count++;
+        }
+        
+        //save HashSet<String>: pdb as pdbSet.ser
+        String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
+        try{
+            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(pdbSet));
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
 
     }

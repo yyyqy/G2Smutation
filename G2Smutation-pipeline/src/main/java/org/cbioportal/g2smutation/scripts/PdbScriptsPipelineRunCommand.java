@@ -103,15 +103,15 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 0]********************");
         log.info("Delete old sql files in the workspace");
-        cleanupG2S();
+//        cleanupG2S();
 
         log.info("********************[Init STEP 1]********************");
         log.info("Initialize G2S service for alignments and residue mapping");
-        initializeG2S(preprocess, parseprocess);
+//        initializeG2S(preprocess, parseprocess);
 
         log.info("********************[Init STEP 2]********************");
         log.info("Find mutation using G2S service");
-        generateMutation(parseprocess);
+//        generateMutation(parseprocess);
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
@@ -807,16 +807,16 @@ public class PdbScriptsPipelineRunCommand {
                  
         log.info("********************[STEP 3.2]********************");
         log.info("[SQL] Use mutation results, generate table mutation_location_entry. Rebuild in updates");        
-        parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLLocation);       
-        
-        //Rebuild table mutation_location_entry;
-        paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.resourceDir + ReadConfig.mutationLocationSQL);
-        cu.runCommand("mysql", paralist);
-        
-        paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
-        cu.runCommand("mysql", paralist); 
+//        parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLLocation);       
+//        
+//        //Rebuild table mutation_location_entry;
+//        paralist = new ArrayList<String>();
+//        paralist.add(ReadConfig.resourceDir + ReadConfig.mutationLocationSQL);
+//        cu.runCommand("mysql", paralist);
+//        
+//        paralist = new ArrayList<String>();
+//        paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
+//        cu.runCommand("mysql", paralist); 
         
         log.info("********************[STEP 3.3]********************");
         log.info("[STRUCTURE] Update PDBrepo");      
@@ -836,8 +836,13 @@ public class PdbScriptsPipelineRunCommand {
         
         log.info("[STRUCTURE] Start running naccess");
         HashSet<String> pdbSet = new HashSet<>();
-        if (updateTag){
-            String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
+        
+        if(!updateTag){
+        	sanno.generateNaccessResults(mUsageRecord, new HashSet<>());
+        	log.info("[STRUCTURE] Start processing naccess rsa results");
+        	sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>());
+        }else{
+        	String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
             // Deserialize
             try{           
                 pdbSet = (HashSet<String>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
@@ -850,12 +855,11 @@ public class PdbScriptsPipelineRunCommand {
                 if(pdbSet.contains(pdb)){
                     pdbSet.remove(pdb);
                 }                
-            }           
-        }
-        sanno.generateNaccessResults(mUsageRecord, pdbSet);
-        
-        log.info("[STRUCTURE] Start processing naccess rsa results");
-        sanno.generateNaccessResultsBuried(mUsageRecord, pdbSet);
+            }
+        	sanno.generateNaccessResults(mUsageRecord, pdbSet);
+        	log.info("[STRUCTURE] Start processing naccess rsa results");
+        	sanno.generateNaccessResultsBuried(mUsageRecord, pdbSet);
+        }                      
         
         log.info("[STRUCTURE] naccess complete and start parsing"); 
         sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,currentDir + ReadConfig.mutationInjectSQLStructure);       
