@@ -103,15 +103,15 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 0]********************");
         log.info("Delete old sql files in the workspace");
-//        cleanupG2S();
+        cleanupG2S();
 
         log.info("********************[Init STEP 1]********************");
         log.info("Initialize G2S service for alignments and residue mapping");
-//        initializeG2S(preprocess, parseprocess);
+        initializeG2S(preprocess, parseprocess);
 
         log.info("********************[Init STEP 2]********************");
         log.info("Find mutation using G2S service");
-//        generateMutation(parseprocess);
+        generateMutation(parseprocess);
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
@@ -119,7 +119,7 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 4]********************");
         log.info("[FileSystem] Clean Up");
-//        postInitialCleanup();
+        postInitialCleanup();
     }
 
     /**
@@ -765,41 +765,10 @@ public class PdbScriptsPipelineRunCommand {
     	ArrayList<String> paralist = new ArrayList<String>();
         CommandProcessUtil cu = new CommandProcessUtil();
         String currentDir = this.currentDir;
-        
-        log.info("********************[STEP 3.1]********************");
-        log.info("[File] Read results from file, generate HashMap for usage"); 
-        //FileOperatingUtil fou = new FileOperatingUtil();
-        //MutationUsageRecord mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult);
-        
-        /**
-        log.info("********************[STEP 3.1.1]********************");
-        log.info("[DEBUG] Serialize and deserialize for debug usage");        
-        // Serialize the MutationUsageRecord into the tmpfile!!!!
-        String filename = ReadConfig.workspace + "mUsageRecord.ser";
-        try{
-            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(mUsageRecord));
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-        */
-        // Deserialize!!!!
-        String filename = ReadConfig.workspace + "mUsageRecord.ser";
-        MutationUsageRecord mUsageRecord = new MutationUsageRecord();
-        // Deserialize the tmpfile to MutationUsageRecord
-        try{           
-        	mUsageRecord = (MutationUsageRecord)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-         
-                 
-        log.info("********************[STEP 3.2]********************");
-        log.info("[SQL] Use mutation results, update table mutation_location_entry)");        
-      
         FileOperatingUtil fou = new FileOperatingUtil();
         
         log.info("********************[STEP 3.1]********************");
-        log.info("[File] Read results from file, generate HashMap for usage."); 
+        log.info("[File] Read results from file, generate HashMap for usage");        
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
         HashMap<String, String> mutationHm = new HashMap<>();
         if (updateTag){
@@ -812,8 +781,8 @@ public class PdbScriptsPipelineRunCommand {
             }            
         }
         //<mutation_NO, gpos>: saving time for API calling           
-        mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm); 
-                
+        mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);
+        
         /**
         log.info("********************[STEP 3.1.1]********************");
         log.info("[DEBUG] Serialize and deserialize for debug usage");        
@@ -830,7 +799,7 @@ public class PdbScriptsPipelineRunCommand {
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
         // Deserialize the tmpfile to MutationUsageRecord
         try{           
-            mUsageRecord = (MutationUsageRecord)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
+        	mUsageRecord = (MutationUsageRecord)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -838,67 +807,52 @@ public class PdbScriptsPipelineRunCommand {
                  
         log.info("********************[STEP 3.2]********************");
         log.info("[SQL] Use mutation results, generate table mutation_location_entry. Rebuild in updates");        
-//        parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLLocation);       
-//        
-//        //Rebuild table mutation_location_entry;
-//        paralist = new ArrayList<String>();
-//        paralist.add(ReadConfig.resourceDir + ReadConfig.mutationLocationSQL);
-//        cu.runCommand("mysql", paralist);
-//        
-//        paralist = new ArrayList<String>();
-//        paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
-//        cu.runCommand("mysql", paralist);  
+        parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLLocation);       
         
+        //Rebuild table mutation_location_entry;
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.mutationLocationSQL);
+        cu.runCommand("mysql", paralist);
+        
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
+        cu.runCommand("mysql", paralist);  
+              
         log.info("********************[STEP 3.3]********************");
-        log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry");
         log.info("[STRUCTURE] Download weekly Cath");
+		FTPClientUtil fc = new FTPClientUtil();
+		fc.downloadFilefromFTP(ReadConfig.cathAllSource,
+				currentDir + ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
+		System.out.println(
+				currentDir + ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
+		paralist = new ArrayList<String>();
+		paralist.add(currentDir + ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
+		paralist.add(currentDir + ReadConfig.cathFile);
+		cu.runCommand("gunzip", paralist);
+
+		fc.downloadFilefromFTP(ReadConfig.cathNamesSource,
+				currentDir + ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
+		System.out.println(
+				currentDir + ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
+		paralist = new ArrayList<String>();
+		paralist.add(
+				currentDir + ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
+		paralist.add(currentDir + ReadConfig.cathNamesFile);
+		cu.runCommand("gunzip", paralist); 	      
         
-	        FTPClientUtil fc = new FTPClientUtil();
-	        fc.downloadFilefromFTP(ReadConfig.cathAllSource, currentDir
-	        		+ ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
-	        System.out.println(currentDir
-	        		+ ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
-	        paralist = new ArrayList<String>();
-	        paralist.add(currentDir
-	        		+ ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
-	        paralist.add(currentDir + ReadConfig.cathFile);
-	        cu.runCommand("gunzip", paralist); 
-	        
-	        fc.downloadFilefromFTP(ReadConfig.cathNamesSource, currentDir
-	        		+ ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
-	        System.out.println(currentDir
-	        		+ ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
-	        paralist = new ArrayList<String>();
-	        paralist.add(currentDir
-	        		+ ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
-	        paralist.add(currentDir + ReadConfig.cathNamesFile);
-	        cu.runCommand("gunzip", paralist); 
-	        
-        StructureAnnotation sanno = new StructureAnnotation();
-        
-        log.info("[STRUCTURE] Start running naccess"); 
-//        sanno.generateNaccessResults(mUsageRecord);
-        
-        log.info("[STRUCTURE] Start processing naccess rsa results");
-//        sanno.generateNaccessResultsBuried(mUsageRecord);
-        
-        log.info("[STRUCTURE] naccess complete and start parsing"); 
-        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,currentDir + ReadConfig.mutationInjectSQLStructure);       
-//        cu.runCommand("mysql", paralist); 
-        
-        log.info("********************[STEP 3.3]********************");
+        log.info("********************[STEP 3.4]********************");
         log.info("[STRUCTURE] Update PDBrepo");      
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.dsspLocalDataFile);
         cu.runCommand("rsyncdssp", paralist);
         
-        log.info("********************[STEP 3.4]********************");
+        log.info("********************[STEP 3.5]********************");
         log.info("[STRUCTURE] Update DSSPrepo");      
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.pdbRepo);
         cu.runCommand("rsync", paralist);
         
-        log.info("********************[STEP 3.5]********************");
+        log.info("********************[STEP 3.6]********************");
         log.info("[STRUCTURE] For residues from mutation info, running structure annotation and inject to table structure_annotation_entry. Rebuild in updates");      
         StructureAnnotation sanno = new StructureAnnotation();
         
@@ -945,10 +899,9 @@ public class PdbScriptsPipelineRunCommand {
         //dbsnp, clinvar, cosmic, genie, tcga annotation, only need update in initial G2S        
         if (!updateTag){
         	//TODO Update Clinvar later, next version
-        	log.info("********************[STEP 3.6]********************");
+        	log.info("********************[STEP 3.7]********************");
             log.info("[SQL] Clinvar: Download weekly Clinvar, parsing annotation file and inject to table clinvar_entry)");
             
-            FTPClientUtil fc = new FTPClientUtil();
             fc.downloadFilefromFTP(ReadConfig.clinvarWholeSource, currentDir
                     + ReadConfig.clinvarWholeSource.substring(ReadConfig.clinvarWholeSource.lastIndexOf("/") + 1));
             System.out.println(currentDir
@@ -970,7 +923,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + ReadConfig.mutationInjectSQLClinvar);
             cu.runCommand("mysql", paralist);
         	
-			log.info("********************[STEP 3.7]********************");
+			log.info("********************[STEP 3.8]********************");
 			log.info(
 					"[SQL] DBSNP: For residues from mutation info, parsing annotation file and inject to table dbsnp_entry)");
 			parseprocess.parseGenerateMutationResultSQL4DbsnpEntry(mUsageRecord,
@@ -985,7 +938,7 @@ public class PdbScriptsPipelineRunCommand {
 			paralist.add(currentDir + ReadConfig.mutationInjectSQLDbsnp);
 			cu.runCommand("mysql", paralist);
 
-			log.info("********************[STEP 3.8]********************");
+			log.info("********************[STEP 3.9]********************");
 			log.info(
 					"[SQL] For residues from mutation info, parsing annotation file and inject to table cosmic_entry)");
 			parseprocess.parseGenerateMutationResultSQL4CosmicEntry(mUsageRecord,
@@ -1000,7 +953,7 @@ public class PdbScriptsPipelineRunCommand {
 			paralist.add(currentDir + ReadConfig.mutationInjectSQLCosmic);
 			cu.runCommand("mysql", paralist);
 
-			log.info("********************[STEP 3.9]********************");
+			log.info("********************[STEP 3.10]********************");
 			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table genie_entry)");
 			parseprocess.parseGenerateMutationResultSQL4GenieEntry(mUsageRecord,
 					currentDir + ReadConfig.genieFile,
@@ -1014,7 +967,7 @@ public class PdbScriptsPipelineRunCommand {
 			paralist.add(currentDir + ReadConfig.mutationInjectSQLGenie);
 			cu.runCommand("mysql", paralist);
 
-			log.info("********************[STEP 3.10]********************");
+			log.info("********************[STEP 3.11]********************");
 			log.info("[SQL] For residues from mutation info, parsing annotation file and inject to table tcga_entry)");
 			parseprocess.parseGenerateMutationResultSQL4TcgaEntry(mUsageRecord,
 					currentDir + ReadConfig.tcgaFile,
@@ -1059,7 +1012,7 @@ public class PdbScriptsPipelineRunCommand {
         // Serialize the MutationUsageRecord into the tmpfile!!!!
         if(!this.updateTag){
         	//Generate SNP information using dbsnp, clinvar, cosmic, genie, tcga
-            log.info("********************[STEP 3.11]********************");
+            log.info("********************[STEP 3.12]********************");
             log.info("[SQL] Generate and import into the table gpos_allmapping_entry");
             HashMap<String,String> inputHm = new HashMap<String,String>();
             //Test here
@@ -1077,7 +1030,7 @@ public class PdbScriptsPipelineRunCommand {
                 cu.runCommand("mysql", paralist);
             }      
             
-            log.info("********************[STEP 3.12]********************");
+            log.info("********************[STEP 3.13]********************");
             log.info("[SQL] Generate and import into the table gpos_protein_entry, this step is very slow for querying lots of API");
             
             if(Boolean.parseBoolean(ReadConfig.initConcurrent)){
@@ -1097,7 +1050,7 @@ public class PdbScriptsPipelineRunCommand {
                 cu.runCommand("mysql", paralist);
             }
         }
-        log.info("********************[STEP 3.13]********************");
+        log.info("********************[STEP 3.14]********************");
         log.info("[SQL] Rebuild all Mapping INSERT SQL statements into table gpos_allmapping_pdb_entry (Warning: This step takes time)");
         
         //call 12million SNP through inner API, should start G2Smutation-web
