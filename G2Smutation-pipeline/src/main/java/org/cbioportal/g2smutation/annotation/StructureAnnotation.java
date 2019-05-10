@@ -936,14 +936,6 @@ public class StructureAnnotation {
             }
             count++;
         }
-        
-        //save HashSet<String>: pdb as pdbSet.ser
-        String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
-        try{
-            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(pdbSet));
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
     }
 
     /**
@@ -965,6 +957,14 @@ public class StructureAnnotation {
                 log.info("Finish " + count + "th mutation in rsa in naccess to showburied");
             }
             count++;
+        }
+        
+        //save HashSet<String>: pdb as pdbSet.ser
+        String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
+        try{
+            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(pdbSet));
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
 
     }

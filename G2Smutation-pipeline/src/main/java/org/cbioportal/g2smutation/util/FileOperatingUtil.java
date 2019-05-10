@@ -487,7 +487,11 @@ public class FileOperatingUtil {
             for (String gpos : inputHm.keySet()) {
 
                 if (postFlag) {// POST
-                    gposList.add(gpos);
+                	//reduce queries here:
+                	if(!gpos2proHm.containsKey(gpos)){
+                		gposList.add(gpos);
+                		count++;
+                	}                  
                     /*
                      * if (count ==10){//test
                      * uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm,
@@ -503,13 +507,16 @@ public class FileOperatingUtil {
                     }
 
                 } else {// GET method
-                    Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gpos, false, count);
-                    executor.execute(worker);
+                	//reduce queries here:
+                	if(!gpos2proHm.containsKey(gpos)){
+                		Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gpos, false, count);
+                		executor.execute(worker);
+                	}
                     // if (count % 1000 == 0) {
                     // log.info("Deal at " + count + "pos");
                     // }
                 }
-                count++;
+                
             }
             executor.shutdown();
             // Wait until all threads are finish

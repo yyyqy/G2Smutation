@@ -124,9 +124,25 @@ CREATE TABLE `gpos_protein_entry` (
 CREATE TABLE `update_record` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `UPDATE_DATE` DATE,
-  `SEG_NUM` int(255),
-  `PDB_NUM` int(255),
-  `ALIGNMENT_NUM` int(255),
+  `SEG_NUM` int,
+  `PDB_NUM` int,
+  `ALIGNMENT_NUM` int,
+  `DBSNP_NUM` int,
+  `CLINVAR_NUM` int,
+  `COSMIC_NUM` int,
+  `GENIE_NUM` int,
+  `TCGA_NUM` int,
+  `DBSNP_MAPPING_NUM` int,
+  `CLINVAR_MAPPING_NUM` int,
+  `COSMIC_MAPPING_NUM` int,
+  `GENIE_MAPPING_NUM` int,
+  `TCGA_MAPPING_NUM` int,
+  `MUTATION_NO_MAPPING_NUM` int,
+  `MUTATION_NO_MAPPING_UNIQUE_NUM` int,
+  `MUTATION_NO` int,
+  `MUTATION_NO_UNIQUE` int,
+  `MUTATION_USAGE_NUM` int,
+  `MUTATION_LOCATION_NUM` int,
   PRIMARY KEY(`ID`)
 );
 

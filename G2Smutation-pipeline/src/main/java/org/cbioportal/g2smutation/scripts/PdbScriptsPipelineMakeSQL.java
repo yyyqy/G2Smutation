@@ -62,6 +62,7 @@ public class PdbScriptsPipelineMakeSQL {
     private String sqlDeleteFile;
     private String insertSequenceSQL;
     private boolean updateTag;// if update, then true;
+    private int alignmentId=1; //alignmentId for mutation usage, keep track of alignmentId
 
     private int testcase=1;// use for test cases, default 1
     
@@ -141,6 +142,8 @@ public class PdbScriptsPipelineMakeSQL {
             } else {
                 // Usually use this, save memory and time
                 HashMap<String, String> pdbHm = new HashMap<String, String>();
+                //alignmentId for mutation:
+                this.alignmentId =1;
                 for (int i = 0; i < this.seqFileCount; i++) {
                     log.info("[Parsing] Read blast results on " + i + "th xml file");
                     parseblastresultsSmallMem(i, pdbHm, true);
@@ -361,7 +364,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @return count
      */
     public int parsexmlMutation(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
-        int count = 1;
+        int count = this.alignmentId;
         try {
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.g2smutation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
@@ -385,10 +388,11 @@ public class PdbScriptsPipelineMakeSQL {
                 for (Hit hit : hits.getHit()) {
                     MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
                     alignmentList.addAll(mar.getAlignmentList());
-                    mutationList.addAll(mar.getMutationList());
-                    count = alignmentList.size() + 1;
+                    mutationList.addAll(mar.getMutationList()); 
+                    count = mar.getAlignmentId();
                 }
             }
+            this.alignmentId = count;
             maresult.setAlignmentList(alignmentList);
             maresult.setMutationList(mutationList);
             log.info("[BLAST] " + sequence_count + " sequences have blast results in " + mutationList.size() + " mutations");
@@ -826,17 +830,6 @@ public class PdbScriptsPipelineMakeSQL {
             br.midline_align = tmp.getHspMidline();
 
             /*
-             * alignment.setSeqId(querytext.split("\\s+")[0]);
-             * alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
-             * alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]
-             * );
-             * alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]
-             * );
-             * alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2
-             * ]); alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);
-             */
-
-            /*
              * //Original solution: Include all the blast results
              * resultList.add(br); count++;
              */
@@ -876,26 +869,8 @@ public class PdbScriptsPipelineMakeSQL {
                         int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i
                                 - pdbGapCount;
                         String pdbNO = br.sseqid.split("\\s+")[0];
-                        /*
-                         * if(mutationHm.containsKey(correctProteinIndex)){
-                         * HashMap<String,String> tmpHm =
-                         * (HashMap<String,String>)mutationHm.get(
-                         * correctProteinIndex); if(tmpHm.containsKey(residue)){
-                         * String tmpstr = tmpHm.get(residue);
-                         * tmpHm.put(residue, tmpstr + pdbNO + " " +
-                         * correctPDBIndex + " " + count + ";"); }else{
-                         * tmpHm.put(residue, pdbNO + " " + correctPDBIndex +
-                         * " " + count + ";"); }
-                         * mutationHm.put(correctProteinIndex, tmpHm); }else{
-                         * HashMap<String,String> tmpHm = new
-                         * HashMap<String,String>(); tmpHm.put(residue, pdbNO +
-                         * " " + correctPDBIndex + " " + count + ";");
-                         * mutationHm.put(correctProteinIndex, tmpHm); }
-                         * inputResidueNameHm.put(correctProteinIndex,
-                         * br.seq_align.substring(i,i+1));
-                         */
+                        
                         MutationRecord mr = new MutationRecord();
-
                         mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
                         mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
                         mr.setSeqResidueIndex(correctProteinIndex);
@@ -908,36 +883,15 @@ public class PdbScriptsPipelineMakeSQL {
                         mutationList.add(mr);
                     }
                 }
-                alignmentList.add(br);
-                count++;
+                alignmentList.add(br);                
             }
+            count++;
         }
-
-        /*
-         * //enumerate the hashmap for (Map.Entry<Integer,
-         * HashMap<String,String>> entry: mutationHm.entrySet()){ int
-         * proteinResidueIndex = entry.getKey(); HashMap<String, String> tmpHm =
-         * (HashMap<String, String>)entry.getValue(); for (Map.Entry<String,
-         * String> tentry : tmpHm.entrySet()) { String pdbResidueName =
-         * tentry.getKey(); String tmpstr = tentry.getValue(); String[]
-         * tmpstrArray = tmpstr.split(";"); for (int i = 0; i <
-         * tmpstrArray.length; i++) { MutationRecord mr = new MutationRecord();
-         * String[] ttstrArray = tmpstrArray[i].split("\\s+");
-         * mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
-         * mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
-         * mr.setSeqResidueIndex(proteinResidueIndex);
-         * mr.setSeqResidueName(inputResidueNameHm.get(proteinResidueIndex));
-         * mr.setPdbNo(ttstrArray[0]);
-         * mr.setPdbResidueIndex(Integer.parseInt(ttstrArray[1]));
-         * mr.setAlignmentId(Integer.parseInt(ttstrArray[2]));
-         * mr.setPdbResidueName(pdbResidueName); mutationList.add(mr); } }
-         * 
-         * }
-         */
 
         MutationAlignmentResult result = new MutationAlignmentResult();
         result.setAlignmentList(alignmentList);
         result.setMutationList(mutationList);
+        result.setAlignmentId(count);
 
         return result;
     }
@@ -1367,8 +1321,8 @@ public class PdbScriptsPipelineMakeSQL {
             for (String pdbName : list) {
                 
                 //Actually, these tables are rebuild every week, so we could directly delete them
-                /*
                 //Delete mutation related annotation first for their foreign key restrains
+            	//But we have to do it for it will get fail for foreign restrain.
                 String str1 = "DELETE FROM gpos_allmapping_pdb_entry WHERE PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str1);              
@@ -1381,7 +1335,6 @@ public class PdbScriptsPipelineMakeSQL {
                 String str3 = "DELETE structure_annotation_entry FROM structure_annotation_entry inner join mutation_entry on structure_annotation_entry.MUTATION_ID=mutation_entry.MUTATION_ID WHERE mutation_entry.PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str3);
-                */
              
                 //Then delete Foreign Key based tables, order is important. Mutation, alignment then PDB
                 //delete from MUTATION_ID
@@ -2028,6 +1981,7 @@ public class PdbScriptsPipelineMakeSQL {
 class MutationAlignmentResult {
     List<BlastResult> alignmentList;
     List<MutationRecord> mutationList;
+    int alignmentId;
 
     public List<BlastResult> getAlignmentList() {
         return alignmentList;
@@ -2044,4 +1998,12 @@ class MutationAlignmentResult {
     public void setMutationList(List<MutationRecord> mutationList) {
         this.mutationList = mutationList;
     }
+
+	public int getAlignmentId() {
+		return alignmentId;
+	}
+
+	public void setAlignmentId(int alignmentId) {
+		this.alignmentId = alignmentId;
+	}
 }
