@@ -195,6 +195,7 @@ public class PdbScriptsPipelineRunCommand {
         boolean mutationTag = false;
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
+            	log.info("Start generating at "+i+"of Insert.sql in update");
                 paralist = new ArrayList<String>();
                 paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile + "." + new Integer(i).toString());
                 paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
@@ -230,9 +231,11 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + ReadConfig.sqlDeleteFile);
         cu.runCommand("mysql", paralist);        
                 
-        log.info("Inject update insert.sql");
+        log.info("Inject updating insert.sql");
         if (this.seqFileCount != -1) {
         	for (int i = 0; i < this.seqFileCount; i++) {
+        		log.info("Start inject at "+i+"of Insert.sql in update");
+        		
         		paralist = new ArrayList<String>();
                 paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
                 cu.runCommand("mysql", paralist);
