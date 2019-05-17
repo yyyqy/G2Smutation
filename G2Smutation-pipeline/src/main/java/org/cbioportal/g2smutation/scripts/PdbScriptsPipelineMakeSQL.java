@@ -1323,6 +1323,10 @@ public class PdbScriptsPipelineMakeSQL {
                 //Actually, these tables are rebuild every week, so we could directly delete them
                 //Delete mutation related annotation first for their foreign key restrains
             	//But we have to do it for it will get fail for foreign restrain.
+            	String str0 = "DELETE FROM mutation_usage_table WHERE PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str0); 
+            	
                 String str1 = "DELETE FROM gpos_allmapping_pdb_entry WHERE PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str1);              
