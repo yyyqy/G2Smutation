@@ -184,13 +184,10 @@ public class PdbScriptsPipelineRunCommand {
 
         // Modified for smaller disk usage, blast/parse/insert/delete
         log.info("********************[Update STEP 1.4]********************");
-        log.info("Insert delete SQL of obsolete and modified alignments in mutation");
+        log.info("Insert delete SQL of obsolete and modified alignments in mutation.");
         // V1 here, we need to use
         // parseprocess.generateDeleteSql(currentDir, listOld);
         parseprocess.generateDeleteMutationSql(currentDir, listOld);
-        paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.sqlDeleteFile);
-        cu.runCommand("mysql", paralist);
 
         log.info("********************[Update STEP 1.5]********************");
         log.info("blastp ensembl genes against pdb; Create and insert SQL statements of new and modified alignments;");
@@ -204,15 +201,7 @@ public class PdbScriptsPipelineRunCommand {
                 paralist.add(currentDir + this.db.dbName);
                 cu.runCommand("blastp", paralist);
 
-                parseprocess.parse2sqlPartition(false, currentDir, this.seqFileCount, i, pdbHm, mutationTag);
-
-                paralist = new ArrayList<String>();
-                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("mysql", paralist);
-
-                paralist = new ArrayList<String>();
-                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("gzip", paralist);
+                parseprocess.parse2sqlPartition(false, currentDir, this.seqFileCount, i, pdbHm, mutationTag);               
             }
         } else {
             paralist = new ArrayList<String>();
@@ -221,11 +210,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + this.db.dbName);
             cu.runCommand("blastp", paralist);
 
-            parseprocess.parse2sql(false, currentDir, this.seqFileCount, mutationTag);
-
-            paralist = new ArrayList<String>();
-            paralist.add(currentDir + ReadConfig.sqlInsertFile);
-            cu.runCommand("mysql", paralist);
+            parseprocess.parse2sql(false, currentDir, this.seqFileCount, mutationTag);            
         }
 
         log.info("********************[Update STEP 1.6]********************");
@@ -236,23 +221,47 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
         paralist.add(ReadConfig.workspace + this.db.dbName);
-        cu.runCommand("makeblastdb", paralist);
-
+        cu.runCommand("makeblastdb", paralist);        
+        
         log.info("********************[Update STEP 1.7]********************");
+        log.info("Inject update sql to database");
+        log.info("Inject update delete.sql");
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.sqlDeleteFile);
+        cu.runCommand("mysql", paralist);        
+                
+        log.info("Inject update insert.sql");
+        if (this.seqFileCount != -1) {
+        	for (int i = 0; i < this.seqFileCount; i++) {
+        		paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("mysql", paralist);
+
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("gzip", paralist);
+        	}        		
+        }else {
+        	paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.sqlInsertFile);
+            cu.runCommand("mysql", paralist);        		
+        }
+        
+        log.info("********************[Update STEP 1.8]********************");
         log.info("Change messages.properties in web module");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
         paralist.add(currentDir + ReadConfig.releaseTagResult);
         cu.runCommand("releaseTag", paralist);
 
-        log.info("********************[Update STEP 1.8]********************");
+        log.info("********************[Update STEP 1.9]********************");
         log.info("Use MYSQL to update records");
         preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
                 currentDir + ReadConfig.updateStatisticsSQL);
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
         cu.runCommand("mysql", paralist);
-
+        	
         return lu;
     }
     

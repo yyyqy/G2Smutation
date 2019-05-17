@@ -1318,11 +1318,18 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            for (String pdbName : list) {
-                
-                //Actually, these tables are rebuild every week, so we could directly delete them
-                //Delete mutation related annotation first for their foreign key restrains
-            	//But we have to do it for it will get fail for foreign restrain.
+            // delete for query and delete will cost lots of time, delete here for saving time
+            outputlist.add("SET FOREIGN_KEY_CHECKS = 0;\n" +
+            		"drop table IF EXISTS mutation_usage_table;\n" + 
+            		"drop table IF EXISTS gpos_allmapping_pdb_entry;\n" + 
+            		"drop table IF EXISTS mutation_location_entry;\n" +
+            		"drop table IF EXISTS structure_annotation_entry;\n" +
+            		"SET FOREIGN_KEY_CHECKS = 1;\n");
+            for (String pdbName : list) {               
+            	/*
+            	 * Actually, these tables are rebuild every week, so we could directly delete them
+            	 * Delete mutation related annotation first for their foreign key restrains
+            	 * But we have to do it for it will get fail for foreign restrain.
             	String str0 = "DELETE FROM mutation_usage_table WHERE PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str0); 
@@ -1339,6 +1346,7 @@ public class PdbScriptsPipelineMakeSQL {
                 String str3 = "DELETE structure_annotation_entry FROM structure_annotation_entry inner join mutation_entry on structure_annotation_entry.MUTATION_ID=mutation_entry.MUTATION_ID WHERE mutation_entry.PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str3);
+                */
              
                 //Then delete Foreign Key based tables, order is important. Mutation, alignment then PDB
                 //delete from MUTATION_ID
