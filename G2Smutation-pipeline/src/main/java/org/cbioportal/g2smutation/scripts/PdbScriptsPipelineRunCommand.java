@@ -161,6 +161,7 @@ public class PdbScriptsPipelineRunCommand {
      */
     ListUpdate updateG2S(PdbScriptsPipelinePreprocessing preprocess, PdbScriptsPipelineMakeSQL parseprocess) {
         CommandProcessUtil cu = new CommandProcessUtil();
+        ArrayList<String>paralist = new ArrayList<String>();
         this.seqFileCount = Integer.parseInt(ReadConfig.updateSeqFastaFileNum);
 
         log.info("********************[Update STEP 1.1]********************");
@@ -172,6 +173,22 @@ public class PdbScriptsPipelineRunCommand {
         log.info("Update G2S at " + this.dateVersion);
 
         log.info("********************[Update STEP 1.2]********************");
+        log.info("Get current alignmentId, and for update usage");
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.updateInitUpdate);
+        paralist.add(currentDir + ReadConfig.updateInitUpdateResult);
+        cu.runCommand("releaseTag", paralist);
+        
+        try {
+        	List<String> lines = FileUtils.readLines(new File(currentDir + ReadConfig.updateInitUpdateResult));
+        	// now we only need check status of alignmentID, we may add some later
+        	parseprocess.setAlignmentId(Integer.parseInt(lines.get(1))+1);
+        	log.info("Update alignmentid starts at " + parseprocess.getAlignmentId());
+        }catch(Exception ex) {
+        	ex.printStackTrace();
+        }       
+        
+        log.info("********************[Update STEP 1.3]********************");
         log.info("Down load and prepare new, obsolete and modified PDB in weekly update from PDB");
         ListUpdate lu = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,
                 ReadConfig.delPDB);
@@ -179,27 +196,26 @@ public class PdbScriptsPipelineRunCommand {
         preprocess.preprocessPDBsequencesUpdate(currentDir + ReadConfig.pdbSeqresDownloadFile,
                 currentDir + ReadConfig.pdbSeqresFastaFile);
 
-        log.info("********************[Update STEP 1.3]********************");
+        log.info("********************[Update STEP 1.4]********************");
         log.info("Create new blast alignments in new and modified PDB");
-        ArrayList<String> paralist = new ArrayList<String>();
+        paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.pdbSeqresFastaFile);
         paralist.add(currentDir + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
         // Modified for smaller disk usage, blast/parse/insert/delete
-        log.info("********************[Update STEP 1.4]********************");
+        log.info("********************[Update STEP 1.5]********************");
         log.info("Insert delete SQL of obsolete and modified alignments in mutation.");
         // V1 here, we need to use
         // parseprocess.generateDeleteSql(currentDir, listOld);
         parseprocess.generateDeleteMutationSql(currentDir, listOld);
 
-        log.info("********************[Update STEP 1.5]********************");
+        log.info("********************[Update STEP 1.6]********************");
         log.info("blastp ensembl genes against pdb; Create and insert SQL statements of new and modified alignments;");
         HashMap<String, String> pdbHm = new HashMap<String, String>();
         boolean mutationTag = false;
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
-            	log.info("Start generating at "+i+"of Insert.sql in update");
                 paralist = new ArrayList<String>();
                 paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile + "." + new Integer(i).toString());
                 paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
@@ -218,7 +234,7 @@ public class PdbScriptsPipelineRunCommand {
             parseprocess.parse2sql(false, currentDir, this.seqFileCount, mutationTag);            
         }
 
-        log.info("********************[Update STEP 1.6]********************");
+        log.info("********************[Update STEP 1.7]********************");
         log.info("After update all the new alignments,Create complete PDB sequences for de novo sequence blast");
         preprocess.denovoPreprocessPDBsequencesUpdate(dateVersion, listOld, currentDir + ReadConfig.pdbSeqresFastaFile,
                 currentDir + ReadConfig.pdbSeqresFastaFile);
@@ -228,7 +244,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);        
         
-        log.info("********************[Update STEP 1.7]********************");
+        log.info("********************[Update STEP 1.8]********************");
         log.info("Inject update sql to database");
         log.info("Inject update delete.sql");
         paralist = new ArrayList<String>();
@@ -1108,16 +1124,20 @@ public class PdbScriptsPipelineRunCommand {
 //         }
     }
     
+    /**
+     * Generate release tag
+     * @param preprocess
+     */
     void generateWeeklyTag(PdbScriptsPipelinePreprocessing preprocess) {
     	CommandProcessUtil cu = new CommandProcessUtil();
     	ArrayList<String> paralist = new ArrayList<String>();
-    	log.info("********************[Update STEP 1.8]********************");
+    	log.info("********************[Update STEP 4.1]********************");
         log.info("Change messages.properties in web module");        
         paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
         paralist.add(currentDir + ReadConfig.releaseTagResult);
         cu.runCommand("releaseTag", paralist);
 
-        log.info("********************[Update STEP 1.9]********************");
+        log.info("********************[Update STEP 4.2]********************");
         log.info("Use MYSQL to update records");
         preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
                 currentDir + ReadConfig.updateStatisticsSQL);

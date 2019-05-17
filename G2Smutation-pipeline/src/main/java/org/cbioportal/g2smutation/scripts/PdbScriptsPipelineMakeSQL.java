@@ -76,6 +76,14 @@ public class PdbScriptsPipelineMakeSQL {
 		this.db = db;
 	}
 
+	public int getAlignmentId() {
+		return alignmentId;
+	}
+
+	public void setAlignmentId(int alignmentId) {
+		this.alignmentId = alignmentId;
+	}
+
 	/**
      * 
      * Constructor
