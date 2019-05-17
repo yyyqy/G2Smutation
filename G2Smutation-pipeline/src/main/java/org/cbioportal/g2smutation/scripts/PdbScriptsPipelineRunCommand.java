@@ -142,8 +142,12 @@ public class PdbScriptsPipelineRunCommand {
         log.info("********************[Update STEP 3]********************");
         log.info("Update Annotate mutation");
         generateAnnotation(parseprocess, this.updateTag, lu);
-
+        
         log.info("********************[Update STEP 4]********************");
+        log.info("Weekly update Tag");
+        generateWeeklyTag(preprocess);
+
+        log.info("********************[Update STEP 5]********************");
         log.info("[FileSystem] Clean Up");
         updateCleanup(lu);
     }
@@ -249,21 +253,6 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);        		
         }
-        
-        log.info("********************[Update STEP 1.8]********************");
-        log.info("Change messages.properties in web module");
-        paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
-        paralist.add(currentDir + ReadConfig.releaseTagResult);
-        cu.runCommand("releaseTag", paralist);
-
-        log.info("********************[Update STEP 1.9]********************");
-        log.info("Use MYSQL to update records");
-        preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
-                currentDir + ReadConfig.updateStatisticsSQL);
-        paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
-        cu.runCommand("mysql", paralist);
         	
         return lu;
     }
@@ -1117,6 +1106,24 @@ public class PdbScriptsPipelineRunCommand {
 //          paralist = new ArrayList<String>(); paralist.add(ReadConfig.pdbRepo);
 //          cu.runCommand("rm", paralist);
 //         }
+    }
+    
+    void generateWeeklyTag(PdbScriptsPipelinePreprocessing preprocess) {
+    	CommandProcessUtil cu = new CommandProcessUtil();
+    	ArrayList<String> paralist = new ArrayList<String>();
+    	log.info("********************[Update STEP 1.8]********************");
+        log.info("Change messages.properties in web module");        
+        paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
+        paralist.add(currentDir + ReadConfig.releaseTagResult);
+        cu.runCommand("releaseTag", paralist);
+
+        log.info("********************[Update STEP 1.9]********************");
+        log.info("Use MYSQL to update records");
+        preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
+                currentDir + ReadConfig.updateStatisticsSQL);
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
+        cu.runCommand("mysql", paralist);
     }
 }
 
