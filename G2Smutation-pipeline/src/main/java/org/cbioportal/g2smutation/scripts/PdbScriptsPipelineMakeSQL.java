@@ -459,6 +459,7 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
+     * However, we don't update to 50 now, this is old implementation
      * Used for Update: generate SQL insert text to Table pdb_ensembl_alignment
      * 
      * The only variate in the procedure is alignment limit, which now is set as
@@ -508,31 +509,33 @@ public class PdbScriptsPipelineMakeSQL {
      * @param br
      * @return generated SQL statements
      */
-    public String makeTable_pdb_seq_insert_Update(BlastResult br) {
-        String[] strarrayQ = br.getQseqid().split(";");
-        String pdbNo = br.getSseqid().split("\\s+")[0];
-        String[] strarrayS = pdbNo.split("_");
-        String segStart = br.getSseqid().split("\\s+")[3];
+	public String makeTable_pdb_seq_insert_Update(BlastResult br) {
+		String[] strarrayQ = br.getQseqid().split(";");
+		String pdbNo = br.getSseqid().split("\\s+")[0];
+		String[] strarrayS = pdbNo.split("_");
+		String segStart = br.getSseqid().split("\\s+")[3];
 
-        String str = "call InsertUpdate('" + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2]
-                + "','" + segStart + "','" + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + ","
-                + br.getqStart() + "," + br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + ","
-                + br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() + "','" + br.getPdb_align() + "','"
-                + br.getMidline_align() + "',CURDATE());\n";
+		/*
+		 * Original: make sure get up to 50 results, but we don't need that now, we want
+		 * all 
+		 * 
+		 * String str = "call InsertUpdate('" + pdbNo + "','" + strarrayS[0] + "','"
+		 * + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','" +
+		 * strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," +
+		 * br.getqStart() + "," + br.getqEnd() + ",'" + br.getEvalue() + "'," +
+		 * br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'" +
+		 * br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align()
+		 * + "',CURDATE());\n";
+		 */
 
-        /*
-         * String str =
-         * "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
-         * + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" +
-         * strarrayS[2] + "','" + segStart + "','" + strarrayQ[0] + "'," +
-         * br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," +
-         * br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + ","
-         * + br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() +
-         * "','" + br.getPdb_align() + "','" + br.getMidline_align() +
-         * "',CURDATE());\n";
-         */
-        return str;
-    }
+		String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+				+ pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','"
+				+ strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
+				+ ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
+				+ br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
+
+		return str;
+	}
 
     /**
      * Parse list of String blast results to input SQL statements, time and
