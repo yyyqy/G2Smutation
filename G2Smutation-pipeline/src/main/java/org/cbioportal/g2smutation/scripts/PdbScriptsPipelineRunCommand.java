@@ -171,6 +171,11 @@ public class PdbScriptsPipelineRunCommand {
         this.dateVersion = dateVersion;
         this.currentDir = currentDir;
         log.info("Update G2S at " + this.dateVersion);
+        try {
+        	FileUtils.forceMkdir(new File(currentDir));
+        }catch(Exception ex) {
+        	ex.printStackTrace();
+        }
 
         log.info("********************[Update STEP 1.2]********************");
         log.info("Get current alignmentId, and for update usage");
@@ -260,16 +265,17 @@ public class PdbScriptsPipelineRunCommand {
                 paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
                 cu.runCommand("mysql", paralist);
 
+                /*
                 paralist = new ArrayList<String>();
                 paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
                 cu.runCommand("gzip", paralist);
+                */
         	}        		
         }else {
         	paralist = new ArrayList<String>();
             paralist.add(currentDir + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);        		
-        }
-        	
+        }	
         return lu;
     }
     
@@ -305,9 +311,11 @@ public class PdbScriptsPipelineRunCommand {
                 paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
                 cu.runCommand("rm", paralist);
 
+                /*
                 paralist = new ArrayList<String>();
                 paralist.add(currentDir + ReadConfig.sqlMutationInsertFile + "." + new Integer(i).toString());
                 cu.runCommand("gzip", paralist);
+                */
             }
         } else {
             parseprocess.parse2sql(false, currentDir, this.seqFileCount, mutationTag);

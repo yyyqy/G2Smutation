@@ -373,6 +373,7 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public int parsexmlMutation(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
         int count = this.alignmentId;
+        log.info("Work on "+count);
         try {
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.g2smutation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
