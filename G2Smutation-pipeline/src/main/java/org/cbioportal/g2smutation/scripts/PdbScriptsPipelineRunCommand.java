@@ -768,11 +768,12 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         String currentDir = this.currentDir;
         
+        log.info("Start union queries, it may take time...");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.mutationGenerateSQL);
         paralist.add(currentDir + ReadConfig.mutationResult);
         cu.runCommand("releaseTag", paralist);
-        
+        log.info("Query ended");
         parseprocess.parseGenerateMutationResultSQL4MutatationUsageTable(currentDir + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage);       
         
         paralist = new ArrayList<String>();
