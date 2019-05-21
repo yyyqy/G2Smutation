@@ -145,6 +145,7 @@ public class PdbScriptsPipelineRunCommand {
         this.currentDir = ReadConfig.workspace + "20190520/";
         ListUpdate lu = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,
          ReadConfig.delPDB);
+        
         log.info("********************[Update STEP 3]********************");
         log.info("Update Annotate mutation");
         generateAnnotation(parseprocess, this.updateTag, lu);
@@ -806,7 +807,8 @@ public class PdbScriptsPipelineRunCommand {
         if (updateTag){
             String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
             // Deserialize
-            try{           
+            try{  
+                log.info("Deserialize "+ filename);
                 mutationHm = (HashMap<String,String>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
             }catch(Exception ex){
                 ex.printStackTrace();
