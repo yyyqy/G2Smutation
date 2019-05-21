@@ -122,7 +122,9 @@ public class StructureAnnotation {
                 //TODO will change later
                 getHETInfoPlaceholder(sar);
                 getDomainUrlPlaceholder(sar);
-                getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+//                test later
+//                getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+
 //                getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
 //                        residueHm.get(mutationId).split("_")[2]);
 //                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
