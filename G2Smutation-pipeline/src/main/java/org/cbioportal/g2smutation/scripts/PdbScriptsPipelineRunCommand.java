@@ -810,6 +810,7 @@ public class PdbScriptsPipelineRunCommand {
             try{  
                 log.info("Deserialize "+ filename);
                 mutationHm = (HashMap<String,String>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
+                log.info("Size of "+ mutationHm.size());
             }catch(Exception ex){
                 ex.printStackTrace();
             }            
