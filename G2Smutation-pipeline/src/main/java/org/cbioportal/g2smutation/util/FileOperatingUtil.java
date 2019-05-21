@@ -84,6 +84,7 @@ public class FileOperatingUtil {
                     // proteinName: ENSP00000404384.1
                     proteinIndex = strArray[4];
                     if (mutationHm.containsKey(mutationNO)) {
+                    	log.info(mutationNO+"%"+mutationHm.get(mutationNO+"%"+mutationID+"*"));
                         gpos = mutationHm.get(mutationNO);
                         mutationList = genomicCoorHm.get(gpos);
                         mutationList.add(mutationID);
