@@ -84,10 +84,8 @@ public class FileOperatingUtil {
                     // proteinName: ENSP00000404384.1
                     proteinIndex = strArray[4];
                     if (mutationHm.containsKey(mutationNO)) {
-                    	log.info(mutationNO+"%"+mutationHm.get(mutationNO)+"%"+mutationID+"*");
+//                    	log.info(mutationNO+"%"+mutationHm.get(mutationNO)+"%"+mutationID+"*");
                         gpos = mutationHm.get(mutationNO);
-                        mutationList = genomicCoorHm.get(gpos);
-                        mutationList.add(mutationID);
                     } else {
                         // Calling GenomeNexus
                         // https://grch37.rest.ensembl.org/map/translation/ENSP00000356671.3/167..167?content-type=application/json
@@ -98,9 +96,13 @@ public class FileOperatingUtil {
                             ex.printStackTrace();
                         }
                         mutationHm.put(mutationNO, gpos); // gpos could be ""
-                        mutationList = new ArrayList<Integer>();
-                        mutationList.add(mutationID);
                     }
+                    if (genomicCoorHm.containsKey(gpos)) {
+                    	mutationList = genomicCoorHm.get(gpos);
+                    }else {
+                    	mutationList = new ArrayList<Integer>();
+                    }                       
+                    mutationList.add(mutationID);
                     mutationIdHm.put(mutationID, gpos); // gpos could be ""
                     genomicCoorHm.put(gpos, mutationList); // mutationList could
                                                            // be ""
