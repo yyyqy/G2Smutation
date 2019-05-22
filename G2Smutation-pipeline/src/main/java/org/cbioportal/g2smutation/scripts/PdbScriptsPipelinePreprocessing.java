@@ -592,14 +592,15 @@ public class PdbScriptsPipelinePreprocessing {
             log.info("[Update] Generate releaseTag and statistics for update ...");
             boolean tag = true;
             List<String> contents = FileUtils.readLines(new File(releaseResultFilename));
-            if (contents.size() != 8) {
+            // release tag, now have 20 columns to update
+            if (contents.size() != 40) {
                 tag = false;
             }
 
             String outstr = "SET autocommit = 0;\nstart transaction;\n";
             outstr = outstr
-                    + "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`) VALUES('"
-                    + contents.get(1) + "', '" + contents.get(3) + "', '" + contents.get(5) + "', '" + contents.get(7)
+                    + "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`,`DBSNP_NUM`,`CLINVAR_NUM`,`COSMIC_NUM`,`GENIE_NUM`,`TCGA_NUM`,`DBSNP_MAPPING_NUM`,`CLINVAR_MAPPING_NUM`,`COSMIC_MAPPING_NUM`,`GENIE_MAPPING_NUM`,`TCGA_MAPPING_NUM`,`MUTATION_NO_MAPPING_NUM`,`MUTATION_NO_MAPPING_UNIQUE_NUM`,`MUTATION_NO`,`MUTATION_NO_UNIQUE`,`MUTATION_USAGE_NUM`,`MUTATION_LOCATION_NUM`) VALUES('"
+                    + contents.get(1) + "', '" + contents.get(3) + "', '" + contents.get(5) + "', '" + contents.get(7) + "', '" + contents.get(9) + "', '" + contents.get(11) + "', '" + contents.get(13) + "', '" + contents.get(15) + "', '" + contents.get(17) + "', '" + contents.get(19) + "', '" + contents.get(21) + "', '" + contents.get(23) + "', '" + contents.get(25) + "', '" + contents.get(27) + "', '" + contents.get(29) + "', '" + contents.get(31) + "', '" + contents.get(33) + "', '" + contents.get(35) + "', '" + contents.get(37) + "', '" + contents.get(39)
                     + "');\n";
             outstr = outstr + "commit;\n";
 
