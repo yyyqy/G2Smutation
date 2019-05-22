@@ -11,5 +11,5 @@ CREATE TABLE `mutation_location_entry` (
   `POS_START` int(255) NOT NULL,
   `POS_END` int(255),
   PRIMARY KEY(`MUTATION_ID`),
-  KEY(`MUTATION_NO,CHR_POS`)
+  KEY(`MUTATION_NO`,`CHR_POS`)
 );

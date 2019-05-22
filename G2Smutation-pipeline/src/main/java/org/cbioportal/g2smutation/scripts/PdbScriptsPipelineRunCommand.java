@@ -133,19 +133,29 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Update STEP 1]********************");
         log.info("Update G2S service for alignments and residue mapping");
-        ListUpdate lu = updateG2S(preprocess, parseprocess);
+//        ListUpdate lu = updateG2S(preprocess, parseprocess);
 
         log.info("********************[Update STEP 2]********************");
         log.info("Update mutation using G2S service");
-        updateMutation(preprocess, parseprocess, lu);
+//        updateMutation(preprocess, parseprocess, lu);
 
+        /**
+         * Used for debug
+         * this.currentDir = ReadConfig.workspace + "20190520/";
+         * ListUpdate lu = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,ReadConfig.delPDB);
+         */
+        
         log.info("********************[Update STEP 3]********************");
         log.info("Update Annotate mutation");
-        generateAnnotation(parseprocess, this.updateTag, lu);
-
+//        generateAnnotation(parseprocess, this.updateTag, lu);
+        
         log.info("********************[Update STEP 4]********************");
+        log.info("Weekly update Tag");
+        generateWeeklyTag(preprocess);
+
+        log.info("********************[Update STEP 5]********************");
         log.info("[FileSystem] Clean Up");
-        updateCleanup(lu);
+//        updateCleanup(lu);
     }
     
     /**
@@ -157,6 +167,7 @@ public class PdbScriptsPipelineRunCommand {
      */
     ListUpdate updateG2S(PdbScriptsPipelinePreprocessing preprocess, PdbScriptsPipelineMakeSQL parseprocess) {
         CommandProcessUtil cu = new CommandProcessUtil();
+        ArrayList<String>paralist = new ArrayList<String>();
         this.seqFileCount = Integer.parseInt(ReadConfig.updateSeqFastaFileNum);
 
         log.info("********************[Update STEP 1.1]********************");
@@ -166,8 +177,29 @@ public class PdbScriptsPipelineRunCommand {
         this.dateVersion = dateVersion;
         this.currentDir = currentDir;
         log.info("Update G2S at " + this.dateVersion);
+        try {
+        	FileUtils.forceMkdir(new File(currentDir));
+        }catch(Exception ex) {
+        	ex.printStackTrace();
+        }
 
         log.info("********************[Update STEP 1.2]********************");
+        log.info("Get current alignmentId, and for update usage");
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.updateInitUpdate);
+        paralist.add(currentDir + ReadConfig.updateInitUpdateResult);
+        cu.runCommand("releaseTag", paralist);
+        
+        try {
+        	List<String> lines = FileUtils.readLines(new File(currentDir + ReadConfig.updateInitUpdateResult));
+        	// now we only need check status of alignmentID, we may add some later
+        	parseprocess.setAlignmentId(Integer.parseInt(lines.get(1))+1);
+        	log.info("Update alignmentid starts at " + parseprocess.getAlignmentId());
+        }catch(Exception ex) {
+        	ex.printStackTrace();
+        }       
+        
+        log.info("********************[Update STEP 1.3]********************");
         log.info("Down load and prepare new, obsolete and modified PDB in weekly update from PDB");
         ListUpdate lu = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,
                 ReadConfig.delPDB);
@@ -175,24 +207,21 @@ public class PdbScriptsPipelineRunCommand {
         preprocess.preprocessPDBsequencesUpdate(currentDir + ReadConfig.pdbSeqresDownloadFile,
                 currentDir + ReadConfig.pdbSeqresFastaFile);
 
-        log.info("********************[Update STEP 1.3]********************");
+        log.info("********************[Update STEP 1.4]********************");
         log.info("Create new blast alignments in new and modified PDB");
-        ArrayList<String> paralist = new ArrayList<String>();
+        paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.pdbSeqresFastaFile);
         paralist.add(currentDir + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
         // Modified for smaller disk usage, blast/parse/insert/delete
-        log.info("********************[Update STEP 1.4]********************");
-        log.info("Insert delete SQL of obsolete and modified alignments in mutation");
+        log.info("********************[Update STEP 1.5]********************");
+        log.info("Insert delete SQL of obsolete and modified alignments in mutation.");
         // V1 here, we need to use
         // parseprocess.generateDeleteSql(currentDir, listOld);
         parseprocess.generateDeleteMutationSql(currentDir, listOld);
-        paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.sqlDeleteFile);
-        cu.runCommand("mysql", paralist);
 
-        log.info("********************[Update STEP 1.5]********************");
+        log.info("********************[Update STEP 1.6]********************");
         log.info("blastp ensembl genes against pdb; Create and insert SQL statements of new and modified alignments;");
         HashMap<String, String> pdbHm = new HashMap<String, String>();
         boolean mutationTag = false;
@@ -204,15 +233,7 @@ public class PdbScriptsPipelineRunCommand {
                 paralist.add(currentDir + this.db.dbName);
                 cu.runCommand("blastp", paralist);
 
-                parseprocess.parse2sqlPartition(false, currentDir, this.seqFileCount, i, pdbHm, mutationTag);
-
-                paralist = new ArrayList<String>();
-                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("mysql", paralist);
-
-                paralist = new ArrayList<String>();
-                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("gzip", paralist);
+                parseprocess.parse2sqlPartition(false, currentDir, this.seqFileCount, i, pdbHm, mutationTag);               
             }
         } else {
             paralist = new ArrayList<String>();
@@ -221,14 +242,10 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + this.db.dbName);
             cu.runCommand("blastp", paralist);
 
-            parseprocess.parse2sql(false, currentDir, this.seqFileCount, mutationTag);
-
-            paralist = new ArrayList<String>();
-            paralist.add(currentDir + ReadConfig.sqlInsertFile);
-            cu.runCommand("mysql", paralist);
+            parseprocess.parse2sql(false, currentDir, this.seqFileCount, mutationTag);            
         }
 
-        log.info("********************[Update STEP 1.6]********************");
+        log.info("********************[Update STEP 1.7]********************");
         log.info("After update all the new alignments,Create complete PDB sequences for de novo sequence blast");
         preprocess.denovoPreprocessPDBsequencesUpdate(dateVersion, listOld, currentDir + ReadConfig.pdbSeqresFastaFile,
                 currentDir + ReadConfig.pdbSeqresFastaFile);
@@ -236,23 +253,35 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
         paralist.add(ReadConfig.workspace + this.db.dbName);
-        cu.runCommand("makeblastdb", paralist);
-
-        log.info("********************[Update STEP 1.7]********************");
-        log.info("Change messages.properties in web module");
-        paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
-        paralist.add(currentDir + ReadConfig.releaseTagResult);
-        cu.runCommand("releaseTag", paralist);
-
+        cu.runCommand("makeblastdb", paralist);        
+        
         log.info("********************[Update STEP 1.8]********************");
-        log.info("Use MYSQL to update records");
-        preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
-                currentDir + ReadConfig.updateStatisticsSQL);
+        log.info("Inject update sql to database");
+        log.info("Inject update delete.sql");
         paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
-        cu.runCommand("mysql", paralist);
+        paralist.add(currentDir + ReadConfig.sqlDeleteFile);
+        cu.runCommand("mysql", paralist);        
+                
+        log.info("Inject updating insert.sql");
+        if (this.seqFileCount != -1) {
+        	for (int i = 0; i < this.seqFileCount; i++) {
+        		log.info("Start inject at "+i+"of Insert.sql in update");
+        		
+        		paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("mysql", paralist);
 
+                /*
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("gzip", paralist);
+                */
+        	}        		
+        }else {
+        	paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.sqlInsertFile);
+            cu.runCommand("mysql", paralist);        		
+        }	
         return lu;
     }
     
@@ -288,9 +317,11 @@ public class PdbScriptsPipelineRunCommand {
                 paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
                 cu.runCommand("rm", paralist);
 
+                /*
                 paralist = new ArrayList<String>();
                 paralist.add(currentDir + ReadConfig.sqlMutationInsertFile + "." + new Integer(i).toString());
                 cu.runCommand("gzip", paralist);
+                */
             }
         } else {
             parseprocess.parse2sql(false, currentDir, this.seqFileCount, mutationTag);
@@ -743,12 +774,13 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         String currentDir = this.currentDir;
         
+        log.info("Start union queries, it may take time...");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.mutationGenerateSQL);
         paralist.add(currentDir + ReadConfig.mutationResult);
         cu.runCommand("releaseTag", paralist);
-        
-        parseprocess.parseGenerateMutationResultSQL4MutatationUsageTable(currentDir + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage);       
+        log.info("Query Finished, Start generate mutation_inject_usage.sql and injection");
+        parseprocess.parseGenerateMutationResultSQL4MutatationUsageTable(currentDir + ReadConfig.mutationResult, currentDir + ReadConfig.mutationInjectSQLUsage);       
         
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.mutationInjectSQLUsage);
@@ -774,8 +806,10 @@ public class PdbScriptsPipelineRunCommand {
         if (updateTag){
             String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
             // Deserialize
-            try{           
+            try{  
+                log.info("Deserialize "+ filename);
                 mutationHm = (HashMap<String,String>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
+                log.info("Size of "+ mutationHm.size());
             }catch(Exception ex){
                 ex.printStackTrace();
             }            
@@ -1054,7 +1088,7 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[SQL] Rebuild all Mapping INSERT SQL statements into table gpos_allmapping_pdb_entry (Warning: This step takes time)");
         
         //call 12million SNP through inner API, should start G2Smutation-web
-        this.allSqlCount = generateSQLfile.generateAllMappingSQLfileHuge(gpos2proHm);
+        this.allSqlCount = generateSQLfile.generateAllMappingSQLfileHuge(gpos2proHm,currentDir);
         log.info("FileCount"+this.allSqlCount);
         gpos2proHmdb.close();
         
@@ -1105,6 +1139,28 @@ public class PdbScriptsPipelineRunCommand {
 //          paralist = new ArrayList<String>(); paralist.add(ReadConfig.pdbRepo);
 //          cu.runCommand("rm", paralist);
 //         }
+    }
+    
+    /**
+     * Generate release tag
+     * @param preprocess
+     */
+    void generateWeeklyTag(PdbScriptsPipelinePreprocessing preprocess) {
+    	CommandProcessUtil cu = new CommandProcessUtil();
+    	ArrayList<String> paralist = new ArrayList<String>();
+    	log.info("********************[Update STEP 4.1]********************");
+        log.info("Change messages.properties in web module");        
+        paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
+        paralist.add(currentDir + ReadConfig.releaseTagResult);
+        cu.runCommand("releaseTag", paralist);
+
+        log.info("********************[Update STEP 4.2]********************");
+        log.info("Use MYSQL to update records");
+        preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
+                currentDir + ReadConfig.updateStatisticsSQL);
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
+        cu.runCommand("mysql", paralist);
     }
 }
 

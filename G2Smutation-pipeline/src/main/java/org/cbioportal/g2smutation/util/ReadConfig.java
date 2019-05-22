@@ -56,6 +56,8 @@ public class ReadConfig {
     public static String dbHost;
     public static String dbName;
     public static String dbNameScript;
+    public static String updateInitUpdate;
+    public static String updateInitUpdateResult;
     public static String releaseTag;
     public static String releaseTagResult;
     public static String updateStatisticsSQL;
@@ -201,6 +203,8 @@ public class ReadConfig {
             ReadConfig.dbHost = prop.getProperty("db_host").trim();
             ReadConfig.dbName = prop.getProperty("db_name").trim();
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
+            ReadConfig.updateInitUpdate = prop.getProperty("update.initUpdate_script").trim();
+            ReadConfig.updateInitUpdateResult = prop.getProperty("update.initUpdate_result").trim();
             ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
             ReadConfig.updateAllSnpSql = prop.getProperty("update.allSnpMutation.sql").trim();
@@ -1246,6 +1250,21 @@ public class ReadConfig {
     public static void setMutationLocationSQL(String mutationLocationSQL) {
         ReadConfig.mutationLocationSQL = mutationLocationSQL;
     }
-    
+
+	public static String getUpdateInitUpdate() {
+		return updateInitUpdate;
+	}
+
+	public static void setUpdateInitUpdate(String updateInitUpdate) {
+		ReadConfig.updateInitUpdate = updateInitUpdate;
+	}
+
+	public static String getUpdateInitUpdateResult() {
+		return updateInitUpdateResult;
+	}
+
+	public static void setUpdateInitUpdateResult(String updateInitUpdateResult) {
+		ReadConfig.updateInitUpdateResult = updateInitUpdateResult;
+	}    
 
 }

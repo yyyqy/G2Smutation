@@ -76,6 +76,14 @@ public class PdbScriptsPipelineMakeSQL {
 		this.db = db;
 	}
 
+	public int getAlignmentId() {
+		return alignmentId;
+	}
+
+	public void setAlignmentId(int alignmentId) {
+		this.alignmentId = alignmentId;
+	}
+
 	/**
      * 
      * Constructor
@@ -365,6 +373,7 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public int parsexmlMutation(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
         int count = this.alignmentId;
+        log.info("Work on "+count);
         try {
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.g2smutation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
@@ -459,6 +468,7 @@ public class PdbScriptsPipelineMakeSQL {
     }
 
     /**
+     * However, we don't update to 50 now, this is old implementation
      * Used for Update: generate SQL insert text to Table pdb_ensembl_alignment
      * 
      * The only variate in the procedure is alignment limit, which now is set as
@@ -508,31 +518,33 @@ public class PdbScriptsPipelineMakeSQL {
      * @param br
      * @return generated SQL statements
      */
-    public String makeTable_pdb_seq_insert_Update(BlastResult br) {
-        String[] strarrayQ = br.getQseqid().split(";");
-        String pdbNo = br.getSseqid().split("\\s+")[0];
-        String[] strarrayS = pdbNo.split("_");
-        String segStart = br.getSseqid().split("\\s+")[3];
+	public String makeTable_pdb_seq_insert_Update(BlastResult br) {
+		String[] strarrayQ = br.getQseqid().split(";");
+		String pdbNo = br.getSseqid().split("\\s+")[0];
+		String[] strarrayS = pdbNo.split("_");
+		String segStart = br.getSseqid().split("\\s+")[3];
 
-        String str = "call InsertUpdate('" + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2]
-                + "','" + segStart + "','" + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + ","
-                + br.getqStart() + "," + br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + ","
-                + br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() + "','" + br.getPdb_align() + "','"
-                + br.getMidline_align() + "',CURDATE());\n";
+		/*
+		 * Original: make sure get up to 50 results, but we don't need that now, we want
+		 * all 
+		 * 
+		 * String str = "call InsertUpdate('" + pdbNo + "','" + strarrayS[0] + "','"
+		 * + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','" +
+		 * strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," +
+		 * br.getqStart() + "," + br.getqEnd() + ",'" + br.getEvalue() + "'," +
+		 * br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'" +
+		 * br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align()
+		 * + "',CURDATE());\n";
+		 */
 
-        /*
-         * String str =
-         * "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
-         * + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" +
-         * strarrayS[2] + "','" + segStart + "','" + strarrayQ[0] + "'," +
-         * br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," +
-         * br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + ","
-         * + br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() +
-         * "','" + br.getPdb_align() + "','" + br.getMidline_align() +
-         * "',CURDATE());\n";
-         */
-        return str;
-    }
+		String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+				+ pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','"
+				+ strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
+				+ ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
+				+ br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
+
+		return str;
+	}
 
     /**
      * Parse list of String blast results to input SQL statements, time and
@@ -1318,11 +1330,22 @@ public class PdbScriptsPipelineMakeSQL {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
-            for (String pdbName : list) {
-                
-                //Actually, these tables are rebuild every week, so we could directly delete them
-                //Delete mutation related annotation first for their foreign key restrains
-            	//But we have to do it for it will get fail for foreign restrain.
+            // delete for query and delete will cost lots of time, delete here for saving time
+            outputlist.add("SET FOREIGN_KEY_CHECKS = 0;\n" +
+            		"drop table IF EXISTS mutation_usage_table;\n" + 
+            		"drop table IF EXISTS gpos_allmapping_pdb_entry;\n" + 
+            		"drop table IF EXISTS mutation_location_entry;\n" +
+            		"drop table IF EXISTS structure_annotation_entry;\n" +
+            		"SET FOREIGN_KEY_CHECKS = 1;\n");
+            for (String pdbName : list) {               
+            	/*
+            	 * Actually, these tables are rebuild every week, so we could directly delete them
+            	 * Delete mutation related annotation first for their foreign key restrains
+            	 * But we have to do it for it will get fail for foreign restrain.
+            	String str0 = "DELETE FROM mutation_usage_table WHERE PDB_NO like '"
+                        + pdbName + "_%';\n";
+                outputlist.add(str0); 
+            	
                 String str1 = "DELETE FROM gpos_allmapping_pdb_entry WHERE PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str1);              
@@ -1335,6 +1358,7 @@ public class PdbScriptsPipelineMakeSQL {
                 String str3 = "DELETE structure_annotation_entry FROM structure_annotation_entry inner join mutation_entry on structure_annotation_entry.MUTATION_ID=mutation_entry.MUTATION_ID WHERE mutation_entry.PDB_NO like '"
                         + pdbName + "_%';\n";
                 outputlist.add(str3);
+                */
              
                 //Then delete Foreign Key based tables, order is important. Mutation, alignment then PDB
                 //delete from MUTATION_ID
