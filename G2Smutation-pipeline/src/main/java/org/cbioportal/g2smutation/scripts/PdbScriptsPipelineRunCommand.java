@@ -140,15 +140,14 @@ public class PdbScriptsPipelineRunCommand {
 //        updateMutation(preprocess, parseprocess, lu);
 
         /**
-         * Used for update
+         * Used for debug
+         * this.currentDir = ReadConfig.workspace + "20190520/";
+         * ListUpdate lu = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,ReadConfig.delPDB);
          */
-        this.currentDir = ReadConfig.workspace + "20190520/";
-        ListUpdate lu = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,
-         ReadConfig.delPDB);
         
         log.info("********************[Update STEP 3]********************");
         log.info("Update Annotate mutation");
-        generateAnnotation(parseprocess, this.updateTag, lu);
+//        generateAnnotation(parseprocess, this.updateTag, lu);
         
         log.info("********************[Update STEP 4]********************");
         log.info("Weekly update Tag");
@@ -156,7 +155,7 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Update STEP 5]********************");
         log.info("[FileSystem] Clean Up");
-        updateCleanup(lu);
+//        updateCleanup(lu);
     }
     
     /**
@@ -1089,7 +1088,7 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[SQL] Rebuild all Mapping INSERT SQL statements into table gpos_allmapping_pdb_entry (Warning: This step takes time)");
         
         //call 12million SNP through inner API, should start G2Smutation-web
-        this.allSqlCount = generateSQLfile.generateAllMappingSQLfileHuge(gpos2proHm);
+        this.allSqlCount = generateSQLfile.generateAllMappingSQLfileHuge(gpos2proHm,currentDir);
         log.info("FileCount"+this.allSqlCount);
         gpos2proHmdb.close();
         
