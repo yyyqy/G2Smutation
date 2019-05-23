@@ -62,6 +62,7 @@ public class StructureAnnotation {
                 // log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
                 strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],
                         residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+                log.info(residueHm.get(mutationId)+"\t"+strNaccess.length()+"\t"+strNaccess);
                 if (strNaccess != "") {
                     sar.setBuried(strNaccess.substring(86, 87));
                     sar.setAllAtomsABS(strNaccess.substring(16, 22));
