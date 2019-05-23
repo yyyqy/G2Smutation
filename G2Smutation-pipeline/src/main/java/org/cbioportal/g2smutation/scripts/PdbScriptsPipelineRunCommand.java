@@ -103,15 +103,15 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 0]********************");
         log.info("Delete old sql files in the workspace");
-        //cleanupG2S();
+        cleanupG2S();
 
         log.info("********************[Init STEP 1]********************");
         log.info("Initialize G2S service for alignments and residue mapping");
-        //initializeG2S(preprocess, parseprocess);
+        initializeG2S(preprocess, parseprocess);
 
         log.info("********************[Init STEP 2]********************");
         log.info("Find mutation using G2S service");
-        //generateMutation(parseprocess);
+        generateMutation(parseprocess);
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
