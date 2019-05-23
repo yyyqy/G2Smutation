@@ -163,6 +163,7 @@ public class StructureAnnotation {
             }
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
+            log.info("Total Structure mutation is "+outputlist.size());
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -964,6 +965,7 @@ public class StructureAnnotation {
         //save HashSet<String>: pdb as pdbSet.ser
         String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
         try{
+        	log.info("Serialize pdbSet, size is "+pdbSet.size());
             FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(pdbSet));
         }catch(Exception ex){
             ex.printStackTrace();
