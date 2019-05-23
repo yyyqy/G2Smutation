@@ -7,18 +7,17 @@ $(document).ready(function() {
     	    { "orderable": false, "targets": 5},
     	    { "orderable": false, "targets": 6},
     	    { "orderable": false, "targets": 7}, 
-    	    { "orderable": false, "targets": 8}, 
-    	    { "orderable": false, "targets": 9}, 
-    	    { "visible": false, "targets": groupColumn },
+    	    { "visible": false, "targets": 0 },
     	    //18+12+40
-    	    { "width": "25%", "targets": 7 },
-            { "width": "15%", "targets": 8 },
-            { "width": "30%", "targets": 9 }
+    	    //{ "width": "8%", "targets": 6 },
+    	    //{ "width": "40%", "targets": 7 }
+            //{ "width": "30%", "targets": 8 }
+            //{ "width": "30%", "targets": 9 }
         ],
         
         "order": [[ groupColumn, 'asc' ],[2,'asc'],[4,'asc']],
-        "scrollX": true,
-        "scrollY": "600px",
+        "scrollX": false,
+        //"scrollY": "600px",
         "responsive" : false,
         "paging" : false,
         "searching" : false,
