@@ -62,9 +62,12 @@ public class StructureAnnotation {
                 // log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
                 strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],
                         residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
-                log.info(residueHm.get(mutationId)+"\t"+strNaccess.length()+"\t"+strNaccess);
+                //log.info(residueHm.get(mutationId)+"\t"+strNaccess.length()+"\t"+strNaccess);
                 if (strNaccess != "") {
-                    sar.setBuried(strNaccess.substring(86, 87));
+                	//Sovled Bug here, show buried is manually added, it may have different def in different systems, so we use split here
+                	//Get last column. But all the others are not included.
+                	String[] tmpArray = strNaccess.split("\\s+");
+                    sar.setBuried(tmpArray[tmpArray.length-1]);
                     sar.setAllAtomsABS(strNaccess.substring(16, 22));
                     sar.setAllAtomsREL(strNaccess.substring(23, 28));
                     sar.setTotalSideABS(strNaccess.substring(29, 35));
