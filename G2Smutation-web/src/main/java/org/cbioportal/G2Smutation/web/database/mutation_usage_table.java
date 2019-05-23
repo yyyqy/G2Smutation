@@ -9,11 +9,6 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
-/**
- * Model of mutation_usage_table
- * @author Juexin Wang
- *
- */
 @Entity
 @Table(name="mutation_usage_table")
 @SecondaryTable(name="pdb_seq_alignment")
@@ -38,7 +33,7 @@ public class mutation_usage_table {
 	public String seqName;
 	
 	@Column(name = "SEQ_INDEX")
-	public Integer seqIndex;
+	public String seqIndex;
 	
 	@Column(name = "SEQ_RESIDUE")
 	public String seqResidue;
@@ -48,19 +43,16 @@ public class mutation_usage_table {
 	public String pdbNo;
 	
 	@Column(name = "PDB_INDEX")
-	public Integer pdbIndex;
+	public String pdbIndex;
 	
 	@Column(name = "PDB_RESIDUE")
 	public String pdbResidue;
 	
-	//@Column(name = "UPDATE_DATE")
-    //public Integer updateDate;
+	@Column(name = "UPDATE_DATE")
+    public String updateDate;
 	
 
 	// EVALUE、BITSCORE、IDENTITY、IDENTP
-	@Column(name = "SEQ_ALIGN", table="pdb_seq_alignment")
-	public String seqAlign;
-	
 	@Column(name = "EVALUE", table="pdb_seq_alignment")
 	public Integer evalue;
 	
@@ -68,10 +60,13 @@ public class mutation_usage_table {
 	public Double bitscore;
 	
 	@Column(name = "IDENTITY", table="pdb_seq_alignment")
-	public Integer identity;
+	public double identity;
 	
 	@Column(name = "IDENTP", table="pdb_seq_alignment")
 	public double identp;
+	
+	@Column(name = "SEQ_ALIGN", table="pdb_seq_alignment")
+	public String seqAlign;
 	
 	public Integer getevalue() {
         return evalue;
@@ -81,7 +76,7 @@ public class mutation_usage_table {
         return bitscore;
     }
     
-    public Integer getidentity() {
+    public double getidentity() {
         return identity;
     }
     
@@ -93,12 +88,12 @@ public class mutation_usage_table {
         return seqAlign;
     }
     
-    public Integer getalignLength() {
-        return seqAlign.length();
-    }
-
+    // Start
     public mutation_usage_table(){}
     
+    public Integer getalignmentId() {
+        return alignmentId;
+    }
     
     public Integer getmutationId() {
         return mutationId;
@@ -108,6 +103,7 @@ public class mutation_usage_table {
         return mutationNo;
     }
     
+    // SEQ
     public Integer getseqId() {
         return seqId;
     }
@@ -116,7 +112,7 @@ public class mutation_usage_table {
         return seqName;
     }
     
-    public Integer getseqIndex() {
+    public String getseqIndex() {
         return seqIndex;
     }
     
@@ -124,19 +120,20 @@ public class mutation_usage_table {
         return seqResidue;
     }
     
+    // PDB
     public String getpdbNo() {
         return pdbNo;
     }
     
-    public Integer getpdbIndex() {
+    public String getpdbIndex() {
         return pdbIndex;
     }
 
     public String getpdbResidue() {
         return pdbResidue;
     }
-
-    public Integer getalignmentId() {
-        return alignmentId;
+    
+    public String getupdateDate(){
+    	return updateDate;
     }
 }
