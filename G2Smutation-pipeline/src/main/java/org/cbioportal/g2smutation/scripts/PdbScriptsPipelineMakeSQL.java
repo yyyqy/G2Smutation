@@ -1590,7 +1590,6 @@ public class PdbScriptsPipelineMakeSQL {
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
         } catch (Exception ex) {
-            log.error(ex.getMessage());
             ex.printStackTrace();
         }
     }
