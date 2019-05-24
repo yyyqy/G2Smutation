@@ -1577,17 +1577,18 @@ public class PdbScriptsPipelineMakeSQL {
                 // Corner Case:
                 // HSCHR6_MHC_MCF_29989718_29989720
                 String[] strArray = chr_pos.split("_");
-                String chr = strArray[0];
-                for (int i = 1; i < strArray.length - 2; i++) {
-                    chr = chr + strArray[i] + "_";
-                }
+                // in case chr_pos == " "
+                if (strArray.length>1) {
+					String chr = strArray[0];
+					for (int i = 1; i < strArray.length - 2; i++) {
+						chr = chr + strArray[i] + "_";
+					}
 
-                log.info(chr_pos);
-                log.info(strArray.length);
-                String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`MUTATION_NO`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
-                        + mutationId + "','" + mutationNo + "','" + chr_pos + "','" + chr + "','"
-                        + strArray[strArray.length - 2] + "','" + strArray[strArray.length - 1] + "');\n";
-                outputlist.add(str);
+					String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`MUTATION_NO`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
+							+ mutationId + "','" + mutationNo + "','" + chr_pos + "','" + chr + "','"
+							+ strArray[strArray.length - 2] + "','" + strArray[strArray.length - 1] + "');\n";
+					outputlist.add(str);
+                }
 
             }
             outputlist.add("commit;");
