@@ -1582,7 +1582,7 @@ public class PdbScriptsPipelineMakeSQL {
                     chr = chr + strArray[i] + "_";
                 }
 
-                log.info(strArray);
+                log.info(strArray.toString());
                 log.info(strArray.length);
                 String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`MUTATION_NO`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
                         + mutationId + "','" + mutationNo + "','" + chr_pos + "','" + chr + "','"
