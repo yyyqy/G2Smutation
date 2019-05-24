@@ -1559,6 +1559,7 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public void parseGenerateMutationResultSQL4MutationLocationEntry(MutationUsageRecord mUsageRecord,
             String outputFilename) {
+    	log.info("Start writing " + outputFilename);
         HashMap<Integer, String> mutationIdHm = mUsageRecord.getMutationIdHm();
         HashMap<Integer, String> mutationNoIdRHm = mUsageRecord.getMutationNoIdRHm();
         try {
@@ -1590,6 +1591,7 @@ public class PdbScriptsPipelineMakeSQL {
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
         } catch (Exception ex) {
+        	log.error(outputFilename + " has something wrong, please check!");
             ex.printStackTrace();
         }
     }
