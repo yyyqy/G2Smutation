@@ -13,3 +13,4 @@ public interface GenieRepository extends JpaRepository<Genie, Long>{
     public List<Genie> findBychrPos(String chrPos);
 
 }
+

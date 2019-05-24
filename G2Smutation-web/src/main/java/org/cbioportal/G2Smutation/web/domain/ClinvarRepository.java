@@ -12,3 +12,4 @@ public interface ClinvarRepository extends JpaRepository<Clinvar, Long>{
     public List<Clinvar> findByChrPos(String chrPos);
 
 }
+

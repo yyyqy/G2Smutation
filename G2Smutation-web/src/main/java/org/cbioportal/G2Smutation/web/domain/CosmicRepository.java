@@ -1,5 +1,6 @@
 package org.cbioportal.G2Smutation.web.domain;
 
+
 import java.util.List;
 
 import org.cbioportal.G2Smutation.web.models.db.Cosmic;
@@ -12,3 +13,4 @@ public interface CosmicRepository extends JpaRepository<Cosmic, Long>{
     public List<Cosmic> findBychrPos(String chrPos);
 
 }
+

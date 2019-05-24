@@ -12,3 +12,4 @@ public interface DbsnpRepository extends JpaRepository<Dbsnp, Long>{
     public List<Dbsnp> findBychrPos(String chrPos);
 
 }
+

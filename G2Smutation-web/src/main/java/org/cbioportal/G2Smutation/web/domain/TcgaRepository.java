@@ -1,5 +1,6 @@
 package org.cbioportal.G2Smutation.web.domain;
 
+
 import java.util.List;
 
 import org.cbioportal.G2Smutation.web.models.db.Tcga;
@@ -12,3 +13,4 @@ public interface TcgaRepository extends JpaRepository<Tcga, Long>{
     public List<Tcga> findBychrPos(String chrPos);
 
 }
+
