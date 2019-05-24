@@ -15,6 +15,7 @@ import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.cbioportal.g2smutation.util.FTPClientUtil;
 import org.cbioportal.g2smutation.util.PdbSequenceUtil;
 import org.cbioportal.g2smutation.util.ReadConfig;
+import org.cbioportal.g2smutation.util.models.ListUpdate;
 
 /**
  * Preprocessing the input PDB, Ensembl and Uniprot files, both in init and
@@ -474,19 +475,20 @@ public class PdbScriptsPipelinePreprocessing {
      * @param delPDB
      * @return
      */
-    public List<String> prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB) {
+    public ListUpdate prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB) {
         List<String> listOld = new ArrayList<String>();
+        List<String> listNew = new ArrayList<String>();
         FTPClientUtil fcu = new FTPClientUtil();
         try {
             log.info("[PIPELINE] Weekly Update: Create deleted list");
-            FileUtils.forceMkdir(new File(currentDir));
+            //FileUtils.forceMkdir(new File(currentDir));
             String addFileName = currentDir + updateTxt;
             File addFastaFile = new File(addFileName);
             String delFileName = currentDir + delPDB;
             List<String> listAdd = fcu.readFTPfile2List(ReadConfig.updateAdded);
             List<String> listMod = fcu.readFTPfile2List(ReadConfig.updateModified);
             List<String> listObs = fcu.readFTPfile2List(ReadConfig.updateObsolete);
-            List<String> listNew = new ArrayList<String>(listAdd);
+            listNew = new ArrayList<String>(listAdd);
             listNew.addAll(listMod);
             listOld = new ArrayList<String>(listMod);
             listOld.addAll(listObs);
@@ -504,7 +506,11 @@ public class PdbScriptsPipelinePreprocessing {
             log.error("[SHELL] Error in fetching weekly updates: " + ex.getMessage());
             ex.printStackTrace();
         }
-        return listOld;
+        
+        ListUpdate lu = new ListUpdate();
+        lu.setListNew(listNew);
+        lu.setListOld(listOld);
+        return lu;
     }
 
     /**
@@ -586,14 +592,15 @@ public class PdbScriptsPipelinePreprocessing {
             log.info("[Update] Generate releaseTag and statistics for update ...");
             boolean tag = true;
             List<String> contents = FileUtils.readLines(new File(releaseResultFilename));
-            if (contents.size() != 8) {
+            // release tag, now have 20 columns to update
+            if (contents.size() != 40) {
                 tag = false;
             }
 
             String outstr = "SET autocommit = 0;\nstart transaction;\n";
             outstr = outstr
-                    + "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`) VALUES('"
-                    + contents.get(1) + "', '" + contents.get(3) + "', '" + contents.get(5) + "', '" + contents.get(7)
+                    + "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`,`DBSNP_NUM`,`CLINVAR_NUM`,`COSMIC_NUM`,`GENIE_NUM`,`TCGA_NUM`,`DBSNP_MAPPING_NUM`,`CLINVAR_MAPPING_NUM`,`COSMIC_MAPPING_NUM`,`GENIE_MAPPING_NUM`,`TCGA_MAPPING_NUM`,`MUTATION_NO_MAPPING_NUM`,`MUTATION_NO_MAPPING_UNIQUE_NUM`,`MUTATION_NO`,`MUTATION_NO_UNIQUE`,`MUTATION_USAGE_NUM`,`MUTATION_LOCATION_NUM`) VALUES('"
+                    + contents.get(1) + "', '" + contents.get(3) + "', '" + contents.get(5) + "', '" + contents.get(7) + "', '" + contents.get(9) + "', '" + contents.get(11) + "', '" + contents.get(13) + "', '" + contents.get(15) + "', '" + contents.get(17) + "', '" + contents.get(19) + "', '" + contents.get(21) + "', '" + contents.get(23) + "', '" + contents.get(25) + "', '" + contents.get(27) + "', '" + contents.get(29) + "', '" + contents.get(31) + "', '" + contents.get(33) + "', '" + contents.get(35) + "', '" + contents.get(37) + "', '" + contents.get(39)
                     + "');\n";
             outstr = outstr + "commit;\n";
 

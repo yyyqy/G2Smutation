@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.Structure;
@@ -61,8 +62,12 @@ public class StructureAnnotation {
                 // log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
                 strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],
                         residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+                //log.info(residueHm.get(mutationId)+"\t"+strNaccess.length()+"\t"+strNaccess);
                 if (strNaccess != "") {
-                    sar.setBuried(strNaccess.substring(86, 87));
+                	//Sovled Bug here, show buried is manually added, it may have different def in different systems, so we use split here
+                	//Get last column. But all the others are not included.
+                	String[] tmpArray = strNaccess.split("\\s+");
+                    sar.setBuried(tmpArray[tmpArray.length-1]);
                     sar.setAllAtomsABS(strNaccess.substring(16, 22));
                     sar.setAllAtomsREL(strNaccess.substring(23, 28));
                     sar.setTotalSideABS(strNaccess.substring(29, 35));
@@ -121,6 +126,9 @@ public class StructureAnnotation {
                 //TODO will change later
                 getHETInfoPlaceholder(sar);
                 getDomainUrlPlaceholder(sar);
+//                test later
+//                getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+
 //                getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
 //                        residueHm.get(mutationId).split("_")[2]);
 //                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
@@ -153,11 +161,13 @@ public class StructureAnnotation {
             // Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
+            
             for(StructureAnnotationRecord sar:sarList){
                 outputlist.add(makeTable_structureAnnotation_insert(sar));
             }
             outputlist.add("commit;");
             FileUtils.writeLines(new File(outputFilename), outputlist);
+            log.info("Total Structure mutation is "+outputlist.size());
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -323,6 +333,7 @@ public class StructureAnnotation {
                         rl = getLigantRadius(hetGroup.get(i).getPDBName());
                         dis = getDistance(x1, y1, z1, x2, y2, z2, ra, rl);
                         if (dis < 0.50) {
+                        	// Threshold value from: Jianyi Yang, Ambrish Roy, Yang Zhang, BioLiP: a semi-manually curated database for biologically relevant ligand–protein interactions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D1096–D1103, https://doi.org/10.1093/nar/gks966
                             sar.setLigandBindingdirect(1);
                             ligantNames = ligantNames + hetGroup.get(i).getPDBName() + "; ";
                         }
@@ -346,6 +357,7 @@ public class StructureAnnotation {
     }
 
     public double getLigantRadius(String name) {
+    	//information from https://periodictable.com/Properties/A/VanDerWaalsRadius.v.html
         double rl = 0;
         switch (name) {
         case "H":
@@ -456,6 +468,9 @@ public class StructureAnnotation {
         case "K":
             rl = 2.75;
             break;
+        default:
+        	//if no ligand information, choose default 1.40 as C
+        	rl = 1.40;
         }
         return rl;
     }
@@ -911,10 +926,11 @@ public class StructureAnnotation {
      * Using naccess to generate results .rsa
      * 
      * @param mUsageRecord
+     * @param HashSet<String> pdbSet
+     * 
      */
-    public void generateNaccessResults(MutationUsageRecord mUsageRecord) {
+    public void generateNaccessResults(MutationUsageRecord mUsageRecord, HashSet<String> pdbSet) {
         HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
-        HashSet<String> pdbSet = new HashSet<>();
         int count = 0;
         for (int mutationId : residueHm.keySet()) {
             String pdbNo = residueHm.get(mutationId).split("_")[0];
@@ -933,10 +949,10 @@ public class StructureAnnotation {
      * Dealing with .rsa get results.
      * 
      * @param mUsageRecord
+     * @param HashSet<String> pdbSet
      */
-    public void generateNaccessResultsBuried(MutationUsageRecord mUsageRecord) {
+    public void generateNaccessResultsBuried(MutationUsageRecord mUsageRecord, HashSet<String> pdbSet) {
         HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
-        HashSet<String> pdbSet = new HashSet<>();
         int count = 0;
         for (int mutationId : residueHm.keySet()) {
             String pdbNo = residueHm.get(mutationId).split("_")[0];
@@ -948,6 +964,15 @@ public class StructureAnnotation {
                 log.info("Finish " + count + "th mutation in rsa in naccess to showburied");
             }
             count++;
+        }
+        
+        //save HashSet<String>: pdb as pdbSet.ser
+        String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
+        try{
+        	log.info("Serialize pdbSet, size is "+pdbSet.size());
+            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(pdbSet));
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
 
     }
@@ -1020,9 +1045,9 @@ public class StructureAnnotation {
                 if (lines.get(i).split("\\s+")[0].equals("RES")) {
                     // log.info(Float.parseFloat(lines.get(i).split("\\s+")[4]));
                     if (Float.parseFloat(lines.get(i).split("\\s+")[5]) < Float.parseFloat(ReadConfig.relativeRatio)) {
-                        lines.set(i, lines.get(i) + "      1");
+                        lines.set(i, lines.get(i) + "\t1");
                     } else {
-                        lines.set(i, lines.get(i) + "      0");
+                        lines.set(i, lines.get(i) + "\t0");
                     }
                     // if(lines.get(i).split("\\s+")[2].equals("A")) {
                     // sum1 += Float.parseFloat(lines.get(i).split("\\s+")[4]);
@@ -1030,7 +1055,7 @@ public class StructureAnnotation {
                     // }
                 }
                 if (lines.get(i).split("\\s+")[0].equals("REM") && lines.get(i).split("\\s+")[1].equals("ABS")) {
-                    lines.set(i, lines.get(i) + "   IFBURIED");
+                    lines.set(i, lines.get(i) + "\tIFBURIED");
                 } else
                     continue;
             }
@@ -1132,5 +1157,127 @@ public class StructureAnnotation {
             }
         }
     }
-
+    
+    public HashMap<String, List<String>> readCathAllFile() throws IOException{
+    	HashMap<String, List<String>> hm = new HashMap<>();
+		String cathpwd = new String(ReadConfig.workspace + ReadConfig.cathFile);
+		File cathfile = new File(cathpwd);
+		List<String> lines = FileUtils.readLines(cathfile, StandardCharsets.UTF_8.name());
+		for(int i=0; i<lines.size(); i++) {
+			String key = lines.get(i).substring(0, 4);
+			List<String> val = new ArrayList<>();
+			if(!hm.containsKey(key)) {
+				val.add(lines.get(i).substring(4));
+				hm.put(key, val);
+			}
+			else {
+				val = hm.get(key);
+				val.add(lines.get(i).substring(4));
+				hm.put(key, val);
+			}
+		}
+    	return hm;
+    }
+    
+    public HashMap<String, String> readCathNamesFile() throws IOException{
+    	HashMap<String, String> hm = new HashMap<>();
+		String cathNamespwd = new String(ReadConfig.workspace + ReadConfig.cathNamesFile);
+		File cathNamesfile = new File(cathNamespwd);
+		List<String> lines = FileUtils.readLines(cathNamesfile, StandardCharsets.UTF_8.name());
+		for(int i=0; i<lines.size(); i++) {
+			String key = lines.get(i).split(" ", 2)[0];
+			String val = lines.get(i).split(" ", 2)[1];
+			hm.put(key, val);
+		}
+    	return hm;
+    }
+    
+    public void getCathInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) throws Exception{
+    	String cathIds = "";
+        String cathIdentifiers = "";
+        String cathArchitectures = "";
+        String cathClasses = "";
+        String cathHomologys = "";
+        String cathTopologys = "";
+        String cathDomains = "";
+        String cathStarts = "";
+        String cathEnds = "";
+    	HashMap<String, List<String>> cathLines = new HashMap<>();
+    	HashMap<String, String> cathNamesLines = new HashMap<>();
+    	//try {
+    		//log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex);
+    		cathLines = readCathAllFile();
+    		cathNamesLines = readCathNamesFile();
+    		if(cathLines.containsKey(pdbId)) {
+    			for(int i=0; i<cathLines.get(pdbId).size(); i++) {
+    				if(cathLines.get(pdbId).get(i).substring(0, 1).equals(pdbChain)) {
+		    			String cathIdTemp = "";
+		    			String homoTemp = "";
+		    			String mapInfo = cathLines.get(pdbId).get(i).split(" ")[3];
+		    			int sectionLen = mapInfo.split(",").length;
+		    			for(int j=0; j<sectionLen; j++) {
+		    				String startEnd = mapInfo.split(",")[j].split(":")[0];
+		    				int startEndLen = startEnd.split("-").length;
+		    				String start = startEnd.split("-")[startEndLen-2];
+		    				String end = startEnd.split("-")[startEndLen-1];
+		    				String domain = pdbId + cathLines.get(pdbId).get(i).split(" ")[0];
+		    				if(Integer.parseInt(pdbResidueIndex)>=Integer.parseInt(start) && Integer.parseInt(pdbResidueIndex)<=Integer.parseInt(end)) {
+		    					cathIdTemp = cathLines.get(pdbId).get(i).split(" ")[2];
+		    					cathIds = cathIds + cathIdTemp + ";";
+		    					cathStarts = cathStarts + start + ";";
+		    					cathEnds = cathEnds + end + ";";   					
+		    					cathDomains = cathDomains + domain +";";
+		    					break;
+		    				}
+		    			}
+		    			if(!cathIdTemp.equals("")) {
+		    				//log.info(cathIdTemp);
+		    				String str1 = cathIdTemp.split("\\.")[0];
+		    				String str2 = cathIdTemp.split("\\.")[0] + "." + cathIdTemp.split("\\.")[1];
+		    				String str3 = cathIdTemp.split("\\.")[0] + "." + cathIdTemp.split("\\.")[1] + "." + cathIdTemp.split("\\.")[2];
+		    				String str4 = cathIdTemp;
+		    				if(cathNamesLines.containsKey(str1)) {
+		    					cathClasses = cathClasses + cathNamesLines.get(str1) + ";";
+		    				}
+		    				if(cathNamesLines.containsKey(str2)) {
+		    					cathArchitectures = cathArchitectures + cathNamesLines.get(str2) + ";";
+		    				}
+		    				if(cathNamesLines.containsKey(str3)) {
+		    					cathIdentifiers = cathIdentifiers + cathNamesLines.get(str3) + ";";
+		    					cathTopologys = cathTopologys + cathNamesLines.get(str3) + ";";
+		    					homoTemp = cathNamesLines.get(str3);
+		    				}
+		    				if(cathNamesLines.containsKey(str4)) {
+		    					if(!cathNamesLines.get(str4).equals("")) {
+		    						homoTemp = cathNamesLines.get(str4);
+		    					}
+		    					cathHomologys = cathHomologys + homoTemp + ";";
+		    				}
+		    			}
+		    		}
+	    		}
+    		}
+    		if(!cathIds.equals("")) {
+    			cathIds = cathIds.substring(0, cathIds.length()-1);
+    			cathIdentifiers = cathIdentifiers.substring(0, cathIdentifiers.length()-1);
+    			cathArchitectures = cathArchitectures.substring(0, cathArchitectures.length()-1);
+    			cathClasses = cathClasses.substring(0, cathClasses.length()-1);
+    			cathHomologys = cathHomologys.substring(0, cathHomologys.length()-1);
+    			cathTopologys = cathTopologys.substring(0, cathTopologys.length()-1);
+    			cathDomains = cathDomains.substring(0, cathDomains.length()-1);
+    			cathStarts = cathStarts.substring(0, cathStarts.length()-1);
+    			cathEnds = cathEnds.substring(0, cathEnds.length()-1);
+    		}
+    		sar.setCathId(cathIds);
+            sar.setCathIdentifier(cathIdentifiers);
+            sar.setCathArchitecture(cathArchitectures);
+            sar.setCathClass(cathClasses);
+            sar.setCathHomology(cathHomologys);
+            sar.setCathTopology(cathTopologys);
+            sar.setCathDomainStart(cathStarts);
+            sar.setCathDomainEnd(cathEnds);
+            sar.setCathDomainId(cathDomains);
+            //log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex + "+" + cathIds + "+" + cathIdentifiers + "+" + cathArchitectures + "+");
+            //log.info(cathClasses + "+" + cathHomologys + "+" + cathTopologys + "+" + cathStarts + "+" + cathEnds + "+" + cathDomains);
+    }
 }

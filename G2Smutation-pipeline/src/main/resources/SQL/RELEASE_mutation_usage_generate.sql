@@ -1,3 +1,7 @@
+--
+-- database `g2smutation`
+--
+-- Rebuilt in weekly update
 SET FOREIGN_KEY_CHECKS = 0;
 drop table IF EXISTS mutation_usage_table;
 SET FOREIGN_KEY_CHECKS = 1;
@@ -20,3 +24,4 @@ CREATE TABLE `mutation_usage_table` (
   FOREIGN KEY(`ALIGNMENT_ID`) REFERENCES `pdb_seq_alignment` (`ALIGNMENT_ID`)
 );
 SELECT DISTINCT x.*  FROM mutation_entry x JOIN mutation_entry y ON y.MUTATION_NO = x.MUTATION_NO AND y.PDB_INDEX = x.PDB_INDEX AND y.PDB_RESIDUE <> x.PDB_RESIDUE ORDER BY MUTATION_NO;
+

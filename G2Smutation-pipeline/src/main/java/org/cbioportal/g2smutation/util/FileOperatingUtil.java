@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 import org.cbioportal.g2smutation.util.models.MutationUsageRecord;
 import org.cbioportal.g2smutation.util.models.SNPAnnotationType;
@@ -29,20 +30,29 @@ public class FileOperatingUtil {
      * parse mutation result from inputFile and generate MutationUsageRecord
      * 
      * @param inputFilename
-     * @return MutationUsageRecord contains (1)HashMap<String, String>
+     * @param mutationHm <mutation_NO, gpos> // save time for calling API
+     * @return MutationUsageRecord contains 
+     *         (1)HashMap<String, String>
      *         mutationIdHm, key:MUTATION_ID, value: chr_start_end
      *         (2)HashMap<String, List<Integer>> mutationIdRHm, key:chr_pos,
-     *         value: List of mutationId (3)HashMap<Integer, String> residueHm,
+     *         value: List of mutationId
+     *         (3)HashMap<Integer, String> residueHm,
      *         key:MUTATION_ID, value:XXXX_Chain_INDEX
+     *         (4)HashMap<Integer, String> mutationNoIdRHm, key:mutationId,
+     *         value: mutationNo 
      * 
      */
-    public MutationUsageRecord readMutationResult2MutationUsageRecord(String inputFilename) {
+    public MutationUsageRecord readMutationResult2MutationUsageRecord(String inputFilename, HashMap<String, String> mutationHm) {
         MutationUsageRecord mur = new MutationUsageRecord();
         HashMap<String, List<Integer>> genomicCoorHm = new HashMap<>();
-        HashMap<String, String> mutationHm = new HashMap<>();// save time for
-                                                             // calling API
+        
+                
         HashMap<Integer, String> mutationIdHm = new HashMap<>();
         HashMap<String, List<Integer>> mutationIdRHm = new HashMap<>();
+        
+        //Reverse of mutationNoIdHm
+        HashMap<Integer, String> mutationNoIdRHm = new HashMap<>();
+        
         HashMap<Integer, String> residueHm = new HashMap<>();
 
         try {
@@ -74,9 +84,8 @@ public class FileOperatingUtil {
                     // proteinName: ENSP00000404384.1
                     proteinIndex = strArray[4];
                     if (mutationHm.containsKey(mutationNO)) {
+//                    	log.info(mutationNO+"%"+mutationHm.get(mutationNO)+"%"+mutationID+"*");
                         gpos = mutationHm.get(mutationNO);
-                        mutationList = genomicCoorHm.get(gpos);
-                        mutationList.add(mutationID);
                     } else {
                         // Calling GenomeNexus
                         // https://grch37.rest.ensembl.org/map/translation/ENSP00000356671.3/167..167?content-type=application/json
@@ -87,13 +96,18 @@ public class FileOperatingUtil {
                             ex.printStackTrace();
                         }
                         mutationHm.put(mutationNO, gpos); // gpos could be ""
-                        mutationList = new ArrayList<Integer>();
-                        mutationList.add(mutationID);
                     }
+                    if (genomicCoorHm.containsKey(gpos)) {
+                    	mutationList = genomicCoorHm.get(gpos);
+                    }else {
+                    	mutationList = new ArrayList<Integer>();
+                    }                       
+                    mutationList.add(mutationID);
                     mutationIdHm.put(mutationID, gpos); // gpos could be ""
                     genomicCoorHm.put(gpos, mutationList); // mutationList could
                                                            // be ""
-
+                    mutationNoIdRHm.put(mutationID, mutationNO);
+                    
                 } else {
 //                    log.info("Not found ENSP in " + strArray[3]);
                     count++;
@@ -108,6 +122,16 @@ public class FileOperatingUtil {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        
+        //save mutationHm<String,String>: <mutationId,gpos> as mutationHm.ser
+        String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
+        try{
+            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(mutationHm));
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        
         // Construct Reverse HashMap mutationIdRHm for mutationIdHm
         for (Integer mutationId : mutationIdHm.keySet()) {
             String gpos = mutationIdHm.get(mutationId);
@@ -140,6 +164,7 @@ public class FileOperatingUtil {
         mur.setMutationIdHm(mutationIdHm);
         mur.setMutationIdRHm(mutationIdRHm);
         mur.setResidueHm(residueHm);
+        mur.setMutationNoIdRHm(mutationNoIdRHm);
         return mur;
     }
 
@@ -465,7 +490,11 @@ public class FileOperatingUtil {
             for (String gpos : inputHm.keySet()) {
 
                 if (postFlag) {// POST
-                    gposList.add(gpos);
+                	//reduce queries here:
+                	if(!gpos2proHm.containsKey(gpos)){
+                		gposList.add(gpos);
+                		count++;
+                	}                  
                     /*
                      * if (count ==10){//test
                      * uapi.callgpos2ensemblAPIPost(en2SeqHm, gpos2proHm,
@@ -481,13 +510,16 @@ public class FileOperatingUtil {
                     }
 
                 } else {// GET method
-                    Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gpos, false, count);
-                    executor.execute(worker);
+                	//reduce queries here:
+                	if(!gpos2proHm.containsKey(gpos)){
+                		Runnable worker = new CallAPIRunnable(en2SeqHm, gpos2proHm, gpos, false, count);
+                		executor.execute(worker);
+                	}
                     // if (count % 1000 == 0) {
                     // log.info("Deal at " + count + "pos");
                     // }
                 }
-                count++;
+                
             }
             executor.shutdown();
             // Wait until all threads are finish

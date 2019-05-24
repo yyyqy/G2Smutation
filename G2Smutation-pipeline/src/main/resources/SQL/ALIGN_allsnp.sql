@@ -1,6 +1,7 @@
 --
 -- database `g2smutation`
 --
+-- Rebuild in weekly update
 SET FOREIGN_KEY_CHECKS = 0;
 drop table IF EXISTS gpos_allmapping_pdb_entry;
 SET FOREIGN_KEY_CHECKS = 1;

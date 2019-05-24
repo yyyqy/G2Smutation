@@ -56,6 +56,8 @@ public class ReadConfig {
     public static String dbHost;
     public static String dbName;
     public static String dbNameScript;
+    public static String updateInitUpdate;
+    public static String updateInitUpdateResult;
     public static String releaseTag;
     public static String releaseTagResult;
     public static String updateStatisticsSQL;
@@ -99,6 +101,8 @@ public class ReadConfig {
     public static String annotationCosmicSQL;
     public static String annotationGenieSQL;
     public static String annotationTcgaSQL;
+    public static String annotationStrctureSQL;
+    public static String mutationLocationSQL;
     public static String alignFilterDiffT;
     public static String alignFilterDiffP;
     public static String alignFilterRatio;
@@ -118,6 +122,8 @@ public class ReadConfig {
     public static String gnApiAlignInnerGposUrl;
     public static String callThreadsNum;
     public static String gpos2proHmDbFile;
+    public static String mutationHmFile;
+    public static String pdbSetFile;
     public static String saveSpaceTag;
     public static String naccess;
     public static String readLocalPDBinNaccess;
@@ -128,6 +134,10 @@ public class ReadConfig {
     public static String dsspFileSuffix;
     public static String sequenceDomainsUrl;
     public static String structureDomainsUrl;
+    public static String cathFile;
+    public static String cathNamesFile;
+    public static String cathAllSource;
+    public static String cathNamesSource;
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -193,6 +203,8 @@ public class ReadConfig {
             ReadConfig.dbHost = prop.getProperty("db_host").trim();
             ReadConfig.dbName = prop.getProperty("db_name").trim();
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
+            ReadConfig.updateInitUpdate = prop.getProperty("update.initUpdate_script").trim();
+            ReadConfig.updateInitUpdateResult = prop.getProperty("update.initUpdate_result").trim();
             ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
             ReadConfig.updateAllSnpSql = prop.getProperty("update.allSnpMutation.sql").trim();
@@ -238,6 +250,8 @@ public class ReadConfig {
             ReadConfig.annotationCosmicSQL = prop.getProperty("annotation_cosmic_SQL").trim();
             ReadConfig.annotationGenieSQL = prop.getProperty("annotation_genie_SQL").trim();
             ReadConfig.annotationTcgaSQL = prop.getProperty("annotation_tcga_SQL").trim();
+            ReadConfig.annotationStrctureSQL = prop.getProperty("annotation_strcture_SQL").trim();
+            ReadConfig.mutationLocationSQL = prop.getProperty("mutation_location_SQL").trim();
             ReadConfig.alignFilterDiffT = prop.getProperty("align.filter.diffT").trim();
             ReadConfig.alignFilterDiffP = prop.getProperty("align.filter.diffP").trim();
             ReadConfig.alignFilterRatio = prop.getProperty("align.filter.ratio").trim();
@@ -257,6 +271,8 @@ public class ReadConfig {
             ReadConfig.gnApiAlignInnerGposUrl = prop.getProperty("gn.api.align.inner.gpos.url").trim();
             ReadConfig.callThreadsNum = prop.getProperty("call.threads.num").trim();
             ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHmDbFile").trim();
+            ReadConfig.mutationHmFile = prop.getProperty("mutationHmFile").trim();
+            ReadConfig.pdbSetFile = prop.getProperty("pdbSetFile").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
             ReadConfig.naccess = prop.getProperty("naccess").trim();
             ReadConfig.readLocalPDBinNaccess = prop.getProperty("readLocalPDBinNaccess").trim();
@@ -267,6 +283,10 @@ public class ReadConfig {
             ReadConfig.dsspFileSuffix = prop.getProperty("deep_file_suffix").trim();
             ReadConfig.sequenceDomainsUrl = prop.getProperty("sequence.domains.url").trim();
             ReadConfig.structureDomainsUrl = prop.getProperty("structure.domains.url").trim();
+            ReadConfig.cathFile = prop.getProperty("cath.file").trim();
+            ReadConfig.cathNamesFile = prop.getProperty("cath.names.file").trim();
+            ReadConfig.cathAllSource = prop.getProperty("cath.allSource").trim();
+            ReadConfig.cathNamesSource = prop.getProperty("cath.namesSource").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
             ex.printStackTrace();
@@ -1166,5 +1186,85 @@ public class ReadConfig {
     public static void setSqlMutationInsertFile(String sqlMutationInsertFile) {
         ReadConfig.sqlMutationInsertFile = sqlMutationInsertFile;
     }
+
+	public static String getCathFile() {
+		return cathFile;
+	}
+
+	public static void setCathFile(String cathFile) {
+		ReadConfig.cathFile = cathFile;
+	}
+
+	public static String getCathNamesFile() {
+		return cathNamesFile;
+	}
+
+	public static void setCathNamesFile(String cathNamesFile) {
+		ReadConfig.cathNamesFile = cathNamesFile;
+	}
+
+	public static String getCathAllSource() {
+		return cathAllSource;
+	}
+
+	public static void setCathAllSource(String cathAllSource) {
+		ReadConfig.cathAllSource = cathAllSource;
+	}
+
+	public static String getCathNamesSource() {
+		return cathNamesSource;
+	}
+
+	public static void setCathNamesSource(String cathNamesSource) {
+		ReadConfig.cathNamesSource = cathNamesSource;
+	}
+	
+    public static String getMutationHmFile() {
+        return mutationHmFile;
+    }
+
+    public static void setMutationHmFile(String mutationHmFile) {
+        ReadConfig.mutationHmFile = mutationHmFile;
+    }
+
+    public static String getPdbSetFile() {
+        return pdbSetFile;
+    }
+
+    public static void setPdbSetFile(String pdbSetFile) {
+        ReadConfig.pdbSetFile = pdbSetFile;
+    }
+
+    public static String getAnnotationStrctureSQL() {
+        return annotationStrctureSQL;
+    }
+
+    public static void setAnnotationStrctureSQL(String annotationStrctureSQL) {
+        ReadConfig.annotationStrctureSQL = annotationStrctureSQL;
+    }
+
+    public static String getMutationLocationSQL() {
+        return mutationLocationSQL;
+    }
+
+    public static void setMutationLocationSQL(String mutationLocationSQL) {
+        ReadConfig.mutationLocationSQL = mutationLocationSQL;
+    }
+
+	public static String getUpdateInitUpdate() {
+		return updateInitUpdate;
+	}
+
+	public static void setUpdateInitUpdate(String updateInitUpdate) {
+		ReadConfig.updateInitUpdate = updateInitUpdate;
+	}
+
+	public static String getUpdateInitUpdateResult() {
+		return updateInitUpdateResult;
+	}
+
+	public static void setUpdateInitUpdateResult(String updateInitUpdateResult) {
+		ReadConfig.updateInitUpdateResult = updateInitUpdateResult;
+	}    
 
 }

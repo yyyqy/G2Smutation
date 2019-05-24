@@ -30,7 +30,7 @@ import net.sf.json.JSONObject;
  *
  */
 public class PdbScriptsPipelineApiToSQL {
-    final static Logger log = Logger.getLogger(PdbScriptsPipelineMakeSQL.class);
+    final static Logger log = Logger.getLogger(PdbScriptsPipelineApiToSQL.class);
 
     /**
      * Obsolete! Paired with function generateRsSQLfile()
@@ -264,12 +264,14 @@ public class PdbScriptsPipelineApiToSQL {
      * 
      * @param gpos2proHm
      *            <chr_pos,seq_index>
+     * @param currentDir
      * @return
      */
-    public int generateAllMappingSQLfileHuge(Map gpos2proHm) {
+    public int generateAllMappingSQLfileHuge(Map gpos2proHm, String currentDir) {
         List<String> tempLines = new ArrayList<String>();
         int fileCount = 0;
-        String allsqlfilepwd = new String(ReadConfig.workspace + ReadConfig.gposAlignSqlInsertFile + "." + fileCount);
+        
+        String allsqlfilepwd = new String(currentDir + ReadConfig.gposAlignSqlInsertFile + "." + fileCount);
         File rssqlfile = new File(allsqlfilepwd);
         int sql_insert_output_interval = Integer.parseInt(ReadConfig.sqlInsertOutputInterval);
         List<String> outputLines = new ArrayList<String>();
@@ -314,7 +316,7 @@ public class PdbScriptsPipelineApiToSQL {
                     }
                     log.info("Finished generating the " + fileCount + "th SQL file");
                     fileCount++;
-                    allsqlfilepwd = ReadConfig.workspace + ReadConfig.gposAlignSqlInsertFile + "." + fileCount;
+                    allsqlfilepwd = currentDir + ReadConfig.gposAlignSqlInsertFile + "." + fileCount;
                     rssqlfile = new File(allsqlfilepwd);
                     outputLines = new ArrayList<String>();
                     outputLines.add("SET autocommit = 0;");
