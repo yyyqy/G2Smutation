@@ -1,6 +1,6 @@
 package org.cbioportal.G2Smutation.web.domain;
 
-import org.cbioportal.G2Smutation.web.database.mutation_usage_table;
+import org.cbioportal.G2Smutation.web.models.db.mutation_usage_table;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.List;

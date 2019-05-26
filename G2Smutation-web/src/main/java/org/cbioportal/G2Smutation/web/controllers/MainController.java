@@ -1,6 +1,5 @@
 package org.cbioportal.G2Smutation.web.controllers;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,23 +12,21 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cbioportal.G2Smutation.scripts.PdbScriptsPipelineRunCommand;
-import org.cbioportal.G2Smutation.web.database.mutation_usage_table;
-import org.cbioportal.G2Smutation.web.database.rs_mutation_entry;
-import org.cbioportal.G2Smutation.web.database.rs_mutation_entry_Initia;
-import org.cbioportal.G2Smutation.web.database.pdb_seq_alignment;
-
-import org.cbioportal.G2Smutation.web.database.structure_annotation_entry;
-import org.cbioportal.G2Smutation.web.database.clinvar_entry;
-import org.cbioportal.G2Smutation.web.database.cosmic_entry;
-import org.cbioportal.G2Smutation.web.database.dbsnp_entry;
-import org.cbioportal.G2Smutation.web.database.genie_entry;
-import org.cbioportal.G2Smutation.web.database.tcga_entry;
-
 import org.cbioportal.G2Smutation.web.domain.*;
 import org.cbioportal.G2Smutation.web.domain.StatisticsRepository;
 import org.cbioportal.G2Smutation.web.models.InputAlignment;
 import org.cbioportal.G2Smutation.web.models.InputSequence;
 import org.cbioportal.G2Smutation.web.models.Statistics;
+import org.cbioportal.G2Smutation.web.models.db.Clinvar;
+import org.cbioportal.G2Smutation.web.models.db.Cosmic;
+import org.cbioportal.G2Smutation.web.models.db.Dbsnp;
+import org.cbioportal.G2Smutation.web.models.db.Genie;
+import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
+import org.cbioportal.G2Smutation.web.models.db.Tcga;
+import org.cbioportal.G2Smutation.web.models.db.mutation_usage_table;
+import org.cbioportal.G2Smutation.web.models.db.pdb_seq_alignment;
+import org.cbioportal.G2Smutation.web.models.db.rs_mutation_entry;
+import org.cbioportal.G2Smutation.web.models.db.rs_mutation_entry_Initia;
 import org.cbioportal.G2Smutation.web.models.InputResidue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -748,7 +745,7 @@ public class MainController {
     @RequestMapping(value = "/StructurePage",method = RequestMethod.GET)
     public ModelAndView getStructurePage(Model model, HttpServletRequest request){
     	String MutationId = request.getParameter("MutationId");
-        List<structure_annotation_entry> structuresdetails = structureRepository.findBymutationId(Integer.parseInt(MutationId));
+        List<StructureAnnotation> structuresdetails = structureRepository.findBymutationId(Integer.parseInt(MutationId));
         model.addAttribute("structures", structuresdetails);
         return new ModelAndView("structure");
     }
@@ -757,7 +754,7 @@ public class MainController {
     @RequestMapping(value = "/ClinvarPage",method = RequestMethod.GET)
     public ModelAndView getclinvarPage(Model model, HttpServletRequest request){
     	String MutationId = request.getParameter("MutationId");
-        List<clinvar_entry> clinvarsdetails = clinvarRepository.findBymutationId(Integer.parseInt(MutationId));
+        List<Clinvar> clinvarsdetails = clinvarRepository.findByMutationId(Integer.parseInt(MutationId));
         model.addAttribute("clinvars", clinvarsdetails);
         return new ModelAndView("clinvar");
     }
@@ -766,7 +763,7 @@ public class MainController {
     @RequestMapping(value = "/CosmicPage",method = RequestMethod.GET)
     public ModelAndView getcosmicPage(Model model, HttpServletRequest request){
     	String MutationId = request.getParameter("MutationId");
-        List<cosmic_entry> cosmicsdetails = cosmicRepository.findBymutationId(Integer.parseInt(MutationId));
+        List<Cosmic> cosmicsdetails = cosmicRepository.findByMutationId(Integer.parseInt(MutationId));
         model.addAttribute("cosmics", cosmicsdetails);
         return new ModelAndView("cosmic");
     }
@@ -775,7 +772,7 @@ public class MainController {
     @RequestMapping(value = "/DbsnpPage",method = RequestMethod.GET)
     public ModelAndView getDbsnpPage(Model model, HttpServletRequest request){
     	String MutationId = request.getParameter("MutationId");
-        List<dbsnp_entry> dbsnpdetails = dbsnpRepository.findBymutationId(Integer.parseInt(MutationId));
+        List<Dbsnp> dbsnpdetails = dbsnpRepository.findByMutationId(Integer.parseInt(MutationId));
         model.addAttribute("dbsnps", dbsnpdetails);
         return new ModelAndView("dbsnp");
     }
@@ -784,7 +781,7 @@ public class MainController {
     @RequestMapping(value = "/GeniePage",method = RequestMethod.GET)
     public ModelAndView getGeniePage(Model model, HttpServletRequest request){
     	String MutationId = request.getParameter("MutationId");
-        List<genie_entry> geniedetails = genieRepository.findBymutationId(Integer.parseInt(MutationId));
+        List<Genie> geniedetails = genieRepository.findByMutationId(Integer.parseInt(MutationId));
         model.addAttribute("genies", geniedetails);
         return new ModelAndView("genie");
     }
@@ -793,7 +790,7 @@ public class MainController {
     @RequestMapping(value = "/TcgaPage",method = RequestMethod.GET)
     public ModelAndView getTcgaPage(Model model, HttpServletRequest request){
     	String MutationId = request.getParameter("MutationId");
-        List<tcga_entry> tcgadetails = tcgaRepository.findBymutationId(Integer.parseInt(MutationId));
+        List<Tcga> tcgadetails = tcgaRepository.findByMutationId(Integer.parseInt(MutationId));
         model.addAttribute("tcgas", tcgadetails);
         return new ModelAndView("tcga");
     }

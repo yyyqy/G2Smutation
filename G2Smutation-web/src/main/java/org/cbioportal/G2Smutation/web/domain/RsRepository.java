@@ -1,7 +1,8 @@
 package org.cbioportal.G2Smutation.web.domain;
 
 import java.util.List;
-import org.cbioportal.G2Smutation.web.database.rs_mutation_entry;
+
+import org.cbioportal.G2Smutation.web.models.db.rs_mutation_entry;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RsRepository extends JpaRepository<rs_mutation_entry, Integer> {

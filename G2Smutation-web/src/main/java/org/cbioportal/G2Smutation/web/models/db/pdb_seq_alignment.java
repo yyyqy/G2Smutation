@@ -1,4 +1,4 @@
-package org.cbioportal.G2Smutation.web.database;
+package org.cbioportal.G2Smutation.web.models.db;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,7 +8,11 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Column;
 
-
+/**
+ * Under doubt?
+ * @author wangjue
+ *
+ */
 @Entity
 //@Table(name="pdb_seq_alignment")
 //@SecondaryTable(name="mutation_usage_table")

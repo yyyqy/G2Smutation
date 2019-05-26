@@ -1,37 +1,40 @@
-package org.cbioportal.G2Smutation.web.database;
+package org.cbioportal.G2Smutation.web.models.db;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
-//TODO: what's the differnce between this and rs_mutation_entry_Initia.java
+/**
+ * 
+ * @author Jingxuan
+ *
+ */
+
+//TODO: what's the differnce between this and rs_mutation_entry.java
 //TODO: need refine
 @Entity
 @Table(name="rs_mutation_entry")
-//@SecondaryTable(name="mutation_usage_table")
-//This class is for rs.html Search Page
-public class rs_mutation_entry {
-	
+// This class is for rs.html Start Page
+public class rs_mutation_entry_Initia{
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "ID")
-    public Integer rsId;
+    private Integer rsId;
 	
 	@Column(name = "ALIGNMENT_ID")
     public Integer alignmentId;
 	
 	@Column(name = "RS_SNP_ID")
-    public Integer rsSnpId;
+    private Integer rsSnpId;
 	
 	@Column(name = "SEQ_ID")
 	public Integer seqId;
 	
 	@Column(name = "SEQ_INDEX")
-	public Integer seqIndex;
+	public String seqIndex;
 	
 	@Column(name = "SEQ_RESIDUE")
 	public String seqResidue;
@@ -44,26 +47,22 @@ public class rs_mutation_entry {
 	
 	@Column(name = "PDB_RESIDUE")
 	public String pdbResidue;
-	
-	//@Column(name = "SEQ_NAME", table="mutation_usage_table")
-	//public String seqName;
 
+    public rs_mutation_entry_Initia(){}
 
-    public rs_mutation_entry(){}
-
-    public Integer getrsId() {
+    public Integer getRsId() {
         return rsId;
     }
     
-    public Integer getrsSnpId() {
+    public Integer getRsSnpId() {
         return rsSnpId;
     }
     
-    public Integer getseqId() {
+    public Integer getSeqId() {
         return seqId;
     }
     
-    public Integer getseqIndex() {
+    public String getseqIndex() {
         return seqIndex;
     }
     
@@ -86,10 +85,4 @@ public class rs_mutation_entry {
     public Integer getalignmentId() {
         return alignmentId;
     }
-    
-    /*
-    public String getseqName() {
-        return seqName;
-    }
-    */
 }
