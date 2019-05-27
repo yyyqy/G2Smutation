@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Timer;
 
 import org.apache.log4j.Logger;
+import org.cbioportal.g2smutation.statistics.PdbScriptsPipelineRunCommandStatistics;
 import org.cbioportal.g2smutation.util.*;
 
 /**
@@ -82,8 +83,8 @@ public class PdbScriptsPipelineStarter {
             // hidden commands for inner usage;
             // Used to generate summaries of different thresholds
             log.info("[Pipeline] Run Statistics");
-            app = new PdbScriptsPipelineRunCommand();
-            app.runStatistics();
+            PdbScriptsPipelineRunCommandStatistics appStatistics = new PdbScriptsPipelineRunCommandStatistics();
+            appStatistics.runStatistics();
             break;
         default:
             System.out.println("The argument should be " + INITIALIZE_DATABASE_COMMAND + ", " + WEEKLY_UPDATE_COMMAND

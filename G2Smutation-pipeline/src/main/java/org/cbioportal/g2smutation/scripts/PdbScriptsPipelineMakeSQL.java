@@ -109,7 +109,7 @@ public class PdbScriptsPipelineMakeSQL {
      * 
      * @param app
      */
-    PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, int testcase) {
+    public PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, int testcase) {
         this.db = app.getDb();
         this.matches = app.getMatches();
         this.seqFileCount = app.getSeqFileCount();
