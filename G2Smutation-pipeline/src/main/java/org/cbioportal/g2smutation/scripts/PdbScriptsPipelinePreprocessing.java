@@ -15,6 +15,7 @@ import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.cbioportal.g2smutation.util.FTPClientUtil;
 import org.cbioportal.g2smutation.util.PdbSequenceUtil;
 import org.cbioportal.g2smutation.util.ReadConfig;
+import org.cbioportal.g2smutation.util.models.AminoAcidType;
 import org.cbioportal.g2smutation.util.models.ListUpdate;
 
 /**
@@ -559,6 +560,7 @@ public class PdbScriptsPipelinePreprocessing {
 
     /**
      * Obsolete, use Thymeleaf, but does not start automatically
+     * Still need test
      * 
      * @param releaseResultFilename
      * @param propertyFilename
@@ -587,35 +589,60 @@ public class PdbScriptsPipelinePreprocessing {
      * log.error(ex.getMessage()); ex.printStackTrace(); } }
      */
 
-    public void releasTagUpdateSQL(String releaseResultFilename, String sqlFilename) {
-        try {
-            log.info("[Update] Generate releaseTag and statistics for update ...");
-            boolean tag = true;
-            List<String> contents = FileUtils.readLines(new File(releaseResultFilename));
-            // release tag, now have 20 columns to update
-            if (contents.size() != 40) {
-                tag = false;
-            }
+	public void releasTagUpdateSQL(String releaseResultFilename, String sqlFilename) {
+		try {
+			log.info("[Update] Generate releaseTag and statistics for update ...");
+			boolean tag = true;
+			List<String> contents = FileUtils.readLines(new File(releaseResultFilename));
+			// release tag, now have 20 columns to update
+			// Then have more in update heatmap of transition matrix: 19*(19+1)/2=190
+			// Total 210 lines
+			if (contents.size() != 420) {
+				tag = false;
+			}
+			
+			int totalAArecords = AminoAcidType.values().length*(AminoAcidType.values().length-1)/2;
+			List<String> colList = new ArrayList<>();
+			
+			for (int i = 0; i<totalAArecords; i++) {
+				for (int j = i+1; j< totalAArecords; j++) {
+					colList.add(AminoAcidType.values()[i]+"2"+AminoAcidType.values()[j]);
+				}
+			}			
 
-            String outstr = "SET autocommit = 0;\nstart transaction;\n";
-            outstr = outstr
-                    + "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`,`DBSNP_NUM`,`CLINVAR_NUM`,`COSMIC_NUM`,`GENIE_NUM`,`TCGA_NUM`,`DBSNP_MAPPING_NUM`,`CLINVAR_MAPPING_NUM`,`COSMIC_MAPPING_NUM`,`GENIE_MAPPING_NUM`,`TCGA_MAPPING_NUM`,`MUTATION_NO_MAPPING_NUM`,`MUTATION_NO_MAPPING_UNIQUE_NUM`,`MUTATION_NO`,`MUTATION_NO_UNIQUE`,`MUTATION_USAGE_NUM`,`MUTATION_LOCATION_NUM`) VALUES('"
-                    + contents.get(1) + "', '" + contents.get(3) + "', '" + contents.get(5) + "', '" + contents.get(7) + "', '" + contents.get(9) + "', '" + contents.get(11) + "', '" + contents.get(13) + "', '" + contents.get(15) + "', '" + contents.get(17) + "', '" + contents.get(19) + "', '" + contents.get(21) + "', '" + contents.get(23) + "', '" + contents.get(25) + "', '" + contents.get(27) + "', '" + contents.get(29) + "', '" + contents.get(31) + "', '" + contents.get(33) + "', '" + contents.get(35) + "', '" + contents.get(37) + "', '" + contents.get(39)
-                    + "');\n";
-            outstr = outstr + "commit;\n";
+			String outstr = "SET autocommit = 0;\nstart transaction;\n";
+			outstr = outstr
+					+ "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`,`DBSNP_NUM`,`CLINVAR_NUM`,`COSMIC_NUM`,`GENIE_NUM`,`TCGA_NUM`,`DBSNP_MAPPING_NUM`,`CLINVAR_MAPPING_NUM`,`COSMIC_MAPPING_NUM`,`GENIE_MAPPING_NUM`,`TCGA_MAPPING_NUM`,`MUTATION_NO_MAPPING_NUM`,`MUTATION_NO_MAPPING_UNIQUE_NUM`,`MUTATION_NO`,`MUTATION_NO_UNIQUE`,`MUTATION_USAGE_NUM`,`MUTATION_LOCATION_NUM`";
+			for (String col: colList) {
+				outstr = outstr + ",`" + col + "`";
+			}					
+			outstr = outstr	+ ") VALUES('"
+					+ contents.get(1) + "', '" + contents.get(3) + "', '" + contents.get(5) + "', '" + contents.get(7)
+					+ "', '" + contents.get(9) + "', '" + contents.get(11) + "', '" + contents.get(13) + "', '"
+					+ contents.get(15) + "', '" + contents.get(17) + "', '" + contents.get(19) + "', '"
+					+ contents.get(21) + "', '" + contents.get(23) + "', '" + contents.get(25) + "', '"
+					+ contents.get(27) + "', '" + contents.get(29) + "', '" + contents.get(31) + "', '"
+					+ contents.get(33) + "', '" + contents.get(35) + "', '" + contents.get(37) + "', '"
+					+ contents.get(39) + "'";
+			
+			for (int i = 0; i<colList.size(); i++) {
+				outstr = outstr + ", '" + contents.get(i+41) + "'";
+			}
 
-            FileUtils.writeStringToFile(new File(sqlFilename), outstr);
+			outstr = outstr + ");\ncommit;\n";
 
-            if (!tag) {
-                log.error("[Update] Update Error: Could not Successfully generate releaseTag from "
-                        + releaseResultFilename + " to " + sqlFilename + ", Please Check");
-            }
+			FileUtils.writeStringToFile(new File(sqlFilename), outstr);
 
-        } catch (Exception ex) {
-            log.error("[Update] Update Error: Could not Successfully generate releaseTag from " + releaseResultFilename
-                    + " to " + sqlFilename + ", Please Check");
-            log.error(ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
+			if (!tag) {
+				log.error("[Update] Update Error: Could not Successfully generate releaseTag from "
+						+ releaseResultFilename + " to " + sqlFilename + ", Please Check");
+			}
+
+		} catch (Exception ex) {
+			log.error("[Update] Update Error: Could not Successfully generate releaseTag from " + releaseResultFilename
+					+ " to " + sqlFilename + ", Please Check");
+			log.error(ex.getMessage());
+			ex.printStackTrace();
+		}
+	}
 }
