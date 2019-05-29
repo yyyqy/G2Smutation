@@ -125,16 +125,16 @@ public class StructureAnnotation {
 				}
 				
 				// Use placeholder now
-//				getHETInfoPlaceholder(sar);
-//				getDomainUrlPlaceholder(sar);
-				getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-						residueHm.get(mutationId).split("_")[2]);
+				getHETInfoPlaceholder(sar);
+				getDomainUrlPlaceholder(sar);
+//				getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+//						residueHm.get(mutationId).split("_")[2]);
 
 //				// Start test cath, directly download cath resources
-//				getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-//						residueHm.get(mutationId).split("_")[2]);
-                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-                        residueHm.get(mutationId).split("_")[2]);
+				getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+						residueHm.get(mutationId).split("_")[2]);
+//                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+//                        residueHm.get(mutationId).split("_")[2]);
 
 				sarList.add(sar);
 				if (count % 10000 == 0) {
