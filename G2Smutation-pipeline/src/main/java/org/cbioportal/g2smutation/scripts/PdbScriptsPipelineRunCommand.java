@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import org.cbioportal.g2smutation.util.blast.BlastDataBase;
 import org.cbioportal.g2smutation.util.models.ListUpdate;
 import org.cbioportal.g2smutation.util.models.MutationUsageRecord;
 import org.cbioportal.g2smutation.util.models.SNPAnnotationType;
+import org.cbioportal.g2smutation.util.models.StructureAnnotationRecord;
 
 /**
  * Main function from entrance of G2Smutation pipeline
@@ -802,16 +804,24 @@ public class PdbScriptsPipelineRunCommand {
         
         log.info("[STRUCTURE] Start running naccess");
         HashSet<String> pdbSet = new HashSet<>();
+        HashMap<String, StructureAnnotationRecord> structureAnnoHm = new HashMap<>();
         
         if(!updateTag){
         	sanno.generateNaccessResults(mUsageRecord, new HashSet<>());
-        	log.info("[STRUCTURE] Start processing naccess rsa results");
+        	log.info("[STRUCTURE] Start processing naccess rsa results from scratch");
         	sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>());
+        	
+        	log.info("[STRUCTURE] naccess complete and start parsing from scratch"); 
+            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, new HashMap<String, StructureAnnotationRecord >());       
+            
         }else{
-        	String filename = ReadConfig.workspace + ReadConfig.pdbSetFile;
-            // Deserialize
+        	String pdbSetFilename = ReadConfig.workspace + ReadConfig.pdbSetFile;
+        	String structureAnnoHmFilename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
+            
+        	// Deserialize
             try{           
-                pdbSet = (HashSet<String>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(filename)));
+                pdbSet = (HashSet<String>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(pdbSetFilename)));
+                structureAnnoHm = (HashMap<String, StructureAnnotationRecord>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(structureAnnoHmFilename)));
             }catch(Exception ex){
                 ex.printStackTrace();
             }
@@ -823,12 +833,27 @@ public class PdbScriptsPipelineRunCommand {
                 }                
             }
         	sanno.generateNaccessResults(mUsageRecord, pdbSet);
-        	log.info("[STRUCTURE] Start processing naccess rsa results");
+        	log.info("[STRUCTURE] Start processing naccess rsa results in update");
         	sanno.generateNaccessResultsBuried(mUsageRecord, pdbSet);
+        	
+        	//update structure annotation
+        	HashSet<String> pdbNewSet = new HashSet<>();
+        	for(String pdb:listNew){
+        		pdbNewSet.add(pdb);
+        	}
+        	Iterator<Map.Entry<String, StructureAnnotationRecord>> iter = structureAnnoHm.entrySet().iterator();
+    		while (iter.hasNext()) {
+    		    Map.Entry<String, StructureAnnotationRecord> entry = iter.next();
+    		    if(pdbNewSet.contains(entry.getKey().toString().split("_")[0])){
+    		        iter.remove();
+    		    }
+    		}
+    		
+    		log.info("[STRUCTURE] naccess complete and start parsing in update"); 
+            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);       
+                    	
         }                      
         
-        log.info("[STRUCTURE] naccess complete and start parsing"); 
-        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,currentDir + ReadConfig.mutationInjectSQLStructure);       
         
         log.info("[STRUCTURE] Dump mutation_inject_structure.sql to structure_annotation_entry");
         //rebuild table structure_annotation_entry

@@ -604,8 +604,8 @@ public class PdbScriptsPipelinePreprocessing {
 			int totalAArecords = AminoAcidType.values().length*(AminoAcidType.values().length-1)/2;
 			List<String> colList = new ArrayList<>();
 			
-			for (int i = 0; i<totalAArecords; i++) {
-				for (int j = i+1; j< totalAArecords; j++) {
+			for (int i = 0; i<AminoAcidType.values().length; i++) {
+				for (int j = i+1; j< AminoAcidType.values().length; j++) {
 					colList.add(AminoAcidType.values()[i]+"2"+AminoAcidType.values()[j]);
 				}
 			}			
@@ -625,7 +625,7 @@ public class PdbScriptsPipelinePreprocessing {
 					+ contents.get(33) + "', '" + contents.get(35) + "', '" + contents.get(37) + "', '"
 					+ contents.get(39) + "'";
 			
-			for (int i = 0; i<colList.size(); i++) {
+			for (int i = 0; i<colList.size()*2; i=i+2) {
 				outstr = outstr + ", '" + contents.get(i+41) + "'";
 			}
 
@@ -641,7 +641,6 @@ public class PdbScriptsPipelinePreprocessing {
 		} catch (Exception ex) {
 			log.error("[Update] Update Error: Could not Successfully generate releaseTag from " + releaseResultFilename
 					+ " to " + sqlFilename + ", Please Check");
-			log.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}

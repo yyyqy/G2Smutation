@@ -41,9 +41,11 @@ public class StructureAnnotation {
      * 
      * @param MutationUsageRecord
      * @param outputFilename
+     * @param structureAnnoHm<pdb_chain_index, information>
+     * 
      */
 	public void parseGenerateMutationResultSQL4StructureAnnotationEntry(MutationUsageRecord mUsageRecord,
-			String outputFilename) {
+			String outputFilename, HashMap<String, StructureAnnotationRecord> structureAnnoHm) {
 		HashMap<Integer, String> mutationIdHm = mUsageRecord.getMutationIdHm();
 		HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
 		try {
@@ -126,15 +128,15 @@ public class StructureAnnotation {
 				
 				// Use placeholder now
 				getHETInfoPlaceholder(sar);
-				getDomainUrlPlaceholder(sar);
+//				getDomainUrlPlaceholder(sar);
 //				getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
 //						residueHm.get(mutationId).split("_")[2]);
 
 //				// Start test cath, directly download cath resources
-				getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-						residueHm.get(mutationId).split("_")[2]);
-//                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-//                        residueHm.get(mutationId).split("_")[2]);
+//				getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+//						residueHm.get(mutationId).split("_")[2]);
+                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+                        residueHm.get(mutationId).split("_")[2]);
 
 				sarList.add(sar);
 				if (count % 10000 == 0) {
@@ -529,6 +531,15 @@ public class StructureAnnotation {
         
     }
     
+    /**
+     * Get domains URL using hashmap
+     * 
+     * @param sar
+     * @param pdbId
+     * @param pdbChain
+     * @param pdbResidueIndex
+     * @throws Exception
+     */
     public void getDomainsUrl(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex)
             throws Exception {
         // get pfam and interpro info from sequence_domains

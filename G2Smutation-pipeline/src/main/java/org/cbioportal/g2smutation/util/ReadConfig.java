@@ -124,6 +124,7 @@ public class ReadConfig {
     public static String gpos2proHmDbFile;
     public static String mutationHmFile;
     public static String pdbSetFile;
+    public static String structureAnnoHmFile;
     public static String saveSpaceTag;
     public static String naccess;
     public static String readLocalPDBinNaccess;
@@ -273,6 +274,7 @@ public class ReadConfig {
             ReadConfig.gpos2proHmDbFile = prop.getProperty("gpos2proHmDbFile").trim();
             ReadConfig.mutationHmFile = prop.getProperty("mutationHmFile").trim();
             ReadConfig.pdbSetFile = prop.getProperty("pdbSetFile").trim();
+            ReadConfig.structureAnnoHmFile = prop.getProperty("structureAnnoHmFile").trim();
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
             ReadConfig.naccess = prop.getProperty("naccess").trim();
             ReadConfig.readLocalPDBinNaccess = prop.getProperty("readLocalPDBinNaccess").trim();
@@ -1265,6 +1267,15 @@ public class ReadConfig {
 
 	public static void setUpdateInitUpdateResult(String updateInitUpdateResult) {
 		ReadConfig.updateInitUpdateResult = updateInitUpdateResult;
-	}    
+	}
+
+	public static String getStructureAnnoHmFile() {
+		return structureAnnoHmFile;
+	}
+
+	public static void setStructureAnnoHmFile(String structureAnnoHmFile) {
+		ReadConfig.structureAnnoHmFile = structureAnnoHmFile;
+	}
+	
 
 }
