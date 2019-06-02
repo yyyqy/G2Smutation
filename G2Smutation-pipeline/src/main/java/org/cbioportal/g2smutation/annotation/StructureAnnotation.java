@@ -56,95 +56,115 @@ public class StructureAnnotation {
 
 			int count = 0;
 			for (int mutationId : mutationIdHm.keySet()) {
+				String annoKey = residueHm.get(mutationId);
 				StructureAnnotationRecord sar = new StructureAnnotationRecord();
-				sar.setChrPos(mutationIdHm.get(mutationId));
-				sar.setMutationId(mutationId);
-				sar.setPdbNo(residueHm.get(mutationId));// ?
-				sar.setPdbResidueIndex(Integer.parseInt(residueHm.get(mutationId).split("_")[2]));
-				// log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
-				strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],
-						residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
-				// log.info(residueHm.get(mutationId)+"\t"+strNaccess.length()+"\t"+strNaccess);
-				if (strNaccess != "") {
-					// Sovled Bug here, show buried is manually added, it may have different def in
-					// different systems, so we use split here
-					// Get last column. But all the others are not included.
-					String[] tmpArray = strNaccess.split("\\s+");
-					sar.setBuried(tmpArray[tmpArray.length - 1]);
-					sar.setAllAtomsABS(strNaccess.substring(16, 22));
-					sar.setAllAtomsREL(strNaccess.substring(23, 28));
-					sar.setTotalSideABS(strNaccess.substring(29, 35));
-					sar.setTotalSideREL(strNaccess.substring(36, 41));
-					sar.setMainChainABS(strNaccess.substring(42, 48));
-					sar.setMainChainREL(strNaccess.substring(49, 54));
-					sar.setNonPolarABS(strNaccess.substring(55, 61));
-					sar.setNonPolarREL(strNaccess.substring(62, 67));
-					sar.setAllPolarABS(strNaccess.substring(68, 74));
-					sar.setAllPolarREL(strNaccess.substring(75, 80));
-				} else {
-					sar.setBuried("");
-					sar.setAllAtomsABS("");
-					sar.setAllAtomsREL("");
-					sar.setTotalSideABS("");
-					sar.setTotalSideREL("");
-					sar.setMainChainABS("");
-					sar.setMainChainREL("");
-					sar.setNonPolarABS("");
-					sar.setNonPolarREL("");
-					sar.setAllPolarABS("");
-					sar.setAllPolarREL("");
-				}
-				strDSSP = getDSSPInfo(residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-						residueHm.get(mutationId).split("_")[2]);
-				if (strDSSP != "") {
-					sar.setPdbResidueName(strDSSP.substring(13, 14));
-					sar.setSecStructure(strDSSP.substring(16, 17));
-					sar.setThreeTurnHelix(strDSSP.substring(18, 19));
-					sar.setFourTurnHelix(strDSSP.substring(19, 20));
-					sar.setFiveTurnHelix(strDSSP.substring(20, 21));
-					sar.setGeometricalBend(strDSSP.substring(21, 22));
-					sar.setChirality(strDSSP.substring(22, 23));
-					sar.setBetaBridgeLabela(strDSSP.substring(23, 24));
-					sar.setBetaBridgeLabelb(strDSSP.substring(24, 25));
-					sar.setBpa(strDSSP.substring(26, 29));
-					sar.setBpb(strDSSP.substring(30, 33));
-					sar.setBetaSheetLabel(strDSSP.substring(33, 34));
-					sar.setAcc(strDSSP.substring(35, 38));
-				} else {
-					sar.setPdbResidueName("");
-					sar.setSecStructure("");
-					sar.setThreeTurnHelix("");
-					sar.setFourTurnHelix("");
-					sar.setFiveTurnHelix("");
-					sar.setGeometricalBend("");
-					sar.setChirality("");
-					sar.setBetaBridgeLabela("");
-					sar.setBetaBridgeLabelb("");
-					sar.setBpa("");
-					sar.setBpb("");
-					sar.setBetaSheetLabel("");
-					sar.setAcc("");
-				}
-				
-				// Use placeholder now
-				getHETInfoPlaceholder(sar);
-//				getDomainUrlPlaceholder(sar);
-//				getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-//						residueHm.get(mutationId).split("_")[2]);
+				if (!structureAnnoHm.containsKey(annoKey)) {				
+					sar.setChrPos(mutationIdHm.get(mutationId));
+					sar.setMutationId(mutationId);
+					sar.setPdbNo(residueHm.get(mutationId));// ? TODO Check in
+															// test
+					sar.setPdbResidueIndex(Integer.parseInt(residueHm.get(mutationId).split("_")[2]));
+					// log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
+					strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],
+							residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+					// log.info(residueHm.get(mutationId)+"\t"+strNaccess.length()+"\t"+strNaccess);
+					if (strNaccess != "") {
+						// Sovled Bug here, show buried is manually added, it
+						// may have different def in
+						// different systems, so we use split here
+						// Get last column. But all the others are not included.
+						String[] tmpArray = strNaccess.split("\\s+");
+						sar.setBuried(tmpArray[tmpArray.length - 1]);
+						sar.setAllAtomsABS(strNaccess.substring(16, 22));
+						sar.setAllAtomsREL(strNaccess.substring(23, 28));
+						sar.setTotalSideABS(strNaccess.substring(29, 35));
+						sar.setTotalSideREL(strNaccess.substring(36, 41));
+						sar.setMainChainABS(strNaccess.substring(42, 48));
+						sar.setMainChainREL(strNaccess.substring(49, 54));
+						sar.setNonPolarABS(strNaccess.substring(55, 61));
+						sar.setNonPolarREL(strNaccess.substring(62, 67));
+						sar.setAllPolarABS(strNaccess.substring(68, 74));
+						sar.setAllPolarREL(strNaccess.substring(75, 80));
+					} else {
+						sar.setBuried("");
+						sar.setAllAtomsABS("");
+						sar.setAllAtomsREL("");
+						sar.setTotalSideABS("");
+						sar.setTotalSideREL("");
+						sar.setMainChainABS("");
+						sar.setMainChainREL("");
+						sar.setNonPolarABS("");
+						sar.setNonPolarREL("");
+						sar.setAllPolarABS("");
+						sar.setAllPolarREL("");
+					}
+					strDSSP = getDSSPInfo(residueHm.get(mutationId).split("_")[0],
+							residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+					if (strDSSP != "") {
+						sar.setPdbResidueName(strDSSP.substring(13, 14));
+						sar.setSecStructure(strDSSP.substring(16, 17));
+						sar.setThreeTurnHelix(strDSSP.substring(18, 19));
+						sar.setFourTurnHelix(strDSSP.substring(19, 20));
+						sar.setFiveTurnHelix(strDSSP.substring(20, 21));
+						sar.setGeometricalBend(strDSSP.substring(21, 22));
+						sar.setChirality(strDSSP.substring(22, 23));
+						sar.setBetaBridgeLabela(strDSSP.substring(23, 24));
+						sar.setBetaBridgeLabelb(strDSSP.substring(24, 25));
+						sar.setBpa(strDSSP.substring(26, 29));
+						sar.setBpb(strDSSP.substring(30, 33));
+						sar.setBetaSheetLabel(strDSSP.substring(33, 34));
+						sar.setAcc(strDSSP.substring(35, 38));
+					} else {
+						sar.setPdbResidueName("");
+						sar.setSecStructure("");
+						sar.setThreeTurnHelix("");
+						sar.setFourTurnHelix("");
+						sar.setFiveTurnHelix("");
+						sar.setGeometricalBend("");
+						sar.setChirality("");
+						sar.setBetaBridgeLabela("");
+						sar.setBetaBridgeLabelb("");
+						sar.setBpa("");
+						sar.setBpb("");
+						sar.setBetaSheetLabel("");
+						sar.setAcc("");
+					}
 
-//				// Start test cath, directly download cath resources
-//				getCathInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-//						residueHm.get(mutationId).split("_")[2]);
-                getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-                        residueHm.get(mutationId).split("_")[2]);
+					// Use placeholder now
+					// getHETInfoPlaceholder(sar);
+					// getDomainUrlPlaceholder(sar);
+					getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+							residueHm.get(mutationId).split("_")[2]);
 
+					// // Start test cath, directly download cath resources, not
+					// test
+					// getCathInfo(sar, residueHm.get(mutationId).split("_")[0],
+					// residueHm.get(mutationId).split("_")[1],
+					// residueHm.get(mutationId).split("_")[2]);
+					getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
+							residueHm.get(mutationId).split("_")[2]);
+					
+					structureAnnoHm.put(annoKey, sar);
+				}else{
+					sar = structureAnnoHm.get(annoKey);
+				}
 				sarList.add(sar);
-				if (count % 10000 == 0) {
+				if (count % 100000 == 0) {
 					log.info("Processing " + count + "th");
 				}
 				count++;
 			}
-
+			
+			//save HashSet<String>: pdb as pdbSet.ser
+	        String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
+	        try{
+	        	log.info("Serialize structureAnnoH, size is " + structureAnnoHm.size());
+	            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(structureAnnoHm));
+	            log.info("Serialization completed");
+	        }catch(Exception ex){
+	            ex.printStackTrace();
+	        }
+	        
 			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename);
 
 		} catch (Exception ex) {
@@ -993,6 +1013,7 @@ public class StructureAnnotation {
         try{
         	log.info("Serialize pdbSet, size is "+pdbSet.size());
             FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(pdbSet));
+            log.info("Serialization completed");
         }catch(Exception ex){
             ex.printStackTrace();
         }

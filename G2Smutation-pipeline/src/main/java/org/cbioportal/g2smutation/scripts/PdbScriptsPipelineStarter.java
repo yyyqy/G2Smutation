@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Timer;
 
 import org.apache.log4j.Logger;
+import org.cbioportal.g2smutation.annotation.PdbScriptsPipelineRunCommandStructureAnnotation;
 import org.cbioportal.g2smutation.statistics.PdbScriptsPipelineRunCommandStatistics;
 import org.cbioportal.g2smutation.util.*;
 
@@ -23,6 +24,7 @@ public class PdbScriptsPipelineStarter {
     public static final String WEEKLY_UPDATE_COMMAND = "updateweekly";
     public static final String IMMEDIATE_UPDATE_COMMAND = "update";
     public static final String STATISTICS_COMMAND = "stats";
+    public static final String STRUCTURE_UPDATE_COMMAND = "updatestructure";
 
     /**
      * main function, run the commands
@@ -85,6 +87,13 @@ public class PdbScriptsPipelineStarter {
             log.info("[Pipeline] Run Statistics");
             PdbScriptsPipelineRunCommandStatistics appStatistics = new PdbScriptsPipelineRunCommandStatistics();
             appStatistics.runStatistics();
+            break;
+        case STRUCTURE_UPDATE_COMMAND:
+            // hidden commands for inner usage;
+            // Used to update tedious structure after updates
+            log.info("[Pipeline] Run Structure Update");
+            PdbScriptsPipelineRunCommandStructureAnnotation appStucture = new PdbScriptsPipelineRunCommandStructureAnnotation();
+            appStucture.runStructureAnnotation();
             break;
         default:
             System.out.println("The argument should be " + INITIALIZE_DATABASE_COMMAND + ", " + WEEKLY_UPDATE_COMMAND

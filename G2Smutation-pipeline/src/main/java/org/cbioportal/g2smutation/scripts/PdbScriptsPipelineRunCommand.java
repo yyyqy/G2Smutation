@@ -850,8 +850,7 @@ public class PdbScriptsPipelineRunCommand {
     		}
     		
     		log.info("[STRUCTURE] naccess complete and start parsing in update"); 
-            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);       
-                    	
+            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);                         	
         }                      
         
         
