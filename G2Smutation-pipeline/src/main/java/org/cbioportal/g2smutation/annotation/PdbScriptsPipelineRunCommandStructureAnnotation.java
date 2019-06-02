@@ -33,7 +33,7 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		ArrayList<String> paralist = new ArrayList<String>();
 		CommandProcessUtil cu = new CommandProcessUtil();
 		FileOperatingUtil fou = new FileOperatingUtil();
-		String currentDir = ReadConfig.workspace + ""; // Hardcode now
+		String currentDir = ReadConfig.workspace + "20190530/"; // Hardcode now
 
 		log.info("[File] Read results from file, generate HashMap for usage");
 		MutationUsageRecord mUsageRecord = new MutationUsageRecord();
@@ -54,14 +54,6 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		// <mutation_NO, gpos>: saving time for API calling
 		mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);
 
-		// Deserialize
-		try {
-			String structureAnnoHmFilename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
-			structureAnnoHm = (HashMap<String, StructureAnnotationRecord>) SerializationUtils
-					.deserialize(FileUtils.readFileToByteArray(new File(structureAnnoHmFilename)));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 		sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,
 				ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);
 
