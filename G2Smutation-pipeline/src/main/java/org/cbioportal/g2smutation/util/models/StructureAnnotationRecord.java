@@ -1,5 +1,7 @@
 package org.cbioportal.g2smutation.util.models;
 
+import java.io.Serializable;
+
 /**
  * Model of structure annotation
  * 
@@ -7,7 +9,7 @@ package org.cbioportal.g2smutation.util.models;
  *
  */
 
-public class StructureAnnotationRecord {
+public class StructureAnnotationRecord implements Serializable {
     private String chrPos;
 
     private int mutationId;

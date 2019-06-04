@@ -21,6 +21,7 @@ import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.io.PDBFileReader;
 import org.cbioportal.g2smutation.util.CommandProcessUtil;
 import org.cbioportal.g2smutation.util.ReadConfig;
+import org.cbioportal.g2smutation.util.StringUtil;
 import org.cbioportal.g2smutation.util.models.MutationUsageRecord;
 import org.cbioportal.g2smutation.util.models.StructureAnnotationRecord;
 import org.json.JSONArray;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
  */
 public class StructureAnnotation {
     final static Logger log = Logger.getLogger(StructureAnnotation.class);
+    StringUtil su = new StringUtil();
 
     /**
      * generate structure annotation for strucure_annotation_entry
@@ -761,7 +763,7 @@ public class StructureAnnotation {
                     String caId = caIt.next().toString();
                     // log.info(caId);
                     JSONObject caOb = cath.getJSONObject(caId);
-                    String caName = caOb.getString("name");
+                    String caName = su.toSQLstring(caOb.getString("name"));
                     String caArchitecture = caOb.getString("architecture");
                     String caIdent = caOb.getString("identifier");
                     String caClass = caOb.getString("class");
