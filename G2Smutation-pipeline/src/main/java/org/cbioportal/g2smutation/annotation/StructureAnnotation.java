@@ -151,8 +151,8 @@ public class StructureAnnotation {
 					sar = structureAnnoHm.get(annoKey);
 				}
 				sarList.add(sar);
-				if (count % 100000 == 0) {
-					log.info("Processing " + count + "th");
+				if (count % 1000 == 0) {
+					log.info("Processing " + count + "th in total size of "+mutationIdHm.size()+" in mutationIdHm");
 				}
 				count++;
 			}
@@ -273,7 +273,7 @@ public class StructureAnnotation {
             if (i < lines.size()) {
                 str = lines.get(i);
             } else {
-                log.error(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find DSSP information!");
+                log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find DSSP information!");
             }
             // log.info(str);
         }catch(FileNotFoundException e){
@@ -305,7 +305,7 @@ public class StructureAnnotation {
             if (i < lines.size()) {
                 str = lines.get(i);
             } else {
-                log.error(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find Naccess information!");
+                log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find Naccess information!");
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -378,7 +378,7 @@ public class StructureAnnotation {
             }
         } catch (Exception e) {
 //            e.printStackTrace();
-            log.error(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find HET information!");
+            log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find HET information!");
             sar.setLigandBindingdirect(0);
             sar.setLigandBindingProtein(0);
             sar.setLigandName("");
