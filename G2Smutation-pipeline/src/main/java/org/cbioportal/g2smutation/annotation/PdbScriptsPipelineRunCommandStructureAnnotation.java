@@ -33,7 +33,7 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		ArrayList<String> paralist = new ArrayList<String>();
 		CommandProcessUtil cu = new CommandProcessUtil();
 		FileOperatingUtil fou = new FileOperatingUtil();
-		String currentDir = ReadConfig.workspace + "20190530/"; // Hardcode now
+		String currentDir = ReadConfig.workspace + "20190606/"; // Hardcode now
 
 		log.info("[File] Read results from file, generate HashMap for usage");
 		MutationUsageRecord mUsageRecord = new MutationUsageRecord();
