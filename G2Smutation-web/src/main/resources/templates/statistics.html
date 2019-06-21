@@ -43,6 +43,7 @@
 	
 	<div class="container">
 	<h1 layout:fragment="header">Statistics of G2S databases:</h1>
+	<h2 layout:fragment="header">Alignment Summary</h1>
 	<div layout:fragment="content" class="container-fluid">
 
 		<table
@@ -61,38 +62,94 @@
 				</tr>
 				<tr>
 					<td>Ensembl version</td>
-					<td>Human Release-90</td>
+					<td>Human Release-96</td>
 				</tr>
 				<tr>
-					<td>Number of Nonredundant Ensembl Entries:</td>
-					<td>104817</td>
+					<td>Number of Nonredundant Human Ensembl Entries:</td>
+					<td>104763</td>
 				</tr>
 				<tr>
 					<td>Uniprot(Swissprot) version</td>
-					<td>UniProt Release 2017_09</td>
+					<td>UniProt Release 2019_03</td>
 				</tr>
 				<tr>
-					<td>Number of Nonredundant Uniprot Entries:</td>
-					<td>594927</td>
+					<td>Number of Nonredundant Human Uniprot Entries:</td>
+					<td>42190</td>
 				</tr>
 				<tr>
-					<td>Number of Combined Nonredundant Ensembl/Uniprot Entires:</td>
-					<td>559575</td>
+					<td>Number of Combined Nonredundant Human Ensembl/Uniprot Entires:</td>
+					<td>92780</td>
 				</tr>
 				<tr>
 					<td>Number of PDB Entries of Chains and Segments:</td>
-					<td th:text="${statistics[0].segNum}">284458</td>
+					<td th:text="${statistics[0].segNum}">91061</td>
 				</tr>
 				<tr>
 					<td>Number of PDB Biological Macromolecular Structures:</td>
-					<td th:text="${statistics[0].pdbNum}">108237</td>
+					<td th:text="${statistics[0].pdbNum}">41966</td>
 				</tr>
 				<tr>
 					<td>Number of Protein-PDB alignments:</td>
-					<td th:text="${statistics[0].alignmentNum}">108237</td>
+					<td th:text="${statistics[0].alignmentNum}">659592</td>
 				</tr>
 			</tbody>
 		</table>
+		
+		
+		<h2 layout:fragment="header">Annotation Summary</h1>
+		<table
+			class="table table-bordered table-striped table-sm table-condensed"
+			style="width: 75%">
+			<thead>
+				<tr>
+					<td>Name</td>
+					<td>Numbers of Entries</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Mapped DBSNP entry</td>
+					<td th:text="${statistics[0].updateDate}">1</td>
+				</tr>
+				<tr>
+					<td>Mapped DBSNP entry on mutated position</td>
+					<td th:text="${statistics[0].updateDate}">1</td>
+				</tr>
+				<tr>
+					<td>Ensembl version</td>
+					<td>Human Release-96</td>
+				</tr>
+				<tr>
+					<td>Number of Nonredundant Human Ensembl Entries:</td>
+					<td>104763</td>
+				</tr>
+				<tr>
+					<td>Uniprot(Swissprot) version</td>
+					<td>UniProt Release 2019_03</td>
+				</tr>
+				<tr>
+					<td>Number of Nonredundant Human Uniprot Entries:</td>
+					<td>42190</td>
+				</tr>
+				<tr>
+					<td>Number of Combined Nonredundant Human Ensembl/Uniprot Entires:</td>
+					<td>92780</td>
+				</tr>
+				<tr>
+					<td>Number of PDB Entries of Chains and Segments:</td>
+					<td th:text="${statistics[0].segNum}">91061</td>
+				</tr>
+				<tr>
+					<td>Number of PDB Biological Macromolecular Structures:</td>
+					<td th:text="${statistics[0].pdbNum}">41966</td>
+				</tr>
+				<tr>
+					<td>Number of Protein-PDB alignments:</td>
+					<td th:text="${statistics[0].alignmentNum}">659592</td>
+				</tr>
+			</tbody>
+		</table>
+		
 		<p>G2S database stored alignments from protein
 			sequences against PDB sequences.</p>
 		<p>
