@@ -103,49 +103,35 @@
 			<thead>
 				<tr>
 					<td>Name</td>
-					<td>Numbers of Entries</td>
+					<td>PDB Mapped DBSNP entries on mutated position</td>
+					<td>Total PDB Mapped DBSNP entries</td>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>PDB Mapped DBSNP entries</td>
+					<td>DBSNP entries</td>
+					<td th:text="${statistics[0].dbsnpMappingNum}">2903</td>
 					<td th:text="${statistics[0].dbsnpNum}">2344830</td>
 				</tr>
 				<tr>
-					<td>PDB Mapped DBSNP entries on mutated position</td>
-					<td th:text="${statistics[0].dbsnpMappingNum}">2903</td>
-				</tr>
-				<tr>
-					<td>PDB Mapped CLINVAR entries</td>
+					<td>CLINVAR entries</td>
+					<td th:text="${statistics[0].clinvarMappingNum}">281</td>
 					<td th:text="${statistics[0].clinvarNum}">416218</td>
 				</tr>
 				<tr>
-					<td>PDB Mapped CLINVAR entries on mutated position</td>
-					<td th:text="${statistics[0].clinvarMappingNum}">281</td>
-				</tr>
-				<tr>
-					<td>PDB Mapped COSMIC entries</td>
+					<td>COSMIC entries</td>
+					<td th:text="${statistics[0].cosmicMappingNum}">1803</td>
 					<td th:text="${statistics[0].cosmicNum}">5452069</td>
 				</tr>
 				<tr>
-					<td>PDB Mapped COSMIC entries on mutated position</td>
-					<td th:text="${statistics[0].cosmicMappingNum}">1803</td>
-				</tr>
-				<tr>
-					<td>PDB Mapped GENIE entries</td>
+					<td>GENIE entries</td>
+					<td th:text="${statistics[0].genieMappingNum}">234</td>
 					<td th:text="${statistics[0].genieNum}">434567</td>
 				</tr>
 				<tr>
-					<td>PDB Mapped GENIE entries on mutated position</td>
-					<td th:text="${statistics[0].genieMappingNum}">234</td>
-				</tr>
-				<tr>
-					<td>PDB Mapped TCGA entries</td>
-					<td th:text="${statistics[0].tcgaNum}">5625059</td>
-				</tr>
-				<tr>
-					<td>PDB Mapped TCGA entries on mutated position</td>
+					<td>TCGA entries</td>
 					<td th:text="${statistics[0].tcgaMappingNum}">1460</td>
+					<td th:text="${statistics[0].tcgaNum}">5625059</td>
 				</tr>
 				<tr>
 					<td>Number of Genomic Position-PDB Alignments</td>
@@ -206,7 +192,7 @@
 			<tbody>
 				<tr>
 					<td>A</td>
-					<td>NA</td>
+					<td></td>
 					<td th:text="${statistics[0].a2R}">NA</td>
 					<td th:text="${statistics[0].a2N}">NA</td>
 					<td th:text="${statistics[0].a2D}">NA</td>
