@@ -15,10 +15,10 @@ select count(DISTINCT(CHR_POS)) from gpos_allmapping_entry where CLINVAR_ID<>'';
 select count(DISTINCT(CHR_POS)) from gpos_allmapping_entry where COSMIC_ID<>'';
 select count(DISTINCT(CHR_POS)) from gpos_allmapping_entry where GENIE_ID<>'';
 select count(DISTINCT(CHR_POS)) from gpos_allmapping_entry where TCGA_ID<>'';
-select count(DISTINCT(CHR_POS)) from gpos_allmapping_pdb_entry;
 select count(*) from gpos_allmapping_pdb_entry;
-select count(DISTINCT(CHR_POS)) from gpos_protein_entry;
+select count(DISTINCT(CHR_POS)) from gpos_allmapping_pdb_entry;
 select count(*) from gpos_protein_entry;
+select count(DISTINCT(CHR_POS)) from gpos_protein_entry;
 select count(*) from mutation_usage_table;
 select count(DISTINCT(MUTATION_NO)) from mutation_usage_table;
 -- update table

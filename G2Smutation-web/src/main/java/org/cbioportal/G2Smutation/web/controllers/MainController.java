@@ -255,13 +255,12 @@ public class MainController {
         return new ModelAndView("clients");
     }
     
-    /*
     @GetMapping("/statistics")
     public ModelAndView statisticsInfo(Model model) {
         List<Statistics> statistics = statisticsRepository.findTop2ByOrderByIdDesc();
         return new ModelAndView("/statistics", "statistics", statistics);
     }
-    */
+    
 
     @GetMapping("/about")
     public ModelAndView aboutInfo() {
