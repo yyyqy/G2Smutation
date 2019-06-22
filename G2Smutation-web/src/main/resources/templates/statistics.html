@@ -42,7 +42,7 @@
 	</nav>
 	
 	<div class="container">
-	<h1 layout:fragment="header">Statistics of G2S databases: Updated at ${statistics[0].updateDate} </h1>
+	<h1 layout:fragment="header">Statistics of G2S databases:</h1>
 	<h2 layout:fragment="header">Alignment Summary</h2>
 	<div layout:fragment="content" class="container-fluid">
 
@@ -56,6 +56,10 @@
 				</tr>
 			</thead>
 			<tbody>
+				<tr>
+					<td>Last Update Date:</td>
+					<td th:text="${statistics[0].updateDate}">1</td>
+				</tr>
 				<tr>
 					<td>Ensembl version</td>
 					<td>Human Release-96</td>
