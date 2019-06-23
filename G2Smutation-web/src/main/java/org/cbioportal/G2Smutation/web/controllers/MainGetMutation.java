@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiParam;
  */
 @RestController // shorthand for @Controller, @ResponseBody
 @CrossOrigin(origins = "*") // allow all cross-domain requests
-@Api(tags = "Get Mutation", description = "mutation in ensembl/uniprot/hgvs/sequences")
+@Api(tags = "Get Structure Mutations in Proteins", description = "mutation in ensembl/uniprot/hgvs/sequences")
 @RequestMapping(value = "/api/")
 public class MainGetMutation {
     final static Logger log = Logger.getLogger(MainGetMutation.class);
@@ -55,7 +55,7 @@ public class MainGetMutation {
             @ApiParam(required = true, value = "Input id e.g.\n"
                     + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
                     + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
-                    + "hgvs-grch37:17:g.79478130C>G;\n" + "hgvs-grch38:17:g.7676594T>G;\n"
+                    + "hgvs-grch37:17:g.79478130C>G;\n" 
                     + "dbsnp:rs1800369") @PathVariable String id,
             @ApiParam(required = false, value = "Input Residue Positions e.g. 10,100; Anynumber for hgvs;\n"
                     + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {

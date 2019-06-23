@@ -71,5 +71,5 @@ CREATE TABLE `structure_annotation_entry` (
   `SCOP_START` TEXT,
   `SCOP_END` TEXT,
   PRIMARY KEY(`ID`),
-  KEY(`CHR_POS`,`MUTATION_ID`)
+  KEY(`CHR_POS`,`MUTATION_ID`,`PDB_NO`)
 );

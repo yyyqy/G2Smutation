@@ -942,8 +942,8 @@ public class SeqIdAlignmentController {
             mr.setPdbPos(entry.getPdbIndex());
             mr.setPdbResidue(entry.getPdbResidue());
             //TODO, can improve use OO Design
-            int mutationId = entry.getMutationId();
-            mr.setStructureAnnotation(structureAnnotationRepository.findByMutationId(mutationId));
+            String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
+            mr.setStructureAnnotation(structureAnnotationRepository.findTopByPdbNo(queryPdbNo));
             List<MutatedResidueAnnotation> list = new ArrayList<>();
             if (hm.containsKey(key)){
                 list = hm.get(key);
@@ -1015,8 +1015,9 @@ public class SeqIdAlignmentController {
                 mr.setPdbPos(entry.getPdbIndex());
                 mr.setPdbResidue(entry.getPdbResidue());
                 //TODO, can improve use OO Design
-                int mutationId = entry.getMutationId();
-                mr.setStructureAnnotation(structureAnnotationRepository.findByMutationId(mutationId));
+                //queryPdbNo: 2pcx_A_282
+                String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
+                mr.setStructureAnnotation(structureAnnotationRepository.findTopByPdbNo(queryPdbNo));
                 List<MutatedResidueAnnotation> list = new ArrayList<>();
                 if (hm.containsKey(key)){
                     list = hm.get(key);

@@ -7,7 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StructureAnnotationRepository extends JpaRepository<StructureAnnotation, Long>{
     
-    public StructureAnnotation findByMutationId(int mutationId);
+	//This function does not work for updating...
+    //public StructureAnnotation findByMutationId(int mutationId);
+    
+    public StructureAnnotation findTopByPdbNo(String pdbNo);
     
     public List<StructureAnnotation> findByChrPos(String chrPos);
 
