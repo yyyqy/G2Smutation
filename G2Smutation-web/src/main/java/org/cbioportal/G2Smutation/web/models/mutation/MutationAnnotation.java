@@ -6,24 +6,22 @@ public class MutationAnnotation {
   //MUTATION_NO and MUTATION_ID is not here
     private String proteinName; //SEQ_NAME
     
-    private List<MutatedPositionAnnotation> mutatedPositionAnnotation;
+    private List<MutatedPositionInfo> mutatedPositionInfo;
 
-    public String getProteinName() {
-        return proteinName;
-    }
+	public String getProteinName() {
+		return proteinName;
+	}
 
-    public void setProteinName(String proteinName) {
-        this.proteinName = proteinName;
-    }
+	public void setProteinName(String proteinName) {
+		this.proteinName = proteinName;
+	}
 
-    public List<MutatedPositionAnnotation> getMutatedPositionAnnotation() {
-        return mutatedPositionAnnotation;
-    }
+	public List<MutatedPositionInfo> getMutatedPositionInfo() {
+		return mutatedPositionInfo;
+	}
 
-    public void setMutatedPositionAnnotation(List<MutatedPositionAnnotation> mutatedPositionAnnotation) {
-        this.mutatedPositionAnnotation = mutatedPositionAnnotation;
-    }
-    
-    
+	public void setMutatedPositionInfo(List<MutatedPositionInfo> mutatedPositionInfo) {
+		this.mutatedPositionInfo = mutatedPositionInfo;
+	}
 
 }

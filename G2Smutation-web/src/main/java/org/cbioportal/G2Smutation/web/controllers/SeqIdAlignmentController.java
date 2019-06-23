@@ -33,9 +33,9 @@ import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
 import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
 import org.cbioportal.G2Smutation.web.models.db.Tcga;
 import org.cbioportal.G2Smutation.web.models.mutation.MutatedPosition;
-import org.cbioportal.G2Smutation.web.models.mutation.MutatedPositionAnnotation;
+import org.cbioportal.G2Smutation.web.models.mutation.MutatedPositionInfo;
 import org.cbioportal.G2Smutation.web.models.mutation.MutatedResidue;
-import org.cbioportal.G2Smutation.web.models.mutation.MutatedResidueAnnotation;
+import org.cbioportal.G2Smutation.web.models.mutation.MutatedResidueInfo;
 import org.cbioportal.G2Smutation.web.models.mutation.Mutation;
 import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotation;
 import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotationGenome;
@@ -96,7 +96,7 @@ public class SeqIdAlignmentController {
     @Autowired
     private TcgaRepository tcgaRepository;
     @Autowired
-    private StructureAnnotationRepository structureAnnotationRepository;    
+    private StructureAnnotationRepository structureAnnotationRepository; 
     
 
     @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -916,6 +916,119 @@ public class SeqIdAlignmentController {
         return outlist;
     }
     
+    /**
+     * Implementation of API getMutationUsageByEnsemblIdGenome
+     * 
+     * @param chromosomeNum
+     * @param position
+     * @param nucleotideType
+     * @param genomeVersion
+     * @return
+     */
+    public List<Mutation> getMutationUsageByEnsemblIdGenome(String chromosomeNum, long position, String nucleotideType,
+            String genomeVersion) {
+        // Calling GenomeNexus
+        UtilAPI uapi = new UtilAPI();
+
+        List<GenomeResidueInput> grlist = new ArrayList<GenomeResidueInput>();
+        try {
+            grlist = uapi.callHumanGenomeAPI(chromosomeNum, position, nucleotideType, genomeVersion);
+        } catch (HttpClientErrorException ex) {
+            ex.printStackTrace();
+            // org.springframework.web.client.HttpClientErrorException: 400 Bad
+            // Request
+            return null;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        Set<String> grsetValid = new HashSet<>();
+        for (GenomeResidueInput gr : grlist) {
+            List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid());
+            // System.out.println(gr.getEnsembl().getEnsemblid());
+
+            for (Ensembl ensembl : ensembllist) {
+                if (geneSequenceRepository.findBySeqId(ensembl.getSeqId()).size() != 0) {
+                    Ensembl es = gr.getEnsembl();
+                    es.setSeqId(ensembl.getSeqId());
+                    // System.out.println("API
+                    // ensemblID:\t"+es.getEnsemblid()+"\t:"+es.getSeqId());
+                    gr.setEnsembl(es);
+                    grsetValid.add(gr.getEnsembl().getSeqId()+"_"+gr.getResidue().getResidueNum());
+                }
+            }
+        }
+
+        List<Mutation> outlist = new ArrayList<Mutation>();
+        if (grsetValid.size() >= 1) {
+            for (String gr : grsetValid) {
+                System.out.println("Out:\t"+gr);
+                String[] arrays = gr.split("_");
+            	List<String> tmpStringList = new ArrayList<>();
+            	tmpStringList.add(arrays[1]);
+                List<Mutation> list = seqController.getMutationUsageBySeqId(arrays[0],
+                		tmpStringList);
+                outlist.addAll(list);
+            }
+        }
+        return outlist;
+    }
+
+    /**
+     * Implementation of API getMutationUsageByEnsemblIddbSNPID
+     * 
+     * @param dbSNPID
+     * @return
+     */
+    public List<Mutation> getMutationUsageByEnsemblIddbSNPID(String dbSNPID) {
+        // Calling GenomeNexus
+        UtilAPI uapi = new UtilAPI();
+
+        List<GenomeResidueInput> grlist = new ArrayList<GenomeResidueInput>();
+        try {
+            grlist = uapi.calldbSNPAPI(dbSNPID);
+        } catch (HttpClientErrorException ex) {
+            ex.printStackTrace();
+            // org.springframework.web.client.HttpClientErrorException: 400 Bad
+            // Request
+            return null;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        Set<String> grsetValid = new HashSet<>();
+        for (GenomeResidueInput gr : grlist) {
+            List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid());
+            // System.out.println(gr.getEnsembl().getEnsemblid());
+
+            for (Ensembl ensembl : ensembllist) {
+                if (geneSequenceRepository.findBySeqId(ensembl.getSeqId()).size() != 0) {
+                    Ensembl es = gr.getEnsembl();
+                    es.setSeqId(ensembl.getSeqId());
+                    // System.out.println("API
+                    // ensemblID:\t"+es.getEnsemblid()+"\t:"+es.getSeqId());
+                    gr.setEnsembl(es);
+                    grsetValid.add(gr.getEnsembl().getSeqId()+"_"+gr.getResidue().getResidueNum());
+                }
+            }
+        }
+
+        List<Mutation> outlist = new ArrayList<Mutation>();
+        if (grsetValid.size() >= 1) {
+            for (String gr : grsetValid) {
+                System.out.println("Out:\t"+gr);
+                String[] arrays = gr.split("_");
+            	List<String> tmpStringList = new ArrayList<>();
+            	tmpStringList.add(arrays[1]);
+                List<Mutation> list = seqController.getMutationUsageBySeqId(arrays[0],
+                		tmpStringList);
+                outlist.addAll(list);
+            }
+        }
+        
+        return outlist;
+    }
+    
     //Mutation Annotation
     /**
      * "Get All MutationUsageTable by Protein SeqId
@@ -929,13 +1042,13 @@ public class SeqIdAlignmentController {
         List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
         List<MutationAnnotation> outit = new ArrayList<>();
         
-        HashMap<String,List<MutatedResidueAnnotation>> hm = new HashMap<>();
+        HashMap<String,List<MutatedResidueInfo>> hm = new HashMap<>();
         
         String proteinName = "";
         for(MutationUsageTable entry: it){
             proteinName = entry.getSeqName();
             String key = Integer.toString(entry.getSeqIndex())+"\t"+entry.getSeqResidue();
-            MutatedResidueAnnotation mr = new MutatedResidueAnnotation();
+            MutatedResidueInfo mr = new MutatedResidueInfo();
             String[] pdbNoUse = entry.getPdbNo().split("_");
             //System.out.println(pdbNoUse[0]+"_"+pdbNoUse[1]);
             mr.setPdbNo(pdbNoUse[0]+"_"+pdbNoUse[1]);
@@ -944,7 +1057,7 @@ public class SeqIdAlignmentController {
             //TODO, can improve use OO Design
             String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
             mr.setStructureAnnotation(structureAnnotationRepository.findTopByPdbNo(queryPdbNo));
-            List<MutatedResidueAnnotation> list = new ArrayList<>();
+            List<MutatedResidueInfo> list = new ArrayList<>();
             if (hm.containsKey(key)){
                 list = hm.get(key);
                 list.add(mr);
@@ -956,16 +1069,16 @@ public class SeqIdAlignmentController {
         
         MutationAnnotation entry = new MutationAnnotation();
         entry.setProteinName(proteinName);
-        List<MutatedPositionAnnotation> mplist = new ArrayList<>();
+        List<MutatedPositionInfo> mplist = new ArrayList<>();
         
         SortedSet<String> keys = new TreeSet<>(hm.keySet());
         for (String key: keys){            
             int proteinPos = Integer.parseInt(key.split("\t")[0]);
             String proteinResidue = key.split("\t")[1];
-            MutatedPositionAnnotation mp = new MutatedPositionAnnotation();
+            MutatedPositionInfo mp = new MutatedPositionInfo();
             mp.setProteinPos(proteinPos);
             mp.setProteinResidue(proteinResidue);
-            mp.setMutatedResidueAnnotation(hm.get(key));
+            mp.setMutatedResidueInfo(hm.get(key));
             List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
             mp.setDbsnpAnnotation(dbsnpList);
             List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
@@ -978,7 +1091,7 @@ public class SeqIdAlignmentController {
             mp.setTcgaAnnotation(tcgaList);
             mplist.add(mp);
         }
-        entry.setMutatedPositionAnnotation(mplist);
+        entry.setMutatedPositionInfo(mplist);
         outit.add(entry);
         return outit;
     }
@@ -996,7 +1109,7 @@ public class SeqIdAlignmentController {
         List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
         List<MutationAnnotation> outit = new ArrayList<>();
         
-        HashMap<String,List<MutatedResidueAnnotation>> hm = new HashMap<>();
+        HashMap<String,List<MutatedResidueInfo>> hm = new HashMap<>();
         
         HashSet<String> posSet = new HashSet<>();
         for(String pos: positionList){
@@ -1008,7 +1121,7 @@ public class SeqIdAlignmentController {
             if(posSet.contains(Integer.toString(entry.getSeqIndex()))){
                 proteinName = entry.getSeqName();
                 String key = Integer.toString(entry.getSeqIndex())+"\t"+entry.getSeqResidue();
-                MutatedResidueAnnotation mr = new MutatedResidueAnnotation();
+                MutatedResidueInfo mr = new MutatedResidueInfo();
                 String[] pdbNoUse = entry.getPdbNo().split("_");
                 //System.out.println(pdbNoUse[0]+"_"+pdbNoUse[1]);
                 mr.setPdbNo(pdbNoUse[0]+"_"+pdbNoUse[1]);
@@ -1018,7 +1131,7 @@ public class SeqIdAlignmentController {
                 //queryPdbNo: 2pcx_A_282
                 String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
                 mr.setStructureAnnotation(structureAnnotationRepository.findTopByPdbNo(queryPdbNo));
-                List<MutatedResidueAnnotation> list = new ArrayList<>();
+                List<MutatedResidueInfo> list = new ArrayList<>();
                 if (hm.containsKey(key)){
                     list = hm.get(key);
                     list.add(mr);
@@ -1031,16 +1144,16 @@ public class SeqIdAlignmentController {
         
         MutationAnnotation entry = new MutationAnnotation();
         entry.setProteinName(proteinName);
-        List<MutatedPositionAnnotation> mplist = new ArrayList<>();
+        List<MutatedPositionInfo> mplist = new ArrayList<>();
         
         SortedSet<String> keys = new TreeSet<>(hm.keySet());
         for (String key: keys){            
             int proteinPos = Integer.parseInt(key.split("\t")[0]);
             String proteinResidue = key.split("\t")[1];
-            MutatedPositionAnnotation mp = new MutatedPositionAnnotation();
+            MutatedPositionInfo mp = new MutatedPositionInfo();
             mp.setProteinPos(proteinPos);
             mp.setProteinResidue(proteinResidue);
-            mp.setMutatedResidueAnnotation(hm.get(key));
+            mp.setMutatedResidueInfo(hm.get(key));
             List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
             mp.setDbsnpAnnotation(dbsnpList);
             List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
@@ -1053,7 +1166,7 @@ public class SeqIdAlignmentController {
             mp.setTcgaAnnotation(tcgaList);
             mplist.add(mp);
         }
-        entry.setMutatedPositionAnnotation(mplist);
+        entry.setMutatedPositionInfo(mplist);
         outit.add(entry);
         return outit;
     }
@@ -1116,6 +1229,118 @@ public class SeqIdAlignmentController {
             outlist.addAll(getMutationUsageAnnotationByUniprotAccessionIso(it.next(), isoform, positionList));
         }
 
+        return outlist;
+    }
+    
+    /**
+     * Implementation of API getMutationUsageAnnotationByEnsemblIdGenome
+     * 
+     * @param chromosomeNum
+     * @param position
+     * @param nucleotideType
+     * @param genomeVersion
+     * @return
+     */
+    public List<MutationAnnotation> getMutationUsageAnnotationByEnsemblIdGenome(String chromosomeNum, long position, String nucleotideType,
+            String genomeVersion) {
+        // Calling GenomeNexus
+        UtilAPI uapi = new UtilAPI();
+
+        List<GenomeResidueInput> grlist = new ArrayList<GenomeResidueInput>();
+        try {
+            grlist = uapi.callHumanGenomeAPI(chromosomeNum, position, nucleotideType, genomeVersion);
+        } catch (HttpClientErrorException ex) {
+            ex.printStackTrace();
+            // org.springframework.web.client.HttpClientErrorException: 400 Bad
+            // Request
+            return null;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        Set<String> grsetValid = new HashSet<>();
+        for (GenomeResidueInput gr : grlist) {
+            List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid());
+            // System.out.println(gr.getEnsembl().getEnsemblid());
+
+            for (Ensembl ensembl : ensembllist) {
+                if (geneSequenceRepository.findBySeqId(ensembl.getSeqId()).size() != 0) {
+                    Ensembl es = gr.getEnsembl();
+                    es.setSeqId(ensembl.getSeqId());
+                    // System.out.println("API
+                    // ensemblID:\t"+es.getEnsemblid()+"\t:"+es.getSeqId());
+                    gr.setEnsembl(es);
+                    grsetValid.add(gr.getEnsembl().getSeqId()+"_"+gr.getResidue().getResidueNum());
+                }
+            }
+        }
+
+        List<MutationAnnotation> outlist = new ArrayList<MutationAnnotation>();
+        if (grsetValid.size() >= 1) {
+            for (String gr : grsetValid) {
+                System.out.println("Out:\t"+gr);
+                String[] arrays = gr.split("_");
+            	List<String> tmpStringList = new ArrayList<>();
+            	tmpStringList.add(arrays[1]);
+                List<MutationAnnotation> list = seqController.getMutationUsageAnnotationBySeqId(arrays[0],
+                		tmpStringList);
+                outlist.addAll(list);
+            }
+        }
+        return outlist;
+    }
+
+    /**
+     * Implementation of API getMutationUsageAnnotationByEnsemblIddbSNPID
+     * 
+     * @param dbSNPID
+     * @return
+     */
+    public List<MutationAnnotation> getMutationUsageAnnotationByEnsemblIddbSNPID(String dbSNPID) {
+        // Calling GenomeNexus
+        UtilAPI uapi = new UtilAPI();
+
+        List<GenomeResidueInput> grlist = new ArrayList<GenomeResidueInput>();
+        try {
+            grlist = uapi.calldbSNPAPI(dbSNPID);
+        } catch (HttpClientErrorException ex) {
+            ex.printStackTrace();
+            // org.springframework.web.client.HttpClientErrorException: 400 Bad
+            // Request
+            return null;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        Set<String> grsetValid = new HashSet<>();
+        for (GenomeResidueInput gr : grlist) {
+            List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid());
+            // System.out.println(gr.getEnsembl().getEnsemblid());
+
+            for (Ensembl ensembl : ensembllist) {
+                if (geneSequenceRepository.findBySeqId(ensembl.getSeqId()).size() != 0) {
+                    Ensembl es = gr.getEnsembl();
+                    es.setSeqId(ensembl.getSeqId());
+                    // System.out.println("API
+                    // ensemblID:\t"+es.getEnsemblid()+"\t:"+es.getSeqId());
+                    gr.setEnsembl(es);
+                    grsetValid.add(gr.getEnsembl().getSeqId()+"_"+gr.getResidue().getResidueNum());
+                }
+            }
+        }
+
+        List<MutationAnnotation> outlist = new ArrayList<MutationAnnotation>();
+        if (grsetValid.size() >= 1) {
+            for (String gr : grsetValid) {
+                System.out.println("Out:\t"+gr);
+                String[] arrays = gr.split("_");
+            	List<String> tmpStringList = new ArrayList<>();
+            	tmpStringList.add(arrays[1]);
+                List<MutationAnnotation> list = seqController.getMutationUsageAnnotationBySeqId(arrays[0],
+                		tmpStringList);
+                outlist.addAll(list);
+            }
+        }
         return outlist;
     }
     
