@@ -752,8 +752,8 @@ public class MainController {
     // Clinvar Page
     @RequestMapping(value = "/ClinvarPage",method = RequestMethod.GET)
     public ModelAndView getclinvarPage(Model model, HttpServletRequest request){
-    	String MutationId = request.getParameter("MutationId");
-        List<Clinvar> clinvarsdetails = clinvarRepository.findByMutationId(Integer.parseInt(MutationId));
+    	String mutationNo = request.getParameter("MutationId");
+        List<Clinvar> clinvarsdetails = clinvarRepository.findByMutationNo(mutationNo);
         model.addAttribute("clinvars", clinvarsdetails);
         return new ModelAndView("clinvar");
     }
@@ -761,8 +761,8 @@ public class MainController {
     // Cosmic Page
     @RequestMapping(value = "/CosmicPage",method = RequestMethod.GET)
     public ModelAndView getcosmicPage(Model model, HttpServletRequest request){
-    	String MutationId = request.getParameter("MutationId");
-        List<Cosmic> cosmicsdetails = cosmicRepository.findByMutationId(Integer.parseInt(MutationId));
+    	String mutationId = request.getParameter("MutationId");
+        List<Cosmic> cosmicsdetails = cosmicRepository.findByMutationNo(mutationId);
         model.addAttribute("cosmics", cosmicsdetails);
         return new ModelAndView("cosmic");
     }
@@ -770,8 +770,8 @@ public class MainController {
     // Dbsnp Page
     @RequestMapping(value = "/DbsnpPage",method = RequestMethod.GET)
     public ModelAndView getDbsnpPage(Model model, HttpServletRequest request){
-    	String MutationId = request.getParameter("MutationId");
-        List<Dbsnp> dbsnpdetails = dbsnpRepository.findByMutationId(Integer.parseInt(MutationId));
+    	String mutationNo = request.getParameter("MutationId");
+        List<Dbsnp> dbsnpdetails = dbsnpRepository.findByMutationNo(mutationNo);
         model.addAttribute("dbsnps", dbsnpdetails);
         return new ModelAndView("dbsnp");
     }
@@ -779,8 +779,8 @@ public class MainController {
     // Genie Page
     @RequestMapping(value = "/GeniePage",method = RequestMethod.GET)
     public ModelAndView getGeniePage(Model model, HttpServletRequest request){
-    	String MutationId = request.getParameter("MutationId");
-        List<Genie> geniedetails = genieRepository.findByMutationId(Integer.parseInt(MutationId));
+    	String mutationNo = request.getParameter("MutationId");
+        List<Genie> geniedetails = genieRepository.findByMutationNo(mutationNo);
         model.addAttribute("genies", geniedetails);
         return new ModelAndView("genie");
     }
@@ -788,8 +788,8 @@ public class MainController {
     // Tcga Page
     @RequestMapping(value = "/TcgaPage",method = RequestMethod.GET)
     public ModelAndView getTcgaPage(Model model, HttpServletRequest request){
-    	String MutationId = request.getParameter("MutationId");
-        List<Tcga> tcgadetails = tcgaRepository.findByMutationId(Integer.parseInt(MutationId));
+    	String mutationNo = request.getParameter("MutationId");
+        List<Tcga> tcgadetails = tcgaRepository.findByMutationNo(mutationNo);
         model.addAttribute("tcgas", tcgadetails);
         return new ModelAndView("tcga");
     }

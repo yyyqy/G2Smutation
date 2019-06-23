@@ -6,11 +6,11 @@ import java.util.List;
 import org.cbioportal.G2Smutation.web.models.db.Cosmic;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CosmicRepository extends JpaRepository<Cosmic, Long>{
-    
-    public List<Cosmic> findByMutationId(int mutationId);
+public interface CosmicRepository extends JpaRepository<Cosmic, String>{
     
     public List<Cosmic> findBychrPos(String chrPos);
+    
+    public List<Cosmic> findByMutationNo(String seqIdpos);
 
 }
 

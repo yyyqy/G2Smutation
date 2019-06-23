@@ -26,8 +26,12 @@ import org.cbioportal.G2Smutation.web.models.GenomeResidueInput;
 import org.cbioportal.G2Smutation.web.models.Uniprot;
 import org.cbioportal.G2Smutation.web.models.api.UtilAPI;
 import org.cbioportal.G2Smutation.web.models.db.Clinvar;
+import org.cbioportal.G2Smutation.web.models.db.Cosmic;
+import org.cbioportal.G2Smutation.web.models.db.Dbsnp;
+import org.cbioportal.G2Smutation.web.models.db.Genie;
 import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
 import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
+import org.cbioportal.G2Smutation.web.models.db.Tcga;
 import org.cbioportal.G2Smutation.web.models.mutation.MutatedPosition;
 import org.cbioportal.G2Smutation.web.models.mutation.MutatedPositionAnnotation;
 import org.cbioportal.G2Smutation.web.models.mutation.MutatedResidue;
@@ -962,9 +966,16 @@ public class SeqIdAlignmentController {
             mp.setProteinPos(proteinPos);
             mp.setProteinResidue(proteinResidue);
             mp.setMutatedResidueAnnotation(hm.get(key));
-            //TODO
-            //List<Clinvar> clinvarList = clinvarRepository.findByChrPos(chrPos);
-            //mp.setClinvar(clinvarList);
+            List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setDbsnpAnnotation(dbsnpList);
+            List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setClinvarAnnotation(clinvarList);
+            List<Cosmic> cosmicList = cosmicRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setCosmicAnnotation(cosmicList);
+            List<Genie> genieList = genieRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setGenieAnnotation(genieList);
+            List<Tcga> tcgaList = tcgaRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setTcgaAnnotation(tcgaList);
             mplist.add(mp);
         }
         entry.setMutatedPositionAnnotation(mplist);
@@ -1029,9 +1040,16 @@ public class SeqIdAlignmentController {
             mp.setProteinPos(proteinPos);
             mp.setProteinResidue(proteinResidue);
             mp.setMutatedResidueAnnotation(hm.get(key));
-            //TODO
-            //List<Clinvar> clinvarList = clinvarRepository.findByChrPos(chrPos);
-            //mp.setClinvar(clinvarList);
+            List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setDbsnpAnnotation(dbsnpList);
+            List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setClinvarAnnotation(clinvarList);
+            List<Cosmic> cosmicList = cosmicRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setCosmicAnnotation(cosmicList);
+            List<Genie> genieList = genieRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setGenieAnnotation(genieList);
+            List<Tcga> tcgaList = tcgaRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
+            mp.setTcgaAnnotation(tcgaList);
             mplist.add(mp);
         }
         entry.setMutatedPositionAnnotation(mplist);

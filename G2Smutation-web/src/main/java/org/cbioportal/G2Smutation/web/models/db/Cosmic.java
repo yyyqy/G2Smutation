@@ -25,8 +25,8 @@ public class Cosmic {
     @Column(name = "CHR_POS")
     private String chrPos;
     
-    @Column(name = "MUTATION_ID")
-    private int mutationId;
+    @Column(name = "MUTATION_NO")
+    private String mutationNo;
     
     @Column(name = "GENE_NAME")
     private String geneName;
@@ -73,7 +73,7 @@ public class Cosmic {
     @Column(name = "HISTOLOGY_SUBTYPE_3")
     private String histologySubtype3;
     
-    @Column(name = "GENOME-WIDE_SCREEN")
+    @Column(name = "GENOME_WIDE_SCREEN")
     private String genomewideScreen;
     
     @Column(name = "COSMIC_MUTATION_ID")
@@ -150,17 +150,17 @@ public class Cosmic {
 
     public void setChrPos(String chrPos) {
         this.chrPos = chrPos;
-    }
+    }   
 
-    public int getMutationId() {
-        return mutationId;
-    }
+    public String getMutationNo() {
+		return mutationNo;
+	}
 
-    public void setMutationId(int mutationId) {
-        this.mutationId = mutationId;
-    }
+	public void setMutationNo(String mutationNo) {
+		this.mutationNo = mutationNo;
+	}
 
-    public String getGeneName() {
+	public String getGeneName() {
         return geneName;
     }
 
