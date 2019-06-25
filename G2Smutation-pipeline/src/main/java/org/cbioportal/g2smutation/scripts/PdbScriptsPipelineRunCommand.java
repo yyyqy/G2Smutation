@@ -95,7 +95,15 @@ public class PdbScriptsPipelineRunCommand {
         this.allSqlCount = allSqlCount;
     }
 
-    /**
+    public String getCurrentDir() {
+		return currentDir;
+	}
+
+	public void setCurrentDir(String currentDir) {
+		this.currentDir = currentDir;
+	}
+
+	/**
      * main steps of init pipeline
      */
     public void runInit() {
