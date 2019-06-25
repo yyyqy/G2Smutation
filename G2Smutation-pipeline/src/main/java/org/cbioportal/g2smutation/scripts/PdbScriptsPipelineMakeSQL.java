@@ -896,10 +896,10 @@ public class PdbScriptsPipelineMakeSQL {
                          */
 					if (indexHm.containsKey(correctProteinIndex)) {
 						HashSet<String> indexSet = indexHm.get(correctProteinIndex);
-//						if(indexSet.size()>=2) {
-//							System.out.println(indexSet.size());							
-//						}						
-						if (indexSet.size() >= 2 || !indexSet.contains(residue)) {
+//						if(querytext.startsWith("59996;P04637_1") && correctProteinIndex==106) {
+//							System.out.println(correctProteinIndex+"\t"+indexSet.size()+"\t"+indexSet.toString());
+//						}
+						//if (indexSet.size() >= 2) {
 							int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i
 									- pdbGapCount;
 							String pdbNO = br.sseqid.split("\\s+")[0];
@@ -915,7 +915,7 @@ public class PdbScriptsPipelineMakeSQL {
 							mr.setAlignmentId(count);
 
 							mutationList.add(mr);
-						}
+						//}
 					}
                 }
                 alignmentList.add(br);                
@@ -996,6 +996,7 @@ public class PdbScriptsPipelineMakeSQL {
                     if ((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")) {
                         // log.info("*"+residueAlign+"&"+residue+"@");
                     	int correctProteinIndex = br.qStart + i - seqGapCount;
+                    	
                         HashSet<String> indexSet;
                         if(indexHm.containsKey(correctProteinIndex)) {
                         	indexSet = indexHm.get(correctProteinIndex);
@@ -1006,7 +1007,10 @@ public class PdbScriptsPipelineMakeSQL {
 //                        if(indexSet.size()>=2) {
 //                        	System.out.println(indexSet.size());
 //                        }
-                        indexHm.put(correctProteinIndex, indexSet);                       
+                        indexHm.put(correctProteinIndex, indexSet); 
+//                        if(querytext.startsWith("59996;P04637_1") && correctProteinIndex==106) {
+//                        	System.out.println(residue+"\t"+indexHm.get(correctProteinIndex).toString());
+//                    	}
                     }
                 }               
             }
