@@ -125,11 +125,11 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
-        generateAnnotation(parseprocess, false, new ListUpdate());
+        //generateAnnotation(parseprocess, false, new ListUpdate());
 
         log.info("********************[Init STEP 4]********************");
         log.info("[FileSystem] Clean Up");
-        postInitialCleanup();
+        //postInitialCleanup();
     }
 
     /**
