@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * Main controller get genomics Mutation: Get Mutations
+ * Controller get Mutation from genome position: Get Mutations
  * 
  * @author Juexin Wang
  *

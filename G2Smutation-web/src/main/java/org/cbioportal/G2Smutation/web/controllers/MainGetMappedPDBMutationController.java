@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * Main controller get genomics Mutation: Get Mutations
+ * Controller get Mutation from PDB: Get Mutations
  * 
  * @author Juexin Wang
  *
@@ -34,15 +34,15 @@ import io.swagger.annotations.ApiParam;
 @Api(tags = "Structure Mutations from PDB", description = "PDB")
 @RequestMapping(value = "/api/")
 public class MainGetMappedPDBMutationController {
-	
+
 	final static Logger log = Logger.getLogger(MainGetMappedPDBMutationController.class);
 
 	@Autowired
 	private SeqIdAlignmentController seqController;
-	
+
 	@Autowired
-    private StructureAnnotationRepository structureAnnotationRepository;
-	
+	private StructureAnnotationRepository structureAnnotationRepository;
+
 	@RequestMapping(value = "/pdbMutation/{pdb}/{chain:.+}", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation("Query mutation by variant")
@@ -52,38 +52,38 @@ public class MainGetMappedPDBMutationController {
 			@ApiParam(required = false, value = "Input id: e.g. 202,282") @RequestParam(required = false) List<String> positionList) {
 
 		List<StructureAnnotation> outList = new ArrayList<StructureAnnotation>();
-		
-		String inputStr = pdb+"_"+chain+"_";
-		System.out.println(inputStr);
-		
+
+		String inputStr = pdb + "_" + chain + "_";
+		// System.out.println(inputStr);
+
 		if (positionList == null) {
 			List<StructureAnnotation> tmpList = structureAnnotationRepository.findByPdbNoStartingWith(inputStr);
 			Set<String> tmpSet = new HashSet<>();
-			for(StructureAnnotation sa: tmpList) {
-				if(tmpSet.contains(sa.getPdbNo())) {
-					
-				}else {
+			for (StructureAnnotation sa : tmpList) {
+				if (tmpSet.contains(sa.getPdbNo())) {
+
+				} else {
 					tmpSet.add(sa.getPdbNo());
 					outList.add(sa);
 				}
 			}
-        } else {
-        	List<StructureAnnotation> tmpList = structureAnnotationRepository.findByPdbNoStartingWith(inputStr);
+		} else {
+			List<StructureAnnotation> tmpList = structureAnnotationRepository.findByPdbNoStartingWith(inputStr);
 			Set<String> tmpSet = new HashSet<>();
-			for(StructureAnnotation sa: tmpList) {
-				if(tmpSet.contains(sa.getPdbNo())) {
-					
-				}else {
+			for (StructureAnnotation sa : tmpList) {
+				if (tmpSet.contains(sa.getPdbNo())) {
+
+				} else {
 					tmpSet.add(sa.getPdbNo());
 					String posStr = sa.getPdbNo().split("_")[2];
-					for(String pos: positionList) {
-						if(posStr.equals(pos)) {							
-							outList.add(sa);						
+					for (String pos : positionList) {
+						if (posStr.equals(pos)) {
+							outList.add(sa);
 						}
 					}
 				}
 			}
-        }		
+		}
 		return outList;
 	}
 }

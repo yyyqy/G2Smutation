@@ -962,7 +962,7 @@ public class SeqIdAlignmentController {
         List<Mutation> outlist = new ArrayList<Mutation>();
         if (grsetValid.size() >= 1) {
             for (String gr : grsetValid) {
-                System.out.println("Out:\t"+gr);
+                //System.out.println("Out:\t"+gr);
                 String[] arrays = gr.split("_");
             	List<String> tmpStringList = new ArrayList<>();
             	tmpStringList.add(arrays[1]);
@@ -1016,7 +1016,7 @@ public class SeqIdAlignmentController {
         List<Mutation> outlist = new ArrayList<Mutation>();
         if (grsetValid.size() >= 1) {
             for (String gr : grsetValid) {
-                System.out.println("Out:\t"+gr);
+                //System.out.println("Out:\t"+gr);
                 String[] arrays = gr.split("_");
             	List<String> tmpStringList = new ArrayList<>();
             	tmpStringList.add(arrays[1]);
@@ -1278,7 +1278,7 @@ public class SeqIdAlignmentController {
         List<MutationAnnotation> outlist = new ArrayList<MutationAnnotation>();
         if (grsetValid.size() >= 1) {
             for (String gr : grsetValid) {
-                System.out.println("Out:\t"+gr);
+                //System.out.println("Out:\t"+gr);
                 String[] arrays = gr.split("_");
             	List<String> tmpStringList = new ArrayList<>();
             	tmpStringList.add(arrays[1]);
@@ -1332,7 +1332,7 @@ public class SeqIdAlignmentController {
         List<MutationAnnotation> outlist = new ArrayList<MutationAnnotation>();
         if (grsetValid.size() >= 1) {
             for (String gr : grsetValid) {
-                System.out.println("Out:\t"+gr);
+                //System.out.println("Out:\t"+gr);
                 String[] arrays = gr.split("_");
             	List<String> tmpStringList = new ArrayList<>();
             	tmpStringList.add(arrays[1]);

@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * Main controller get ResidueMutation: Get Mutations
+ * Controller get Mutation from protein: Get Mutations
  * 
  * @author Juexin Wang
  *
@@ -35,280 +35,284 @@ import io.swagger.annotations.ApiParam;
 @Api(tags = "Structure Mutations from Proteins", description = "ensembl/uniprot/sequences")
 @RequestMapping(value = "/api/")
 public class MainGetMappedProteinMutationController {
-    final static Logger log = Logger.getLogger(MainGetMappedProteinMutationController.class);
-    
-    @Autowired
-    private EnsemblRepository ensemblRepository;
-    @Autowired
-    private SeqIdAlignmentController seqController;
-    @Autowired
-    private UniprotRepository uniprotRepository;
-    @Autowired
-    private MutationUsageTableRepository mutationUsageTableRepository;
-    
-    @RequestMapping(value = "/proteinMutation/{id_type}/{id:.+}", method = { RequestMethod.GET,
-            RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("POST mutation by ProteinId")
-    public List<Mutation> postProteinMutation(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot;"
-                    + "uniprot_isoform;\n hgvs-grch37; dbsnp") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g.\n"
-                    + "ensembl:ENSP00000269305.4/ENSG00000141510.11/ENST00000269305.4;\n"
-                    + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_1/P53_HUMAN_1;\n"
-                    + "hgvs-grch37:17:g.7577094G>C;\n" 
-                    + "dbsnp:rs28934574") @PathVariable String id,
-            @ApiParam(required = false, value = "Input Residue Positions e.g. 202,282; Anynumber for hgvs;\n"
-                    + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
-        
-        List<Mutation> outList = new ArrayList<Mutation>();
-        if (id_type.equals("ensembl")) {
-            if (id.startsWith("ENSP")) {// EnsemblID:
-                // ENSP00000269305.4/ENSP00000269305
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
-                for (Ensembl ensembl : ensembllist) {
-                    //System.out.println(ensembl.getSeqId());
-                    if (positionList == null) {
-                        outList.addAll(seqController.getMutationUsageBySeqId(ensembl.getSeqId()));
-                    } else {
-                        outList.addAll(seqController.getMutationUsageBySeqId(ensembl.getSeqId(), positionList));
-                    }
+	final static Logger log = Logger.getLogger(MainGetMappedProteinMutationController.class);
 
-                }
-            } else if (id.startsWith("ENSG")) {// EnsemblGene:
-                // ENSG00000141510.11/ENSG00000141510
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
-                // Original implementation, just find exact word
-                // ENSG00000141510
-                // List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
-                if (ensembllist.size() >= 1) {
-                    for (Ensembl en : ensembllist) {
-                        if (positionList == null) {
-                            outList.addAll(seqController.getMutationUsageBySeqId(en.getSeqId()));
-                        } else {
-                            outList.addAll(seqController.getMutationUsageBySeqId(en.getSeqId(), positionList));
-                        }
+	@Autowired
+	private EnsemblRepository ensemblRepository;
+	@Autowired
+	private SeqIdAlignmentController seqController;
+	@Autowired
+	private UniprotRepository uniprotRepository;
+	@Autowired
+	private MutationUsageTableRepository mutationUsageTableRepository;
 
-                    }
-                }
-            } else if (id.startsWith("ENST")) {// EnsemblTranscript:
-                // ENST00000269305.4/ENST00000269305
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
-                if (ensembllist.size() >= 1) {
-                    for (Ensembl en : ensembllist) {
-                        if (positionList == null) {
-                            outList.addAll(seqController.getMutationUsageBySeqId(en.getSeqId()));
-                        } else {
-                            outList.addAll(seqController.getMutationUsageBySeqId(en.getSeqId(), positionList));
-                        }
+	@RequestMapping(value = "/proteinMutation/{id_type}/{id:.+}", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation("POST mutation by ProteinId")
+	public List<Mutation> postProteinMutation(
+			@ApiParam(required = true, value = "Input id_type: ensembl; uniprot;"
+					+ "uniprot_isoform;") @PathVariable String id_type,
+			@ApiParam(required = true, value = "Input id e.g.\n"
+					+ "ensembl:ENSP00000269305.4/ENSG00000141510.11/ENST00000269305.4;\n"
+					+ "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_1/P53_HUMAN_1;") @PathVariable String id,
+			@ApiParam(required = false, value = "Input Residue Positions e.g. 202,282;"
+					+ "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
-                    }
-                }
-            } else {
-                log.info("Error in Input. id_type:Ensembl id: " + id + " position:" + positionList);
-            }
+		List<Mutation> outList = new ArrayList<Mutation>();
+		if (id_type.equals("ensembl")) {
+			if (id.startsWith("ENSP")) {// EnsemblID:
+				// ENSP00000269305.4/ENSP00000269305
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
+				for (Ensembl ensembl : ensembllist) {
+					// System.out.println(ensembl.getSeqId());
+					if (positionList == null) {
+						outList.addAll(seqController.getMutationUsageBySeqId(ensembl.getSeqId()));
+					} else {
+						outList.addAll(seqController.getMutationUsageBySeqId(ensembl.getSeqId(), positionList));
+					}
 
-        } else if (id_type.equals("uniprot")) {
-            if (id.length() == 6 && id.split("_").length != 2) { // Accession: P04637
-                if (positionList == null) {
-                    outList.addAll(seqController.getMutationUsageByUniprotAccessionIso(id, "1"));
-                } else {
-                    outList.addAll(seqController.getMutationUsageByUniprotAccessionIso(id, "1", positionList));
-                }
+				}
+			} else if (id.startsWith("ENSG")) {// EnsemblGene:
+				// ENSG00000141510.11/ENSG00000141510
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
+				// Original implementation, just find exact word
+				// ENSG00000141510
+				// List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
+				if (ensembllist.size() >= 1) {
+					for (Ensembl en : ensembllist) {
+						if (positionList == null) {
+							outList.addAll(seqController.getMutationUsageBySeqId(en.getSeqId()));
+						} else {
+							outList.addAll(seqController.getMutationUsageBySeqId(en.getSeqId(), positionList));
+						}
 
-            } else if (id.split("_").length == 2) {// ID: P53_HUMAN
-                if (positionList == null) {
-                    outList.addAll(seqController.getMutationUsageByUniprotIdIso(id, "1"));
-                } else {
-                    outList.addAll(seqController.getMutationUsageByUniprotIdIso(id, "1", positionList));
-                }
+					}
+				}
+			} else if (id.startsWith("ENST")) {// EnsemblTranscript:
+				// ENST00000269305.4/ENST00000269305
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
+				if (ensembllist.size() >= 1) {
+					for (Ensembl en : ensembllist) {
+						if (positionList == null) {
+							outList.addAll(seqController.getMutationUsageBySeqId(en.getSeqId()));
+						} else {
+							outList.addAll(seqController.getMutationUsageBySeqId(en.getSeqId(), positionList));
+						}
 
-            } else {
-                log.info("Error in Input. id_type:Uniprot id: " + id + " position:" + positionList);
-            }
+					}
+				}
+			} else {
+				log.info("Error in Input. id_type:Ensembl id: " + id + " position:" + positionList);
+			}
 
-        } else if (id_type.equals("uniprot_isoform")) {
-            if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession: P04637
-                if (positionList == null) {
-                    outList.addAll(
-                            seqController.getMutationUsageByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]));
-                } else {
-                    outList.addAll(seqController.getMutationUsageByUniprotAccessionIso(id.split("_")[0], id.split("_")[1],
-                            positionList));
-                }
+		} else if (id_type.equals("uniprot")) {
+			if (id.length() == 6 && id.split("_").length != 2) { // Accession: P04637
+				if (positionList == null) {
+					outList.addAll(seqController.getMutationUsageByUniprotAccessionIso(id, "1"));
+				} else {
+					outList.addAll(seqController.getMutationUsageByUniprotAccessionIso(id, "1", positionList));
+				}
 
-            } else if (id.split("_").length == 3) {// ID: P53_HUMAN
-                if (positionList == null) {
-                    outList.addAll(seqController.getMutationUsageByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
-                            id.split("_")[2]));
-                } else {
-                    outList.addAll(seqController.getMutationUsageByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
-                            id.split("_")[2], positionList));
-                }
+			} else if (id.split("_").length == 2) {// ID: P53_HUMAN
+				if (positionList == null) {
+					outList.addAll(seqController.getMutationUsageByUniprotIdIso(id, "1"));
+				} else {
+					outList.addAll(seqController.getMutationUsageByUniprotIdIso(id, "1", positionList));
+				}
 
-            } else {
-                log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
-            }
-        } 
-        
-        else if (id_type.equals("hgvs-grch37")) {
-            // http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
+			} else {
+				log.info("Error in Input. id_type:Uniprot id: " + id + " position:" + positionList);
+			}
 
-            String genomeVersion = "GRCH37";
+		} else if (id_type.equals("uniprot_isoform")) {
+			if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession: P04637
+				if (positionList == null) {
+					outList.addAll(
+							seqController.getMutationUsageByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]));
+				} else {
+					outList.addAll(seqController.getMutationUsageByUniprotAccessionIso(id.split("_")[0],
+							id.split("_")[1], positionList));
+				}
 
-            String chromosomeNum = id.split(":g\\.")[0];
-            String tmp = id.split(":g\\.")[1];
-            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
-            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
+			} else if (id.split("_").length == 3) {// ID: P53_HUMAN
+				if (positionList == null) {
+					outList.addAll(seqController.getMutationUsageByUniprotIdIso(
+							id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2]));
+				} else {
+					outList.addAll(seqController.getMutationUsageByUniprotIdIso(
+							id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2], positionList));
+				}
 
-            System.out.println(chromosomeNum + " " + pos + " " + nucleotideType + " " + genomeVersion);
-            outList.addAll(
-                    seqController.getMutationUsageByEnsemblIdGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
+			} else {
+				log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
+			}
+		}
 
-        } 
-        else if (id_type.equals("dbsnp")) {
-            // https://www.genomenexus.org/beta/annotation/dbsnp/rs116035550
-            // https://www.genomenexus.org/beta/annotation/dbsnp/dbSNPID
-            System.out.println("dbsnp: " + id);
-            outList.addAll(seqController.getMutationUsageByEnsemblIddbSNPID(id));
-        } 
-        
-        else {
-            log.info("Error in Input. id_type:" + id_type + " id: " + id + " position:" + positionList);
-        }
-        return outList;
-    }
-    
-    @RequestMapping(value = "/proteinMutationAnno/{id_type}/{id:.+}", method = { RequestMethod.GET,
-            RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("POST mutation and annotation by ProteinId")
-    public List<MutationAnnotation> postProteinMutationAnnotation(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot;"
-                    + "uniprot_isoform;\n hgvs-grch37; dbsnp") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g.\n"
-                    + "ensembl:ENSP00000269305.4/ENSG00000141510.11/ENST00000269305.4;\n"
-                    + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_1/P53_HUMAN_1;\n"
-                    + "hgvs-grch37:17:g.7577094G>C;\n" 
-                    + "dbsnp:rs28934574") @PathVariable String id,
-            @ApiParam(required = false, value = "Input Residue Positions e.g. 202,282; Anynumber for hgvs;\n"
-                    + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
-        
-        List<MutationAnnotation> outList = new ArrayList<MutationAnnotation>();
-        if (id_type.equals("ensembl")) {
-            if (id.startsWith("ENSP")) {// EnsemblID:
-                // ENSP00000269305.4/ENSP00000269305
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
-                for (Ensembl ensembl : ensembllist) {
-                    //System.out.println(ensembl.getSeqId());
-                    if (positionList == null) {
-                        outList.addAll(seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId()));
-                    } else {
-                        outList.addAll(seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), positionList));
-                    }
+		/*
+		 * Move to genomic/variant API endpoints
+		else if (id_type.equals("hgvs-grch37")) {
+			// http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
 
-                }
-            } else if (id.startsWith("ENSG")) {// EnsemblGene:
-                // ENSG00000141510.11/ENSG00000141510
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
-                // Original implementation, just find exact word
-                // ENSG00000141510.16
-                // List<Ensembl> ensembllist =
-                // ensemblRepository.findByEnsemblGene(id);
-                if (ensembllist.size() >= 1) {
-                    for (Ensembl en : ensembllist) {
-                        if (positionList == null) {
-                            outList.addAll(seqController.getMutationUsageAnnotationBySeqId(en.getSeqId()));
-                        } else {
-                            outList.addAll(seqController.getMutationUsageAnnotationBySeqId(en.getSeqId(), positionList));
-                        }
+			String genomeVersion = "GRCH37";
 
-                    }
-                }
-            } else if (id.startsWith("ENST")) {// EnsemblTranscript:
-                // ENST00000269305.4/ENST00000269305
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
-                if (ensembllist.size() >= 1) {
-                    for (Ensembl en : ensembllist) {
-                        if (positionList == null) {
-                            outList.addAll(seqController.getMutationUsageAnnotationBySeqId(en.getSeqId()));
-                        } else {
-                            outList.addAll(seqController.getMutationUsageAnnotationBySeqId(en.getSeqId(), positionList));
-                        }
+			String chromosomeNum = id.split(":g\\.")[0];
+			String tmp = id.split(":g\\.")[1];
+			long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
+			String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
 
-                    }
-                }
-            } else {
-                log.info("Error in Input. id_type:Ensembl id: " + id + " position:" + positionList);
-            }
+			System.out.println(chromosomeNum + " " + pos + " " + nucleotideType + " " + genomeVersion);
+			outList.addAll(
+					seqController.getMutationUsageByEnsemblIdGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
 
-        } else if (id_type.equals("uniprot")) {
-            if (id.length() == 6 && id.split("_").length != 2) {// Accession:
-                // P04637
-                if (positionList == null) {
-                    outList.addAll(seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1"));
-                } else {
-                    outList.addAll(seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1", positionList));
-                }
+		} else if (id_type.equals("dbsnp")) {
+			// https://www.genomenexus.org/beta/annotation/dbsnp/rs116035550
+			// https://www.genomenexus.org/beta/annotation/dbsnp/dbSNPID
+			System.out.println("dbsnp: " + id);
+			outList.addAll(seqController.getMutationUsageByEnsemblIddbSNPID(id));
+		}
+		*/
 
-            } else if (id.split("_").length == 2) {// ID: P53_HUMAN
-                if (positionList == null) {
-                    outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1"));
-                } else {
-                    outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1", positionList));
-                }
+		else {
+			log.info("Error in Input. id_type:" + id_type + " id: " + id + " position:" + positionList);
+		}
+		return outList;
+	}
 
-            } else {
-                log.info("Error in Input. id_type:Uniprot id: " + id + " position:" + positionList);
-            }
+	@RequestMapping(value = "/proteinMutationAnno/{id_type}/{id:.+}", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation("POST mutation and annotation by ProteinId")
+	public List<MutationAnnotation> postProteinMutationAnnotation(
+			@ApiParam(required = true, value = "Input id_type: ensembl; uniprot;"
+					+ "uniprot_isoform") @PathVariable String id_type,
+			@ApiParam(required = true, value = "Input id e.g.\n"
+					+ "ensembl:ENSP00000269305.4/ENSG00000141510.11/ENST00000269305.4;\n"
+					+ "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_1/P53_HUMAN_1;") @PathVariable String id,
+			@ApiParam(required = false, value = "Input Residue Positions e.g. 202,282;"
+					+ "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
-        } else if (id_type.equals("uniprot_isoform")) {
-            if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession:
-                // P04637
-                if (positionList == null) {
-                    outList.addAll(
-                            seqController.getMutationUsageAnnotationByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]));
-                } else {
-                    outList.addAll(seqController.getMutationUsageAnnotationByUniprotAccessionIso(id.split("_")[0], id.split("_")[1],
-                            positionList));
-                }
+		List<MutationAnnotation> outList = new ArrayList<MutationAnnotation>();
+		if (id_type.equals("ensembl")) {
+			if (id.startsWith("ENSP")) {// EnsemblID:
+				// ENSP00000269305.4/ENSP00000269305
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
+				for (Ensembl ensembl : ensembllist) {
+					// System.out.println(ensembl.getSeqId());
+					if (positionList == null) {
+						outList.addAll(seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId()));
+					} else {
+						outList.addAll(
+								seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), positionList));
+					}
 
-            } else if (id.split("_").length == 3) {// ID: P53_HUMAN
-                if (positionList == null) {
-                    outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
-                            id.split("_")[2]));
-                } else {
-                    outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
-                            id.split("_")[2], positionList));
-                }
+				}
+			} else if (id.startsWith("ENSG")) {// EnsemblGene:
+				// ENSG00000141510.11/ENSG00000141510
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
+				// Original implementation, just find exact word
+				// ENSG00000141510.16
+				// List<Ensembl> ensembllist =
+				// ensemblRepository.findByEnsemblGene(id);
+				if (ensembllist.size() >= 1) {
+					for (Ensembl en : ensembllist) {
+						if (positionList == null) {
+							outList.addAll(seqController.getMutationUsageAnnotationBySeqId(en.getSeqId()));
+						} else {
+							outList.addAll(
+									seqController.getMutationUsageAnnotationBySeqId(en.getSeqId(), positionList));
+						}
 
-            } else {
-                log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
-            }
-        } else if (id_type.equals("hgvs-grch37")) {
-            // http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
+					}
+				}
+			} else if (id.startsWith("ENST")) {// EnsemblTranscript:
+				// ENST00000269305.4/ENST00000269305
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
+				if (ensembllist.size() >= 1) {
+					for (Ensembl en : ensembllist) {
+						if (positionList == null) {
+							outList.addAll(seqController.getMutationUsageAnnotationBySeqId(en.getSeqId()));
+						} else {
+							outList.addAll(
+									seqController.getMutationUsageAnnotationBySeqId(en.getSeqId(), positionList));
+						}
 
-            String genomeVersion = "GRCH37";
+					}
+				}
+			} else {
+				log.info("Error in Input. id_type:Ensembl id: " + id + " position:" + positionList);
+			}
 
-            String chromosomeNum = id.split(":g\\.")[0];
-            String tmp = id.split(":g\\.")[1];
-            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
-            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
+		} else if (id_type.equals("uniprot")) {
+			if (id.length() == 6 && id.split("_").length != 2) {// Accession:
+				// P04637
+				if (positionList == null) {
+					outList.addAll(seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1"));
+				} else {
+					outList.addAll(
+							seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1", positionList));
+				}
 
-            System.out.println(chromosomeNum + " " + pos + " " + nucleotideType + " " + genomeVersion);
-            outList.addAll(
-                    seqController.getMutationUsageAnnotationByEnsemblIdGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
+			} else if (id.split("_").length == 2) {// ID: P53_HUMAN
+				if (positionList == null) {
+					outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1"));
+				} else {
+					outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1", positionList));
+				}
 
-        } else if (id_type.equals("dbsnp")) {
-            // https://www.genomenexus.org/beta/annotation/dbsnp/rs116035550
-            // https://www.genomenexus.org/beta/annotation/dbsnp/dbSNPID
-            System.out.println("dbsnp: " + id);
-            outList.addAll(seqController.getMutationUsageAnnotationByEnsemblIddbSNPID(id));
-        } 
-        
-        else {
-            log.info("Error in Input. id_type:" + id_type + " id: " + id + " position:" + positionList);
-        }
-        return outList;
-    }
+			} else {
+				log.info("Error in Input. id_type:Uniprot id: " + id + " position:" + positionList);
+			}
+
+		} else if (id_type.equals("uniprot_isoform")) {
+			if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession:
+				// P04637
+				if (positionList == null) {
+					outList.addAll(seqController.getMutationUsageAnnotationByUniprotAccessionIso(id.split("_")[0],
+							id.split("_")[1]));
+				} else {
+					outList.addAll(seqController.getMutationUsageAnnotationByUniprotAccessionIso(id.split("_")[0],
+							id.split("_")[1], positionList));
+				}
+
+			} else if (id.split("_").length == 3) {// ID: P53_HUMAN
+				if (positionList == null) {
+					outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(
+							id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2]));
+				} else {
+					outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(
+							id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2], positionList));
+				}
+
+			} else {
+				log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
+			}
+		}
+		/**
+		else if (id_type.equals("hgvs-grch37")) {
+			// http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
+
+			String genomeVersion = "GRCH37";
+
+			String chromosomeNum = id.split(":g\\.")[0];
+			String tmp = id.split(":g\\.")[1];
+			long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
+			String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
+
+			System.out.println(chromosomeNum + " " + pos + " " + nucleotideType + " " + genomeVersion);
+			outList.addAll(seqController.getMutationUsageAnnotationByEnsemblIdGenome(chromosomeNum, pos, nucleotideType,
+					genomeVersion));
+
+		} else if (id_type.equals("dbsnp")) {
+			// https://www.genomenexus.org/beta/annotation/dbsnp/rs116035550
+			// https://www.genomenexus.org/beta/annotation/dbsnp/dbSNPID
+			System.out.println("dbsnp: " + id);
+			outList.addAll(seqController.getMutationUsageAnnotationByEnsemblIddbSNPID(id));
+		}
+		*/
+
+		else {
+			log.info("Error in Input. id_type:" + id_type + " id: " + id + " position:" + positionList);
+		}
+		return outList;
+	}
 
 }
-
