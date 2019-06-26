@@ -60,6 +60,8 @@ public class ReadConfig {
     public static String updateInitUpdateResult;
     public static String releaseTag;
     public static String releaseTagResult;
+    public static String updateReleaseWeeklydownloadScript;
+    public static String updateReleaseWeeklydownload;
     public static String updateStatisticsSQL;
     public static String updateAllSnpSql;
     public static String pdbStructureService;
@@ -208,6 +210,8 @@ public class ReadConfig {
             ReadConfig.updateInitUpdateResult = prop.getProperty("update.initUpdate_result").trim();
             ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
+            ReadConfig.updateReleaseWeeklydownloadScript = prop.getProperty("update.release_weeklydownload_script").trim();
+            ReadConfig.updateReleaseWeeklydownload = prop.getProperty("update.release_weeklydownload").trim();
             ReadConfig.updateAllSnpSql = prop.getProperty("update.allSnpMutation.sql").trim();
             ReadConfig.updateStatisticsSQL = prop.getProperty("update.statistics.sql").trim();
             ReadConfig.pdbStructureService = prop.getProperty("pdb.structureService").trim();
@@ -1276,6 +1280,23 @@ public class ReadConfig {
 	public static void setStructureAnnoHmFile(String structureAnnoHmFile) {
 		ReadConfig.structureAnnoHmFile = structureAnnoHmFile;
 	}
+
+	public static String getUpdateReleaseWeeklydownloadScript() {
+		return updateReleaseWeeklydownloadScript;
+	}
+
+	public static void setUpdateReleaseWeeklydownloadScript(String updateReleaseWeeklydownloadScript) {
+		ReadConfig.updateReleaseWeeklydownloadScript = updateReleaseWeeklydownloadScript;
+	}
+
+	public static String getUpdateReleaseWeeklydownload() {
+		return updateReleaseWeeklydownload;
+	}
+
+	public static void setUpdateReleaseWeeklydownload(String updateReleaseWeeklydownload) {
+		ReadConfig.updateReleaseWeeklydownload = updateReleaseWeeklydownload;
+	}
+	
 	
 
 }

@@ -113,19 +113,20 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 0]********************");
         log.info("Delete old sql files in the workspace");
-        cleanupG2S();
+        //cleanupG2S();
 
         log.info("********************[Init STEP 1]********************");
         log.info("Initialize G2S service for alignments and residue mapping");
-        initializeG2S(preprocess, parseprocess);
+        //initializeG2S(preprocess, parseprocess);
 
         log.info("********************[Init STEP 2]********************");
         log.info("Find mutation using G2S service");
-        generateMutation(parseprocess);
+        //generateMutation(parseprocess);
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
-        //generateAnnotation(parseprocess, false, new ListUpdate());
+        this.setSeqFileCount(10);
+        generateAnnotation(parseprocess, false, new ListUpdate());
 
         log.info("********************[Init STEP 4]********************");
         log.info("[FileSystem] Clean Up");
@@ -1104,6 +1105,13 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
         cu.runCommand("mysql", paralist);
+        
+        log.info("********************[Update STEP 4.3]********************");
+        log.info("Generate Realease download files");
+        paralist.add(ReadConfig.resourceDir + ReadConfig.updateReleaseWeeklydownloadScript);
+        String[] date = currentDir.split("\\/");
+        paralist.add(ReadConfig.workspace + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
+        cu.runCommand("releaseTag", paralist);       
     }
 }
 
