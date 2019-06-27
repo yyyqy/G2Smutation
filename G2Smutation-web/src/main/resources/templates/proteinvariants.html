@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"></link>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"></link>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  	
+  	<!-- For dataTables -->
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"></link>
+	<link rel="stylesheet" type="text/css" href="/css/datatable.css"></link>
+	<script type="text/javascript" charset="utf8" src="js/jquery.spring-friendly.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	
+	
+</head>
+
+
+
+<body>
+	<nav style="margin:0px" class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">G2S Web Service</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    		<span class="navbar-toggler-icon"></span>
+  		</button>
+  		
+  		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    		<ul class="navbar-nav mr-auto">
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/sequence}" href="sequence.html">Sequence</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/database}" href="database.html">Database</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/Statistics}" href="statistics.html">Statistics</a>
+      			</li>
+    		</ul>
+  		</div>
+	</nav>
+	
+	<div class="container">
+	<h1 layout:fragment="header">Statistics of G2S databases:</h1>
+	<h2 layout:fragment="header">Alignment Summary</h2>
+	<div layout:fragment="content" class="container-fluid">
+
+<table id="contents" class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<td>ProteinName</td>
+					<td>QueryPosition</td>
+					<td><abbr title="Annotation">Residue</abbr></td>
+					<td>PDB</td>
+					<td>Chain</td>
+					<td>PDBPosition</td>
+					<td>PDBResidue</td>
+					<td>alignmentId</td>
+				</tr>
+			</thead>
+		</table>
+
+		
+		<p>G2S database stored alignments from protein
+			sequences against PDB sequences.</p>
+		<p>
+			The sources of protein sequences are from <a
+				href="ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/">Uniprot</a>
+			(Only includes Swissprot) and <a
+				href="http://ftp.ensembl.org/pub/release-90/fasta/homo_sapiens/pep/">HUMAN
+				ENSEMBL</a>. All the protein sequences are combined together to remove
+			redundancy.
+		</p>
+		<p>
+			G2S makes automatic frequent (<b>WEEKLY</b>) updates to
+			the set of pre-caculated alignments as new/obsolete/modified protein
+			structures are added to <a href="http://www.rcsb.org/">RCSB
+				Protein Data Bank</a>, while keeping the set of protein sequences from
+			public protein sequence databases fixed. Less frequently (<b>MONTHS</b>),
+			the system is re-initialized using an updated set of protein
+			sequences in new release of Uniprot/Ensembl, and during
+			re-initialization an all-against-all alignment process is executed.
+		</p>
+	</div>
+	</div>
+	
+	<script>
+$(document).ready(function() {
+    $('#contents').DataTable( {
+        ajax : '/allmutationusage',
+        processing: true,
+		columns : [
+		{
+			data : 'seqName'
+		}, 
+		{
+			data : 'seqIndex'
+		},  
+		{
+			data : 'seqResidue'
+		}, 
+		{
+			data : 'pdbNo',
+			"render": function(data, type, row, meta){
+            if(type === 'display'){
+            	var dataurl = '/api/proteinMutationAnno/uniprot/P53_HUMAN?positionList=282'
+                data = '<a href="' + dataurl + '">' + data + '</a>';
+            }
+            return data;
+         	}
+		}, 
+		{
+			data : 'pdbNo',
+			render: function (data) { return data.split("_")[1]; }
+		},
+		{
+			data : 'pdbIndex'
+		}, 
+		{
+			data : 'pdbResidue'
+		},
+		{
+			data : 'alignmentId'
+		}]
+	});
+	
+} );
+	
+
+
+
+
+	</script>
+</body>
+</html>

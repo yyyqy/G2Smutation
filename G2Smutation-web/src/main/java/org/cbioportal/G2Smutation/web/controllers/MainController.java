@@ -13,14 +13,15 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.cbioportal.G2Smutation.scripts.PdbScriptsPipelineRunCommand;
 import org.cbioportal.G2Smutation.web.domain.*;
-import org.cbioportal.G2Smutation.web.domain.StatisticsRepository;
 import org.cbioportal.G2Smutation.web.models.InputAlignment;
 import org.cbioportal.G2Smutation.web.models.InputSequence;
+import org.cbioportal.G2Smutation.web.models.MutationUsageTableResult;
 import org.cbioportal.G2Smutation.web.models.Statistics;
 import org.cbioportal.G2Smutation.web.models.db.Clinvar;
 import org.cbioportal.G2Smutation.web.models.db.Cosmic;
 import org.cbioportal.G2Smutation.web.models.db.Dbsnp;
 import org.cbioportal.G2Smutation.web.models.db.Genie;
+import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
 import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
 import org.cbioportal.G2Smutation.web.models.db.Tcga;
 import org.cbioportal.G2Smutation.web.models.db.mutation_usage_table;
@@ -37,9 +38,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -60,7 +63,11 @@ import java.util.List;
  * 
  */
 @Controller
+@RestController
 public class MainController {
+	
+	@Autowired
+	private MutationUsageTableRepository mutationUsageTableRepository;
 	
 	@Autowired
 	private MutationRepository mutationRepository;
@@ -271,21 +278,38 @@ public class MainController {
     public ModelAndView contactInfo() {
         return new ModelAndView("contact");
     }
-    
-    @GetMapping("/beta")
-    public ModelAndView betaInfo() {
-        return new ModelAndView("beta");
-    }
-    
-    @GetMapping("/detail")
-    public ModelAndView detailInfo(Model model) {
-        return new ModelAndView("detail");
-    }
 
     @GetMapping("/")
     public ModelAndView homeInfo() {
         return new ModelAndView("frontpage");
     }
+    
+    //New table
+    
+    @GetMapping("/proteinvariants")
+    public ModelAndView proteinvariantsInfo() {
+    	//List<MutationUsageTable> entries = mutationUsageTableRepository.findByMutationNo("149_69");
+    	//System.out.println(entries.toString());
+    	//return new ModelAndView("/proteinvariants","entries",entries);
+    	return new ModelAndView("/proteinvariants");
+    	//return mutationUsageTableRepository.findByMutationNo("149_69");
+        //return new ModelAndView("proteinvariants");
+    }
+    
+    @RequestMapping(value = "/allmutationusage", method = RequestMethod.GET)
+    public MutationUsageTableResult listAllMutationUsage() {
+    	MutationUsageTableResult result = new MutationUsageTableResult();
+    	//List<MutationUsageTable> entries = mutationUsageTableRepository.findAll();
+    	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(59996);
+    	result.setData(entries);
+    	//result.setRecordsTotal(entries.size());
+    	//result.setRecordsFiltered(entries.size());
+    	return result;
+    	//return mutationUsageTableRepository.findByMutationNo("149_69");
+        //return new ModelAndView("proteinvariants");
+    }
+    
+    
     
     // RS database start
     public Integer rstotaldata = 16290997;
@@ -851,5 +875,6 @@ public class MainController {
         }
         return new ModelAndView(new RedirectView(result));
     }
+    
 
 }

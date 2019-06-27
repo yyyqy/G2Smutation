@@ -141,8 +141,7 @@ CREATE TABLE `update_record` (
   `CLINVAR_MAPPING_NUM` int,
   `COSMIC_MAPPING_NUM` int,
   `GENIE_MAPPING_NUM` int,
-  `TCGA_MAPPING_NUM` int,
-  
+  `TCGA_MAPPING_NUM` int,  
   `MUTATION_LOCATION_NUM` int,
   `A2R` int,
   `A2N` int,

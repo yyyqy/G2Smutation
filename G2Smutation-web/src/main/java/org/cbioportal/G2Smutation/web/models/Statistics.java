@@ -50,6 +50,21 @@ public class Statistics {
     @Column(name = "TCGA_NUM")
     private int tcgaNum;
     
+    @Column(name = "DBSNP_NUM_UNIQUE")
+    private int dbsnpNumUnique;
+    
+    @Column(name = "CLINVAR_NUM_UNIQUE")
+    private int clinvarNumUnique;
+    
+    @Column(name = "COSMIC_NUM_UNIQUE")
+    private int cosmicNumUnique;
+    
+    @Column(name = "GENIE_NUM_UNIQUE")
+    private int genieNumUnique;
+    
+    @Column(name = "TCGA_NUM_UNIQUE")
+    private int tcgaNumUnique;
+        
     @Column(name = "DBSNP_MAPPING_NUM")
     private int dbsnpMappingNum;
     
@@ -64,21 +79,6 @@ public class Statistics {
     
     @Column(name = "TCGA_MAPPING_NUM")
     private int tcgaMappingNum;
-    
-    @Column(name = "MUTATION_NO_MAPPING_NUM")
-    private int mutationNoMappingNum;
-    
-    @Column(name = "MUTATION_NO_MAPPING_UNIQUE_NUM")
-    private int mutationNoMappingUniqueNum;
-    
-    @Column(name = "MUTATION_NO")
-    private int mutationNo;
-    
-    @Column(name = "MUTATION_NO_UNIQUE")
-    private int mutationNoUnique;
-    
-    @Column(name = "MUTATION_USAGE_NUM")
-    private int mutationUsageNum;
     
     @Column(name = "MUTATION_LOCATION_NUM")
     private int mutationLocationNum;
@@ -677,52 +677,45 @@ public class Statistics {
     @Column(name = "Y2V")
     private int y2V;
 
+	public int getId() {
+		return id;
+	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
 
+	public String getUpdateDate() {
+		return updateDate;
+	}
 
-    
-    
+	public void setUpdateDate(String updateDate) {
+		this.updateDate = updateDate;
+	}
 
+	public int getSegNum() {
+		return segNum;
+	}
 
-    public int getId() {
-        return id;
-    }
+	public void setSegNum(int segNum) {
+		this.segNum = segNum;
+	}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	public int getPdbNum() {
+		return pdbNum;
+	}
 
-    public String getUpdateDate() {
-        return updateDate;
-    }
+	public void setPdbNum(int pdbNum) {
+		this.pdbNum = pdbNum;
+	}
 
-    public void setUpdateDate(String updateDate) {
-        this.updateDate = updateDate;
-    }
+	public int getAlignmentNum() {
+		return alignmentNum;
+	}
 
-    public int getSegNum() {
-        return segNum;
-    }
-
-    public void setSegNum(int segNum) {
-        this.segNum = segNum;
-    }
-
-    public int getPdbNum() {
-        return pdbNum;
-    }
-
-    public void setPdbNum(int pdbNum) {
-        this.pdbNum = pdbNum;
-    }
-
-    public int getAlignmentNum() {
-        return alignmentNum;
-    }
-
-    public void setAlignmentNum(int alignmentNum) {
-        this.alignmentNum = alignmentNum;
-    }
+	public void setAlignmentNum(int alignmentNum) {
+		this.alignmentNum = alignmentNum;
+	}
 
 	public int getDbsnpNum() {
 		return dbsnpNum;
@@ -764,6 +757,46 @@ public class Statistics {
 		this.tcgaNum = tcgaNum;
 	}
 
+	public int getDbsnpNumUnique() {
+		return dbsnpNumUnique;
+	}
+
+	public void setDbsnpNumUnique(int dbsnpNumUnique) {
+		this.dbsnpNumUnique = dbsnpNumUnique;
+	}
+
+	public int getClinvarNumUnique() {
+		return clinvarNumUnique;
+	}
+
+	public void setClinvarNumUnique(int clinvarNumUnique) {
+		this.clinvarNumUnique = clinvarNumUnique;
+	}
+
+	public int getCosmicNumUnique() {
+		return cosmicNumUnique;
+	}
+
+	public void setCosmicNumUnique(int cosmicNumUnique) {
+		this.cosmicNumUnique = cosmicNumUnique;
+	}
+
+	public int getGenieNumUnique() {
+		return genieNumUnique;
+	}
+
+	public void setGenieNumUnique(int genieNumUnique) {
+		this.genieNumUnique = genieNumUnique;
+	}
+
+	public int getTcgaNumUnique() {
+		return tcgaNumUnique;
+	}
+
+	public void setTcgaNumUnique(int tcgaNumUnique) {
+		this.tcgaNumUnique = tcgaNumUnique;
+	}
+
 	public int getDbsnpMappingNum() {
 		return dbsnpMappingNum;
 	}
@@ -802,46 +835,6 @@ public class Statistics {
 
 	public void setTcgaMappingNum(int tcgaMappingNum) {
 		this.tcgaMappingNum = tcgaMappingNum;
-	}
-
-	public int getMutationNoMappingNum() {
-		return mutationNoMappingNum;
-	}
-
-	public void setMutationNoMappingNum(int mutationNoMappingNum) {
-		this.mutationNoMappingNum = mutationNoMappingNum;
-	}
-
-	public int getMutationNoMappingUniqueNum() {
-		return mutationNoMappingUniqueNum;
-	}
-
-	public void setMutationNoMappingUniqueNum(int mutationNoMappingUniqueNum) {
-		this.mutationNoMappingUniqueNum = mutationNoMappingUniqueNum;
-	}
-
-	public int getMutationNo() {
-		return mutationNo;
-	}
-
-	public void setMutationNo(int mutationNo) {
-		this.mutationNo = mutationNo;
-	}
-
-	public int getMutationNoUnique() {
-		return mutationNoUnique;
-	}
-
-	public void setMutationNoUnique(int mutationNoUnique) {
-		this.mutationNoUnique = mutationNoUnique;
-	}
-
-	public int getMutationUsageNum() {
-		return mutationUsageNum;
-	}
-
-	public void setMutationUsageNum(int mutationUsageNum) {
-		this.mutationUsageNum = mutationUsageNum;
 	}
 
 	public int getMutationLocationNum() {
@@ -2371,7 +2364,6 @@ public class Statistics {
 	public void setY2V(int y2v) {
 		y2V = y2v;
 	}
-    
     
 
 }

@@ -97,6 +97,7 @@
 					<td>Name</td>
 					<td>PDB Mapped DBSNP entries on mutated position</td>
 					<td>Total PDB Mapped DBSNP entries</td>
+					<td>Variants</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -104,49 +105,36 @@
 					<td>DBSNP entries</td>
 					<td th:text="${statistics[0].dbsnpMappingNum}">2903</td>
 					<td th:text="${statistics[0].dbsnpNum}">2344830</td>
+					<td th:text="${statistics[0].dbsnpNumUnique}">2344830</td>
 				</tr>
 				<tr>
 					<td>CLINVAR entries</td>
 					<td th:text="${statistics[0].clinvarMappingNum}">281</td>
 					<td th:text="${statistics[0].clinvarNum}">416218</td>
+					<td th:text="${statistics[0].clinvarNumUnique}">416218</td>
 				</tr>
 				<tr>
 					<td>COSMIC entries</td>
 					<td th:text="${statistics[0].cosmicMappingNum}">1803</td>
 					<td th:text="${statistics[0].cosmicNum}">5452069</td>
+					<td th:text="${statistics[0].cosmicNumUnique}">5452069</td>
 				</tr>
-				<tr>
+				<!--<tr>
 					<td>GENIE entries</td>
 					<td th:text="${statistics[0].genieMappingNum}">234</td>
 					<td th:text="${statistics[0].genieNum}">434567</td>
-				</tr>
+					<td th:text="${statistics[0].genieNumUnique}">434567</td>
+				</tr>//-->
 				<tr>
 					<td>TCGA entries</td>
 					<td th:text="${statistics[0].tcgaMappingNum}">1460</td>
 					<td th:text="${statistics[0].tcgaNum}">5625059</td>
-				</tr>
-				<tr>
-					<td>Number of Genomic Position-PDB Alignments</td>
-					<td th:text="${statistics[0].mutationNoMappingNum}">66926301</td>
-				</tr>
-				<tr>
-					<td>Number of Genomic Positions mapped to PDB</td>
-					<td th:text="${statistics[0].mutationNoMappingUniqueNum}">1583213</td>
-				</tr>
-				<tr>
-					<td>Number of Mapped Protein Residues has sequence mutation</td>
-					<td th:text="${statistics[0].mutationNo}">16784085</td>
-				</tr>
-				<tr>
-					<td>Number of GenomicPositions with mapped PDB residue</td>
-					<td th:text="${statistics[0].mutationNoUnique}">6019054</td>
-				</tr>
-				<tr>
-					<td>Number of Alignments with mutation on PDB</td>
-					<td th:text="${statistics[0].mutationUsageNum}">1043638</td>
+					<td th:text="${statistics[0].tcgaNumUnique}">5625059</td>
 				</tr>
 				<tr>
 					<td>Number of Protein Residues with mutation on PDB</td>
+					<td>-</td>
+					<td>-</td>
 					<td th:text="${statistics[0].mutationLocationNum}">11785</td>
 				</tr>
 			</tbody>
