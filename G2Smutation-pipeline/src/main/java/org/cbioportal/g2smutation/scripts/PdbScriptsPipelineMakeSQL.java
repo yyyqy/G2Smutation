@@ -1867,6 +1867,7 @@ public class PdbScriptsPipelineMakeSQL {
             while (it.hasNext()) {
                 String contentStr = it.nextLine();
                 String[] strArray = contentStr.split("\t");
+                
                 if (count == 0) {
                     // header, convert header to inject key string
                     for (String str : strArray) {
@@ -1883,8 +1884,8 @@ public class PdbScriptsPipelineMakeSQL {
                     }
                     keystr = keystr + ",`COSMIC_VERSION`)VALUES('";
                 } else {
-                    // System.out.println(count + " * " + strArray[23]);
-                    if (!strArray[23].equals("")) {
+                    //System.out.println(count + " * " + strArray[23]);
+                    if (!strArray[23].equals("")) {                   	
                         String[] tmpArray = strArray[23].split(":");
                         String[] posArray = tmpArray[1].split("-");
                         int start = Integer.parseInt(posArray[0]);
@@ -1934,11 +1935,14 @@ public class PdbScriptsPipelineMakeSQL {
                 for (String str : strArray) {
                     valstr = valstr + ",'" + str + "'";
                 }
-                // deal with the last character may miss
-                if (strArray.length == 34) {// temp hardcode here related with
-                                            // the cosmic_entry;
-                    valstr = valstr + ",''";
-                }
+                //For some reasons, the end of some cosmic annotation has been trimmed off
+            	//So we have to complete them
+            	int lengthNormal = 35; // 35 is the length of normal COSMIC annotation
+            	if (strArray.length<lengthNormal) {
+            		for(int i=strArray.length; i<lengthNormal; i++) {
+            			valstr = valstr + ",''";
+            		}
+            	}
                 valstr = valstr + ",'COSMIC v87, released 13-NOV-18');\n";
 
                 outputlist.add(keystr + valstr);
