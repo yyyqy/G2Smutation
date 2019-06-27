@@ -1875,6 +1875,9 @@ public class PdbScriptsPipelineMakeSQL {
                                                         // Cosmic, we changed
                                                         // accordingly
                             str = "COSMIC_MUTATION_ID";
+                        }if (str.equals("GENOME-WIDE_SCREEN")) {// duplicate key in
+                            // Cosmic, we changed accordingly
+                        	str = "GENOME_WIDE_SCREEN";
                         }
                         keystr = keystr + ",`" + str + "`";
                     }
