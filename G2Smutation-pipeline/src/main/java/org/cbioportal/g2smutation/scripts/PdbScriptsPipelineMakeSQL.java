@@ -2040,7 +2040,7 @@ public class PdbScriptsPipelineMakeSQL {
                     for (String str : strArray) {
                         if (annotationType.equals("tcga")) {
                             if (str.equals("STRAND")) {
-                                str = "STRAND-VEP";
+                                str = "STRAND_VEP";
                             }
                         }
                         str = str.replaceAll("\\s+", "_").toUpperCase();
