@@ -719,6 +719,7 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         String currentDir = this.currentDir;
         FileOperatingUtil fou = new FileOperatingUtil();
+        /*
         
         log.info("********************[STEP 3.1]********************");
         log.info("[File] Read results from file, generate HashMap for usage");        
@@ -748,7 +749,7 @@ public class PdbScriptsPipelineRunCommand {
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        /*
+        */
         // Deserialize!!!!
         String filename = ReadConfig.workspace + "mUsageRecord.ser";
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
@@ -758,7 +759,8 @@ public class PdbScriptsPipelineRunCommand {
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        */ 
+        
+        /*
                  
         log.info("********************[STEP 3.2]********************");
         log.info("[SQL] Use mutation results, generate table mutation_location_entry. Rebuild in updates");        
@@ -872,7 +874,10 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.mutationInjectSQLStructure);
         cu.runCommand("mysql", paralist);
+        */
         
+        
+        FTPClientUtil fc = new FTPClientUtil();
         //dbsnp, clinvar, cosmic, genie, tcga annotation, only need update in initial G2S        
         if (!updateTag){
         	//TODO Update Clinvar later, next version
