@@ -751,7 +751,7 @@ public class PdbScriptsPipelineRunCommand {
         }
         */
         // Deserialize!!!!
-        String filename = ReadConfig.workspace + "mUsageRecord.ser";
+        String filename = ReadConfig.workspace + "PERSISTENCE/mUsageRecord.ser";
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
         // Deserialize the tmpfile to MutationUsageRecord
         try{           
