@@ -25,6 +25,7 @@ import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.io.PDBFileReader;
 import org.cbioportal.g2smutation.util.FileOperatingUtil;
 import org.cbioportal.g2smutation.util.ReadConfig;
+import org.cbioportal.g2smutation.util.StringUtil;
 import org.cbioportal.g2smutation.util.blast.BlastDataBase;
 import org.cbioportal.g2smutation.util.blast.BlastOutput;
 import org.cbioportal.g2smutation.util.blast.BlastOutputIterations;
@@ -1781,6 +1782,7 @@ public class PdbScriptsPipelineMakeSQL {
                                                         // all information in
                                                         // the line>
         FileOperatingUtil fou = new FileOperatingUtil();
+        StringUtil su = new StringUtil();
         try {
             LineIterator it = FileUtils.lineIterator(new File(inputFilename));
             while (it.hasNext()) {
@@ -1823,7 +1825,7 @@ public class PdbScriptsPipelineMakeSQL {
 
                 for (String key : contentHm.keySet()) {
                     keystr = keystr + ",`" + key + "`";
-                    valstr = valstr + ",'" + contentHm.get(key) + "'";
+                    valstr = valstr + ",'" + su.toSQLstring(contentHm.get(key)) + "'";
                 }
                 valstr = valstr + ",CURDATE());\n";
 
