@@ -820,9 +820,9 @@ public class PdbScriptsPipelineRunCommand {
         HashMap<String, StructureAnnotationRecord> structureAnnoHm = new HashMap<>();
         
         if(!updateTag){
-        	sanno.generateNaccessResults(mUsageRecord, new HashSet<>());
+        	sanno.generateNaccessResults(mUsageRecord, new HashSet<>(), false);
         	log.info("[STRUCTURE] Start processing naccess rsa results from scratch");
-        	sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>());
+        	sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>(), false);
         	
         	log.info("[STRUCTURE] naccess complete and start parsing from scratch"); 
             sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, new HashMap<String, StructureAnnotationRecord >());       
@@ -845,9 +845,9 @@ public class PdbScriptsPipelineRunCommand {
                     pdbSet.remove(pdb);
                 }                
             }
-        	sanno.generateNaccessResults(mUsageRecord, pdbSet);
+        	sanno.generateNaccessResults(mUsageRecord, pdbSet, true);
         	log.info("[STRUCTURE] Start processing naccess rsa results in update");
-        	sanno.generateNaccessResultsBuried(mUsageRecord, pdbSet);
+        	sanno.generateNaccessResultsBuried(mUsageRecord, pdbSet, true);
         	
         	//update structure annotation
         	HashSet<String> pdbNewSet = new HashSet<>();

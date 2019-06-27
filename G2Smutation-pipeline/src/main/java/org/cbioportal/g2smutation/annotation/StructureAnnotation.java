@@ -971,19 +971,22 @@ public class StructureAnnotation {
      * 
      * @param mUsageRecord
      * @param HashSet<String> pdbSet
+     * @param forceRunFlag   true:If File existed,rerun (Update)
+     * 						false:If file not existed, not rerun (init) 
      * 
      */
-    public void generateNaccessResults(MutationUsageRecord mUsageRecord, HashSet<String> pdbSet) {
+    public void generateNaccessResults(MutationUsageRecord mUsageRecord, HashSet<String> pdbSet, boolean forceRunFlag) {
         HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
         int count = 0;
+        int totalSize = residueHm.size();
         for (int mutationId : residueHm.keySet()) {
             String pdbNo = residueHm.get(mutationId).split("_")[0];
             if (!pdbSet.contains(pdbNo)) {
-                runNaccessFromLocal(pdbNo);
+                runNaccessFromLocal(pdbNo, forceRunFlag);
                 pdbSet.add(pdbNo);
             }
-            if (count % 1000 == 0) {
-                log.info("Finish " + count + "th in naccess");
+            if (count % 10000 == 0) {
+                log.info("Finish " + count + "th of total "+ totalSize+" in naccess");
             }
             count++;
         }
@@ -994,14 +997,17 @@ public class StructureAnnotation {
      * 
      * @param mUsageRecord
      * @param HashSet<String> pdbSet
+     * @param forceRunFlag   true:If File existed,rerun (Update)
+     * 						false:If file not existed, not rerun (init)
+     * 
      */
-    public void generateNaccessResultsBuried(MutationUsageRecord mUsageRecord, HashSet<String> pdbSet) {
+    public void generateNaccessResultsBuried(MutationUsageRecord mUsageRecord, HashSet<String> pdbSet, boolean forceRunFlag) {
         HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
         int count = 0;
         for (int mutationId : residueHm.keySet()) {
             String pdbNo = residueHm.get(mutationId).split("_")[0];
             if (!pdbSet.contains(pdbNo)) {
-                generateBuriedAtomicFile(pdbNo);
+                generateBuriedAtomicFile(pdbNo, forceRunFlag);
                 pdbSet.add(pdbNo);
             }
             if (count % 100000 == 0) {
@@ -1027,32 +1033,47 @@ public class StructureAnnotation {
      * 
      * @param input
      *            pdbfile ep. 2acf.pdb
+     * @param forceRunFlag
+     * 				true: rerun
+     * 				false: not rerun if the file exisited
      * @return .asa .log .rsa
      */
-    public int runNaccessFromLocal(String pdbNo) {
+    public int runNaccessFromLocal(String pdbNo, boolean forceRunFlag) {
         int shellReturnCode = 0;
         try {
             CommandProcessUtil cu = new CommandProcessUtil();
-            String inputFilename = ReadConfig.tmpdir + pdbNo + ".pdb";
             ArrayList<String> paralist = new ArrayList<String>();
-            if (Boolean.parseBoolean(ReadConfig.readLocalPDBinNaccess)) {
-                String foldername = pdbNo.substring(1, 3).toLowerCase();
-                String pdburl = ReadConfig.pdbRepo + foldername + "/pdb" + pdbNo.toLowerCase() + ".ent.gz";
+            String inputFilename = ReadConfig.tmpdir + pdbNo + ".pdb";
+          
+            //if the file is there, avoid IO
+            if( !forceRunFlag && new File(inputFilename).exists()) {
+            	
+            }else {
+            	if (Boolean.parseBoolean(ReadConfig.readLocalPDBinNaccess)) {
+                    String foldername = pdbNo.substring(1, 3).toLowerCase();
+                    String pdburl = ReadConfig.pdbRepo + foldername + "/pdb" + pdbNo.toLowerCase() + ".ent.gz";
+                    paralist = new ArrayList<String>();
+                    paralist.add(pdburl);
+                    paralist.add(inputFilename);
+                    cu.runCommand("gunzip", paralist);
+                } else {
+                    String pdburl = ReadConfig.pdbStructureService + pdbNo.toUpperCase() + ".pdb";
+                    paralist = new ArrayList<String>();
+                    paralist.add(pdburl);
+                    paralist.add(inputFilename);
+                    cu.runCommand("wget", paralist);
+                }           	
+            } 
+            
+            //if the file is there, avoid IO
+            if(!forceRunFlag && new File(ReadConfig.tmpdir + pdbNo + ".asa").exists()) {
+            	
+            }else {
                 paralist = new ArrayList<String>();
-                paralist.add(pdburl);
                 paralist.add(inputFilename);
-                cu.runCommand("gunzip", paralist);
-            } else {
-                String pdburl = ReadConfig.pdbStructureService + pdbNo.toUpperCase() + ".pdb";
-                paralist = new ArrayList<String>();
-                paralist.add(pdburl);
-                paralist.add(inputFilename);
-                cu.runCommand("wget", paralist);
+                paralist.add(ReadConfig.tmpdir);
+                cu.runCommand("naccess", paralist);           	
             }
-            paralist = new ArrayList<String>();
-            paralist.add(inputFilename);
-            paralist.add(ReadConfig.tmpdir);
-            cu.runCommand("naccess", paralist);
         } catch (Exception ex) {
             log.error("[SHELL] Fatal Error: Could not Successfully process command, exit the program now");
             log.error(ex.getMessage());
@@ -1069,43 +1090,49 @@ public class StructureAnnotation {
      *            pdb.rsa
      * @return pdb.showburied
      */
-    public void generateBuriedAtomicFile(String pdbNo) {
+    public void generateBuriedAtomicFile(String pdbNo, boolean forceRunFlag) {
         try {
             String rsafilepwd = new String(ReadConfig.tmpdir + pdbNo + ".rsa");
             File rsafile = new File(rsafilepwd);
             String resfilepwd = new String(ReadConfig.tmpdir + pdbNo + ".showburied");
             File resfile = new File(resfilepwd);
-            List<String> lines = FileUtils.readLines(rsafile, StandardCharsets.UTF_8.name());
-            int linesNum = lines.size();
-            // log.info(lines.size());
-            HashMap<String, String> absHM = new HashMap<>();
-            // float sum1 = 0, sum2 = 0;
-            for (int i = linesNum - 1; i >= 0; i--) {
-                // log.info(lines.get(i).split("\\s+")[0]);
-                if (lines.get(i).split("\\s+")[0].equals("CHAIN")) {
-                    absHM.put(lines.get(i).split("\\s+")[2], lines.get(i).split("\\s+")[3]);
-                    // log.info(lines.get(i).split("\\s+")[2] + " " +
-                    // lines.get(i).split("\\s+")[3]);
-                }
-                if (lines.get(i).split("\\s+")[0].equals("RES")) {
-                    // log.info(Float.parseFloat(lines.get(i).split("\\s+")[4]));
-                    if (Float.parseFloat(lines.get(i).split("\\s+")[5]) < Float.parseFloat(ReadConfig.relativeRatio)) {
-                        lines.set(i, lines.get(i) + "\t1");
-                    } else {
-                        lines.set(i, lines.get(i) + "\t0");
+            // Force rerun or not
+            if( !forceRunFlag && resfile.exists()) {
+            	
+            }else {
+            	List<String> lines = FileUtils.readLines(rsafile, StandardCharsets.UTF_8.name());
+                int linesNum = lines.size();
+                // log.info(lines.size());
+                HashMap<String, String> absHM = new HashMap<>();
+                // float sum1 = 0, sum2 = 0;
+                for (int i = linesNum - 1; i >= 0; i--) {
+                    // log.info(lines.get(i).split("\\s+")[0]);
+                    if (lines.get(i).split("\\s+")[0].equals("CHAIN")) {
+                        absHM.put(lines.get(i).split("\\s+")[2], lines.get(i).split("\\s+")[3]);
+                        // log.info(lines.get(i).split("\\s+")[2] + " " +
+                        // lines.get(i).split("\\s+")[3]);
                     }
-                    // if(lines.get(i).split("\\s+")[2].equals("A")) {
-                    // sum1 += Float.parseFloat(lines.get(i).split("\\s+")[4]);
-                    // sum2 += Float.parseFloat(lines.get(i).split("\\s+")[5]);
-                    // }
+                    if (lines.get(i).split("\\s+")[0].equals("RES")) {
+                        // log.info(Float.parseFloat(lines.get(i).split("\\s+")[4]));
+                        if (Float.parseFloat(lines.get(i).split("\\s+")[5]) < Float.parseFloat(ReadConfig.relativeRatio)) {
+                            lines.set(i, lines.get(i) + "\t1");
+                        } else {
+                            lines.set(i, lines.get(i) + "\t0");
+                        }
+                        // if(lines.get(i).split("\\s+")[2].equals("A")) {
+                        // sum1 += Float.parseFloat(lines.get(i).split("\\s+")[4]);
+                        // sum2 += Float.parseFloat(lines.get(i).split("\\s+")[5]);
+                        // }
+                    }
+                    if (lines.get(i).split("\\s+")[0].equals("REM") && lines.get(i).split("\\s+")[1].equals("ABS")) {
+                        lines.set(i, lines.get(i) + "\tIFBURIED");
+                    } else
+                        continue;
                 }
-                if (lines.get(i).split("\\s+")[0].equals("REM") && lines.get(i).split("\\s+")[1].equals("ABS")) {
-                    lines.set(i, lines.get(i) + "\tIFBURIED");
-                } else
-                    continue;
+                // log.info(sum1 + " " + sum2);
+                FileUtils.writeLines(resfile, StandardCharsets.UTF_8.name(), lines);            	
             }
-            // log.info(sum1 + " " + sum2);
-            FileUtils.writeLines(resfile, StandardCharsets.UTF_8.name(), lines);
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }

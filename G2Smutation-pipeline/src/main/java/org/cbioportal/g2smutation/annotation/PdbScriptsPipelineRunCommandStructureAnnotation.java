@@ -33,7 +33,8 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		ArrayList<String> paralist = new ArrayList<String>();
 		CommandProcessUtil cu = new CommandProcessUtil();
 		FileOperatingUtil fou = new FileOperatingUtil();
-		String currentDir = ReadConfig.workspace + "20190606/"; // Hardcode now
+		//String currentDir = ReadConfig.workspace + "20190606/"; // Hardcode now
+		String currentDir = ReadConfig.workspace;
 
 		log.info("[File] Read results from file, generate HashMap for usage");
 		MutationUsageRecord mUsageRecord = new MutationUsageRecord();
@@ -52,10 +53,16 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		}
 
 		// <mutation_NO, gpos>: saving time for API calling
-		mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);
-
-		sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,
-				ReadConfig.workspace + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);
+		mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);		
+		
+		//usually the flag is set as false in init, true in update
+		sanno.generateNaccessResults(mUsageRecord, new HashSet<>(), false);
+    	log.info("[STRUCTURE] Start processing naccess rsa results from scratch");
+    	sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>(), false);
+    	
+    	log.info("[STRUCTURE] naccess complete and start parsing from scratch"); 
+        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);       
+        
 
 		// Careful
 		// log.info("[STRUCTURE] Dump mutation_inject_structure.sql to
