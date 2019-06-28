@@ -202,9 +202,8 @@ public class StructureAnnotation {
 					break;
 				}
 			}
-
-			/*
-			// save HashSet<String>: pdb as pdbSet.ser
+			
+			// save structureAnnoHm
 			String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
 			try {
 				log.info("Serialize structureAnnoH, size is " + structureAnnoHm.size());
@@ -213,7 +212,6 @@ public class StructureAnnotation {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			*/
 
 			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename);
 
