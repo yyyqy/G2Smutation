@@ -265,7 +265,7 @@ public class StructureAnnotation {
                 + "`CATH_HOMOLOGY`,`CATH_IDENTIFIER`,`CATH_NAME`,`CATH_TOPOLOGY`,`CATH_DOMAIN_ID`,`CATH_DOMAIN_START`,"
                 + "`CATH_DOMAIN_END`,`SCOP_ID`,`SCOP_DESCRIPTION`,`SCOP_IDENTIFIER`,`SCOP_SCCS`,`SCOP_CLASS_SUNID`,"
                 + "`SCOP_CLASS_DESCRIPTION`,`SCOP_FOLD_SUNID`,`SCOP_FOLD_DESCRIPTION`,`SCOP_SUPERFAMILY_SUNID`,"
-                + "`SCOP_SUPERFAMILY_DESCRIPTION`,`SCOP_START`,`SCOP_END`)VALUES('" + sar.getPdbAnnoKey() + "',"
+                + "`SCOP_SUPERFAMILY_DESCRIPTION`,`SCOP_START`,`SCOP_END`)VALUES('" + sar.getPdbAnnoKey() + "','"
                 + sar.getPdbNo() + "'," + sar.getPdbResidueIndex() + ",'"
                 + sar.getPdbResidueName() + "','" + sar.getBuried() + "','" + sar.getAllAtomsABS() + "','"
                 + sar.getAllAtomsREL() + "','" + sar.getTotalSideABS() + "','" + sar.getTotalSideREL() + "','"
