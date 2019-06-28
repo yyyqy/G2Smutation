@@ -112,7 +112,7 @@ public class StructureAnnotation {
 							sar.setPdbNo(pdbOld + "_" + contentchain);
 							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 							
-							getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+							//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 
 							structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
 							sarList.add(sar);
