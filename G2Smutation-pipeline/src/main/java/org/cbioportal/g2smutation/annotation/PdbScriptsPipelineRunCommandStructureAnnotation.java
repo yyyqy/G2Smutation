@@ -48,12 +48,6 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 			mutationHm = (HashMap<String, String>) SerializationUtils
 					.deserialize(FileUtils.readFileToByteArray(new File(filename)));
 			log.info("Size of " + mutationHm.size());
-
-			log.info("Deserialize " + filename);
-			filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
-			structureAnnoHm = (HashMap<String, StructureAnnotationRecord>) SerializationUtils
-					.deserialize(FileUtils.readFileToByteArray(new File(filename)));
-			log.info("Size of " + structureAnnoHm.size());
 			log.info("Serialization completed");
 		} catch (Exception ex) {
 			ex.printStackTrace();
