@@ -198,8 +198,12 @@ public class StructureAnnotation {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
 				count++;
+				if(count == 1000) {
+					break;
+				}
 			}
 
+			/*
 			// save HashSet<String>: pdb as pdbSet.ser
 			String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
 			try {
@@ -209,6 +213,7 @@ public class StructureAnnotation {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+			*/
 
 			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename);
 
