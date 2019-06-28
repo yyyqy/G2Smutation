@@ -82,7 +82,7 @@ public class StructureAnnotation {
 
 			for (String annoKey : annoKeyList) {
 				StructureAnnotationRecord sar = new StructureAnnotationRecord();
-				System.out.println("annoKey:" + annoKey);
+				//System.out.println("annoKey:" + annoKey);
 				if (!structureAnnoHm.containsKey(annoKey)) {
 					String pdb = annoKey.split("_")[0];
 					String chain = annoKey.split("_")[1];
