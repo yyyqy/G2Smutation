@@ -56,11 +56,9 @@ public class StructureAnnotation {
 			String outputFilename, HashMap<String, StructureAnnotationRecord> structureAnnoHm) {
 		HashMap<Integer, String> mutationIdHm = mUsageRecord.getMutationIdHm();
 		HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
+		int filecount = 0;
 		try {
 			List<StructureAnnotationRecord> sarList = new ArrayList<>();
-
-			String strNaccess = "";
-			String strDSSP = "";
 
 			int count = 0;
 			//ArrayList<String> annoKeyList = new ArrayList<String>();
@@ -159,8 +157,11 @@ public class StructureAnnotation {
 				if (count % 10000 == 0) {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
-				if(count == 1000) {
-					break;
+				
+				if(count % 100000 ==0) {
+					generateMutationResultSQL4StructureAnnotation(sarList, outputFilename+"."+Integer.toString(filecount));
+					filecount++;
+					sarList = new ArrayList<StructureAnnotationRecord>();
 				}
 				count++;
 			}
@@ -185,6 +186,8 @@ public class StructureAnnotation {
 				//System.out.println("PostPutKey: " + pdbOld+"_"+contentKey);
 			}
 			
+			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename+"."+Integer.toString(filecount));
+			
 			
 			
 			// save structureAnnoHm
@@ -197,7 +200,7 @@ public class StructureAnnotation {
 				ex.printStackTrace();
 			}
 
-			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename);
+			
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
