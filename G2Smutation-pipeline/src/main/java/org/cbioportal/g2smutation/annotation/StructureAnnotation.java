@@ -76,7 +76,7 @@ public class StructureAnnotation {
 			    }
 			});
 			//dummy init, find random
-			Structure struc = new PDBFileReader().getStructure(ReadConfig.tmpdir + files[files.length-2]);
+			Structure struc = new PDBFileReader().getStructure(files[files.length-2]);
 
 			String pdbOld = "";
 
