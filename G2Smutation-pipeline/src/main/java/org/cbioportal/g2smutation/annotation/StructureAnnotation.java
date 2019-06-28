@@ -58,8 +58,10 @@ public class StructureAnnotation {
 
 			int count = 0;
 			for (int mutationId : mutationIdHm.keySet()) {
+				
 				String annoKey = residueHm.get(mutationId);
 				StructureAnnotationRecord sar = new StructureAnnotationRecord();
+				System.out.println("annoKey:"+annoKey);
 				if (!structureAnnoHm.containsKey(annoKey)) {				
 					sar.setChrPos(mutationIdHm.get(mutationId));
 					sar.setMutationId(mutationId);
