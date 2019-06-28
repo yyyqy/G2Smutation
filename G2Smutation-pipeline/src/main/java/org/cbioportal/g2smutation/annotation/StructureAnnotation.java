@@ -68,7 +68,7 @@ public class StructureAnnotation {
 			List<String> naccessLines = new ArrayList<>();
 			List<String> dsspLines = new ArrayList<>();
 			List<String> asaLines = new ArrayList<>();
-			Structure struc = new PDBFileReader().getStructure("");
+			Structure struc = new PDBFileReader().getStructure("1MBN");//dummy init, 1MBN is the first entry in PDB
 
 			String pdbOld = "";
 
