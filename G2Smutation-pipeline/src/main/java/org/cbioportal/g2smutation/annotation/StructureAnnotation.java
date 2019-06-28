@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
@@ -79,21 +81,49 @@ public class StructureAnnotation {
 			});
 			//dummy init, find random
 			Structure struc = new PDBFileReader().getStructure(files[files.length-2]);
-
+			SortedMap<String, StructureAnnotationRecord> pdbContentMp = new TreeMap<>();
+			
 			String pdbOld = "";
 
 			Iterator it = annoKeySet.iterator();
 			while (it.hasNext()) {
 				String annoKey = it.next().toString();
-				StructureAnnotationRecord sar = new StructureAnnotationRecord();
-				//System.out.println("annoKey:" + annoKey);
+				StructureAnnotationRecord sarOut = new StructureAnnotationRecord();
+				
+				
 				if (!structureAnnoHm.containsKey(annoKey)) {
 					String pdb = annoKey.split("_")[0];
 					String chain = annoKey.split("_")[1];
 					String index = annoKey.split("_")[2];
+					System.out.println("annoKey:" + annoKey);
 
 					// Save IO
 					if (!pdb.equals(pdbOld)) {
+						
+						getNaccessInfo(naccessLines, pdbContentMp);
+						getDSSPInfo(dsspLines, pdbContentMp);
+						getHETInfo(asaLines, struc, pdbContentMp);
+						
+						for(String contentKey: pdbContentMp.keySet()) {
+							StructureAnnotationRecord sar = pdbContentMp.get(contentKey);
+							String contentchain = contentKey.split("_")[0];
+							String contentindex = contentKey.split("_")[1];
+							sar.setPdbAnnoKey(pdbOld+"_"+contentKey);
+							sar.setPdbNo(pdbOld + "_" + contentchain);
+							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
+							
+							getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+
+							structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
+							sarList.add(sarOut);
+							System.out.println("PutKey: " + pdbOld+"_"+contentKey);
+
+							
+							
+						}
+						
+						
+						
 						try {
 							naccessLines = FileUtils.readLines(
 									new File((ReadConfig.tmpdir + pdb + ReadConfig.naccessFileSuffix)),
@@ -104,101 +134,57 @@ public class StructureAnnotation {
 							asaLines = FileUtils.readLines(new File((ReadConfig.tmpdir + pdb + ".asa")),
 									StandardCharsets.UTF_8.name());
 							struc = new PDBFileReader().getStructure(ReadConfig.tmpdir + pdb + ".pdb");
+							pdbContentMp = new TreeMap<>();
+							
+												
 							pdbOld = pdb;
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 					}
+					
+					pdbContentMp.put(chain+"_"+index, new StructureAnnotationRecord());
 
-					sar.setPdbAnnoKey(annoKey);
-					sar.setPdbNo(pdb + "_" + chain);
-					sar.setPdbResidueIndex(Integer.parseInt(index));
-					// log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
-					strNaccess = getNaccessInfo(pdb, chain, index, naccessLines);
-					// log.info(residueHm.get(mutationId)+"\t"+strNaccess.length()+"\t"+strNaccess);
-					if (strNaccess != "") {
-						// Sovled Bug here, show buried is manually added, it
-						// may have different def in
-						// different systems, so we use split here
-						// Get last column. But all the others are not included.
-						String[] tmpArray = strNaccess.split("\\s+");
-						sar.setBuried(tmpArray[tmpArray.length - 1]);
-						sar.setAllAtomsABS(strNaccess.substring(16, 22));
-						sar.setAllAtomsREL(strNaccess.substring(23, 28));
-						sar.setTotalSideABS(strNaccess.substring(29, 35));
-						sar.setTotalSideREL(strNaccess.substring(36, 41));
-						sar.setMainChainABS(strNaccess.substring(42, 48));
-						sar.setMainChainREL(strNaccess.substring(49, 54));
-						sar.setNonPolarABS(strNaccess.substring(55, 61));
-						sar.setNonPolarREL(strNaccess.substring(62, 67));
-						sar.setAllPolarABS(strNaccess.substring(68, 74));
-						sar.setAllPolarREL(strNaccess.substring(75, 80));
-					} else {
-						sar.setBuried("");
-						sar.setAllAtomsABS("");
-						sar.setAllAtomsREL("");
-						sar.setTotalSideABS("");
-						sar.setTotalSideREL("");
-						sar.setMainChainABS("");
-						sar.setMainChainREL("");
-						sar.setNonPolarABS("");
-						sar.setNonPolarREL("");
-						sar.setAllPolarABS("");
-						sar.setAllPolarREL("");
-					}
-					strDSSP = getDSSPInfo(pdb, chain, index, dsspLines);
-					if (strDSSP != "") {
-						sar.setPdbResidueName(strDSSP.substring(13, 14));
-						sar.setSecStructure(strDSSP.substring(16, 17));
-						sar.setThreeTurnHelix(strDSSP.substring(18, 19));
-						sar.setFourTurnHelix(strDSSP.substring(19, 20));
-						sar.setFiveTurnHelix(strDSSP.substring(20, 21));
-						sar.setGeometricalBend(strDSSP.substring(21, 22));
-						sar.setChirality(strDSSP.substring(22, 23));
-						sar.setBetaBridgeLabela(strDSSP.substring(23, 24));
-						sar.setBetaBridgeLabelb(strDSSP.substring(24, 25));
-						sar.setBpa(strDSSP.substring(26, 29));
-						sar.setBpb(strDSSP.substring(30, 33));
-						sar.setBetaSheetLabel(strDSSP.substring(33, 34));
-						sar.setAcc(strDSSP.substring(35, 38));
-					} else {
-						sar.setPdbResidueName("");
-						sar.setSecStructure("");
-						sar.setThreeTurnHelix("");
-						sar.setFourTurnHelix("");
-						sar.setFiveTurnHelix("");
-						sar.setGeometricalBend("");
-						sar.setChirality("");
-						sar.setBetaBridgeLabela("");
-						sar.setBetaBridgeLabelb("");
-						sar.setBpa("");
-						sar.setBpb("");
-						sar.setBetaSheetLabel("");
-						sar.setAcc("");
-					}
 
 					// Use placeholder now
 					// getHETInfoPlaceholder(sar);
 					// getDomainUrlPlaceholder(sar);
-					getHETInfo(sar, pdb, chain, index, asaLines, struc);
-
-					// // Start test cath, directly download cath resources, not
-					// test
-					// getCathInfo(sar, residueHm.get(mutationId).split("_")[0],
-					// residueHm.get(mutationId).split("_")[1],
-					// residueHm.get(mutationId).split("_")[2]);
-					getDomainsUrl(sar, pdb, chain, index);
-
-					structureAnnoHm.put(annoKey, sar);
+					
+					
 				} else {
-					sar = structureAnnoHm.get(annoKey);
+					sarOut = structureAnnoHm.get(annoKey);
+					sarList.add(sarOut);
 				}
-				sarList.add(sar);
-				if (count % 10000 == 0) {
+				
+				if (count % 100 == 0) {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
+				}
+				if(count == 1000) {
+					break;
 				}
 				count++;
 			}
+			
+			//Post, the last one
+			getNaccessInfo(naccessLines, pdbContentMp);
+			getDSSPInfo(dsspLines, pdbContentMp);
+			getHETInfo(asaLines, struc, pdbContentMp);
+			
+			for(String contentKey: pdbContentMp.keySet()) {
+				StructureAnnotationRecord sar = pdbContentMp.get(contentKey);
+				String contentchain = contentKey.split("_")[0];
+				String contentindex = contentKey.split("_")[1];
+				sar.setPdbAnnoKey(pdbOld+"_"+contentKey);
+				sar.setPdbNo(pdbOld + "_" + contentchain);
+				sar.setPdbResidueIndex(Integer.parseInt(contentindex));
+				
+				getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+
+				structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
+				sarList.add(sar);
+			}
+			
+			
 			
 			// save structureAnnoHm
 			String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
@@ -286,61 +272,64 @@ public class StructureAnnotation {
         return str;
     }
 
-    public String getDSSPInfo(String pdbId, String pdbChain, String pdbResidueIndex, List<String> lines) {
-        String str = "";
-        try {            
-            int i = 0;
-            int index = Integer.parseInt(pdbResidueIndex);
-            int flag = 0;
-            for (; i < lines.size(); i++) {
-                if (lines.get(i).substring(2, 3).equals("#")) {
-                    flag = 1;
-                    continue;
-                }
-                if (flag == 0) {
-                    continue;
-                } else {
-                    if (!(lines.get(i).substring(11, 12).equals(pdbChain)
-                            && stringToInt(lines.get(i).substring(6, 10)) == index)) {
-                        continue;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            if (i < lines.size()) {
-                str = lines.get(i);
-            } else {
-                //log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find DSSP information!");
-            }
-        }catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        return str;
-    }
+	public void getDSSPInfo(List<String> lines, SortedMap<String, StructureAnnotationRecord> pdbContentMp) {
+		boolean flag = false;
+		for (int i = 0; i < lines.size(); i++) {
+			if (lines.get(i).substring(2, 3).equals("#")) {
+				flag = true;
+				continue;
+			}
+			if (flag) {
+				String currentStr = lines.get(i);
+				String checkStr = currentStr.substring(11, 12) + "_" + currentStr.substring(6, 10).trim();
 
-    public String getNaccessInfo(String pdbId, String pdbChain, String pdbResidueIndex, List<String> lines) {
-        String str = "";
-        try {
-            int i = 0;
-            for (; i < lines.size(); i++) {
-                if (!(lines.get(i).substring(0, 3).equals("RES") && lines.get(i).substring(8, 9).equals(pdbChain)
-                        && (stringToInt(lines.get(i).substring(9, 13)) == Integer.parseInt(pdbResidueIndex)))) {
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (i < lines.size()) {
-                str = lines.get(i);
-            } else {
-                //log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find Naccess information!");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return str;
-    }
+				if (pdbContentMp.containsKey(checkStr)) {
+					StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
+
+					sar.setPdbResidueName(currentStr.substring(13, 14));
+					sar.setSecStructure(currentStr.substring(16, 17));
+					sar.setThreeTurnHelix(currentStr.substring(18, 19));
+					sar.setFourTurnHelix(currentStr.substring(19, 20));
+					sar.setFiveTurnHelix(currentStr.substring(20, 21));
+					sar.setGeometricalBend(currentStr.substring(21, 22));
+					sar.setChirality(currentStr.substring(22, 23));
+					sar.setBetaBridgeLabela(currentStr.substring(23, 24));
+					sar.setBetaBridgeLabelb(currentStr.substring(24, 25));
+					sar.setBpa(currentStr.substring(26, 29));
+					sar.setBpb(currentStr.substring(30, 33));
+					sar.setBetaSheetLabel(currentStr.substring(33, 34));
+					sar.setAcc(currentStr.substring(35, 38));
+					
+					pdbContentMp.put(checkStr, sar);
+				}
+			}
+		}
+	}
+
+	public void getNaccessInfo(List<String> lines, SortedMap<String, StructureAnnotationRecord> pdbContentMp) {
+
+		for (int i = 0; i < lines.size(); i++) {
+			String currentStr = lines.get(i);
+			String checkStr = currentStr.substring(8, 9) + "_" + currentStr.substring(9, 13).trim();
+			if (currentStr.substring(0, 3).equals("RES") && pdbContentMp.containsKey(checkStr)) {
+				StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
+				String[] tmpArray = currentStr.split("\\s+");
+				sar.setBuried(tmpArray[tmpArray.length - 1]);
+				sar.setAllAtomsABS(currentStr.substring(16, 22));
+				sar.setAllAtomsREL(currentStr.substring(23, 28));
+				sar.setTotalSideABS(currentStr.substring(29, 35));
+				sar.setTotalSideREL(currentStr.substring(36, 41));
+				sar.setMainChainABS(currentStr.substring(42, 48));
+				sar.setMainChainREL(currentStr.substring(49, 54));
+				sar.setNonPolarABS(currentStr.substring(55, 61));
+				sar.setNonPolarREL(currentStr.substring(62, 67));
+				sar.setAllPolarABS(currentStr.substring(68, 74));
+				sar.setAllPolarREL(currentStr.substring(75, 80));
+				pdbContentMp.put(checkStr, sar);
+			}
+		}
+
+	}
     
     /**
      * Add placeholder in HET
@@ -362,51 +351,51 @@ public class StructureAnnotation {
      * @param pdbChain
      * @param pdbResidueIndex
      */
-    public void getHETInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex, List<String> lines,  Structure struc) {
-        try {
+    public void getHETInfo(List<String> lines,  Structure struc, SortedMap<String, StructureAnnotationRecord> pdbContentMp) {
+
             double x1, x2, y1, y2, z1, z2, ra, rl, dis;
-            int k = 0;
-            while (!(lines.get(k).substring(21, 22).equals(pdbChain) && lines.get(k).substring(13, 15).equals("CA")
-                    && stringToInt(lines.get(k).substring(22, 26)) == Integer.parseInt(pdbResidueIndex))) {
-                k++;
-            }
-            x1 = Double.parseDouble(lines.get(k).substring(30, 38));
-            y1 = Double.parseDouble(lines.get(k).substring(38, 46));
-            z1 = Double.parseDouble(lines.get(k).substring(46, 54));
-            ra = Double.parseDouble(lines.get(k).substring(64, 68));
-            
-            List<Group> hetGroup = new ArrayList<Group>();
-            String ligantNames = "";
-            hetGroup.addAll(struc.getHetGroups());
-            if (hetGroup.isEmpty()) {
-                sar.setLigandBindingdirect(0);
-                sar.setLigandBindingProtein(0);
-                sar.setLigandName(ligantNames);
-            } else {
-                sar.setLigandBindingProtein(1);
-                for (int i = 0; i < hetGroup.size(); i++) {
-                    for (int j = 0; j < hetGroup.get(i).size(); j++) {
-                        x2 = hetGroup.get(i).getAtom(j).getX();
-                        y2 = hetGroup.get(i).getAtom(j).getY();
-                        z2 = hetGroup.get(i).getAtom(j).getZ();
-                        rl = getLigantRadius(hetGroup.get(i).getPDBName());
-                        dis = getDistance(x1, y1, z1, x2, y2, z2, ra, rl);
-                        if (dis < 0.50) {
-                        	// Threshold value from: Jianyi Yang, Ambrish Roy, Yang Zhang, BioLiP: a semi-manually curated database for biologically relevant ligand–protein interactions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D1096–D1103, https://doi.org/10.1093/nar/gks966
-                            sar.setLigandBindingdirect(1);
-                            ligantNames = ligantNames + hetGroup.get(i).getPDBName() + "; ";
-                        }
-                    }
-                }
-                sar.setLigandName(ligantNames);
-            }
-        } catch (Exception e) {
-//            e.printStackTrace();
-            //log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find HET information!");
-            sar.setLigandBindingdirect(0);
-            sar.setLigandBindingProtein(0);
-            sar.setLigandName("");
-        }
+            for (int k =0; k<lines.size(); k++) {
+            	String currentStr = lines.get(k);
+    			String checkStr = currentStr.substring(21, 22) + "_" + currentStr.substring(22, 26).trim();
+
+    			if(currentStr.substring(13, 15).equals("CA") && pdbContentMp.containsKey(checkStr)) {
+    				StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
+    				x1 = Double.parseDouble(currentStr.substring(30, 38));
+    	            y1 = Double.parseDouble(currentStr.substring(38, 46));
+    	            z1 = Double.parseDouble(currentStr.substring(46, 54));
+    	            ra = Double.parseDouble(currentStr.substring(64, 68));
+    	            
+    	            List<Group> hetGroup = new ArrayList<Group>();
+    	            String ligantNames = "";
+    	            hetGroup.addAll(struc.getHetGroups());
+    	            if (hetGroup.isEmpty()) {
+    	                sar.setLigandBindingdirect(0);
+    	                sar.setLigandBindingProtein(0);
+    	                sar.setLigandName(ligantNames);
+    	            } else {
+    	                sar.setLigandBindingProtein(1);
+    	                for (int i = 0; i < hetGroup.size(); i++) {
+    	                    for (int j = 0; j < hetGroup.get(i).size(); j++) {
+    	                        x2 = hetGroup.get(i).getAtom(j).getX();
+    	                        y2 = hetGroup.get(i).getAtom(j).getY();
+    	                        z2 = hetGroup.get(i).getAtom(j).getZ();
+    	                        rl = getLigantRadius(hetGroup.get(i).getPDBName());
+    	                        dis = getDistance(x1, y1, z1, x2, y2, z2, ra, rl);
+    	                        if (dis < 0.50) {
+    	                        	// Threshold value from: Jianyi Yang, Ambrish Roy, Yang Zhang, BioLiP: a semi-manually curated database for biologically relevant ligand–protein interactions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D1096–D1103, https://doi.org/10.1093/nar/gks966
+    	                            sar.setLigandBindingdirect(1);
+    	                            ligantNames = ligantNames + hetGroup.get(i).getPDBName() + "; ";
+    	                        }
+    	                    }
+    	                }
+    	                sar.setLigandName(ligantNames);
+    	            }
+    	            pdbContentMp.put(checkStr, sar);
+    				
+    			}
+            }            
+
+        
     }
 
     public double getDistance(double x1, double y1, double z1, double x2, double y2, double z2, double ra, double rl) {
