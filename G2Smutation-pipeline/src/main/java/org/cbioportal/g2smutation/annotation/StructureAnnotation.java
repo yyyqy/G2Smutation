@@ -115,7 +115,7 @@ public class StructureAnnotation {
 							getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 
 							structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
-							sarList.add(sarOut);
+							sarList.add(sar);
 							System.out.println("PutKey: " + pdbOld+"_"+contentKey);
 
 							
@@ -156,10 +156,10 @@ public class StructureAnnotation {
 					sarList.add(sarOut);
 				}
 				
-				if (count % 100 == 0) {
+				if (count % 10 == 0) {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
-				if(count == 1000) {
+				if(count == 100) {
 					break;
 				}
 				count++;
@@ -182,6 +182,7 @@ public class StructureAnnotation {
 
 				structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
 				sarList.add(sar);
+				System.out.println("PostPutKey: " + pdbOld+"_"+contentKey);
 			}
 			
 			
