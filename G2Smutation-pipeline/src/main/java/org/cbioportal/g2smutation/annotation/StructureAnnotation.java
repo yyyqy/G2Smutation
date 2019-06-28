@@ -3,6 +3,7 @@ package org.cbioportal.g2smutation.annotation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -68,7 +69,14 @@ public class StructureAnnotation {
 			List<String> naccessLines = new ArrayList<>();
 			List<String> dsspLines = new ArrayList<>();
 			List<String> asaLines = new ArrayList<>();
-			Structure struc = new PDBFileReader().getStructure("1MBN");//dummy init, 1MBN is the first entry in PDB
+			File dir = new File(ReadConfig.tmpdir);
+			File[] files = dir.listFiles(new FilenameFilter() {
+			    public boolean accept(File dir, String name) {
+			        return name.toLowerCase().endsWith(".pdb");
+			    }
+			});
+			//dummy init, find random
+			Structure struc = new PDBFileReader().getStructure(ReadConfig.tmpdir + files[files.length-2]);
 
 			String pdbOld = "";
 
