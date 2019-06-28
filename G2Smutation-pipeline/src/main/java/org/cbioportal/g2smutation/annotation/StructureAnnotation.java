@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -59,12 +61,12 @@ public class StructureAnnotation {
 			String strDSSP = "";
 
 			int count = 0;
-			ArrayList<String> annoKeyList = new ArrayList<String>();
+			//ArrayList<String> annoKeyList = new ArrayList<String>();
+			SortedSet<String> annoKeySet = new TreeSet<>();
 			for (int mutationId : mutationIdHm.keySet()) {
 				String annoKey = residueHm.get(mutationId);
-				annoKeyList.add(annoKey);
+				annoKeySet.add(annoKey);
 			}
-			Collections.sort(annoKeyList);
 
 			List<String> naccessLines = new ArrayList<>();
 			List<String> dsspLines = new ArrayList<>();
@@ -80,7 +82,9 @@ public class StructureAnnotation {
 
 			String pdbOld = "";
 
-			for (String annoKey : annoKeyList) {
+			Iterator it = annoKeySet.iterator();
+			while (it.hasNext()) {
+				String annoKey = it.next().toString();
 				StructureAnnotationRecord sar = new StructureAnnotationRecord();
 				//System.out.println("annoKey:" + annoKey);
 				if (!structureAnnoHm.containsKey(annoKey)) {
@@ -191,7 +195,7 @@ public class StructureAnnotation {
 				}
 				sarList.add(sar);
 				if (count % 10000 == 0) {
-					log.info("Processing " + count + "th in total size of " + annoKeyList.size() + " annoKeyList");
+					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
 				count++;
 			}
@@ -283,14 +287,11 @@ public class StructureAnnotation {
     }
 
     public String getDSSPInfo(String pdbId, String pdbChain, String pdbResidueIndex, List<String> lines) {
-//        log.info(pdbId + "\t" + pdbChain + "\t" + pdbResidueIndex);// debug
         String str = "";
-        try {
-            
+        try {            
             int i = 0;
             int index = Integer.parseInt(pdbResidueIndex);
             int flag = 0;
-            // log.info(index);
             for (; i < lines.size(); i++) {
                 if (lines.get(i).substring(2, 3).equals("#")) {
                     flag = 1;
@@ -310,11 +311,9 @@ public class StructureAnnotation {
             if (i < lines.size()) {
                 str = lines.get(i);
             } else {
-                log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find DSSP information!");
+                //log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find DSSP information!");
             }
-            // log.info(str);
         }catch(Exception ex) {
-            // TODO Auto-generated catch block
             ex.printStackTrace();
         }
         return str;
@@ -322,7 +321,6 @@ public class StructureAnnotation {
 
     public String getNaccessInfo(String pdbId, String pdbChain, String pdbResidueIndex, List<String> lines) {
         String str = "";
-        // log.info(pdbId + pdbChain + pdbResidueIndex);
         try {
             int i = 0;
             for (; i < lines.size(); i++) {
@@ -336,10 +334,9 @@ public class StructureAnnotation {
             if (i < lines.size()) {
                 str = lines.get(i);
             } else {
-                log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find Naccess information!");
+                //log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find Naccess information!");
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return str;
@@ -405,7 +402,7 @@ public class StructureAnnotation {
             }
         } catch (Exception e) {
 //            e.printStackTrace();
-            log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find HET information!");
+            //log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find HET information!");
             sar.setLigandBindingdirect(0);
             sar.setLigandBindingProtein(0);
             sar.setLigandName("");
