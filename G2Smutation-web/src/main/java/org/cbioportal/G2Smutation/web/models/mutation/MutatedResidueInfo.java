@@ -1,5 +1,6 @@
 package org.cbioportal.G2Smutation.web.models.mutation;
 
+import org.cbioportal.G2Smutation.web.models.StructureAnnotationInfo;
 import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
 
 /**
@@ -10,13 +11,13 @@ import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
  */
 
 public class MutatedResidueInfo extends MutatedResidue{
-    private StructureAnnotation structureAnnotation;
+    private StructureAnnotationInfo structureAnnotation;
 
-	public StructureAnnotation getStructureAnnotation() {
+	public StructureAnnotationInfo getStructureAnnotation() {
 		return structureAnnotation;
 	}
 
-	public void setStructureAnnotation(StructureAnnotation structureAnnotation) {
+	public void setStructureAnnotationInfo(StructureAnnotationInfo structureAnnotation) {
 		this.structureAnnotation = structureAnnotation;
 	}
 }

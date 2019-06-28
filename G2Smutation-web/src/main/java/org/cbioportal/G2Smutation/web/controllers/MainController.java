@@ -28,6 +28,7 @@ import org.cbioportal.G2Smutation.web.models.db.mutation_usage_table;
 import org.cbioportal.G2Smutation.web.models.db.pdb_seq_alignment;
 import org.cbioportal.G2Smutation.web.models.db.rs_mutation_entry;
 import org.cbioportal.G2Smutation.web.models.db.rs_mutation_entry_Initia;
+import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotation;
 import org.cbioportal.G2Smutation.web.models.InputResidue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -122,6 +123,9 @@ public class MainController {
 	
     @Autowired
     private StatisticsRepository statisticsRepository;
+    
+    @Autowired
+    private MainGetMappedProteinMutationController proteinMutationRepository;
     
     @Autowired
     HttpServletRequest request;
@@ -309,6 +313,19 @@ public class MainController {
         //return new ModelAndView("proteinvariants");
     }
     
+    /**
+    @GetMapping("/detail")
+    public ModelAndView detailInfo() {
+    	return new ModelAndView("/detail");
+    }
+    */
+    
+    @GetMapping("/detailAnno")
+    public ModelAndView detailInfo() {
+    	//api/proteinMutationAnno/uniprot/P53_HUMAN/pdb/2pcx_A
+    	List<MutationAnnotation> outList = proteinMutationRepository.postProteinMutationAnnotationByPDB("uniprot","P53_HUMAN","2pcx","A",new ArrayList());
+    	return new ModelAndView("/detailAnno","outList",outList);
+    }
     
     
     // RS database start

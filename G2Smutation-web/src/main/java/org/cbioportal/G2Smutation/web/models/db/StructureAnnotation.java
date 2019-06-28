@@ -213,6 +213,7 @@ public class StructureAnnotation {
     
     @Column(name = "SCOP_END")
     private String scopEnd;
+    
 
     public int getId() {
         return id;
@@ -469,6 +470,7 @@ public class StructureAnnotation {
     public void setLigandName(String ligandName) {
         this.ligandName = ligandName;
     }
+    
 
     public String getInterproId() {
         return interproId;

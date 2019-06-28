@@ -41,6 +41,7 @@ import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotation;
 import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotationGenome;
 import org.cbioportal.G2Smutation.web.controllers.SeqIdAlignmentController;
 import org.cbioportal.G2Smutation.web.models.ResidueMapping;
+import org.cbioportal.G2Smutation.web.models.StructureAnnotationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -1056,7 +1057,9 @@ public class SeqIdAlignmentController {
             mr.setPdbResidue(entry.getPdbResidue());
             //TODO, can improve use OO Design
             String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
-            mr.setStructureAnnotation(structureAnnotationRepository.findTopByPdbNo(queryPdbNo));
+            StructureAnnotation ma = structureAnnotationRepository.findTopByPdbNo(queryPdbNo);
+            StructureAnnotationInfo maInfo = new StructureAnnotationInfo(ma);
+            mr.setStructureAnnotationInfo(maInfo);
             List<MutatedResidueInfo> list = new ArrayList<>();
             if (hm.containsKey(key)){
                 list = hm.get(key);
@@ -1130,7 +1133,11 @@ public class SeqIdAlignmentController {
                 //TODO, can improve use OO Design
                 //queryPdbNo: 2pcx_A_282
                 String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
-                mr.setStructureAnnotation(structureAnnotationRepository.findTopByPdbNo(queryPdbNo));
+                
+                StructureAnnotation ma = structureAnnotationRepository.findTopByPdbNo(queryPdbNo);
+                StructureAnnotationInfo maInfo = new StructureAnnotationInfo(ma);
+                mr.setStructureAnnotationInfo(maInfo);
+
                 List<MutatedResidueInfo> list = new ArrayList<>();
                 if (hm.containsKey(key)){
                     list = hm.get(key);
