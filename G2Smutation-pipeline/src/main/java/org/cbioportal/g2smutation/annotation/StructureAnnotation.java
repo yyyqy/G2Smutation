@@ -95,7 +95,7 @@ public class StructureAnnotation {
 					String pdb = annoKey.split("_")[0];
 					String chain = annoKey.split("_")[1];
 					String index = annoKey.split("_")[2];
-					System.out.println("annoKey:" + annoKey);
+					//System.out.println("annoKey:" + annoKey);
 
 					// Save IO
 					if (!pdb.equals(pdbOld)) {
@@ -116,7 +116,7 @@ public class StructureAnnotation {
 
 							structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
 							sarList.add(sar);
-							System.out.println("PutKey: " + pdbOld+"_"+contentKey);
+							//System.out.println("PutKey: " + pdbOld+"_"+contentKey);
 
 							
 							
@@ -156,10 +156,10 @@ public class StructureAnnotation {
 					sarList.add(sarOut);
 				}
 				
-				if (count % 10 == 0) {
+				if (count % 10000 == 0) {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
-				if(count == 100) {
+				if(count == 1000) {
 					break;
 				}
 				count++;
@@ -182,7 +182,7 @@ public class StructureAnnotation {
 
 				structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
 				sarList.add(sar);
-				System.out.println("PostPutKey: " + pdbOld+"_"+contentKey);
+				//System.out.println("PostPutKey: " + pdbOld+"_"+contentKey);
 			}
 			
 			
