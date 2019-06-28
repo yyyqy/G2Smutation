@@ -15,8 +15,8 @@ import org.cbioportal.g2smutation.util.models.MutationUsageRecord;
 import org.cbioportal.g2smutation.util.models.StructureAnnotationRecord;
 
 /**
- * Run tedious structure annotation
- * Part of copying from main function in generateAnnotation
+ * Run tedious structure annotation Part of copying from main function in
+ * generateAnnotation
  * 
  * @author juexin wang
  *
@@ -33,7 +33,7 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		ArrayList<String> paralist = new ArrayList<String>();
 		CommandProcessUtil cu = new CommandProcessUtil();
 		FileOperatingUtil fou = new FileOperatingUtil();
-		//String currentDir = ReadConfig.workspace + "20190606/"; // Hardcode now
+		// String currentDir = ReadConfig.workspace + "20190606/"; // Hardcode now
 		String currentDir = ReadConfig.workspace;
 
 		log.info("[File] Read results from file, generate HashMap for usage");
@@ -48,21 +48,40 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 			mutationHm = (HashMap<String, String>) SerializationUtils
 					.deserialize(FileUtils.readFileToByteArray(new File(filename)));
 			log.info("Size of " + mutationHm.size());
+
+			log.info("Deserialize " + filename);
+			filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
+			structureAnnoHm = (HashMap<String, StructureAnnotationRecord>) SerializationUtils
+					.deserialize(FileUtils.readFileToByteArray(new File(filename)));
+			log.info("Size of " + structureAnnoHm.size());
+			log.info("Serialization completed");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
 		// <mutation_NO, gpos>: saving time for API calling
-		mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);		
-		
-		//usually the flag is set as false in init, true in update
+		mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);
+
+		// usually the flag is set as false in init, true in update
 		sanno.generateNaccessResults(mUsageRecord, new HashSet<>(), false);
-    	log.info("[STRUCTURE] Start processing naccess rsa results from scratch");
-    	sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>(), false);
-    	
-    	log.info("[STRUCTURE] naccess complete and start parsing from scratch"); 
-        sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);       
-        
+		log.info("[STRUCTURE] Start processing naccess rsa results from scratch");
+		sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>(), false);
+
+		// Deserialize
+		try {
+			log.info("Deserialize " + filename);
+			filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
+			structureAnnoHm = (HashMap<String, StructureAnnotationRecord>) SerializationUtils
+					.deserialize(FileUtils.readFileToByteArray(new File(filename)));
+			log.info("Size of " + structureAnnoHm.size());
+			log.info("Serialization completed");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		log.info("[STRUCTURE] naccess complete and start parsing from scratch");
+		sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,
+				currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);
 
 		// Careful
 		// log.info("[STRUCTURE] Dump mutation_inject_structure.sql to
