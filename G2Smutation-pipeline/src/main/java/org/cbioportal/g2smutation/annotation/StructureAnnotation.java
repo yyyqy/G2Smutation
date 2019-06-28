@@ -157,13 +157,17 @@ public class StructureAnnotation {
 				if (count % 10000 == 0) {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
-				
-				if(count % 100000 ==0) {
+								
+				count++;
+				if(count % 10000 ==0) {
 					generateMutationResultSQL4StructureAnnotation(sarList, outputFilename+"."+Integer.toString(filecount));
 					filecount++;
 					sarList = new ArrayList<StructureAnnotationRecord>();
 				}
-				count++;
+				
+				if(count == 25000) {
+					break;
+				}
 			}
 			
 			//Post, the last one
