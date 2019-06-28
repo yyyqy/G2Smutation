@@ -198,9 +198,6 @@ public class StructureAnnotation {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
 				count++;
-				if(count == 1000) {
-					break;
-				}
 			}
 			
 			// save structureAnnoHm
