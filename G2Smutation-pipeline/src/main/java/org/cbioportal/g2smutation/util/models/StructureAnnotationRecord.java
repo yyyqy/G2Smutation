@@ -10,10 +10,9 @@ import java.io.Serializable;
  */
 
 public class StructureAnnotationRecord implements Serializable {
-    private String chrPos;
 
-    private int mutationId;
-
+	private String pdbAnnoKey;
+	
     private String pdbNo;
 
     private int pdbResidueIndex;
@@ -141,28 +140,22 @@ public class StructureAnnotationRecord implements Serializable {
     /*
      * getter and setter methods
      */
-
-    public String getChrPos() {
-        return chrPos;
-    }
-
-    public void setChrPos(String chrPos) {
-        this.chrPos = chrPos;
-    }
-
-    public int getMutationId() {
-        return mutationId;
-    }
-
-    public void setMutationId(int mutationId) {
-        this.mutationId = mutationId;
-    }
+    
+    
 
     public String getPdbNo() {
         return pdbNo;
     }
 
-    public void setPdbNo(String pdbNo) {
+    public String getPdbAnnoKey() {
+		return pdbAnnoKey;
+	}
+
+	public void setPdbAnnoKey(String pdbAnnoKey) {
+		this.pdbAnnoKey = pdbAnnoKey;
+	}
+
+	public void setPdbNo(String pdbNo) {
         this.pdbNo = pdbNo;
     }
 

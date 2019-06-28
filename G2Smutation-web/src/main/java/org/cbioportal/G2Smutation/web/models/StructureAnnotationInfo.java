@@ -124,8 +124,8 @@ public class StructureAnnotationInfo {
 }
 
 class GeneralInfo {    
-    @Column(name = "CHR_POS")
-    private String chrPos;
+    @Column(name = "PDB_ANNOKEY")
+    private String pdbAnnoKey;
     
     @Column(name = "PDB_NO")
     private String pdbNo;
@@ -137,7 +137,6 @@ class GeneralInfo {
     private String pdbResidue;
     
     GeneralInfo(StructureAnnotation sa){
-    	this.setChrPos(sa.getChrPos());
     	this.setPdbNo(sa.getPdbNo());
     	this.setPdbIndex(sa.getPdbIndex());
     	this.setPdbResidue(this.getPdbResidue());
@@ -147,12 +146,12 @@ class GeneralInfo {
     	
     }
 
-	public String getChrPos() {
-		return chrPos;
+	public String getPdbAnnoKey() {
+		return pdbAnnoKey;
 	}
 
-	public void setChrPos(String chrPos) {
-		this.chrPos = chrPos;
+	public void setPdbAnnoKey(String pdbAnnoKey) {
+		this.pdbAnnoKey = pdbAnnoKey;
 	}
 
 	public String getPdbNo() {

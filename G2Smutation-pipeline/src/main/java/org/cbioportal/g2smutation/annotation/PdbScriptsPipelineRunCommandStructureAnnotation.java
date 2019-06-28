@@ -61,6 +61,7 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		log.info("[STRUCTURE] Start processing naccess rsa results from scratch");
 		sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>(), false);
 
+		/*
 		// Deserialize
 		try {
 			log.info("Deserialize " + filename);
@@ -72,6 +73,7 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		*/
 
 		log.info("[STRUCTURE] naccess complete and start parsing from scratch");
 		sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,

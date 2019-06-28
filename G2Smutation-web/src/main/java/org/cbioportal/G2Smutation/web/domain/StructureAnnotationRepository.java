@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StructureAnnotationRepository extends JpaRepository<StructureAnnotation, Long>{   
     
-    public List<StructureAnnotation> findByChrPos(String chrPos);
-    
     public List<StructureAnnotation> findByPdbNoStartingWith(String input); //2pcx_A_
     
     public StructureAnnotation findTopByPdbNo(String pdbNo); //2pcx_A_282

@@ -22,11 +22,8 @@ public class StructureAnnotation {
     @Column(name = "ID")
     private int id;
     
-    @Column(name = "CHR_POS")
-    private String chrPos;
-    
-    @Column(name = "MUTATION_ID")
-    private int mutationId;
+    @Column(name = "PDB_ANNOKEY")
+    private String pdbAnnoKey;
     
     @Column(name = "PDB_NO")
     private String pdbNo;
@@ -222,24 +219,18 @@ public class StructureAnnotation {
     public void setId(int id) {
         this.id = id;
     }
+    
+    
 
-    public String getChrPos() {
-        return chrPos;
-    }
+    public String getPdbAnnoKey() {
+		return pdbAnnoKey;
+	}
 
-    public void setChrPos(String chrPos) {
-        this.chrPos = chrPos;
-    }
+	public void setPdbAnnoKey(String pdbAnnoKey) {
+		this.pdbAnnoKey = pdbAnnoKey;
+	}
 
-    public int getMutationId() {
-        return mutationId;
-    }
-
-    public void setMutationId(int mutationId) {
-        this.mutationId = mutationId;
-    }
-
-    public String getPdbNo() {
+	public String getPdbNo() {
         return pdbNo;
     }
 

@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,20 +58,51 @@ public class StructureAnnotation {
 			String strDSSP = "";
 
 			int count = 0;
+			ArrayList<String> annoKeyList = new ArrayList<String>();
 			for (int mutationId : mutationIdHm.keySet()) {
-				
 				String annoKey = residueHm.get(mutationId);
+				annoKeyList.add(annoKey);
+			}
+			Collections.sort(annoKeyList);
+
+			List<String> naccessLines = new ArrayList<>();
+			List<String> dsspLines = new ArrayList<>();
+			List<String> asaLines = new ArrayList<>();
+			Structure struc = new PDBFileReader().getStructure("");
+
+			String pdbOld = "";
+
+			for (String annoKey : annoKeyList) {
 				StructureAnnotationRecord sar = new StructureAnnotationRecord();
-				System.out.println("annoKey:"+annoKey);
-				if (!structureAnnoHm.containsKey(annoKey)) {				
-					sar.setChrPos(mutationIdHm.get(mutationId));
-					sar.setMutationId(mutationId);
-					sar.setPdbNo(residueHm.get(mutationId));// ? TODO Check in
-															// test
-					sar.setPdbResidueIndex(Integer.parseInt(residueHm.get(mutationId).split("_")[2]));
+				System.out.println("annoKey:" + annoKey);
+				if (!structureAnnoHm.containsKey(annoKey)) {
+					String pdb = annoKey.split("_")[0];
+					String chain = annoKey.split("_")[1];
+					String index = annoKey.split("_")[2];
+
+					// Save IO
+					if (!pdb.equals(pdbOld)) {
+						try {
+							naccessLines = FileUtils.readLines(
+									new File((ReadConfig.tmpdir + pdb + ReadConfig.naccessFileSuffix)),
+									StandardCharsets.UTF_8.name());
+							dsspLines = FileUtils.readLines(
+									new File(ReadConfig.dsspLocalDataFile + pdb + ReadConfig.dsspFileSuffix),
+									StandardCharsets.UTF_8.name());
+							asaLines = FileUtils.readLines(new File((ReadConfig.tmpdir + pdb + ".asa")),
+									StandardCharsets.UTF_8.name());
+							struc = new PDBFileReader().getStructure(ReadConfig.tmpdir + pdb + ".pdb");
+							pdbOld = pdb;
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+
+					sar.setPdbAnnoKey(annoKey);
+					sar.setPdbNo(pdb + "_" + chain);
+					sar.setPdbResidueIndex(Integer.parseInt(index));
 					// log.info(residueHm.get(mutationId).split("_")[0]+residueHm.get(mutationId).split("_")[1]+residueHm.get(mutationId).split("_")[2]);
-					strNaccess = getNaccessInfo(residueHm.get(mutationId).split("_")[0],
-							residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+					strNaccess = getNaccessInfo(pdb, chain, index, naccessLines);
 					// log.info(residueHm.get(mutationId)+"\t"+strNaccess.length()+"\t"+strNaccess);
 					if (strNaccess != "") {
 						// Sovled Bug here, show buried is manually added, it
@@ -102,8 +134,7 @@ public class StructureAnnotation {
 						sar.setAllPolarABS("");
 						sar.setAllPolarREL("");
 					}
-					strDSSP = getDSSPInfo(residueHm.get(mutationId).split("_")[0],
-							residueHm.get(mutationId).split("_")[1], residueHm.get(mutationId).split("_")[2]);
+					strDSSP = getDSSPInfo(pdb, chain, index, dsspLines);
 					if (strDSSP != "") {
 						sar.setPdbResidueName(strDSSP.substring(13, 14));
 						sar.setSecStructure(strDSSP.substring(16, 17));
@@ -137,38 +168,36 @@ public class StructureAnnotation {
 					// Use placeholder now
 					// getHETInfoPlaceholder(sar);
 					// getDomainUrlPlaceholder(sar);
-					getHETInfo(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-							residueHm.get(mutationId).split("_")[2]);
+					getHETInfo(sar, pdb, chain, index, asaLines, struc);
 
 					// // Start test cath, directly download cath resources, not
 					// test
 					// getCathInfo(sar, residueHm.get(mutationId).split("_")[0],
 					// residueHm.get(mutationId).split("_")[1],
 					// residueHm.get(mutationId).split("_")[2]);
-					getDomainsUrl(sar, residueHm.get(mutationId).split("_")[0], residueHm.get(mutationId).split("_")[1],
-							residueHm.get(mutationId).split("_")[2]);
-					
+					getDomainsUrl(sar, pdb, chain, index);
+
 					structureAnnoHm.put(annoKey, sar);
-				}else{
+				} else {
 					sar = structureAnnoHm.get(annoKey);
 				}
 				sarList.add(sar);
-				if (count % 1000 == 0) {
-					log.info("Processing " + count + "th in total size of "+mutationIdHm.size()+" in mutationIdHm");
+				if (count % 10000 == 0) {
+					log.info("Processing " + count + "th in total size of " + annoKeyList.size() + " annoKeyList");
 				}
 				count++;
 			}
-			
-			//save HashSet<String>: pdb as pdbSet.ser
-	        String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
-	        try{
-	        	log.info("Serialize structureAnnoH, size is " + structureAnnoHm.size());
-	            FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(structureAnnoHm));
-	            log.info("Serialization completed");
-	        }catch(Exception ex){
-	            ex.printStackTrace();
-	        }
-	        
+
+			// save HashSet<String>: pdb as pdbSet.ser
+			String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
+			try {
+				log.info("Serialize structureAnnoH, size is " + structureAnnoHm.size());
+				FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(structureAnnoHm));
+				log.info("Serialization completed");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
 			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename);
 
 		} catch (Exception ex) {
@@ -209,7 +238,7 @@ public class StructureAnnotation {
      * @return
      */
     public String makeTable_structureAnnotation_insert(StructureAnnotationRecord sar) {
-        String str = "INSERT INTO `structure_annotation_entry` (`CHR_POS`,`MUTATION_ID`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,"
+        String str = "INSERT INTO `structure_annotation_entry` (`PDB_ANNOKEY`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,"
                 + "`BURIED`,`ALL_ATOMS_ABS`,`ALL_ATOMS_REL`,`TOTAL_SIDE_ABS`,`TOTAL_SIDE_REL`,`MAIN_CHAIN_ABS`,`MAIN_CHAIN_REL`,"
                 + "`NON_POLAR_ABS`,`NON_POLAR_REL`,`ALL_POLAR_ABS`,`ALL_POLAR_REL`,`SEC_STRUCTURE`,`THREE_TURN_HELIX`,"
                 + "`FOUR_TURN_HELIX`,`FIVE_TURN_HELIX`,`GEOMETRICAL_BEND`,`CHIRALITY`,`BETA_BRIDGE_LABELA`,`BETA_BRIDGE_LABELB`,"
@@ -219,8 +248,8 @@ public class StructureAnnotation {
                 + "`CATH_HOMOLOGY`,`CATH_IDENTIFIER`,`CATH_NAME`,`CATH_TOPOLOGY`,`CATH_DOMAIN_ID`,`CATH_DOMAIN_START`,"
                 + "`CATH_DOMAIN_END`,`SCOP_ID`,`SCOP_DESCRIPTION`,`SCOP_IDENTIFIER`,`SCOP_SCCS`,`SCOP_CLASS_SUNID`,"
                 + "`SCOP_CLASS_DESCRIPTION`,`SCOP_FOLD_SUNID`,`SCOP_FOLD_DESCRIPTION`,`SCOP_SUPERFAMILY_SUNID`,"
-                + "`SCOP_SUPERFAMILY_DESCRIPTION`,`SCOP_START`,`SCOP_END`)VALUES('" + sar.getChrPos() + "',"
-                + sar.getMutationId() + ",'" + sar.getPdbNo() + "'," + sar.getPdbResidueIndex() + ",'"
+                + "`SCOP_SUPERFAMILY_DESCRIPTION`,`SCOP_START`,`SCOP_END`)VALUES('" + sar.getPdbAnnoKey() + "',"
+                + sar.getPdbNo() + "'," + sar.getPdbResidueIndex() + ",'"
                 + sar.getPdbResidueName() + "','" + sar.getBuried() + "','" + sar.getAllAtomsABS() + "','"
                 + sar.getAllAtomsREL() + "','" + sar.getTotalSideABS() + "','" + sar.getTotalSideREL() + "','"
                 + sar.getMainChainABS() + "','" + sar.getMainChainREL() + "','" + sar.getNonPolarABS() + "','"
@@ -245,13 +274,11 @@ public class StructureAnnotation {
         return str;
     }
 
-    public String getDSSPInfo(String pdbId, String pdbChain, String pdbResidueIndex) {
-        String resfilepwd = new String(ReadConfig.dsspLocalDataFile + pdbId + ReadConfig.dsspFileSuffix);
-        File resfile = new File(resfilepwd);
+    public String getDSSPInfo(String pdbId, String pdbChain, String pdbResidueIndex, List<String> lines) {
 //        log.info(pdbId + "\t" + pdbChain + "\t" + pdbResidueIndex);// debug
         String str = "";
         try {
-            List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
+            
             int i = 0;
             int index = Integer.parseInt(pdbResidueIndex);
             int flag = 0;
@@ -278,23 +305,17 @@ public class StructureAnnotation {
                 log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find DSSP information!");
             }
             // log.info(str);
-        }catch(FileNotFoundException e){
-        	//in case dssp file does not exist in the system
-        	log.info(e);
-        }catch (IOException e) {
+        }catch(Exception ex) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            ex.printStackTrace();
         }
         return str;
     }
 
-    public String getNaccessInfo(String pdbId, String pdbChain, String pdbResidueIndex) {
-        String resfilepwd = new String(ReadConfig.tmpdir + pdbId + ReadConfig.naccessFileSuffix);
-        File resfile = new File(resfilepwd);
+    public String getNaccessInfo(String pdbId, String pdbChain, String pdbResidueIndex, List<String> lines) {
         String str = "";
         // log.info(pdbId + pdbChain + pdbResidueIndex);
         try {
-            List<String> lines = FileUtils.readLines(resfile, StandardCharsets.UTF_8.name());
             int i = 0;
             for (; i < lines.size(); i++) {
                 if (!(lines.get(i).substring(0, 3).equals("RES") && lines.get(i).substring(8, 9).equals(pdbChain)
@@ -309,7 +330,7 @@ public class StructureAnnotation {
             } else {
                 log.info(pdbId + " " + pdbChain + " " + pdbResidueIndex + " cannot find Naccess information!");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -336,12 +357,9 @@ public class StructureAnnotation {
      * @param pdbChain
      * @param pdbResidueIndex
      */
-    public void getHETInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) {
+    public void getHETInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex, List<String> lines,  Structure struc) {
         try {
             double x1, x2, y1, y2, z1, z2, ra, rl, dis;
-            String asafilepwd = new String(ReadConfig.tmpdir + pdbId + ".asa");
-            File asafile = new File(asafilepwd);
-            List<String> lines = FileUtils.readLines(asafile, StandardCharsets.UTF_8.name());
             int k = 0;
             while (!(lines.get(k).substring(21, 22).equals(pdbChain) && lines.get(k).substring(13, 15).equals("CA")
                     && stringToInt(lines.get(k).substring(22, 26)) == Integer.parseInt(pdbResidueIndex))) {
@@ -351,8 +369,7 @@ public class StructureAnnotation {
             y1 = Double.parseDouble(lines.get(k).substring(38, 46));
             z1 = Double.parseDouble(lines.get(k).substring(46, 54));
             ra = Double.parseDouble(lines.get(k).substring(64, 68));
-            PDBFileReader reader = new PDBFileReader();
-            Structure struc = reader.getStructure(ReadConfig.tmpdir + pdbId + ".pdb");
+            
             List<Group> hetGroup = new ArrayList<Group>();
             String ligantNames = "";
             hetGroup.addAll(struc.getHetGroups());

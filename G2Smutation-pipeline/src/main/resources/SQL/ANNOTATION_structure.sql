@@ -6,8 +6,7 @@ drop table IF EXISTS structure_annotation_entry;
 -- Rebuilt in weekly update
 CREATE TABLE `structure_annotation_entry` (
   `ID` int NOT NULL AUTO_INCREMENT,
-  `CHR_POS` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin, -- CHR_POSSTART_POSEND
-  `MUTATION_ID` int NOT NULL,
+  `PDB_ANNOKEY` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, -- XXXX_A_123 
   `PDB_NO` VARCHAR(12) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `PDB_INDEX` int NOT NULL,
   `PDB_RESIDUE` VARCHAR(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
@@ -71,5 +70,5 @@ CREATE TABLE `structure_annotation_entry` (
   `SCOP_START` TEXT,
   `SCOP_END` TEXT,
   PRIMARY KEY(`ID`),
-  KEY(`CHR_POS`,`MUTATION_ID`,`PDB_NO`)
+  KEY(`PDB_ANNOKEY`)
 );
