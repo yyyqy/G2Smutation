@@ -137,6 +137,7 @@ class GeneralInfo {
     private String pdbResidue;
     
     GeneralInfo(StructureAnnotation sa){
+    	this.setPdbAnnoKey(sa.getPdbAnnoKey());
     	this.setPdbNo(sa.getPdbNo());
     	this.setPdbIndex(sa.getPdbIndex());
     	this.setPdbResidue(this.getPdbResidue());
