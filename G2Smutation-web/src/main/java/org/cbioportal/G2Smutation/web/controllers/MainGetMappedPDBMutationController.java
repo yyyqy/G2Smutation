@@ -57,7 +57,7 @@ public class MainGetMappedPDBMutationController {
 		// System.out.println(inputStr);
 
 		if (positionList == null) {
-			List<StructureAnnotation> tmpList = structureAnnotationRepository.findByPdbNoStartingWith(inputStr);
+			List<StructureAnnotation> tmpList = structureAnnotationRepository.findTopByPdbAnnoKeyStartingWith(inputStr);
 			Set<String> tmpSet = new HashSet<>();
 			for (StructureAnnotation sa : tmpList) {
 				if (tmpSet.contains(sa.getPdbNo())) {
@@ -68,7 +68,7 @@ public class MainGetMappedPDBMutationController {
 				}
 			}
 		} else {
-			List<StructureAnnotation> tmpList = structureAnnotationRepository.findByPdbNoStartingWith(inputStr);
+			List<StructureAnnotation> tmpList = structureAnnotationRepository.findTopByPdbAnnoKeyStartingWith(inputStr);
 			Set<String> tmpSet = new HashSet<>();
 			for (StructureAnnotation sa : tmpList) {
 				if (tmpSet.contains(sa.getPdbNo())) {

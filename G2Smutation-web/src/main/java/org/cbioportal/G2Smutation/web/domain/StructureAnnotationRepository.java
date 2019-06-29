@@ -6,10 +6,9 @@ import org.cbioportal.G2Smutation.web.models.StructureAnnotationInfo;
 import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StructureAnnotationRepository extends JpaRepository<StructureAnnotation, Long>{   
+public interface StructureAnnotationRepository extends JpaRepository<StructureAnnotation, Long>{ 
+	public List<StructureAnnotation> findTopByPdbAnnoKeyStartingWith(String pdbAnnoKeyPart);//2pcx_A_
     
-    public List<StructureAnnotation> findByPdbNoStartingWith(String input); //2pcx_A_
-    
-    public StructureAnnotation findTopByPdbNo(String pdbNo); //2pcx_A_282
+    public StructureAnnotation findTopByPdbAnnoKey(String pdbAnnoKey); //2pcx_A_282
 
 }
