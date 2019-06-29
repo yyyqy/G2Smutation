@@ -20,6 +20,7 @@ import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
 public class StructureAnnotationInfo {
 	
 	private GeneralInfo generalInfo;
+	
 	@Column(name = "BURIED")
 	private String Buried;
 	
