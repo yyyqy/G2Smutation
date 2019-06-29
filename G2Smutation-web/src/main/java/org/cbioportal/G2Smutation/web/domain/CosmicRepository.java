@@ -11,6 +11,8 @@ public interface CosmicRepository extends JpaRepository<Cosmic, String>{
     public List<Cosmic> findBychrPos(String chrPos);
     
     public List<Cosmic> findByMutationNo(String seqIdpos);
+    
+    public List<String> findMutationNoByCosmicMutationId(String cosmicMutationId);
 
 }
 

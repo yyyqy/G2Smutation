@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.cbioportal.G2Smutation.web.domain.ClinvarRepository;
+import org.cbioportal.G2Smutation.web.domain.CosmicRepository;
+import org.cbioportal.G2Smutation.web.domain.DbsnpRepository;
 import org.cbioportal.G2Smutation.web.models.mutation.Mutation;
 import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,7 @@ import io.swagger.annotations.ApiParam;
  */
 @RestController // shorthand for @Controller, @ResponseBody
 @CrossOrigin(origins = "*") // allow all cross-domain requests
-@Api(tags = "Structure Mutations from Variance", description = "dbSNP")
+@Api(tags = "Structure Mutations from Variance", description = "dbSNP/clinVar/COSMIC")
 @RequestMapping(value = "/api/")
 public class MainGetMappedVarianceController {
 	
@@ -34,19 +37,59 @@ public class MainGetMappedVarianceController {
 
 	@Autowired
 	private SeqIdAlignmentController seqController;
+	
+	@Autowired
+	private ClinvarRepository clinvarRepository;
+	
+	@Autowired
+	private DbsnpRepository dbsnpRepository;
+	
+	@Autowired
+	private CosmicRepository cosmicRepository;
 
 	@RequestMapping(value = "/variantMutation/{id_type}/{id:.+}", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation("Query mutation by variant")
 	public List<Mutation> postVariantMutation(
-			@ApiParam(required = true, value = "Input id_type: dbsnp") @PathVariable String id_type,
-			@ApiParam(required = true, value = "Input id: e.g. rs28934574") @PathVariable String id) {
+			@ApiParam(required = true, value = "Input id_type: dbsnp/clinvar/cosmic") @PathVariable String id_type,
+			@ApiParam(required = true, value = "Input id: e.g. rs28934574/140821/COSM1636702") @PathVariable String id) {
 
 		List<Mutation> outList = new ArrayList<Mutation>();
-		// http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
-
-		System.out.println("dbsnp: " + id);
-		outList.addAll(seqController.getMutationUsageByEnsemblIddbSNPID(id));
+		List<String> mutationNoList = new ArrayList<>();
+		
+		if(id_type.equals("dbsnp")) {
+			/**
+			 * Option 1: use API
+			 * 
+			 * // http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
+			outList.addAll(seqController.getMutationUsageByEnsemblIddbSNPID(id));
+			 */
+			
+			/**
+			 * Option 2: use inner database
+			 */
+			if (id.startsWith("rs")) {
+				mutationNoList = dbsnpRepository.findMutationNoByRsId(id.split("rs")[1]);								
+			}
+								
+		}else if(id_type.equals("clinvar")) {
+			mutationNoList = clinvarRepository.findMutationNoByClinvarId(id);
+		}else if(id_type.equals("cosmic")) {
+			if (id.startsWith("COSM")) {
+				mutationNoList = cosmicRepository.findMutationNoByCosmicMutationId(id.split("COSM")[1]);				
+			}			
+		}else {
+			log.error("Does not support others");
+		}
+		
+		//get mutationNoList, then get results
+		for(String mutationNo: mutationNoList) {
+			String[] pdbArrays = mutationNo.split("_");//60004_282
+			List<String> posList = new ArrayList<String>();
+			posList.add(pdbArrays[1]);
+			outList.addAll(seqController.getMutationUsageBySeqId(pdbArrays[0], posList));
+		}
+		
 		return outList;
 	}
 
@@ -54,14 +97,47 @@ public class MainGetMappedVarianceController {
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation("Query mutation by variant")
 	public List<MutationAnnotation> postVariantMutationAnnotation(
-			@ApiParam(required = true, value = "Input id_type: dbsnp") @PathVariable String id_type,
-			@ApiParam(required = true, value = "Input id: e.g. rs28934574") @PathVariable String id) {
+			@ApiParam(required = true, value = "Input id_type: dbsnp/clinvar") @PathVariable String id_type,
+			@ApiParam(required = true, value = "Input id: e.g. rs28934574/140821") @PathVariable String id) {
 
-		List<MutationAnnotation> outList = new ArrayList<MutationAnnotation>();
-		// http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
-
-		System.out.println("dbsnp: " + id);
-		outList.addAll(seqController.getMutationUsageAnnotationByEnsemblIddbSNPID(id));
+		List<MutationAnnotation> outList = new ArrayList<MutationAnnotation>();		
+		List<String> mutationNoList = new ArrayList<>();
+		
+		if(id_type.equals("dbsnp")) {
+			/**
+			 * Option 1: use API
+			 * 
+			 * // http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
+			outList.addAll(seqController.getMutationUsageAnnotationByEnsemblIddbSNPID(id));
+			 */
+			
+			/**
+			 * Option 2: use inner database
+			 */
+			if (id.startsWith("rs")) {
+				mutationNoList = dbsnpRepository.findMutationNoByRsId(id.split("rs")[1]);				
+			}
+								
+		}else if(id_type.equals("clinvar")) {
+			mutationNoList = clinvarRepository.findMutationNoByClinvarId(id);
+			
+		}else if(id_type.equals("cosmic")) {
+			if (id.startsWith("COSM")) {
+				mutationNoList = cosmicRepository.findMutationNoByCosmicMutationId(id.split("COSM")[1]);								
+			}			
+		}else {
+			log.error("Does not support others");
+		}
+		
+		//get mutationNoList, then get results
+		for(String mutationNo: mutationNoList) {
+			String[] pdbArrays = mutationNo.split("_");//60004_282
+			List<String> posList = new ArrayList<String>();
+			posList.add(pdbArrays[1]);
+			outList.addAll(seqController.getMutationUsageAnnotationBySeqId(pdbArrays[0], posList));
+		}
+		
+		
 		return outList;
 	}
 
