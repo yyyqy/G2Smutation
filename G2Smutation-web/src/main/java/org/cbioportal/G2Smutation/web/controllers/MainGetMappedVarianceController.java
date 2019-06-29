@@ -69,14 +69,15 @@ public class MainGetMappedVarianceController {
 			 * Option 2: use inner database
 			 */
 			if (id.startsWith("rs")) {
-				mutationNoList = dbsnpRepository.findMutationNoByRsId(id.split("rs")[1]);								
+				mutationNoList = dbsnpRepository.findMutationNoByRsId(Integer.parseInt(id.split("rs")[1]));								
 			}
 								
 		}else if(id_type.equals("clinvar")) {
-			mutationNoList = clinvarRepository.findMutationNoByClinvarId(id);
+			mutationNoList = clinvarRepository.findMutationNoByClinvarId(Integer.parseInt(id));
 		}else if(id_type.equals("cosmic")) {
 			if (id.startsWith("COSM")) {
-				mutationNoList = cosmicRepository.findMutationNoByCosmicMutationId(id.split("COSM")[1]);				
+				mutationNoList = cosmicRepository.findMutationNoByCosmicMutationId(id);
+				System.out.println(mutationNoList);
 			}			
 		}else {
 			log.error("Does not support others");
@@ -115,15 +116,15 @@ public class MainGetMappedVarianceController {
 			 * Option 2: use inner database
 			 */
 			if (id.startsWith("rs")) {
-				mutationNoList = dbsnpRepository.findMutationNoByRsId(id.split("rs")[1]);				
+				mutationNoList = dbsnpRepository.findMutationNoByRsId(Integer.parseInt(id.split("rs")[1]));				
 			}
 								
 		}else if(id_type.equals("clinvar")) {
-			mutationNoList = clinvarRepository.findMutationNoByClinvarId(id);
+			mutationNoList = clinvarRepository.findMutationNoByClinvarId(Integer.parseInt(id));
 			
 		}else if(id_type.equals("cosmic")) {
 			if (id.startsWith("COSM")) {
-				mutationNoList = cosmicRepository.findMutationNoByCosmicMutationId(id.split("COSM")[1]);								
+				mutationNoList = cosmicRepository.findMutationNoByCosmicMutationId(id);								
 			}			
 		}else {
 			log.error("Does not support others");

@@ -11,7 +11,7 @@ public interface DbsnpRepository extends JpaRepository<Dbsnp, String>{
     
     public List<Dbsnp> findByMutationNo(String seqIdpos);
     
-    public List<String> findMutationNoByRsId(String rsId);
+    public List<String> findMutationNoByRsId(int rsId);
 
 }
 

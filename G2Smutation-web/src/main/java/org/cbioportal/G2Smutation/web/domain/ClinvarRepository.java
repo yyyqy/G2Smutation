@@ -11,9 +11,9 @@ public interface ClinvarRepository extends JpaRepository<Clinvar, String>{
     
     public List<Clinvar> findByMutationNo(String seqIdpos);
     
-    public Clinvar findTopByClinvarId(String clinvarId);
+    public Clinvar findTopByClinvarId(int clinvarId);
     
-    public List<String> findMutationNoByClinvarId(String clinvarId);
+    public List<String> findMutationNoByClinvarId(int clinvarId);
 
 }
 
