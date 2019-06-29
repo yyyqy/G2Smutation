@@ -12,7 +12,7 @@ public interface CosmicRepository extends JpaRepository<Cosmic, String>{
     
     public List<Cosmic> findByMutationNo(String seqIdpos);
     
-    public List<String> findMutationNoByCosmicMutationId(String cosmicMutationId);
+    public List<Cosmic> findByCosmicMutationId(String cosmicMutationId);
 
 }
 

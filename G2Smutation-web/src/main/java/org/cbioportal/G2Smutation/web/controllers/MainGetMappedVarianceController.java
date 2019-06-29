@@ -7,6 +7,9 @@ import org.apache.log4j.Logger;
 import org.cbioportal.G2Smutation.web.domain.ClinvarRepository;
 import org.cbioportal.G2Smutation.web.domain.CosmicRepository;
 import org.cbioportal.G2Smutation.web.domain.DbsnpRepository;
+import org.cbioportal.G2Smutation.web.models.db.Clinvar;
+import org.cbioportal.G2Smutation.web.models.db.Cosmic;
+import org.cbioportal.G2Smutation.web.models.db.Dbsnp;
 import org.cbioportal.G2Smutation.web.models.mutation.Mutation;
 import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,15 +72,23 @@ public class MainGetMappedVarianceController {
 			 * Option 2: use inner database
 			 */
 			if (id.startsWith("rs")) {
-				mutationNoList = dbsnpRepository.findMutationNoByRsId(Integer.parseInt(id.split("rs")[1]));								
+				List<Dbsnp> dbsnpList = dbsnpRepository.findByRsId(Integer.parseInt(id.split("rs")[1]));
+				for(Dbsnp dbsnp: dbsnpList) {
+					mutationNoList.add(dbsnp.getMutationNo());
+				}
 			}
 								
 		}else if(id_type.equals("clinvar")) {
-			mutationNoList = clinvarRepository.findMutationNoByClinvarId(Integer.parseInt(id));
+			List<Clinvar> clinvarList = clinvarRepository.findByClinvarId(Integer.parseInt(id));
+			for(Clinvar clinvar: clinvarList) {
+				mutationNoList.add(clinvar.getMutationNo());
+			}
 		}else if(id_type.equals("cosmic")) {
 			if (id.startsWith("COSM")) {
-				mutationNoList = cosmicRepository.findMutationNoByCosmicMutationId(id);
-				System.out.println(mutationNoList);
+				List<Cosmic> cosmicList = cosmicRepository.findByCosmicMutationId(id);
+				for(Cosmic cosmic: cosmicList) {
+					mutationNoList.add(cosmic.getMutationNo());
+				}
 			}			
 		}else {
 			log.error("Does not support others");
@@ -116,15 +127,24 @@ public class MainGetMappedVarianceController {
 			 * Option 2: use inner database
 			 */
 			if (id.startsWith("rs")) {
-				mutationNoList = dbsnpRepository.findMutationNoByRsId(Integer.parseInt(id.split("rs")[1]));				
+				List<Dbsnp> dbsnpList = dbsnpRepository.findByRsId(Integer.parseInt(id.split("rs")[1]));
+				for(Dbsnp dbsnp: dbsnpList) {
+					mutationNoList.add(dbsnp.getMutationNo());
+				}			
 			}
 								
 		}else if(id_type.equals("clinvar")) {
-			mutationNoList = clinvarRepository.findMutationNoByClinvarId(Integer.parseInt(id));
+			List<Clinvar> clinvarList = clinvarRepository.findByClinvarId(Integer.parseInt(id));
+			for(Clinvar clinvar: clinvarList) {
+				mutationNoList.add(clinvar.getMutationNo());
+			}
 			
 		}else if(id_type.equals("cosmic")) {
 			if (id.startsWith("COSM")) {
-				mutationNoList = cosmicRepository.findMutationNoByCosmicMutationId(id);								
+				List<Cosmic> cosmicList = cosmicRepository.findByCosmicMutationId(id);
+				for(Cosmic cosmic: cosmicList) {
+					mutationNoList.add(cosmic.getMutationNo());
+				}
 			}			
 		}else {
 			log.error("Does not support others");
