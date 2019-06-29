@@ -1046,6 +1046,7 @@ public class SeqIdAlignmentController {
         HashMap<String,List<MutatedResidueInfo>> hm = new HashMap<>();
         
         String proteinName = "";
+        try {
         for(MutationUsageTable entry: it){
             proteinName = entry.getSeqName();
             String key = Integer.toString(entry.getSeqIndex())+"\t"+entry.getSeqResidue();
@@ -1070,6 +1071,9 @@ public class SeqIdAlignmentController {
                 list.add(mr);
             }
             hm.put(key, list);           
+        }
+        }catch(Exception ex) {
+        	ex.printStackTrace();
         }
         
         MutationAnnotation entry = new MutationAnnotation();
