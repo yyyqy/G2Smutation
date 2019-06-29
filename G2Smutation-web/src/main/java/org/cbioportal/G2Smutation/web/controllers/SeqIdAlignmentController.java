@@ -1126,6 +1126,7 @@ public class SeqIdAlignmentController {
         }
         
         String proteinName = "";
+        try {
         for(MutationUsageTable entry: it){
             if(posSet.contains(Integer.toString(entry.getSeqIndex()))){
                 proteinName = entry.getSeqName();
@@ -1153,6 +1154,9 @@ public class SeqIdAlignmentController {
                 }
                 hm.put(key, list);                
             }                      
+        }
+        }catch(Exception ex) {
+        	ex.printStackTrace();
         }
         
         MutationAnnotation entry = new MutationAnnotation();
