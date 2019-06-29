@@ -61,7 +61,7 @@ public class StructureAnnotation {
 			List<StructureAnnotationRecord> sarList = new ArrayList<>();
 
 			int count = 0;
-			//ArrayList<String> annoKeyList = new ArrayList<String>();
+			// ArrayList<String> annoKeyList = new ArrayList<String>();
 			SortedSet<String> annoKeySet = new TreeSet<>();
 			for (int mutationId : mutationIdHm.keySet()) {
 				String annoKey = residueHm.get(mutationId);
@@ -73,55 +73,50 @@ public class StructureAnnotation {
 			List<String> asaLines = new ArrayList<>();
 			File dir = new File(ReadConfig.tmpdir);
 			File[] files = dir.listFiles(new FilenameFilter() {
-			    public boolean accept(File dir, String name) {
-			        return name.toLowerCase().endsWith(".pdb");
-			    }
+				public boolean accept(File dir, String name) {
+					return name.toLowerCase().endsWith(".pdb");
+				}
 			});
-			//dummy init, find random
-			Structure struc = new PDBFileReader().getStructure(files[files.length-2]);
+			// dummy init, find random
+			Structure struc = new PDBFileReader().getStructure(files[files.length - 2]);
 			SortedMap<String, StructureAnnotationRecord> pdbContentMp = new TreeMap<>();
-			
+
 			String pdbOld = "";
 
 			Iterator it = annoKeySet.iterator();
 			while (it.hasNext()) {
 				String annoKey = it.next().toString();
 				StructureAnnotationRecord sarOut = new StructureAnnotationRecord();
-				
-				
+
 				if (!structureAnnoHm.containsKey(annoKey)) {
 					String pdb = annoKey.split("_")[0];
 					String chain = annoKey.split("_")[1];
 					String index = annoKey.split("_")[2];
-					//System.out.println("annoKey:" + annoKey);
+					// System.out.println("annoKey:" + annoKey);
 
 					// Save IO
 					if (!pdb.equals(pdbOld)) {
-						
+
 						getNaccessInfo(naccessLines, pdbContentMp);
 						getDSSPInfo(dsspLines, pdbContentMp);
 						getHETInfo(asaLines, struc, pdbContentMp);
-						
-						for(String contentKey: pdbContentMp.keySet()) {
+
+						for (String contentKey : pdbContentMp.keySet()) {
 							StructureAnnotationRecord sar = pdbContentMp.get(contentKey);
 							String contentchain = contentKey.split("_")[0];
 							String contentindex = contentKey.split("_")[1];
-							sar.setPdbAnnoKey(pdbOld+"_"+contentKey);
+							sar.setPdbAnnoKey(pdbOld + "_" + contentKey);
 							sar.setPdbNo(pdbOld + "_" + contentchain);
 							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
-							
-							//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 
-							structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
+							getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+
+							structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
 							sarList.add(sar);
-							//System.out.println("PutKey: " + pdbOld+"_"+contentKey);
+							// System.out.println("PutKey: " + pdbOld+"_"+contentKey);
 
-							
-							
 						}
-						
-						
-						
+
 						try {
 							naccessLines = FileUtils.readLines(
 									new File((ReadConfig.tmpdir + pdb + ReadConfig.naccessFileSuffix)),
@@ -133,64 +128,60 @@ public class StructureAnnotation {
 									StandardCharsets.UTF_8.name());
 							struc = new PDBFileReader().getStructure(ReadConfig.tmpdir + pdb + ".pdb");
 							pdbContentMp = new TreeMap<>();
-							
-												
+
 							pdbOld = pdb;
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 					}
-					
-					pdbContentMp.put(chain+"_"+index, new StructureAnnotationRecord());
 
+					pdbContentMp.put(chain + "_" + index, new StructureAnnotationRecord());
 
 					// Use placeholder now
 					// getHETInfoPlaceholder(sar);
 					// getDomainUrlPlaceholder(sar);
-					
-					
+
 				} else {
 					sarOut = structureAnnoHm.get(annoKey);
 					sarList.add(sarOut);
 				}
-				
+
 				if (count % 10000 == 0) {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
-								
+
 				count++;
-				if(count % 100000 ==0) {
-					generateMutationResultSQL4StructureAnnotation(sarList, outputFilename+"."+Integer.toString(filecount));
+				if (count % 100000 == 0) {
+					generateMutationResultSQL4StructureAnnotation(sarList,
+							outputFilename + "." + Integer.toString(filecount));
 					System.out.println(sarList.size());
 					filecount++;
 					sarList = new ArrayList<StructureAnnotationRecord>();
 				}
 			}
-			
-			//Post, the last one
+
+			// Post, the last one
 			getNaccessInfo(naccessLines, pdbContentMp);
 			getDSSPInfo(dsspLines, pdbContentMp);
 			getHETInfo(asaLines, struc, pdbContentMp);
-			
-			for(String contentKey: pdbContentMp.keySet()) {
+
+			for (String contentKey : pdbContentMp.keySet()) {
 				StructureAnnotationRecord sar = pdbContentMp.get(contentKey);
 				String contentchain = contentKey.split("_")[0];
 				String contentindex = contentKey.split("_")[1];
-				sar.setPdbAnnoKey(pdbOld+"_"+contentKey);
+				sar.setPdbAnnoKey(pdbOld + "_" + contentKey);
 				sar.setPdbNo(pdbOld + "_" + contentchain);
 				sar.setPdbResidueIndex(Integer.parseInt(contentindex));
-				
+
 				getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 
-				structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
+				structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
 				sarList.add(sar);
-				//System.out.println("PostPutKey: " + pdbOld+"_"+contentKey);
+				// System.out.println("PostPutKey: " + pdbOld+"_"+contentKey);
 			}
-			
-			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename+"."+Integer.toString(filecount));
-			
-			
-			
+
+			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename + "." + Integer.toString(filecount));
+
 			// save structureAnnoHm
 			String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
 			try {
@@ -200,8 +191,6 @@ public class StructureAnnotation {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-
-			
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
