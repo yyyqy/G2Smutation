@@ -56,7 +56,7 @@ public class StructureAnnotationInfo {
 		this.setScopAnno(scopAnno);
 	}
 	
-	StructureAnnotationInfo(){
+	public StructureAnnotationInfo(){
 		GeneralInfo generalInfo = new GeneralInfo();
 		NaccessAnno naccessAnno = new NaccessAnno();
 		DsspAnno dsspAnno = new DsspAnno();

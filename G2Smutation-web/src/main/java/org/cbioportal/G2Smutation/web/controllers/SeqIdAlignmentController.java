@@ -1046,7 +1046,7 @@ public class SeqIdAlignmentController {
         HashMap<String,List<MutatedResidueInfo>> hm = new HashMap<>();
         
         String proteinName = "";
-        try {
+        
         for(MutationUsageTable entry: it){
             proteinName = entry.getSeqName();
             String key = Integer.toString(entry.getSeqIndex())+"\t"+entry.getSeqResidue();
@@ -1058,11 +1058,18 @@ public class SeqIdAlignmentController {
             mr.setPdbResidue(entry.getPdbResidue());
             //TODO, can improve use OO Design
             String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
-            System.out.println("*"+queryPdbNo);
+            
             StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
-            System.out.println("#"+ma.getPdbAnnoKey());
-            StructureAnnotationInfo maInfo = new StructureAnnotationInfo(ma);
+            
+            
+            StructureAnnotationInfo maInfo = new StructureAnnotationInfo();
+            try {
+            maInfo = new StructureAnnotationInfo(ma);
+            }catch(Exception ex) {
+            	ex.printStackTrace();
+            }
             mr.setStructureAnnotationInfo(maInfo);
+            
             List<MutatedResidueInfo> list = new ArrayList<>();
             if (hm.containsKey(key)){
                 list = hm.get(key);
@@ -1072,9 +1079,7 @@ public class SeqIdAlignmentController {
             }
             hm.put(key, list);           
         }
-        }catch(Exception ex) {
-        	ex.printStackTrace();
-        }
+        
         
         MutationAnnotation entry = new MutationAnnotation();
         entry.setProteinName(proteinName);
@@ -1126,7 +1131,7 @@ public class SeqIdAlignmentController {
         }
         
         String proteinName = "";
-        try {
+        
         for(MutationUsageTable entry: it){
             if(posSet.contains(Integer.toString(entry.getSeqIndex()))){
                 proteinName = entry.getSeqName();
@@ -1142,7 +1147,12 @@ public class SeqIdAlignmentController {
                 String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
                 
                 StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
-                StructureAnnotationInfo maInfo = new StructureAnnotationInfo(ma);
+                StructureAnnotationInfo maInfo = new StructureAnnotationInfo();
+                try {
+                maInfo = new StructureAnnotationInfo(ma);
+                }catch(Exception ex) {
+                	ex.printStackTrace();
+                }
                 mr.setStructureAnnotationInfo(maInfo);
 
                 List<MutatedResidueInfo> list = new ArrayList<>();
@@ -1155,9 +1165,7 @@ public class SeqIdAlignmentController {
                 hm.put(key, list);                
             }                      
         }
-        }catch(Exception ex) {
-        	ex.printStackTrace();
-        }
+        
         
         MutationAnnotation entry = new MutationAnnotation();
         entry.setProteinName(proteinName);
