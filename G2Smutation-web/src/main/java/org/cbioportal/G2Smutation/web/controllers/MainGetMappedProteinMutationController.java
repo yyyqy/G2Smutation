@@ -594,7 +594,7 @@ public class MainGetMappedProteinMutationController {
                     	nmp.setClinvarAnnotation(mp.getClinvarAnnotation());
                     	nmp.setCosmicAnnotation(mp.getCosmicAnnotation());
                     	nmp.setDbsnpAnnotation(mp.getDbsnpAnnotation());
-                    	nmp.setGenieAnnotation(mp.getGenieAnnotation());
+                    	//nmp.setGenieAnnotation(mp.getGenieAnnotation());
                     	nmp.setTcgaAnnotation(mp.getTcgaAnnotation());
                     	//System.out.println("*****"+nmp.getMutatedResidue().size());
                     	MutationAnnotation nmutation = new MutationAnnotation();

@@ -18,7 +18,7 @@ public class MutatedPositionInfo {
     private List<Dbsnp> dbsnpAnnotation;
     private List<Clinvar> clinvarAnnotation;
     private List<Cosmic> cosmicAnnotation;
-    private List<Genie> genieAnnotation;
+    // private List<Genie> genieAnnotation;
     private List<Tcga> tcgaAnnotation;
 	public int getProteinPos() {
 		return proteinPos;
@@ -56,12 +56,14 @@ public class MutatedPositionInfo {
 	public void setCosmicAnnotation(List<Cosmic> cosmicAnnotation) {
 		this.cosmicAnnotation = cosmicAnnotation;
 	}
+	/*
 	public List<Genie> getGenieAnnotation() {
 		return genieAnnotation;
 	}
 	public void setGenieAnnotation(List<Genie> genieAnnotation) {
 		this.genieAnnotation = genieAnnotation;
 	}
+	*/
 	public List<Tcga> getTcgaAnnotation() {
 		return tcgaAnnotation;
 	}

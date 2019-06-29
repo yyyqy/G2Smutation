@@ -1037,78 +1037,77 @@ public class SeqIdAlignmentController {
      * @param seqId
      * @return
      */
-    public List<MutationAnnotation> getMutationUsageAnnotationBySeqId(
-            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
-        
-        List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
-        List<MutationAnnotation> outit = new ArrayList<>();
-        
-        HashMap<String,List<MutatedResidueInfo>> hm = new HashMap<>();
-        
-        String proteinName = "";
-        
-        for(MutationUsageTable entry: it){
-            proteinName = entry.getSeqName();
-            String key = Integer.toString(entry.getSeqIndex())+"\t"+entry.getSeqResidue();
-            MutatedResidueInfo mr = new MutatedResidueInfo();
-            String[] pdbNoUse = entry.getPdbNo().split("_");
-            //System.out.println(pdbNoUse[0]+"_"+pdbNoUse[1]);
-            mr.setPdbNo(pdbNoUse[0]+"_"+pdbNoUse[1]);
-            mr.setPdbPos(entry.getPdbIndex());
-            mr.setPdbResidue(entry.getPdbResidue());
-            //TODO, can improve use OO Design
-            String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
-            
-            StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
-            
-            
-            StructureAnnotationInfo maInfo = new StructureAnnotationInfo();
-            try {
-            maInfo = new StructureAnnotationInfo(ma);
-            }catch(Exception ex) {
-            	ex.printStackTrace();
-            }
-            mr.setStructureAnnotationInfo(maInfo);
-            
-            List<MutatedResidueInfo> list = new ArrayList<>();
-            if (hm.containsKey(key)){
-                list = hm.get(key);
-                list.add(mr);
-            }else{
-                list.add(mr);
-            }
-            hm.put(key, list);           
-        }
-        
-        
-        MutationAnnotation entry = new MutationAnnotation();
-        entry.setProteinName(proteinName);
-        List<MutatedPositionInfo> mplist = new ArrayList<>();
-        
-        SortedSet<String> keys = new TreeSet<>(hm.keySet());
-        for (String key: keys){            
-            int proteinPos = Integer.parseInt(key.split("\t")[0]);
-            String proteinResidue = key.split("\t")[1];
-            MutatedPositionInfo mp = new MutatedPositionInfo();
-            mp.setProteinPos(proteinPos);
-            mp.setProteinResidue(proteinResidue);
-            mp.setMutatedResidueInfo(hm.get(key));
-            List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setDbsnpAnnotation(dbsnpList);
-            List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setClinvarAnnotation(clinvarList);
-            List<Cosmic> cosmicList = cosmicRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setCosmicAnnotation(cosmicList);
-            List<Genie> genieList = genieRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setGenieAnnotation(genieList);
-            List<Tcga> tcgaList = tcgaRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setTcgaAnnotation(tcgaList);
-            mplist.add(mp);
-        }
-        entry.setMutatedPositionInfo(mplist);
-        outit.add(entry);
-        return outit;
-    }
+	public List<MutationAnnotation> getMutationUsageAnnotationBySeqId(
+			@ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
+
+		List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
+		List<MutationAnnotation> outit = new ArrayList<>();
+
+		HashMap<String, List<MutatedResidueInfo>> hm = new HashMap<>();
+
+		String proteinName = "";
+
+		for (MutationUsageTable entry : it) {
+			proteinName = entry.getSeqName();
+			String key = Integer.toString(entry.getSeqIndex()) + "\t" + entry.getSeqResidue();
+			MutatedResidueInfo mr = new MutatedResidueInfo();
+			String[] pdbNoUse = entry.getPdbNo().split("_");
+			// System.out.println(pdbNoUse[0]+"_"+pdbNoUse[1]);
+			mr.setPdbNo(pdbNoUse[0] + "_" + pdbNoUse[1]);
+			mr.setPdbPos(entry.getPdbIndex());
+			mr.setPdbResidue(entry.getPdbResidue());
+			// TODO, can improve use OO Design
+			String queryPdbNo = pdbNoUse[0] + "_" + pdbNoUse[1] + "_" + entry.getPdbIndex();
+
+			StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
+
+			StructureAnnotationInfo maInfo = new StructureAnnotationInfo();
+			try {
+				maInfo = new StructureAnnotationInfo(ma);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			mr.setStructureAnnotationInfo(maInfo);
+
+			List<MutatedResidueInfo> list = new ArrayList<>();
+			if (hm.containsKey(key)) {
+				list = hm.get(key);
+				list.add(mr);
+			} else {
+				list.add(mr);
+			}
+			hm.put(key, list);
+		}
+
+		MutationAnnotation entry = new MutationAnnotation();
+		entry.setProteinName(proteinName);
+		List<MutatedPositionInfo> mplist = new ArrayList<>();
+
+		SortedSet<String> keys = new TreeSet<>(hm.keySet());
+		for (String key : keys) {
+			int proteinPos = Integer.parseInt(key.split("\t")[0]);
+			String proteinResidue = key.split("\t")[1];
+			MutatedPositionInfo mp = new MutatedPositionInfo();
+			mp.setProteinPos(proteinPos);
+			mp.setProteinResidue(proteinResidue);
+			mp.setMutatedResidueInfo(hm.get(key));
+			List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setDbsnpAnnotation(dbsnpList);
+			List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setClinvarAnnotation(clinvarList);
+			List<Cosmic> cosmicList = cosmicRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setCosmicAnnotation(cosmicList);
+			//Do not redistribute genie
+			//List<Genie> genieList = genieRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			//mp.setGenieAnnotation(genieList);
+			List<Tcga> tcgaList = tcgaRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setTcgaAnnotation(tcgaList);
+			mplist.add(mp);
+		}
+		entry.setMutatedPositionInfo(mplist);
+		outit.add(entry);
+		return outit;
+	}
     
     /**
      * "Get All MutationUsageTable by Protein SeqId
@@ -1116,85 +1115,85 @@ public class SeqIdAlignmentController {
      * @param seqId
      * @return
      */
-    public List<MutationAnnotation> getMutationUsageAnnotationBySeqId(
-            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId,
-            @ApiParam(required = true, value = "Input Residue Position e.g. 99,100") @PathVariable List<String> positionList) {
-        
-        List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
-        List<MutationAnnotation> outit = new ArrayList<>();
-        
-        HashMap<String,List<MutatedResidueInfo>> hm = new HashMap<>();
-        
-        HashSet<String> posSet = new HashSet<>();
-        for(String pos: positionList){
-            posSet.add(pos);
-        }
-        
-        String proteinName = "";
-        
-        for(MutationUsageTable entry: it){
-            if(posSet.contains(Integer.toString(entry.getSeqIndex()))){
-                proteinName = entry.getSeqName();
-                String key = Integer.toString(entry.getSeqIndex())+"\t"+entry.getSeqResidue();
-                MutatedResidueInfo mr = new MutatedResidueInfo();
-                String[] pdbNoUse = entry.getPdbNo().split("_");
-                //System.out.println(pdbNoUse[0]+"_"+pdbNoUse[1]);
-                mr.setPdbNo(pdbNoUse[0]+"_"+pdbNoUse[1]);
-                mr.setPdbPos(entry.getPdbIndex());
-                mr.setPdbResidue(entry.getPdbResidue());
-                //TODO, can improve use OO Design
-                //queryPdbNo: 2pcx_A_282
-                String queryPdbNo = pdbNoUse[0]+"_"+pdbNoUse[1]+"_"+entry.getPdbIndex();
-                
-                StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
-                StructureAnnotationInfo maInfo = new StructureAnnotationInfo();
-                try {
-                maInfo = new StructureAnnotationInfo(ma);
-                }catch(Exception ex) {
-                	ex.printStackTrace();
-                }
-                mr.setStructureAnnotationInfo(maInfo);
+	public List<MutationAnnotation> getMutationUsageAnnotationBySeqId(
+			@ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId,
+			@ApiParam(required = true, value = "Input Residue Position e.g. 99,100") @PathVariable List<String> positionList) {
 
-                List<MutatedResidueInfo> list = new ArrayList<>();
-                if (hm.containsKey(key)){
-                    list = hm.get(key);
-                    list.add(mr);
-                }else{
-                    list.add(mr);
-                }
-                hm.put(key, list);                
-            }                      
-        }
-        
-        
-        MutationAnnotation entry = new MutationAnnotation();
-        entry.setProteinName(proteinName);
-        List<MutatedPositionInfo> mplist = new ArrayList<>();
-        
-        SortedSet<String> keys = new TreeSet<>(hm.keySet());
-        for (String key: keys){            
-            int proteinPos = Integer.parseInt(key.split("\t")[0]);
-            String proteinResidue = key.split("\t")[1];
-            MutatedPositionInfo mp = new MutatedPositionInfo();
-            mp.setProteinPos(proteinPos);
-            mp.setProteinResidue(proteinResidue);
-            mp.setMutatedResidueInfo(hm.get(key));
-            List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setDbsnpAnnotation(dbsnpList);
-            List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setClinvarAnnotation(clinvarList);
-            List<Cosmic> cosmicList = cosmicRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setCosmicAnnotation(cosmicList);
-            List<Genie> genieList = genieRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setGenieAnnotation(genieList);
-            List<Tcga> tcgaList = tcgaRepository.findByMutationNo(seqId+"_"+Integer.toString(proteinPos));
-            mp.setTcgaAnnotation(tcgaList);
-            mplist.add(mp);
-        }
-        entry.setMutatedPositionInfo(mplist);
-        outit.add(entry);
-        return outit;
-    }
+		List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
+		List<MutationAnnotation> outit = new ArrayList<>();
+
+		HashMap<String, List<MutatedResidueInfo>> hm = new HashMap<>();
+
+		HashSet<String> posSet = new HashSet<>();
+		for (String pos : positionList) {
+			posSet.add(pos);
+		}
+
+		String proteinName = "";
+
+		for (MutationUsageTable entry : it) {
+			if (posSet.contains(Integer.toString(entry.getSeqIndex()))) {
+				proteinName = entry.getSeqName();
+				String key = Integer.toString(entry.getSeqIndex()) + "\t" + entry.getSeqResidue();
+				MutatedResidueInfo mr = new MutatedResidueInfo();
+				String[] pdbNoUse = entry.getPdbNo().split("_");
+				// System.out.println(pdbNoUse[0]+"_"+pdbNoUse[1]);
+				mr.setPdbNo(pdbNoUse[0] + "_" + pdbNoUse[1]);
+				mr.setPdbPos(entry.getPdbIndex());
+				mr.setPdbResidue(entry.getPdbResidue());
+				// TODO, can improve use OO Design
+				// queryPdbNo: 2pcx_A_282
+				String queryPdbNo = pdbNoUse[0] + "_" + pdbNoUse[1] + "_" + entry.getPdbIndex();
+
+				StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
+				StructureAnnotationInfo maInfo = new StructureAnnotationInfo();
+				try {
+					maInfo = new StructureAnnotationInfo(ma);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				mr.setStructureAnnotationInfo(maInfo);
+
+				List<MutatedResidueInfo> list = new ArrayList<>();
+				if (hm.containsKey(key)) {
+					list = hm.get(key);
+					list.add(mr);
+				} else {
+					list.add(mr);
+				}
+				hm.put(key, list);
+			}
+		}
+
+		MutationAnnotation entry = new MutationAnnotation();
+		entry.setProteinName(proteinName);
+		List<MutatedPositionInfo> mplist = new ArrayList<>();
+
+		SortedSet<String> keys = new TreeSet<>(hm.keySet());
+		for (String key : keys) {
+			int proteinPos = Integer.parseInt(key.split("\t")[0]);
+			String proteinResidue = key.split("\t")[1];
+			MutatedPositionInfo mp = new MutatedPositionInfo();
+			mp.setProteinPos(proteinPos);
+			mp.setProteinResidue(proteinResidue);
+			mp.setMutatedResidueInfo(hm.get(key));
+			List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setDbsnpAnnotation(dbsnpList);
+			List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setClinvarAnnotation(clinvarList);
+			List<Cosmic> cosmicList = cosmicRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setCosmicAnnotation(cosmicList);
+			// No Redistributed genie project
+			//List<Genie> genieList = genieRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			//mp.setGenieAnnotation(genieList);
+			List<Tcga> tcgaList = tcgaRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setTcgaAnnotation(tcgaList);
+			mplist.add(mp);
+		}
+		entry.setMutatedPositionInfo(mplist);
+		outit.add(entry);
+		return outit;
+	}
     
  // P04637_9
     public List<MutationAnnotation> getMutationUsageAnnotationByUniprotAccessionIso(String uniprotAccession, String isoform) {
