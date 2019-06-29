@@ -302,7 +302,7 @@ public class MainController {
     public MutationUsageTableResult listAllMutationUsage() {
     	MutationUsageTableResult result = new MutationUsageTableResult();
     	//List<MutationUsageTable> entries = mutationUsageTableRepository.findAll();
-    	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(59996);
+    	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(60004);
     	result.setData(entries);
     	//result.setRecordsTotal(entries.size());
     	//result.setRecordsFiltered(entries.size());
