@@ -114,7 +114,6 @@ public class StructureAnnotation {
 
 							structureAnnoHm.put(pdbOld+"_"+contentKey, sar);
 							sarList.add(sar);
-							System.out.println(sar.getPdbAnnoKey());
 							//System.out.println("PutKey: " + pdbOld+"_"+contentKey);
 
 							
@@ -155,20 +154,16 @@ public class StructureAnnotation {
 					sarList.add(sarOut);
 				}
 				
-				if (count % 1000 == 0) {
+				if (count % 10000 == 0) {
 					log.info("Processing " + count + "th in total size of " + annoKeySet.size() + " annoKeyList");
 				}
 								
 				count++;
-				if(count % 1000 ==0) {
+				if(count % 100000 ==0) {
 					generateMutationResultSQL4StructureAnnotation(sarList, outputFilename+"."+Integer.toString(filecount));
 					System.out.println(sarList.size());
 					filecount++;
 					sarList = new ArrayList<StructureAnnotationRecord>();
-				}
-				
-				if(count == 2500) {
-					break;
 				}
 			}
 			
