@@ -104,10 +104,11 @@
 	</div>
 	
 	<script>
-	var proteinid = document.getElementById("proteinname");
+	var demo = document.getElementById("proteinname");
+	console.log(demo.value)
 	$(document).ready(function() {
     $('#contents').DataTable( {
-        ajax : '/unifiedProteinMutationQuery/'+proteinid.value,
+        ajax : '/unifiedProteinMutationQuery/'+demo.value,
         processing: true,
 		columns : [
 		{
