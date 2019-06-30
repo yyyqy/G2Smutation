@@ -60,6 +60,7 @@ public class UnifiedMappedProteinMuationController {
     @Autowired
 	private MutationUsageTableRepository mutationUsageTableRepository;
     
+    @Autowired
     private AlignmentRepository alignmentRepository;
 	
 	@RequestMapping(value = "/unifiedProteinMutationQuery/{id}", method = { RequestMethod.GET,
@@ -110,7 +111,7 @@ public class UnifiedMappedProteinMuationController {
 			}   		
     	}
     	for(MutationUsageTable entry: entries) {
-    		System.out.println("#"+entry.getMutationNo());
+    		System.out.println("#"+entry.getPdbNo());
     		System.out.println("*"+entry.getAlignmentId());
     		Alignment ali = alignmentRepository.findByAlignmentId(entry.getAlignmentId());
     		System.out.println("$$$");
