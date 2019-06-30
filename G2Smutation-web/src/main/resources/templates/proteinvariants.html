@@ -96,10 +96,11 @@
 	
 	<script>
 	var demo = document.getElementById("temp");
-	alert(demo);
+	console.log(demo);
+	console.log(demo.value);
 	$(document).ready(function() {
     $('#contents').DataTable( {
-        ajax : '/api/proteinMutation/uniprot/P53_HUMAN/__${queryproteinname.proteinname}__',
+        ajax : '/api/proteinMutation/uniprot/P53_HUMAN/'+demo.value,
         processing: true,
 		columns : [
 		{
