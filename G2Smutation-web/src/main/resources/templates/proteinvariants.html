@@ -92,7 +92,8 @@
 			sequences in new release of Uniprot/Ensembl, and during
 			re-initialization an all-against-all alignment process is executed.
 		</p>
-		<p>"${queryproteinname.proteinname}"</p>
+		<p>th:text="${queryproteinname.proteinname}"</p>
+		<p>th:text="${queryproteinname}"</p>
 	</div>
 	</div>
 	
@@ -101,7 +102,7 @@
 	alert("test");
 $(document).ready(function() {
     $('#contents').DataTable( {
-        ajax : '/api/proteinMutation/uniprot/P53_HUMAN/"${queryproteinname.proteinname}"',
+        ajax : '/api/proteinMutation/uniprot/P53_HUMAN/th:text="${queryproteinname.proteinname}"',
         processing: true,
 		columns : [
 		{
