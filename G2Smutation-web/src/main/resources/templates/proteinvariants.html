@@ -90,13 +90,16 @@
 			sequences in new release of Uniprot/Ensembl, and during
 			re-initialization an all-against-all alignment process is executed.
 		</p>
+		<input type="text" th:name="temp" th:id="temp" th:value=${queryproteinname.proteinname}></input>
 	</div>
 	</div>
 	
 	<script>
+	var demo = document.getElementById("temp");
+	alert(demo);
 	$(document).ready(function() {
     $('#contents').DataTable( {
-        ajax : '/allmutationusage',
+        ajax : '/api/proteinMutation/uniprot/P53_HUMAN/__${queryproteinname.proteinname}__',
         processing: true,
 		columns : [
 		{
