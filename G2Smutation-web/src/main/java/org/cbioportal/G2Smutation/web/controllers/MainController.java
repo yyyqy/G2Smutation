@@ -359,7 +359,7 @@ public class MainController {
     
     //New table
     
-    @RequestMapping(value = "/allmutationusage", method = RequestMethod.GET)
+    @RequestMapping("/allmutationusage")
     public MutationUsageTableResult listAllMutationUsage() {
     	MutationUsageTableResult result = new MutationUsageTableResult();
     	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(60004);
@@ -367,13 +367,7 @@ public class MainController {
     	return result;
     }
     
-    @RequestMapping(value = "/allmutationusage", method = RequestMethod.POST)
-    public MutationUsageTableResult listAllMutationUsage(@ModelAttribute @Valid QueryProteinName queryproteinname) {
-    	MutationUsageTableResult result = new MutationUsageTableResult();
-    	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(60004);
-    	result.setData(entries);
-    	return result;
-    }
+
     
     /**
     @GetMapping("/detail")
