@@ -213,7 +213,6 @@ SELECT count(DISTINCT x.MUTATION_NO)  FROM mutation_usage_table x JOIN mutation_
 SELECT count(DISTINCT x.MUTATION_NO)  FROM mutation_usage_table x JOIN mutation_usage_table y ON y.MUTATION_NO = x.MUTATION_NO AND y.PDB_RESIDUE = 'W' AND x.PDB_RESIDUE='V';
 SELECT count(DISTINCT x.MUTATION_NO)  FROM mutation_usage_table x JOIN mutation_usage_table y ON y.MUTATION_NO = x.MUTATION_NO AND y.PDB_RESIDUE = 'Y' AND x.PDB_RESIDUE='V';
 -- update table, add index
-ALTER TABLE `structure_annotation_entry` ADD INDEX `PDB_NO` (`PDB_NO`);
 ALTER TABLE `clinvar_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 ALTER TABLE `dbsnp_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 ALTER TABLE `cosmic_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);

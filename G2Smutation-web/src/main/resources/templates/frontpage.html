@@ -56,10 +56,13 @@
         	<p class="lead">An auto-updating database collecting and annotating protein point mutations on 3D structures</p>
         	<div class="row justify-content-md-center">
         	<div class="col-xl-5">
-        	<input type="text" class="form-control" placeholder="Search variants in a gene or protein e.g. P53_HUMAN" aria-label="Recipient's username"></input>
+        		<form action="#" th:action="@{/proteinvariants}" th:object="${queryproteinname}" method="post">
+        		<input type="text" class="form-control" placeholder="Search variants in a gene or protein e.g. P53_HUMAN" aria-label="Recipient's username" th:name="proteinname" th:id="proteinname"></input>
         	e.g. P53_HUMAN or P04637 or ENSP00000269305.4 or ENSG00000141510.11
-        	<button type="submit" class="btn btn-default">Submit</button>
-        	</div></div>
+        		<button type="submit" class="btn btn-default">Submit</button>
+        		</form>
+        	</div>
+        	</div>
     	</section>
     </div>
 	
