@@ -96,7 +96,7 @@
 	<script>
 $(document).ready(function() {
     $('#contents').DataTable( {
-        ajax : '/allmutationusage',
+        ajax : '/api/proteinMutation/uniprot/P53_HUMAN/__${tmpresult}__',
         processing: true,
 		columns : [
 		{
