@@ -105,18 +105,14 @@
 	
 	<script>
 	var demo = document.getElementById("proteinname");
-	console.log(demo.value)
 	$(document).ready(function() {
     $('#contents').DataTable( {
         ajax : '/unifiedProteinMutationQuery/'+demo.value,
         processing: true,
 		columns : [
 		{
-			data : 'geneName'
+			data : 'seqName'
 		}, 
-		{
-			data : 'proteinName'
-		},
 		{
 			data : 'seqIndex'
 		},  
@@ -144,22 +140,7 @@
 			data : 'pdbResidue'
 		},
 		{
-			data : 'evalue'
-		},
-		{
-			data : 'bitscore'
-		},
-		{
-			data : 'identity'
-		},
-		{
-			data : 'identityRatio'
-		},
-		{
-			data : 'identityP'
-		},
-		{
-			data : 'identityPRatio'
+			data : 'alignmentId'
 		}]
 	});
 	
