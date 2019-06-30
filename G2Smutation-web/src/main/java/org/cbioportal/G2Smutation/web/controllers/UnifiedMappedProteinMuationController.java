@@ -111,10 +111,7 @@ public class UnifiedMappedProteinMuationController {
 			}   		
     	}
     	for(MutationUsageTable entry: entries) {
-    		System.out.println("#"+entry.getPdbNo());
-    		System.out.println("*"+entry.getAlignmentId());
     		Alignment ali = alignmentRepository.findByAlignmentId(entry.getAlignmentId());
-    		System.out.println("$$$");
     		MutationUsageTableVariantsInfo mui = new MutationUsageTableVariantsInfo(entry, ali);
     		outentries.add(mui);
     	}
