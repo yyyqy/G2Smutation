@@ -144,11 +144,11 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Update STEP 1]********************");
         log.info("Update G2S service for alignments and residue mapping");
-        ListUpdate lu = updateG2S(preprocess, parseprocess);
+        //ListUpdate lu = updateG2S(preprocess, parseprocess);
 
         log.info("********************[Update STEP 2]********************");
         log.info("Update mutation using G2S service");
-        updateMutation(preprocess, parseprocess, lu);
+        //updateMutation(preprocess, parseprocess, lu);
 
         /**
          * Used for debug
@@ -159,7 +159,7 @@ public class PdbScriptsPipelineRunCommand {
         
         log.info("********************[Update STEP 3]********************");
         log.info("Update Annotate mutation");
-        generateAnnotation(parseprocess, this.updateTag, lu);
+        //generateAnnotation(parseprocess, this.updateTag, lu);
         
         log.info("********************[Update STEP 4]********************");
         log.info("Weekly update Tag");
@@ -167,7 +167,7 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Update STEP 5]********************");
         log.info("[FileSystem] Clean Up");
-        updateCleanup(lu);
+        //updateCleanup(lu);
     }
     
     /**

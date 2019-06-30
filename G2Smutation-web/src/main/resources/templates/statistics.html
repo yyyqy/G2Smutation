@@ -18,7 +18,7 @@
 
 <body>
 	<nav style="margin:0px" class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
-  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">G2S Web Service</a>
+  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">Variant3D</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
     		<span class="navbar-toggler-icon"></span>
   		</button>
@@ -29,13 +29,22 @@
         			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
       			</li>
       			<li class="nav-item">
-        			<a style="font-size:1.2em" class="nav-link" th:href="@{/sequence}" href="sequence.html">Sequence</a>
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/download}" href="download.html">Download</a>
       			</li>
       			<li class="nav-item">
-        			<a style="font-size:1.2em" class="nav-link" th:href="@{/database}" href="database.html">Database</a>
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/clients}" href="clients.html">Clients</a>
       			</li>
       			<li class="nav-item">
-        			<a style="font-size:1.2em" class="nav-link" th:href="@{/Statistics}" href="statistics.html">Statistics</a>
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/statistics}" href="statistics.html">Statistics</a>
+      			</li>     			
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" target="_blank" href="https://github.com/juexinwang/G2Smutation">Github</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/tutorial}" href="tutorial.html">Tutorial</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/about}" href="about.html">About</a>
       			</li>
     		</ul>
   		</div>
@@ -633,26 +642,12 @@
 			</tbody>
 		</table>
 		
-		<p>G2S database stored alignments from protein
-			sequences against PDB sequences.</p>
-		<p>
-			The sources of protein sequences are from <a
-				href="ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/">Uniprot</a>
-			(Only includes Swissprot) and <a
-				href="http://ftp.ensembl.org/pub/release-90/fasta/homo_sapiens/pep/">HUMAN
-				ENSEMBL</a>. All the protein sequences are combined together to remove
-			redundancy.
-		</p>
-		<p>
-			G2S makes automatic frequent (<b>WEEKLY</b>) updates to
-			the set of pre-caculated alignments as new/obsolete/modified protein
-			structures are added to <a href="http://www.rcsb.org/">RCSB
-				Protein Data Bank</a>, while keeping the set of protein sequences from
-			public protein sequence databases fixed. Less frequently (<b>MONTHS</b>),
-			the system is re-initialized using an updated set of protein
-			sequences in new release of Uniprot/Ensembl, and during
-			re-initialization an all-against-all alignment process is executed.
-		</p>
+	</div>
+	
+	<div>
+		<footer>
+		<p>© 2019 Variant3D</p>
+		</footer>
 	</div>
 	</div>
 </body>
