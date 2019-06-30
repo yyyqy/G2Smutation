@@ -74,6 +74,12 @@
 					<td>PDBPosition</td>
 					<td>PDBResidue</td>
 					<td>alignmentId</td>
+					<td>9</td>
+					<td>10</td>
+					<td>11</td>
+					<td>12</td>
+					<td>13</td>
+					<td>14</td>
 				</tr>
 			</thead>
 		</table>
@@ -99,7 +105,7 @@
 			sequences in new release of Uniprot/Ensembl, and during
 			re-initialization an all-against-all alignment process is executed.
 		</p>
-		<input type="text" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
+		<input type="hidden text" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
 	</div>
 	</div>
 	
@@ -107,7 +113,7 @@
 	var demo = document.getElementById("proteinname");
 	$(document).ready(function() {
     $('#contents').DataTable( {
-        ajax : '/unifiedProteinMutationQuery/'+demo.value,
+        ajax : '/unifiedProteinMutationQuery/P53_HUMAN',
         processing: true,
 		columns : [
 		{
@@ -123,14 +129,7 @@
 			data : 'seqResidue'
 		}, 
 		{
-			data : 'pdbNo',
-			"render": function(data, type, row, meta){
-            if(type === 'display'){
-            	var dataurl = '/api/proteinMutationAnno/uniprot/P53_HUMAN?positionList=282'
-                data = '<a href="' + dataurl + '">' + data + '</a>';
-            }
-            return data;
-         	}
+			data : 'pdbNo'
 		}, 
 		{
 			data : 'pdbNo',
@@ -160,8 +159,7 @@
 		{
 			data : 'identityPRatio'
 		}]
-	});
-	
+	});	
 } );
 	
 
