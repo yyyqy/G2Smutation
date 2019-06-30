@@ -15,6 +15,8 @@ public class PdbScriptsPipelineRunCommandTest {
 	final static Logger log = Logger.getLogger(PdbScriptsPipelineRunCommandTest.class);
 	
 	public void generateMutation(){
+		/*
+		 * For test
 		PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
 		PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(app);
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
@@ -30,6 +32,10 @@ public class PdbScriptsPipelineRunCommandTest {
         log.info("********************[STEP 2.1]********************");
         log.info("[PrepareSQL] Parse xml results and output as input sql statments for mutation");
         parseprocess.parse2sqlMutation(false, ReadConfig.workspace, app.getSeqFileCount());
+        */
+		PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
+		PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
+		app.generateWeeklyTag(preprocess);
 	}
 
 }
