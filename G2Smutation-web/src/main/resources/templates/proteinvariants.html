@@ -94,12 +94,14 @@
 		</p>
 		<p>th:text="${queryproteinname.proteinname}"</p>
 		<p>th:text="${queryproteinname}"</p>
+		<p>th:text="${proteinname}"</p>
 	</div>
 	</div>
 	
 	<script>
-	console.log(window.location.search);
 	alert("test");
+	  var test = document.getElementById("proteinname").value;
+  console.log(test)
 $(document).ready(function() {
     $('#contents').DataTable( {
         ajax : '/api/proteinMutation/uniprot/P53_HUMAN/th:text="${queryproteinname.proteinname}"',
