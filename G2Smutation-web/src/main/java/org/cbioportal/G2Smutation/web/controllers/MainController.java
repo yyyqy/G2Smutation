@@ -307,7 +307,7 @@ public class MainController {
     @PostMapping("/")
     public ModelAndView homeInfoBack(@ModelAttribute @Valid QueryProteinName queryproteinname, BindingResult bindingResult,
             HttpServletRequest request) {
-    	
+    	System.out.println("**"+queryproteinname);
     	if (bindingResult.hasErrors()) {
             return new ModelAndView("frontpage");
         }
@@ -351,11 +351,10 @@ public class MainController {
 			}
     		
     	}
-    	System.out.println(entries.get(0).getSeqId());
+    	System.out.println("##"+entries.get(0).getSeqId());
     	MutationUsageTableResult result = new MutationUsageTableResult();
     	result.setData(entries);
-    	String tmpresult = Integer.toString(entries.get(0).getSeqId());
-    	return new ModelAndView("/proteinvariants","tmpresult",tmpresult);
+    	return new ModelAndView("/proteinvariants","queryproteinname",queryproteinname);
     }
     
     //New table
