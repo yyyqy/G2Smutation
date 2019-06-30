@@ -54,6 +54,7 @@ public class MutationUsageTableVariantsInfo {
     	this.setPdbNo(temp[0]+"_"+temp[1]);
     	this.setPdbIndex(mut.getPdbIndex());
     	this.setPdbResidue(mut.getPdbResidue());
+    	this.setEvalue(ali.getEvalue());
     	this.setBitscore(ali.getBitscore());
     	this.setIdentity(ali.getIdentity());
     	this.setIdentityP(ali.getIdentityPositive());
