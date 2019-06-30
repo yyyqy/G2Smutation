@@ -370,7 +370,7 @@ public class MainController {
     @RequestMapping(value = "/allmutationusage", method = RequestMethod.POST)
     public MutationUsageTableResult listAllMutationUsage(@ModelAttribute @Valid QueryProteinName queryproteinname) {
     	MutationUsageTableResult result = new MutationUsageTableResult();
-    	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(Integer.parseInt(queryproteinname.getProteinname()));
+    	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(60004);
     	result.setData(entries);
     	return result;
     }
