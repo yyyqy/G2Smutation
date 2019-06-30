@@ -59,16 +59,71 @@
 	</nav>
 	
 	<div class="container">
-	<h1 layout:fragment="header">Single Residue Variants in </h1><input type="text" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
+	<h1 layout:fragment="header">Single Residue Variants:</h1><input type="hidden" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
 	<div layout:fragment="content" class="container-fluid">
+	
+	<table cellpadding="3" cellspacing="0" border="0" style="width: 67%; margin: 0 auto 2em auto;">
+        <thead>
+            <tr>
+                <th>Target</th>
+                <th>Search text</th>
+                <th>Treat as regex</th>
+                <th>Use smart search</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="filter_global">
+                <td>Global search</td>
+                <td align="center"><input type="text" class="global_filter" id="global_filter"></td>
+                <td align="center"><input type="checkbox" class="global_filter" id="global_regex"></td>
+                <td align="center"><input type="checkbox" class="global_filter" id="global_smart" checked="checked"></td>
+            </tr>
+            <tr id="filter_col1" data-column="0">
+                <td>Column - GeneName</td>
+                <td align="center"><input type="text" class="column_filter" id="col0_filter"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col0_regex"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col0_smart" checked="checked"></td>
+            </tr>
+            <tr id="filter_col2" data-column="1">
+                <td>Column - ProteinName</td>
+                <td align="center"><input type="text" class="column_filter" id="col1_filter"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col1_regex"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col1_smart" checked="checked"></td>
+            </tr>
+            <tr id="filter_col3" data-column="2">
+                <td>Column - SeqIndex</td>
+                <td align="center"><input type="text" class="column_filter" id="col2_filter"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col2_regex"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col2_smart" checked="checked"></td>
+            </tr>
+            <tr id="filter_col4" data-column="3">
+                <td>Column - SeqResidue</td>
+                <td align="center"><input type="text" class="column_filter" id="col3_filter"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col3_regex"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col3_smart" checked="checked"></td>
+            </tr>
+            <tr id="filter_col5" data-column="4">
+                <td>Column - PDBIndex</td>
+                <td align="center"><input type="text" class="column_filter" id="col4_filter"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col4_regex"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col4_smart" checked="checked"></td>
+            </tr>
+            <tr id="filter_col6" data-column="5">
+                <td>Column - PDBResidue</td>
+                <td align="center"><input type="text" class="column_filter" id="col5_filter"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col5_regex"></td>
+                <td align="center"><input type="checkbox" class="column_filter" id="col5_smart" checked="checked"></td>
+            </tr>
+        </tbody>
+    </table>
 
 	<table id="contents" class="table table-bordered table-striped" style="width: 100%">
 			<thead>
 				<tr>
 					<td><abbr title="ENSG in Ensembl">GeneName</abbr></td>
 					<td><abbr title="Uniprot or ENSP in Ensembl">ProteinName</abbr></td>
-					<td><abbr title="Query Protein Index">QueryIndex</abbr></td>
-					<td><abbr title="Query Protein Widetype Residue">Residue</abbr></td>
+					<td><abbr title="Query Protein Index">SeqIndex</abbr></td>
+					<td><abbr title="Query Protein Widetype Residue">SeqResidue</abbr></td>
 					<td><abbr title="Mapped PDB ID">PDB</abbr></td>
 					<td><abbr title="Mapped PDB Chain">Chain</abbr></td>
 					<td><abbr title="Mapped PDB Index">PDBIndex</abbr></td>
