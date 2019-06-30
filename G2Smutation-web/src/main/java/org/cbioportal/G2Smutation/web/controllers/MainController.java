@@ -303,6 +303,7 @@ public class MainController {
         return new ModelAndView("frontpage");
     }
     
+    /*
     @PostMapping("/")
     public ModelAndView homeInfoBack(@ModelAttribute @Valid QueryProteinName queryproteinname, BindingResult bindingResult,
             HttpServletRequest request) {
@@ -363,11 +364,26 @@ public class MainController {
     	MutationUsageTableResult result = new MutationUsageTableResult();
     	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(60004);
     	result.setData(entries);
-    	//result.setRecordsTotal(entries.size());
-    	//result.setRecordsFiltered(entries.size());
     	return result;
-    	//return mutationUsageTableRepository.findByMutationNo("149_69");
-        //return new ModelAndView("proteinvariants");
+    }*/
+    
+    @PostMapping("/")
+    public ModelAndView homeInfoBack(@ModelAttribute @Valid QueryProteinName queryproteinname, BindingResult bindingResult,
+            HttpServletRequest request) {
+    	
+    	if (bindingResult.hasErrors()) {
+            return new ModelAndView("frontpage");
+        }
+    	
+    	return new ModelAndView("/proteinvariants");
+    }
+    
+    @RequestMapping(value = "/allmutationusage", method = RequestMethod.POST)
+    public MutationUsageTableResult listAllMutationUsage(@ModelAttribute @Valid QueryProteinName queryproteinname) {
+    	MutationUsageTableResult result = new MutationUsageTableResult();
+    	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(Integer.parseInt(queryproteinname.getProteinname()));
+    	result.setData(entries);
+    	return result;
     }
     
     /**
