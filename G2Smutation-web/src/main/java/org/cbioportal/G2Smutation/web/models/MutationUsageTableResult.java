@@ -5,15 +5,15 @@ import java.util.List;
 import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
 
 public class MutationUsageTableResult {
-	private List<MutationUsageTable> data;
+	private List<MutationUsageTableVariantsInfo> data;
 	private int recordsTotal;
 	private int recordsFiltered;
 
-	public List<MutationUsageTable> getData() {
+	public List<MutationUsageTableVariantsInfo> getData() {
 		return data;
 	}
 
-	public void setData(List<MutationUsageTable> data) {
+	public void setData(List<MutationUsageTableVariantsInfo> data) {
 		this.data = data;
 	}
 

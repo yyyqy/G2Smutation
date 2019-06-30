@@ -10,11 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
+import org.cbioportal.G2Smutation.web.domain.AlignmentRepository;
 import org.cbioportal.G2Smutation.web.domain.EnsemblRepository;
 import org.cbioportal.G2Smutation.web.domain.MutationUsageTableRepository;
 import org.cbioportal.G2Smutation.web.domain.UniprotRepository;
+import org.cbioportal.G2Smutation.web.models.Alignment;
 import org.cbioportal.G2Smutation.web.models.Ensembl;
 import org.cbioportal.G2Smutation.web.models.MutationUsageTableResult;
+import org.cbioportal.G2Smutation.web.models.MutationUsageTableVariantsInfo;
 import org.cbioportal.G2Smutation.web.models.QueryProteinName;
 import org.cbioportal.G2Smutation.web.models.Uniprot;
 import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
@@ -56,6 +59,8 @@ public class UnifiedMappedProteinMuationController {
     
     @Autowired
 	private MutationUsageTableRepository mutationUsageTableRepository;
+    
+    private AlignmentRepository alignmentRepository;
 	
 	@RequestMapping(value = "/unifiedProteinMutationQuery/{id}", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -66,6 +71,7 @@ public class UnifiedMappedProteinMuationController {
 		MutationUsageTableResult result = new MutationUsageTableResult();
     	
     	List<MutationUsageTable> entries = new ArrayList<>();
+    	List<MutationUsageTableVariantsInfo> outentries = new ArrayList<>();
     	if(id.startsWith("ENSP")) {    		
     		List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
 			for (Ensembl ensembl : ensembllist) {
@@ -103,7 +109,12 @@ public class UnifiedMappedProteinMuationController {
 		        }
 			}   		
     	}
-    	result.setData(entries);
+    	for(MutationUsageTable entry: entries) {
+    		Alignment ali = alignmentRepository.findByAlignmentId(entry.getAlignmentId());
+    		MutationUsageTableVariantsInfo mui = new MutationUsageTableVariantsInfo(entry, ali);
+    		outentries.add(mui);
+    	}
+    	result.setData(outentries);
     	return result;
     }
 

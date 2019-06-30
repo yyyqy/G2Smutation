@@ -306,67 +306,13 @@ public class MainController {
     
     @PostMapping("/")
     public ModelAndView homeInfoBack(@ModelAttribute @Valid QueryProteinName queryproteinname, BindingResult bindingResult,
-            HttpServletRequest request) {
-    	
+            HttpServletRequest request) {   	
     	if (bindingResult.hasErrors()) {
             return new ModelAndView("frontpage");
         }
-    	List<MutationUsageTable> entries = new ArrayList<>();
-    	String id = queryproteinname.getProteinname();
-    	if(id.startsWith("ENSP")) {    		
-    		List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
-			for (Ensembl ensembl : ensembllist) {
-				entries.addAll(mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(Integer.parseInt(ensembl.getSeqId())));
-			}    		
-    	}else if(id.startsWith("ENSG")) {    		
-    		List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
-			for (Ensembl ensembl : ensembllist) {
-				entries.addAll(mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(Integer.parseInt(ensembl.getSeqId())));
-			}    		
-    	}else {
-    		if (id.length() == 6 && id.split("_").length != 2) { // Accession: P04637
-    			
-    	        List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(id + "_1");
-    	        if (uniprotlist.size() == 1) {
-    	        	entries.addAll(mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(Integer.parseInt((uniprotlist.get(0).getSeqId()))));
-    	        }
-
-			} else if (id.split("_").length == 2) {// ID: P53_HUMAN
-
-				List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(id);
-
-		        Set<String> uniprotAccSet = new HashSet<String>();
-		        for (Uniprot uniprot : uniprotList) {
-		            uniprotAccSet.add(uniprot.getUniprotAccession());
-		        }
-
-		        List<Mutation> outlist = new ArrayList<Mutation>();
-		        Iterator<String> it = uniprotAccSet.iterator();
-		        while (it.hasNext()) {
-		        	List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(it.next() + "_1");
-		            if (uniprotlist.size() == 1) {
-		            	entries.addAll(mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(Integer.parseInt((uniprotlist.get(0).getSeqId()))));
-		            }
-		        }
-			}
-    		
-    	}
-    	System.out.println("##"+entries.get(0).getSeqId());
-    	System.out.println("**"+queryproteinname.getProteinname());
-    	MutationUsageTableResult result = new MutationUsageTableResult();
-    	result.setData(entries);
     	return new ModelAndView("/proteinvariants","queryproteinname",queryproteinname);
     }
     
-    //New table
-    
-    @RequestMapping("/allmutationusage")
-    public MutationUsageTableResult listAllMutationUsage() {
-    	MutationUsageTableResult result = new MutationUsageTableResult();
-    	List<MutationUsageTable> entries = mutationUsageTableRepository.findBySeqIdOrderBySeqIndex(60004);
-    	result.setData(entries);
-    	return result;
-    }
     
 
     

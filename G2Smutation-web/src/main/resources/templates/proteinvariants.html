@@ -59,8 +59,8 @@
 	</nav>
 	
 	<div class="container">
-	<h1 layout:fragment="header">Statistics of G2S databases:</h1>
-	<h2 layout:fragment="header">Alignment Summary</h2>
+	<h1 layout:fragment="header">Single Residue Variants and Mapping in <div th:id="proteinname" th:value="${queryproteinname.proteinname}"></div>:</h1>
+	<h2 layout:fragment="header">Results</h2>
 	<div layout:fragment="content" class="container-fluid">
 
 <table id="contents" class="table table-bordered table-striped">
@@ -99,7 +99,7 @@
 			sequences in new release of Uniprot/Ensembl, and during
 			re-initialization an all-against-all alignment process is executed.
 		</p>
-		<input type="hidden text" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
+		<!--<input type="hidden" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>-->
 	</div>
 	</div>
 	
@@ -111,8 +111,11 @@
         processing: true,
 		columns : [
 		{
-			data : 'seqName'
+			data : 'geneName'
 		}, 
+		{
+			data : 'proteinName'
+		},
 		{
 			data : 'seqIndex'
 		},  
@@ -140,7 +143,22 @@
 			data : 'pdbResidue'
 		},
 		{
-			data : 'alignmentId'
+			data : 'evalue'
+		},
+		{
+			data : 'bitscore'
+		},
+		{
+			data : 'identity'
+		},
+		{
+			data : 'identityRatio'
+		},
+		{
+			data : 'identityP'
+		},
+		{
+			data : 'identityPRatio'
 		}]
 	});
 	
