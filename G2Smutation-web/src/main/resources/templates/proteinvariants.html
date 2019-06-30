@@ -95,7 +95,9 @@
 	
 	<script>
 	console.log(window.location.search);
-	var myElement = document.getElementById("__${queryproteinname.proteinname}__");
+	var fd = new FormData(),
+	console.log(fd);
+	
 	alert(myElement);
 $(document).ready(function() {
     $('#contents').DataTable( {
