@@ -1,9 +1,11 @@
 package org.cbioportal.G2Smutation.web.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -110,9 +112,14 @@ public class UnifiedMappedProteinMuationController {
 		        }
 			}   		
     	}
+    	Map<Integer,Alignment> aliHm = new HashMap<>();
     	for(MutationUsageTable entry: entries) {
-    		Alignment ali = alignmentRepository.findByAlignmentId(entry.getAlignmentId());
-    		MutationUsageTableVariantsInfo mui = new MutationUsageTableVariantsInfo(entry, ali);
+    		if(!aliHm.containsKey(entry.getAlignmentId())) {
+    			Alignment ali = alignmentRepository.findByAlignmentId(entry.getAlignmentId());
+    			aliHm.put(entry.getAlignmentId(), ali);
+    		}
+    		Alignment aliU = aliHm.get(entry.getAlignmentId());
+    		MutationUsageTableVariantsInfo mui = new MutationUsageTableVariantsInfo(entry, aliU);
     		outentries.add(mui);
     	}
     	result.setData(outentries);
