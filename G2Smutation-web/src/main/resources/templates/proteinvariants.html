@@ -92,14 +92,11 @@
 			sequences in new release of Uniprot/Ensembl, and during
 			re-initialization an all-against-all alignment process is executed.
 		</p>
-		<p>th:text="${queryproteinname.proteinname}"</p>
-		<p>th:text="${queryproteinname}"</p>
-		<p>th:text="${proteinname}"</p>
 	</div>
 	</div>
 	
 	<script>
-$(document).ready(function() {
+	$(document).ready(function() {
     $('#contents').DataTable( {
         ajax : '/allmutationusage',
         processing: true,
