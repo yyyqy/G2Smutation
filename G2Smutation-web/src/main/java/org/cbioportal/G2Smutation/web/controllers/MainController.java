@@ -306,6 +306,10 @@ public class MainController {
     @PostMapping("/")
     public ModelAndView homeInfoBack(@ModelAttribute @Valid QueryProteinName queryproteinname, BindingResult bindingResult,
             HttpServletRequest request) {
+    	
+    	if (bindingResult.hasErrors()) {
+            return new ModelAndView("frontpage");
+        }
     	List<MutationUsageTable> entries = new ArrayList<>();
     	String id = queryproteinname.getProteinname();
     	if(id.startsWith("ENSP")) {    		
@@ -346,6 +350,7 @@ public class MainController {
 			}
     		
     	}
+    	System.out.println(entries.get(0).getSeqId());
     	MutationUsageTableResult result = new MutationUsageTableResult();
     	result.setData(entries);
     	return new ModelAndView("/proteinvariants","result",result);
