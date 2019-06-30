@@ -12,10 +12,8 @@ public class MutationUsageTableVariantsInfo {
     private int pdbIndex;    
     private String pdbResidue;    
     private String evalue;
-    private float bitscore;
-    private float identity;    
-    private float identityRatio;
-    private float identityP;    
+    private float bitscore;    
+    private float identityRatio;    
     private float identityPRatio;
     
     //Constructor
@@ -56,8 +54,6 @@ public class MutationUsageTableVariantsInfo {
     	this.setPdbResidue(mut.getPdbResidue());
     	this.setEvalue(ali.getEvalue());
     	this.setBitscore(ali.getBitscore());
-    	this.setIdentity(ali.getIdentity());
-    	this.setIdentityP(ali.getIdentityPositive());
     	int length = ali.getMidlineAlign().length();
     	this.setIdentityRatio(ali.getIdentity()/length);
     	this.setIdentityPRatio(ali.getIdentityPositive()/length);   	
@@ -136,28 +132,12 @@ public class MutationUsageTableVariantsInfo {
 		this.bitscore = bitscore;
 	}
 
-	public float getIdentity() {
-		return identity;
-	}
-
-	public void setIdentity(float identity) {
-		this.identity = identity;
-	}
-
 	public float getIdentityRatio() {
 		return identityRatio;
 	}
 
 	public void setIdentityRatio(float identityRatio) {
 		this.identityRatio = identityRatio;
-	}
-
-	public float getIdentityP() {
-		return identityP;
-	}
-
-	public void setIdentityP(float identityP) {
-		this.identityP = identityP;
 	}
 
 	public float getIdentityPRatio() {
