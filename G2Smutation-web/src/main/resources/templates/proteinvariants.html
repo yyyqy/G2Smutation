@@ -59,7 +59,7 @@
 	</nav>
 	
 	<div class="container">
-	<h1 layout:fragment="header">Single Residue Variants in </h1><input type="hidden" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
+	<h1 layout:fragment="header">Single Residue Variants in </h1><input type="text" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
 	<div layout:fragment="content" class="container-fluid">
 
 	<table id="contents" class="table table-bordered table-striped" style="width: 100%">
@@ -82,12 +82,33 @@
 		</table>
 		<!-- <input type="hidden" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input> -->
 	</div>
+	<div>
+		<footer>
+		<p>© 2019 Variant3D</p>
+		</footer>
+	</div>
 	</div>
 	
 	<script>
+	
+function filterGlobal () {
+    $('#contents').DataTable().search(
+        $('#global_filter').val(),
+        $('#global_regex').prop('checked'),
+        $('#global_smart').prop('checked')
+    ).draw();
+}
+ 
+function filterColumn ( i ) {
+    $('#contents').DataTable().column( i ).search(
+        $('#col'+i+'_filter').val(),
+        $('#col'+i+'_regex').prop('checked'),
+        $('#col'+i+'_smart').prop('checked')
+    ).draw();
+}
+	
+	
 	var demo = document.getElementById("proteinname");
-	console.log(demo);
-	console.log(demo.value);
 	$(document).ready(function() {
     $('#contents').DataTable( {
         ajax : '/unifiedProteinMutationQuery/'+demo.value,
@@ -132,7 +153,18 @@
 			data : 'identityPRatio'
 		}]
 	});	
+	
+	$('input.global_filter').on( 'keyup click', function () {
+        filterGlobal();
+    } );
+ 
+    $('input.column_filter').on( 'keyup click', function () {
+        filterColumn( $(this).parents('tr').attr('data-column') );
+    } );
 } );
+
+ 
+
 	
 
 
