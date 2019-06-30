@@ -111,9 +111,11 @@
 	
 	<script>
 	var demo = document.getElementById("proteinname");
+	console.log(demo);
+	console.log(demo.value);
 	$(document).ready(function() {
     $('#contents').DataTable( {
-        ajax : '/unifiedProteinMutationQuery/P53_HUMAN',
+        ajax : '/unifiedProteinMutationQuery/'+demo.value,
         processing: true,
 		columns : [
 		{
