@@ -94,7 +94,8 @@
 	</div>
 	
 	<script>
-	var myElement = document.getElementById("${queryproteinname.proteinname}");
+	console.log(window.location.search);
+	var myElement = document.getElementById("__${queryproteinname.proteinname}__");
 	alert(myElement);
 $(document).ready(function() {
     $('#contents').DataTable( {
