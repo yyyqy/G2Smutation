@@ -2,7 +2,7 @@ package org.cbioportal.G2Smutation.web.models;
 
 public class QueryProteinName {
 	
-	private String proteinname;
+	public String proteinname;
 
 	public String getProteinname() {
 		return proteinname;
