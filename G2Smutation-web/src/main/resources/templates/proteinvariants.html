@@ -59,14 +59,14 @@
 	</nav>
 	
 	<div class="container">
-	<h1 layout:fragment="header">Single Residue Variants in:<h2 th:id="proteinnameshow"></h2></h1>
+	<h1 layout:fragment="header" th:id="proteinnameshow"></h1>
 	<div layout:fragment="content" class="container-fluid">
 	
 	<h2 layout:fragment="header">Multiple Search:</h2>
 	<table cellpadding="3" cellspacing="0" border="0" style="width: 67%; margin: 0 auto 2em auto;">
         <thead>
             <tr>
-                <th>Target(Support Multiple Search)</th>
+                <th>Target</th>
                 <th>Search text</th>
                 <th>Treat as regex</th>
                 <th>Use smart search</th>
@@ -177,7 +177,7 @@ function filterColumn ( i ) {
 	
 	
 	var demo = document.getElementById("proteinname");
-	document.getElementById("proteinnameshow").innerHTML = demo.value;
+	document.getElementById("proteinnameshow").innerHTML = 'Single Residue Variants in: '+demo.value;
 	$(document).ready(function() {
     $('#contents').DataTable( {
         ajax : '/unifiedProteinMutationQuery/'+demo.value,
