@@ -59,8 +59,7 @@
 	</nav>
 	
 	<div class="container">
-	<h1 layout:fragment="header">Single Residue Variants:</h1><!--<input type="hidden" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>-->
-	<h1 th:id="proteinname"></h1>
+	<h1 layout:fragment="header">Single Residue Variants in:<th:id="proteinnameshow"></h1>
 	<div layout:fragment="content" class="container-fluid">
 	
 	<h2 layout:fragment="header">Multiple Search:</h2>
@@ -149,7 +148,7 @@
 				</tr>
 			</thead>
 		</table>
-		<!-- <input type="hidden" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input> -->
+		<input type="hidden" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
 	</div>
 	<div>
 		<footer>
@@ -178,7 +177,7 @@ function filterColumn ( i ) {
 	
 	
 	var demo = document.getElementById("proteinname");
-	document.getElementById("proteinname").innerHTML = demo.value;
+	document.getElementById("proteinnameshow").innerHTML = demo.value;
 	$(document).ready(function() {
     $('#contents').DataTable( {
         ajax : '/unifiedProteinMutationQuery/'+demo.value,
