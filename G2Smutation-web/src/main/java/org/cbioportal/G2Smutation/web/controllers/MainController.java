@@ -1,5 +1,9 @@
 package org.cbioportal.G2Smutation.web.controllers;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,8 +42,12 @@ import org.cbioportal.G2Smutation.web.models.mutation.Mutation;
 import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotation;
 import org.cbioportal.G2Smutation.web.models.InputResidue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -313,7 +321,33 @@ public class MainController {
     	return new ModelAndView("/proteinvariants","queryproteinname",queryproteinname);
     }
     
+    @GetMapping("/download")
+    public ModelAndView downloadInfo() {
+    	return new ModelAndView("/download");
+    }
     
+    //Hardcode Now
+    @RequestMapping(path = "/downloadFile", method = RequestMethod.GET)
+    public ResponseEntity<Resource> downloadFile(String param) {
+
+        // ...
+    	try {
+    
+    	
+    		File file = new File("/home/labadmin/projects/g2smutation/G2Smutation/G2Smutation-pipeline/src/main/resources/ProteinVariants_20190625.txt");
+    		Path path = Paths.get(file.getAbsolutePath());
+    		ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+    	
+
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
+    	}catch(Exception ex) {
+    		ex.printStackTrace();
+    	}
+    	return null;
+    }
 
     
  

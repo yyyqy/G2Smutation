@@ -219,7 +219,7 @@ ALTER TABLE `cosmic_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 ALTER TABLE `genie_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 ALTER TABLE `tcga_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 -- three number in the proposal
--- select DISTINCT(MUTATION_NO) from gpos_protein_entry;
+-- SELECT count(DISTINCT y.MUTATION_NO) FROM gpos_allmapping_pdb_entry x JOIN gpos_protein_entry y ON y.CHR_POS=x.CHR_POS;
 -- SELECT count(DISTINCT x.SEQ_ID,x.SEQ_INDEX) FROM gpos_allmapping_pdb_entry x JOIN gpos_allmapping_entry y ON y.CHR_POS=x.CHR_POS;
 -- select count(DISTINCT(MUTATION_NO)) from mutation_usage_table;
 

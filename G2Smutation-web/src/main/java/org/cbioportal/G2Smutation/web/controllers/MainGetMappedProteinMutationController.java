@@ -36,7 +36,7 @@ import io.swagger.annotations.ApiParam;
  */
 @RestController // shorthand for @Controller, @ResponseBody
 @CrossOrigin(origins = "*") // allow all cross-domain requests
-@Api(tags = "Structure Mutations from Proteins", description = "ensembl/uniprot/sequences")
+@Api(tags = "Structure Mutations from Proteins", description = "ensembl/uniprot")
 @RequestMapping(value = "/api/")
 public class MainGetMappedProteinMutationController {
 	final static Logger log = Logger.getLogger(MainGetMappedProteinMutationController.class);

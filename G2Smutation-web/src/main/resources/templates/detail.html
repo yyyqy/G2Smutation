@@ -1,52 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="utf-8"></meta>
-  <title>jsTree test</title>
-  <!-- 2 load the theme CSS file -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <meta charset="utf-8" />
+    <title>Simple jsTree</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                async: true,
+                type: "GET",
+                url: "https://www.jstree.com/fiddle/?lazy",
+                dataType: "json",
+                success: function (json) {
+                    createJSTree(json);
+                },
+
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(xhr.status);
+                    alert(thrownError);
+                }
+            });            
+        });
+
+        function createJSTree(jsondata) {            
+            $('#SimpleJSTree').jstree({
+                'core': {
+                    'data': jsondata
+                }
+            });
+        }
+    </script>
 </head>
 <body>
-  <!-- 3 setup a container element -->
-  <div id="jstree">
-  </div>
-
-  <!-- 4 include the jQuery library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-  <!-- 5 include the minified jstree source -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
-  
-  <script>
-	$('#jstree').jstree({
-		'core' : {
-			'data' : {
-				"url" : "//https://www.jstree.com/fiddle/?lazy",
-				"data" : function (node) {
-					return { "id" : node.id };
-				}
-			}
-		}
-	});
-  </script>
-  <script>
-  $(function () {
-    // 6 create an instance when the DOM is ready
-    $('#jstree').jstree();
-    // 7 bind to events triggered on the tree
-    $('#jstree').on("changed.jstree", function (e, data) {
-      console.log(data.selected);
-    });
-    // 8 interact with the tree - either way is OK
-    $('button').on('click', function () {
-      $('#jstree').jstree(true).select_node('child_node_1');
-      $('#jstree').jstree('select_node', 'child_node_1');
-      $.jstree.reference('#jstree').select_node('child_node_1');
-    });
-  });
-  </script>
-  
-  
-  
-  
+    <div id="SimpleJSTree"></div>
 </body>
 </html>
