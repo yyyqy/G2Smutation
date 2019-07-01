@@ -230,21 +230,7 @@ function filterColumn ( i ) {
     $('input.column_filter').on( 'keyup click', function () {
         filterColumn( $(this).parents('tr').attr('data-column') );
     } );
-    
-    dom: 'Bfrtip',
-        buttons: [
-            {
-                text: 'Save JSON',
-                action: function ( e, dt, button, config ) {
-                    var data = dt.buttons.exportData();
- 
-                    $.fn.dataTable.fileSave(
-                        new Blob( [ JSON.stringify( data ) ] ),
-                        'Export.json'
-                    );
-                }
-            }
-        ]
+
 } );
 
  
