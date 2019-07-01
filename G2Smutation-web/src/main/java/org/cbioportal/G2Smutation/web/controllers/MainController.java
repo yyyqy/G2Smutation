@@ -316,19 +316,20 @@ public class MainController {
     
 
     
-    /**
+ 
     @GetMapping("/detail")
     public ModelAndView detailInfo() {
     	return new ModelAndView("/detail");
     }
-    */
     
+    /*
     @GetMapping("/detailAnno")
     public ModelAndView detailInfo() {
     	//api/proteinMutationAnno/uniprot/P53_HUMAN/pdb/2pcx_A
     	List<MutationAnnotation> outList = proteinMutationRepository.postProteinMutationAnnotationByPDB("uniprot","P53_HUMAN","2pcx","A",new ArrayList());
     	return new ModelAndView("/detailAnno","outList",outList);
     }
+    */
     
     
     // RS database start
