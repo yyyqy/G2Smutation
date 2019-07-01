@@ -332,7 +332,7 @@ public class MainController {
     }
     
     //Hardcode Now
-    @RequestMapping(path = "/downloadFile", method = RequestMethod.GET)
+    @RequestMapping(path = "/currentRelease.gz", method = RequestMethod.GET)
     public ResponseEntity<Resource> downloadFile(String param) {
 
         // ...
