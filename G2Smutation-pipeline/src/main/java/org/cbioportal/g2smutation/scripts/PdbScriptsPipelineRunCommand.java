@@ -828,7 +828,7 @@ public class PdbScriptsPipelineRunCommand {
         	sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>(), false);
         	
         	log.info("[STRUCTURE] naccess complete and start parsing from scratch"); 
-            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, new HashMap<String, StructureAnnotationRecord >());       
+            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, new HashMap<String, StructureAnnotationRecord >(), true);       
             
         }else{
         	String pdbSetFilename = ReadConfig.workspace + ReadConfig.pdbSetFile;
@@ -866,7 +866,7 @@ public class PdbScriptsPipelineRunCommand {
     		}
     		
     		log.info("[STRUCTURE] naccess complete and start parsing in update"); 
-            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm);                         	
+            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm, false);                         	
         }                      
         
         
