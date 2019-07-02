@@ -334,11 +334,7 @@ public class MainController {
     //Hardcode Now
     @RequestMapping(path = "/currentRelease.gz", method = RequestMethod.GET)
     public ResponseEntity<Resource> downloadFile(String param) {
-
-        // ...
-    	try {
-    
-    	
+    	try {   	
     		File file = new File("/home/labadmin/projects/g2smutation/G2Smutation/G2Smutation-pipeline/src/main/resources/ProteinVariants_20190625.txt.gz");
     		Path path = Paths.get(file.getAbsolutePath());
     		ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));

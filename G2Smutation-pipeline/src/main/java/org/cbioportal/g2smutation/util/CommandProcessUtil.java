@@ -95,6 +95,11 @@ public class CommandProcessUtil {
                 checkFlag = false;
             }
             break;
+        case "cp":
+            if (paralist.size() != 2) {
+                checkFlag = false;
+            }
+            break;
         case "releaseTag":
             if (paralist.size() != 2) {
                 checkFlag = false;
@@ -173,6 +178,10 @@ public class CommandProcessUtil {
             case "rm":
                 log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
                 pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
+                break;
+            case "cp":
+                log.info("[SHELL] Running cp command at" + paralist.get(0) + " "+ paralist.get(1) + "...");
+                pb = new ProcessBuilder(makdeCpCommand(paralist.get(0), paralist.get(1)));
                 break;
             case "releaseTag":
                 log.info("[MYSQL] Running releaseTag command from " + paralist.get(0) + " to " + paralist.get(1)
@@ -366,6 +375,21 @@ public class CommandProcessUtil {
         list.add("rm");
         list.add("-fr");
         list.add(inFilename);
+        return list;
+    }
+    
+    /**
+     * generate cp command
+     * 
+     * @param inFilename
+     * @param outFilename
+     * @return
+     */
+    private List<String> makdeCpCommand(String inFilename, String outFilename) {
+        List<String> list = new ArrayList<String>();
+        list.add("cp");
+        list.add(inFilename);
+        list.add(outFilename);
         return list;
     }
 

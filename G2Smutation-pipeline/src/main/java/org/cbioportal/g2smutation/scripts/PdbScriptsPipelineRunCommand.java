@@ -113,15 +113,15 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 0]********************");
         log.info("Delete old sql files in the workspace");
-        //cleanupG2S();
+        cleanupG2S();
 
         log.info("********************[Init STEP 1]********************");
         log.info("Initialize G2S service for alignments and residue mapping");
-        //initializeG2S(preprocess, parseprocess);
+        initializeG2S(preprocess, parseprocess);
 
         log.info("********************[Init STEP 2]********************");
         log.info("Find mutation using G2S service");
-        //generateMutation(parseprocess);
+        generateMutation(parseprocess);
 
         log.info("********************[Init STEP 3]********************");
         log.info("Annotate mutation");
@@ -130,7 +130,7 @@ public class PdbScriptsPipelineRunCommand {
 
         log.info("********************[Init STEP 4]********************");
         log.info("[FileSystem] Clean Up");
-        //postInitialCleanup();
+        postInitialCleanup();
     }
 
     /**
@@ -740,6 +740,7 @@ public class PdbScriptsPipelineRunCommand {
         mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);
         
         /**
+         * There are may something wrong here
         log.info("********************[STEP 3.1.1]********************");
         log.info("[DEBUG] Serialize and deserialize for debug usage");        
         // Serialize the MutationUsageRecord into the tmpfile!!!!
@@ -774,10 +775,13 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
         cu.runCommand("mysql", paralist);  
-              
+          
+
         log.info("********************[STEP 3.3]********************");
         log.info("[STRUCTURE] Download weekly Cath");
 		FTPClientUtil fc = new FTPClientUtil();
+        /**
+         * Not Used Now
 		fc.downloadFilefromFTP(ReadConfig.cathAllSource,
 				currentDir + ReadConfig.cathAllSource.substring(ReadConfig.cathAllSource.lastIndexOf("/") + 1));
 		System.out.println(
@@ -795,7 +799,8 @@ public class PdbScriptsPipelineRunCommand {
 		paralist.add(
 				currentDir + ReadConfig.cathNamesSource.substring(ReadConfig.cathNamesSource.lastIndexOf("/") + 1));
 		paralist.add(currentDir + ReadConfig.cathNamesFile);
-		cu.runCommand("gunzip", paralist); 	      
+		cu.runCommand("gunzip", paralist); 	
+		*/      
         
         log.info("********************[STEP 3.4]********************");
         log.info("[STRUCTURE] Update PDBrepo");      
@@ -871,10 +876,12 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.resourceDir + ReadConfig.annotationStrctureSQL);
         cu.runCommand("mysql", paralist);
         
-        paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.mutationInjectSQLStructure);
-        cu.runCommand("mysql", paralist);
-        
+        for(int i=0; i<=sanno.getStructureAnnotationFilenum(); i++) {
+        	log.info("[STRUCTURE] Start inject mutation_inject_structure.sql" + i + " to structure_annotation_entry");
+        	paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.mutationInjectSQLStructure+"."+Integer.toString(i));
+            cu.runCommand("mysql", paralist);       	
+        }        
         
         //dbsnp, clinvar, cosmic, genie, tcga annotation, only need update in initial G2S        
         if (!updateTag){
@@ -1110,11 +1117,18 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("mysql", paralist);
         
         log.info("********************[Update STEP 4.3]********************");
-        log.info("Generate Realease download files");
+        log.info("Generate Realease download files: currentRelease.gz");
         paralist.add(ReadConfig.resourceDir + ReadConfig.updateReleaseWeeklydownloadScript);
         String[] date = currentDir.split("\\/");
-        paralist.add(ReadConfig.workspace + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
-        cu.runCommand("releaseTag", paralist);       
+        paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
+        cu.runCommand("releaseTag", paralist);
+        
+        paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
+        cu.runCommand("gzip", paralist);
+        
+        paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt.gz");
+        paralist.add(ReadConfig.resourceDir + "currentRelease.gz");
+        cu.runCommand("cp", paralist);
     }
 }
 

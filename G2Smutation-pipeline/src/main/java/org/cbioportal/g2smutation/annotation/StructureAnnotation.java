@@ -41,7 +41,17 @@ import org.json.JSONObject;
  */
 public class StructureAnnotation {
     final static Logger log = Logger.getLogger(StructureAnnotation.class);
-    StringUtil su = new StringUtil();
+    int structureAnnotationFilenum = 0;
+       
+    public int getStructureAnnotationFilenum() {
+		return structureAnnotationFilenum;
+	}
+
+	public void setStructureAnnotationFilenum(int structureAnnotationFilenum) {
+		this.structureAnnotationFilenum = structureAnnotationFilenum;
+	}
+
+	StringUtil su = new StringUtil();
 
     /**
      * generate structure annotation for strucure_annotation_entry
@@ -109,7 +119,7 @@ public class StructureAnnotation {
 							sar.setPdbNo(pdbOld + "_" + contentchain);
 							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
-							getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+							//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 
 							structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
 							sarList.add(sar);
@@ -173,7 +183,7 @@ public class StructureAnnotation {
 				sar.setPdbNo(pdbOld + "_" + contentchain);
 				sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
-				getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+				//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 
 				structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
 				sarList.add(sar);
@@ -182,6 +192,7 @@ public class StructureAnnotation {
 
 			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename + "." + Integer.toString(filecount));
 
+			
 			// save structureAnnoHm
 			String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
 			try {
@@ -191,6 +202,8 @@ public class StructureAnnotation {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+			
+			this.structureAnnotationFilenum = filecount;
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
