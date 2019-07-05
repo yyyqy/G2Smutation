@@ -172,6 +172,7 @@ public class UnifiedMappedProteinMuationController {
 		}
 		//For here, it should only output one element
 		MutationAnnotation annotation = annotations.get(0);
+		annotation.setProteinName(id);
 
 		return new ModelAndView("/annodetail", "annotation", annotation);
 	}

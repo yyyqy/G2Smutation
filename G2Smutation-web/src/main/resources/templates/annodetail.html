@@ -1,14 +1,109 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
+<!DOCTYPE HTML>
+<html>
+<head>
+
+		  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-89640625-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-89640625-2');
+</script>
+
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"></link>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"></link>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+</head>
 <body>
+	<nav style="margin:0px" class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">Variant3D</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    		<span class="navbar-toggler-icon"></span>
+  		</button>
+  		
+  		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    		<ul class="navbar-nav mr-auto">
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/download}" href="download.html">Download</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/clients}" href="clients.html">Clients</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/statistics}" href="statistics.html">Statistics</a>
+      			</li>     			
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" target="_blank" href="https://github.com/juexinwang/G2Smutation">Github</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/tutorial}" href="tutorial.html">Tutorial</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" target="_blank" href="https://g2s.genomenexus.org/">G2S</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/about}" href="about.html">About</a>
+      			</li> 
+    		</ul>
+  		</div>
+	</nav>
+
+
+<div class="container">
 	<h1 layout:fragment="header">Annotation:</h1>
 	<div layout:fragment="content" class="container-fluid">
 	<div style="overflow-x: auto;">
 		<div class="alert alert-success" th:if="${globalMessage}"
 			th:text="${globalMessage}">Some Success message</div>
 		<h2 layout:fragment="header" th:text="${annotation.proteinName}"></h2>
+		
+		
+		<h2>Annotation Details</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>			
+					<td>QueryName</td>	
+					<td>Protein_Index</td>	
+					<td>Protein_RESIDUE</td>
+					<td>PDB_NO</td>
+					<td>PDB_INDEX</td>
+					<td>PDB_RESIDUE</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info: ${annotation.mutatedPositionInfo}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
+						<tr class="table-info">	
+							<td th:text="${annotation.proteinName}">1</td>	
+							<td th:text="${info.proteinPos}">1</td>
+							<td th:text="${info.proteinResidue}">1</td>				
+							<td th:text="${ginfo.pdbNo}">1</td>
+							<td th:text="${ginfo.pdbPos}">1</td>
+							<td th:text="${ginfo.pdbResidue}">1</td>																			
+						</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		
 		<h2>DBSNP Annotation</h2>
 		<table class="table table-bordered table-striped">
 			<thead>
@@ -472,8 +567,6 @@
 			</tbody>
 		</table>
 	
-		
-<!--	
 		<h2>Naccess Annotation</h2>
 		<table class="table table-bordered table-striped">
 			<thead>
@@ -708,6 +801,12 @@
 		-->
 		</div>
 
+	</div>
+	<div>
+		<footer>
+		<p>© 2019 Variant3D</p>
+		</footer>
+	</div>
 	</div>
 </body>
 </html>

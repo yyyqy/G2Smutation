@@ -58,7 +58,7 @@
   		</div>
 	</nav>
 	
-	<div class="container">
+	<!--<div class="container">-->
 	<h2 layout:fragment="header" th:id="proteinnameshow"></h2>
 	<div layout:fragment="content" class="container-fluid">
 	
@@ -145,12 +145,13 @@
 					<td><abbr title="Bitscore of Alignment from BLASTP, indicating Mapping Quality">BITSCORE</abbr></td>
 					<td><abbr title="The extent to which two amino acid sequences have the same/similar residues at the same positions in an alignment">Identity</abbr></td>
 					<td><abbr title="The extent to which two amino acid sequences have the same residues at the same positions in an alignment">IdentityPositive</abbr></td>
-					<td><a th:class="annodetail">Details</a></td>
+					<td>Details</td>
+					<td><a th:class="annodetail">Annotation</a></td>
 				</tr>
 			</thead>
 		</table>
 		<input type="hidden" th:name="proteinname" th:id="proteinname" th:value="${queryproteinname.proteinname}"></input>
-	</div>
+	<!--</div>-->
 	<div>
 		<footer>
 		<p>© 2019 Variant3D</p>
@@ -222,6 +223,12 @@ function filterColumn ( i ) {
 		},
 		{
 			data : 'identityPRatio'
+		},		
+		{
+			data : 'pdbInfo',
+			render: function (data, type, row, meta ) {
+      		return '<div style="padding:0px" class="panel-body"> <a target="_blank" href="'+'/ngl?pdbInfo2='+data+'">Structure Details</a></div>';
+      		}
 		},		
 		{
 			data : 'pdbInfo',

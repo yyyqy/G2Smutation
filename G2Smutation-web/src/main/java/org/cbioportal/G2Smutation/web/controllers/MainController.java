@@ -360,16 +360,21 @@ public class MainController {
     	return new ModelAndView("/annodetail");
     }
     
-    /*
-    @GetMapping("/detailAnno")
-    public ModelAndView detailInfo() {
-    	//api/proteinMutationAnno/uniprot/P53_HUMAN/pdb/2pcx_A
-    	List<MutationAnnotation> outList = proteinMutationRepository.postProteinMutationAnnotationByPDB("uniprot","P53_HUMAN","2pcx","A",new ArrayList());
-    	return new ModelAndView("/detailAnno","outList",outList);
+    /**
+     * Develop by Jingxuan, it basicially work now
+     */
+    // Regular database start
+    public Integer totaldata = 1119936;
+    @GetMapping("/database")    
+    public ModelAndView databaseInfo(@RequestParam(value="number",defaultValue = "1") Integer number,Model model){
+    	List<mutation_usage_table> datapage=mutationRepository.findTop10BymutationIdGreaterThan(1);
+        model.addAttribute("data", datapage);
+        model.addAttribute("number",number);
+        model.addAttribute("totaldata", totaldata);
+        return new ModelAndView("database");
     }
-    */
     
-    
+    /*
     // RS database start
     public Integer rstotaldata = 16290997;
     @GetMapping("/rs")    
@@ -567,20 +572,7 @@ public class MainController {
         model.addAttribute("requestCount", rssearchMaxPage);
         return new ModelAndView("rssearch");
     }
-    // RS database end
-    
-    
-    // Regular database start
-    public Integer totaldata = 1119936;
-    @GetMapping("/database")    
-    public ModelAndView databaseInfo(@RequestParam(value="number",defaultValue = "1") Integer number,Model model){
-    	List<mutation_usage_table> datapage=mutationRepository.findTop10BymutationIdGreaterThan(1);
-        model.addAttribute("data", datapage);
-        model.addAttribute("number",number);
-        model.addAttribute("totaldata", totaldata);
-        return new ModelAndView("database");
-    }
-    
+    // RS database end   
     
     // For search
     public List<mutation_usage_table> searchData;
@@ -822,17 +814,18 @@ public class MainController {
         return new ModelAndView("alignmentId");
     }
     
+    
     //TODO
     // Structure Page
-    /*
-    @RequestMapping(value = "/StructurePage",method = RequestMethod.GET)
-    public ModelAndView getStructurePage(Model model, HttpServletRequest request){
-    	String MutationId = request.getParameter("MutationId");
-        List<StructureAnnotation> structuresdetails = structureRepository.findBymutationId(Integer.parseInt(MutationId));
-        model.addAttribute("structures", structuresdetails);
-        return new ModelAndView("structure");
-    }
-    */
+    
+//    @RequestMapping(value = "/StructurePage",method = RequestMethod.GET)
+//    public ModelAndView getStructurePage(Model model, HttpServletRequest request){
+//    	String MutationId = request.getParameter("MutationId");
+//        List<StructureAnnotation> structuresdetails = structureRepository.findBymutationId(Integer.parseInt(MutationId));
+//        model.addAttribute("structures", structuresdetails);
+//        return new ModelAndView("structure");
+//    }
+    
     
     // Clinvar Page
     @RequestMapping(value = "/ClinvarPage",method = RequestMethod.GET)
@@ -879,45 +872,6 @@ public class MainController {
         return new ModelAndView("tcga");
     }
     
-    
-    // Two ways for 3D PDB structure
-    @RequestMapping(value = "/3Dmol",method = RequestMethod.GET)
-    public ModelAndView indexback(Model model, HttpServletRequest request){
-        String padInfo = request.getParameter("pdbInfo");
-        String pdb;
-        pdb= padInfo.substring(0,4);
-        String  chain= padInfo.substring(5,6);
-        String resi = padInfo.substring(8);
-    	String dataSelect2 = "chain:"+chain;
-    	String dataSelect3 = "chain:"+chain+";resi:"+resi;
-    	
-    	model.addAttribute("dataSelect2", dataSelect2);
-    	model.addAttribute("dataSelect3", dataSelect3);
-    	model.addAttribute("pdb", pdb);
-        model.addAttribute("chain", chain);
-    	model.addAttribute("resi", resi);
-
-        return new ModelAndView("3Dmol");
-    }
-    
-    @RequestMapping(value = "/ngl",method = RequestMethod.GET)
-    public ModelAndView bglback(Model model, HttpServletRequest request){
-        String padInfo = request.getParameter("pdbInfo2");
-        String pdb= padInfo.substring(0,4);
-        String chain= padInfo.substring(5,6);
-        String resi = padInfo.substring(8);
-        String loadFile = "rcsb://"+pdb;
-        String Selection = resi+":"+chain;
-        
-        model.addAttribute("loadFile", loadFile);
-        model.addAttribute("Selection", Selection);
-    	model.addAttribute("pdb", pdb);
-        model.addAttribute("chain", chain);
-    	model.addAttribute("resi", resi);
-
-        return new ModelAndView("ngl");
-    }
-    
     // seqNameUrl
     @RequestMapping(value = "/seqNameUrl",method = RequestMethod.GET)
     public ModelAndView urlback(Model model, HttpServletRequest request){
@@ -936,6 +890,62 @@ public class MainController {
         }
         return new ModelAndView(new RedirectView(result));
     }
+    */
+    
+    // Two ways for 3D PDB structure
+    /**
+     * Have not check 
+     * @param model
+     * @param request
+     * @return
+     */
+    /*
+    @RequestMapping(value = "/3Dmol",method = RequestMethod.GET)
+    public ModelAndView indexback(Model model, HttpServletRequest request){
+        String padInfo = request.getParameter("pdbInfo");
+        String pdb;
+        pdb= padInfo.substring(0,4);
+        String  chain= padInfo.substring(5,6);
+        String resi = padInfo.substring(8);
+    	String dataSelect2 = "chain:"+chain;
+    	String dataSelect3 = "chain:"+chain+";resi:"+resi;
+    	
+    	model.addAttribute("dataSelect2", dataSelect2);
+    	model.addAttribute("dataSelect3", dataSelect3);
+    	model.addAttribute("pdb", pdb);
+        model.addAttribute("chain", chain);
+    	model.addAttribute("resi", resi);
+
+        return new ModelAndView("3Dmol");
+    }
+    */
+    
+    /**
+     * Use This!
+     * @param model
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/ngl",method = RequestMethod.GET)
+    public ModelAndView bglback(Model model, HttpServletRequest request){
+        String padInfo = request.getParameter("pdbInfo2");
+        String[] tmparray = padInfo.split("_");
+        String pdb= tmparray[0];
+        String chain= tmparray[1];
+        String resi = tmparray[2];
+        String loadFile = "rcsb://"+pdb;
+        String Selection = resi+":"+chain;
+        
+        model.addAttribute("loadFile", loadFile);
+        model.addAttribute("Selection", Selection);
+    	model.addAttribute("pdb", pdb);
+        model.addAttribute("chain", chain);
+    	model.addAttribute("resi", resi);
+
+        return new ModelAndView("ngl");
+    }
+    
+
     
 
 }

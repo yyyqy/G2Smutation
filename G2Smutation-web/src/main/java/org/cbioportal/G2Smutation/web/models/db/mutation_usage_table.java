@@ -9,8 +9,11 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 /**
+ * Can Delete
  * replicates of MutationUsageTable, used secondary table to get alignment infor
  * @author Jingxuan Tang, Juexin Wang
+ * 
+ * 
  *
  */
 
