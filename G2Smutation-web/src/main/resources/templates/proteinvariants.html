@@ -145,6 +145,7 @@
 					<td><abbr title="Bitscore of Alignment from BLASTP, indicating Mapping Quality">BITSCORE</abbr></td>
 					<td><abbr title="The extent to which two amino acid sequences have the same/similar residues at the same positions in an alignment">Identity</abbr></td>
 					<td><abbr title="The extent to which two amino acid sequences have the same residues at the same positions in an alignment">IdentityPositive</abbr></td>
+					<td><a th:class="annodetail">Details</a></td>
 				</tr>
 			</thead>
 		</table>
@@ -179,7 +180,7 @@ function filterColumn ( i ) {
 	var demo = document.getElementById("proteinname");
 	document.getElementById("proteinnameshow").innerHTML = 'Single Residue Variants in: '+demo.value;
 	$(document).ready(function() {
-    $('#contents').DataTable( {
+    var table = $('#contents').DataTable( {
         ajax : '/unifiedProteinMutationQuery/'+demo.value,
         processing: true,
 		columns : [
@@ -196,15 +197,16 @@ function filterColumn ( i ) {
 			data : 'seqResidue'
 		}, 
 		{
-			data : 'pdbNo',
+			data : 'pdbInfo',
 			render: function (data) { return data.split("_")[0]; }
 		}, 
 		{
-			data : 'pdbNo',
+			data : 'pdbInfo',
 			render: function (data) { return data.split("_")[1]; }
 		},
 		{
-			data : 'pdbIndex'
+			data : 'pdbInfo',
+			render: function (data) { return data.split("_")[2]; }
 		}, 
 		{
 			data : 'pdbResidue'
@@ -220,6 +222,12 @@ function filterColumn ( i ) {
 		},
 		{
 			data : 'identityPRatio'
+		},		
+		{
+			data : 'pdbInfo',
+			render: function (data, type, row, meta ) {
+      		return '<a href="'+'unifiedProteinMutationQueryAnno/'+demo.value+'_'+data+'">Annotation</a>';
+      		}
 		}]
 	});	
 	
@@ -230,6 +238,7 @@ function filterColumn ( i ) {
     $('input.column_filter').on( 'keyup click', function () {
         filterColumn( $(this).parents('tr').attr('data-column') );
     } );
+
 
 } );
 

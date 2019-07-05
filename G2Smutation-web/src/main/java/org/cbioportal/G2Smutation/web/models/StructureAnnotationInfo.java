@@ -22,7 +22,7 @@ public class StructureAnnotationInfo {
 	private GeneralInfo generalInfo;
 	
 	@Column(name = "BURIED")
-	private String Buried;
+	public String Buried;
 	
 	private NaccessAnno naccessAnno;
 	private DsspAnno dsspAnno;
@@ -126,7 +126,7 @@ public class StructureAnnotationInfo {
 
 class GeneralInfo {    
     @Column(name = "PDB_ANNOKEY")
-    private String pdbAnnoKey;
+    public String pdbAnnoKey;
     
     @Column(name = "PDB_NO")
     private String pdbNo;

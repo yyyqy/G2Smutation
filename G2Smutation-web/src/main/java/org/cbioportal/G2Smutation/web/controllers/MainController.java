@@ -19,6 +19,7 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cbioportal.G2Smutation.scripts.PdbScriptsPipelineRunCommand;
+import org.cbioportal.G2Smutation.util.ReadConfig;
 import org.cbioportal.G2Smutation.web.domain.*;
 import org.cbioportal.G2Smutation.web.models.Ensembl;
 import org.cbioportal.G2Smutation.web.models.InputAlignment;
@@ -331,15 +332,18 @@ public class MainController {
     	return new ModelAndView("/tutorial");
     }
     
-    //Hardcode Now
+    /**
+     * provide download file link
+     * @param param
+     * @return
+     */
     @RequestMapping(path = "/currentRelease.gz", method = RequestMethod.GET)
     public ResponseEntity<Resource> downloadFile(String param) {
     	try {   	
-    		File file = new File("/home/labadmin/projects/g2smutation/G2Smutation/G2Smutation-pipeline/src/main/resources/ProteinVariants_20190625.txt.gz");
+    		File file = new File(ReadConfig.resourceDir+"currentRelease.gz");
     		Path path = Paths.get(file.getAbsolutePath());
     		ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
     	
-
         return ResponseEntity.ok()
                 .contentLength(file.length())
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
@@ -351,10 +355,9 @@ public class MainController {
     }
 
     
- 
-    @GetMapping("/detail")
-    public ModelAndView detailInfo() {
-    	return new ModelAndView("/detail");
+    @GetMapping("/annodetail")
+    public ModelAndView detailannoInfo() {
+    	return new ModelAndView("/annodetail");
     }
     
     /*

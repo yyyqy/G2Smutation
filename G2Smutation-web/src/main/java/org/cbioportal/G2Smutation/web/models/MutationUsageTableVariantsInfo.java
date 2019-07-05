@@ -8,8 +8,7 @@ public class MutationUsageTableVariantsInfo {
 	private String proteinName;	
     private int seqIndex;   
     private String seqResidue;    
-    private String pdbNo;//XXXX_X 
-    private int pdbIndex;    
+    private String pdbInfo;//abcd_A_123    
     private String pdbResidue;    
     private String evalue;
     private float bitscore;    
@@ -49,8 +48,7 @@ public class MutationUsageTableVariantsInfo {
     	this.setSeqIndex(mut.getSeqIndex());
     	this.setSeqResidue(mut.getSeqResidue());
     	String[] temp = mut.getPdbNo().split("_");
-    	this.setPdbNo(temp[0]+"_"+temp[1]);
-    	this.setPdbIndex(mut.getPdbIndex());
+    	this.setPdbInfo(temp[0]+"_"+temp[1]+"_"+mut.getPdbIndex());
     	this.setPdbResidue(mut.getPdbResidue());
     	this.setEvalue(ali.getEvalue());
     	this.setBitscore(ali.getBitscore());
@@ -91,21 +89,15 @@ public class MutationUsageTableVariantsInfo {
 	public void setSeqResidue(String seqResidue) {
 		this.seqResidue = seqResidue;
 	}
+	
+	
 
-	public String getPdbNo() {
-		return pdbNo;
+	public String getPdbInfo() {
+		return pdbInfo;
 	}
 
-	public void setPdbNo(String pdbNo) {
-		this.pdbNo = pdbNo;
-	}
-
-	public int getPdbIndex() {
-		return pdbIndex;
-	}
-
-	public void setPdbIndex(int pdbIndex) {
-		this.pdbIndex = pdbIndex;
+	public void setPdbInfo(String pdbInfo) {
+		this.pdbInfo = pdbInfo;
 	}
 
 	public String getPdbResidue() {

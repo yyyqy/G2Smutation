@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<body>
+	<h1 layout:fragment="header">Annotation:</h1>
+	<div layout:fragment="content" class="container-fluid">
+	<div style="overflow-x: auto;">
+		<div class="alert alert-success" th:if="${globalMessage}"
+			th:text="${globalMessage}">Some Success message</div>
+		<h2 layout:fragment="header" th:text="${annotation.proteinName}"></h2>
+		<h2>DBSNP Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<td>CHR_POS</td>
+					<td>RSnumber</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info: ${annotation.mutatedPositionInfo}">
+				<tr th:each="dbsnp :${info.dbsnpAnnotation}">
+				<tr class="table-info">
+					<td th:text="${dbsnp.chrPos}">1</td>
+					<td>
+					<a th:href="@{'https://www.ncbi.nlm.nih.gov/snp/rs'+${dbsnp.rsId}}"><p
+								th:text="${dbsnp.rsId}"></p></a></td>
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h2>Clinvar Annotation</h2>
+		<table class="table table-bordered table-striped no-wrap">
+			<thead>
+				<tr>
+					<td>CHR_POS</td>
+					<td>Clinvar_ID</td>
+					<td>REF</td>
+  					<td>ALT</td>
+  					<td>AF_ESP</td>
+  					<td>AF_EXAC</td>
+  					<td>AF_TGP</td>
+  					<td>ALLELEID</td>
+  					<td>CLNDN</td>
+  					<td>CLNDNINCL</td>
+  					<td>CLNDISDB</td>
+  					<td>CLNDISDBINCL</td>
+  					<td>CLNHGVS</td>
+  					<td>CLNREVSTAT</td>
+  					<td>CLNSIG</td>
+  					<td>CLNSIGCONF</td>
+  					<td>CLNSIGINCL</td>
+  					<td>CLNVC</td>
+  					<td>CLNVCSO</td>
+  					<td>CLNVI</td>
+  					<td>DBVARID</td>
+  					<td>GENEINFO</td>
+  					<td>MC</td>
+  					<td>ORIGIN</td>
+  					<td>RS</td>
+  					<td>SSR</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="clinvar :${info.clinvarAnnotation}">
+				<tr class="table-info">
+					<td th:text="${clinvar.chrPos}">1</td>
+					<td th:text="${clinvar.clinvarId}">1</td>
+					<td th:text="${clinvar.ref}">1</td>
+					<td th:text="${clinvar.alt}">1</td>
+					<td th:text="${clinvar.afESP}">1</td>
+					<td th:text="${clinvar.afEXAC}">1</td>
+					<td th:text="${clinvar.afTGP}">1</td>
+					<td th:text="${clinvar.alleleId}">1</td>
+					<td th:text="${clinvar.clndn}">1</td>
+					<td th:text="${clinvar.clndnincl}">1</td>
+					<td th:text="${clinvar.clndisdb}">1</td>
+					<td th:text="${clinvar.clndisdbincl}">1</td>
+					<td th:text="${clinvar.clnhgvs}">1</td>
+					<td th:text="${clinvar.clnrevstat}">1</td>
+					<td th:text="${clinvar.clnsig}">1</td>
+					<td th:text="${clinvar.clnsigconf}">1</td>
+					<td th:text="${clinvar.clnsigincl}">1</td>
+					<td th:text="${clinvar.clnvc}">1</td>
+					<td th:text="${clinvar.clnvcso}">1</td>
+					<td th:text="${clinvar.clnvi}">1</td>
+					<td th:text="${clinvar.dbvarid}">1</td>
+					<td th:text="${clinvar.geneinfo}">1</td>
+					<td th:text="${clinvar.mc}">1</td>
+					<td th:text="${clinvar.origin}">1</td>
+					<td th:text="${clinvar.rs}">1</td>
+					<td th:text="${clinvar.ssr}">1</td>
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h2>Cosmic Annotation</h2>
+		<table class="table table-bordered table-striped no-wrap">
+			<thead>
+				<tr>
+<td>CHR_POS</td>
+<td>GENE_NAME</td>
+<td>ACCESSION_NUMBER</td>
+<td>GENE_CDS_LENGTH</td>
+<td>HGNC_ID</td>
+<td>SAMPLE_NAME</td>
+<td>ID_SAMPLE</td>
+<td>ID_TUMOUR</td>
+<td>PRIMARY_SITE</td>
+<td>SITE_SUBTYPE_1</td>
+<td>SITE_SUBTYPE_2</td>
+<td>SITE_SUBTYPE_3</td>
+<td>PRIMARY_HISTOLOGY</td>
+<td>HISTOLOGY_SUBTYPE_1</td>
+<td>HISTOLOGY_SUBTYPE_2</td>
+<td>HISTOLOGY_SUBTYPE_3</td>
+<td>GENOME_WIDE_SCREEN</td>
+<td>COSMIC_MUTATION_ID</td>
+<td>MUTATION_CDS</td>
+<td>MUTATION_AA</td>
+<td>MUTATION_DESCRIPTION</td>
+<td>MUTATION_ZYGOSITY</td>
+<td>LOH</td>
+<td>GRCH</td>
+<td>MUTATION_GENOME_POSITION</td>
+<td>MUTATION_STRAND</td>
+<td>SNP</td>
+<td>RESISTANCE_MUTATION</td>
+<td>FATHMM_PREDICTION</td>
+<td>FATHMM_SCORE</td>
+<td>MUTATION_SOMATIC_STATUS</td>
+<td>PUBMED_PMID</td>
+<td>ID_STUDY</td>
+<td>SAMPLE_TYPE</td>
+<td>TUMOUR_ORIGIN</td>
+<td>AGE</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="cosmic :${info.cosmicAnnotation}">
+				<tr class="table-info">
+<td th:text="${cosmic.chrPos}">1</td>
+<td th:text="${cosmic.geneName}">1</td>
+<td th:text="${cosmic.accessionNumber}">1</td>
+<td th:text="${cosmic.geneCDSLength}">1</td>
+<td th:text="${cosmic.hgncId}">1</td>
+<td th:text="${cosmic.sampleName}">1</td>
+<td th:text="${cosmic.idSample}">1</td>
+<td th:text="${cosmic.idTumour}">1</td>
+<td th:text="${cosmic.primarySite}">1</td>
+<td th:text="${cosmic.siteSubtype1}">1</td>
+<td th:text="${cosmic.siteSubtype2}">1</td>
+<td th:text="${cosmic.siteSubtype3}">1</td>
+<td th:text="${cosmic.primaryHistology}">1</td>
+<td th:text="${cosmic.histologySubtype1}">1</td>
+<td th:text="${cosmic.histologySubtype2}">1</td>
+<td th:text="${cosmic.histologySubtype3}">1</td>
+<td th:text="${cosmic.genomewideScreen}">1</td>
+<td th:text="${cosmic.cosmicMutationId}">1</td>
+<td th:text="${cosmic.mutationCDS}">1</td>
+<td th:text="${cosmic.mutationAA}">1</td>
+<td th:text="${cosmic.mutationDescription}">1</td>
+<td th:text="${cosmic.mutationZygosity}">1</td>
+<td th:text="${cosmic.loh}">1</td>
+<td th:text="${cosmic.grch}">1</td>
+<td th:text="${cosmic.mutationGenomePosition}">1</td>
+<td th:text="${cosmic.mutationStrand}">1</td>
+<td th:text="${cosmic.snp}">1</td>
+<td th:text="${cosmic.resistanceMutation}">1</td>
+<td th:text="${cosmic.fathmmPrediction}">1</td>
+<td th:text="${cosmic.fathmmScore}">1</td>
+<td th:text="${cosmic.mutationSomaticStatus}">1</td>
+<td th:text="${cosmic.pubmedPMID}">1</td>
+<td th:text="${cosmic.idStudy}">1</td>
+<td th:text="${cosmic.sampleType}">1</td>
+<td th:text="${cosmic.tumourOrigin}">1</td>
+<td th:text="${cosmic.age}">1</td>
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		<h2>TCGA Annotation</h2>
+		<table class="table table-bordered table-striped no-wrap">
+			<thead>
+				<tr>
+<td>CHR_POS</td>
+<td>HUGO_SYMBOL</td>
+<td>ENTREZ_GENE_ID</td>
+<td>CENTER</td>
+<td>NCBI_BUILD</td>
+<td>CHROMOSOME</td>
+<td>START_POSITION</td>
+<td>END_POSITION</td>
+<td>STRAND</td>
+<td>VARIANT_CLASSIFICATION</td>
+<td>VARIANT_TYPE</td>
+<td>REFERENCE_ALLELE</td>
+<td>TUMOR_SEQ_ALLELE1</td>
+<td>TUMOR_SEQ_ALLELE2</td>
+<td>DBSNP_RS</td>
+<td>DBSNP_VAL_STATUS</td>
+<td>TUMOR_SAMPLE_BARCODE</td>
+<td>MATCHED_NORM_SAMPLE_BARCODE</td>
+<td>MATCH_NORM_SEQ_ALLELE1</td>
+<td>MATCH_NORM_SEQ_ALLELE2</td>
+<td>TUMOR_VALIDATION_ALLELE1</td>
+<td>TUMOR_VALIDATION_ALLELE2</td>
+<td>MATCH_NORM_VALIDATION_ALLELE1</td>
+<td>MATCH_NORM_VALIDATION_ALLELE2</td>
+<td>VERIFICATION_STATUS</td>
+<td>VALIDATION_STATUS</td>
+<td>MUTATION_STATUS</td>
+<td>SEQUENCING_PHASE</td>
+<td>SEQUENCE_SOURCE</td>
+<td>VALIDATION_METHOD</td>
+<td>SCORE</td>
+<td>BAM_FILE</td>
+<td>SEQUENCER</td>
+<td>TUMOR_SAMPLE_UUID</td>
+<td>MATCHED_NORM_SAMPLE_UUID</td>
+<td>HGVSC</td>
+<td>HGVSP</td>
+<td>HGVSP_SHORT</td>
+<td>TRANSCRIPT_ID</td>
+<td>EXON_NUMBER</td>
+<td>T_DEPTH</td>
+<td>T_REF_COUNT</td>
+<td>T_ALT_COUNT</td>
+<td>N_DEPTH</td>
+<td>N_REF_COUNT</td>
+<td>N_ALT_COUNT</td>
+<td>ALL_EFFECTS</td>
+<td>ALLELE</td>
+<td>GENE</td>
+<td>FEATURE</td>
+<td>FEATURE_TYPE</td>
+<td>CONSEQUENCE</td>
+<td>CDNA_POSITION</td>
+<td>CDS_POSITION</td>
+<td>PROTEIN_POSITION</td>
+<td>AMINO_ACIDS</td>
+<td>CODONS</td>
+<td>EXISTING_VARIATION</td>
+<td>ALLELE_NUM</td>
+<td>DISTANCE</td>
+<td>STRAND_VEP</td>
+<td>SYMBOL</td>
+<td>SYMBOL_SOURCE</td>
+<td>HGNC_ID</td>
+<td>BIOTYPE</td>
+<td>CANONICAL</td>
+<td>CCDS</td>
+<td>ENSP</td>
+<td>SWISSPROT</td>
+<td>TREMBL</td>
+<td>UNIPARC</td>
+<td>REFSEQ</td>
+<td>SIFT</td>
+<td>POLYPHEN</td>
+<td>EXON</td>
+<td>INTRON</td>
+<td>DOMAINS</td>
+<td>GMAF</td>
+<td>AFR_MAF</td>
+<td>AMR_MAF</td>
+<td>ASN_MAF</td>
+<td>EAS_MAF</td>
+<td>EUR_MAF</td>
+<td>SAS_MAF</td>
+<td>AA_MAF</td>
+<td>EA_MAF</td>
+<td>CLIN_SIG</td>
+<td>SOMATIC</td>
+<td>PUBMED</td>
+<td>MOTIF_NAME</td>
+<td>MOTIF_POS</td>
+<td>HIGH_INF_POS</td>
+<td>MOTIF_SCORE_CHANGE</td>
+<td>IMPACT</td>
+<td>PICK</td>
+<td>VARIANT_CLASS</td>
+<td>TSL</td>
+<td>HGVS_OFFSET</td>
+<td>PHENO</td>
+<td>MINIMISED</td>
+<td>EXAC_AF</td>
+<td>EXAC_AF_AFR</td>
+<td>EXAC_AF_AMR</td>
+<td>EXAC_AF_EAS</td>
+<td>EXAC_AF_FIN</td>
+<td>EXAC_AF_NFE</td>
+<td>EXAC_AF_OTH</td>
+<td>EXAC_AF_SAS</td>
+<td>GENE_PHENO</td>
+<td>FILTER</td>
+<td>COSMIC</td>
+<td>CENTERS</td>
+<td>CONTEXT</td>
+<td>DBVS</td>
+<td>NCALLERS</td>				
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="tcga :${info.tcgaAnnotation}">
+				<tr class="table-info">
+<td th:text="${tcga.chrPos}">1</td>
+<td th:text="${tcga.hugoSymbol}">1</td>
+<td th:text="${tcga.entrezGeneId}">1</td>
+<td th:text="${tcga.center}">1</td>
+<td th:text="${tcga.ncbiBuild}">1</td>
+<td th:text="${tcga.chromosome}">1</td>
+<td th:text="${tcga.startPosition}">1</td>
+<td th:text="${tcga.endPosition}">1</td>
+<td th:text="${tcga.strand}">1</td>
+<td th:text="${tcga.variantClassification}">1</td>
+<td th:text="${tcga.variantType}">1</td>
+<td th:text="${tcga.referenceAllele}">1</td>
+<td th:text="${tcga.tumorSeqAllele1}">1</td>
+<td th:text="${tcga.tumorSeqAllele2}">1</td>
+<td th:text="${tcga.dbsnpRs}">1</td>
+<td th:text="${tcga.dbsnpValStatus}">1</td>
+<td th:text="${tcga.tumorSampleBarcode}">1</td>
+<td th:text="${tcga.matchedNormSampleBarcode}">1</td>
+<td th:text="${tcga.matchNormSeqAllele1}">1</td>
+<td th:text="${tcga.matchNormSeqAllele2}">1</td>
+<td th:text="${tcga.tumorValidationAllele1}">1</td>
+<td th:text="${tcga.tumorValidationAllele2}">1</td>
+<td th:text="${tcga.marchNormValidationAllele1}">1</td>
+<td th:text="${tcga.marchNormValidationAllele2}">1</td>
+<td th:text="${tcga.verificationStatus}">1</td>
+<td th:text="${tcga.validationStatus}">1</td>
+<td th:text="${tcga.mutationStatus}">1</td>
+<td th:text="${tcga.sequenceingPhase}">1</td>
+<td th:text="${tcga.sequenceSource}">1</td>
+<td th:text="${tcga.validationMethod}">1</td>
+<td th:text="${tcga.score}">1</td>
+<td th:text="${tcga.bamFile}">1</td>
+<td th:text="${tcga.sequencer}">1</td>
+<td th:text="${tcga.tumorSampleUUID}">1</td>
+<td th:text="${tcga.matchedNormSampleUUID}">1</td>
+<td th:text="${tcga.hgvsc}">1</td>
+<td th:text="${tcga.hgvsp}">1</td>
+<td th:text="${tcga.hgvspShort}">1</td>
+<td th:text="${tcga.transcriptId}">1</td>
+<td th:text="${tcga.exonNumber}">1</td>
+<td th:text="${tcga.tDepth}">1</td>
+<td th:text="${tcga.tRefCount}">1</td>
+<td th:text="${tcga.tAltCount}">1</td>
+<td th:text="${tcga.nDepth}">1</td>
+<td th:text="${tcga.nRefCount}">1</td>
+<td th:text="${tcga.nAltCount}">1</td>
+<td th:text="${tcga.allEffects}">1</td>
+<td th:text="${tcga.allele}">1</td>
+<td th:text="${tcga.gene}">1</td>
+<td th:text="${tcga.feature}">1</td>
+<td th:text="${tcga.featureType}">1</td>
+<td th:text="${tcga.consequence}">1</td>
+<td th:text="${tcga.cdnaPosition}">1</td>
+<td th:text="${tcga.cdsPosition}">1</td>
+<td th:text="${tcga.proteinPosition}">1</td>
+<td th:text="${tcga.aminoAcids}">1</td>
+<td th:text="${tcga.codons}">1</td>
+<td th:text="${tcga.existingVariation}">1</td>
+<td th:text="${tcga.alleleNum}">1</td>
+<td th:text="${tcga.distance}">1</td>
+<td th:text="${tcga.strandVep}">1</td>
+<td th:text="${tcga.symbol}">1</td>
+<td th:text="${tcga.symbolSource}">1</td>
+<td th:text="${tcga.hgncId}">1</td>
+<td th:text="${tcga.biotype}">1</td>
+<td th:text="${tcga.cannonical}">1</td>
+<td th:text="${tcga.ccds}">1</td>
+<td th:text="${tcga.ensp}">1</td>
+<td th:text="${tcga.swissprot}">1</td>
+<td th:text="${tcga.trembl}">1</td>
+<td th:text="${tcga.uniparc}">1</td>
+<td th:text="${tcga.refseq}">1</td>
+<td th:text="${tcga.sift}">1</td>
+<td th:text="${tcga.polyphen}">1</td>
+<td th:text="${tcga.exon}">1</td>
+<td th:text="${tcga.intron}">1</td>
+<td th:text="${tcga.domains}">1</td>
+<td th:text="${tcga.gmaf}">1</td>
+<td th:text="${tcga.afrMaf}">1</td>
+<td th:text="${tcga.amrMaf}">1</td>
+<td th:text="${tcga.asnMaf}">1</td>
+<td th:text="${tcga.easMaf}">1</td>
+<td th:text="${tcga.eurMaf}">1</td>
+<td th:text="${tcga.sasMaf}">1</td>
+<td th:text="${tcga.aaMaf}">1</td>
+<td th:text="${tcga.eaMaf}">1</td>
+<td th:text="${tcga.clinSig}">1</td>
+<td th:text="${tcga.somatic}">1</td>
+<td th:text="${tcga.pubmed}">1</td>
+<td th:text="${tcga.motifName}">1</td>
+<td th:text="${tcga.motifPos}">1</td>
+<td th:text="${tcga.highInfPos}">1</td>
+<td th:text="${tcga.motifScoreChange}">1</td>
+<td th:text="${tcga.impact}">1</td>
+<td th:text="${tcga.pick}">1</td>
+<td th:text="${tcga.variantClass}">1</td>
+<td th:text="${tcga.tsl}">1</td>
+<td th:text="${tcga.hgvsOffset}">1</td>
+<td th:text="${tcga.pheno}">1</td>
+<td th:text="${tcga.minimised}">1</td>
+<td th:text="${tcga.exacAf}">1</td>
+<td th:text="${tcga.exacAfAFR}">1</td>
+<td th:text="${tcga.exacAfAMR}">1</td>
+<td th:text="${tcga.exacAfEAS}">1</td>
+<td th:text="${tcga.exacAfFIN}">1</td>
+<td th:text="${tcga.exacAfNFE}">1</td>
+<td th:text="${tcga.exacAfOTH}">1</td>
+<td th:text="${tcga.exacAfSAS}">1</td>
+<td th:text="${tcga.genePheno}">1</td>
+<td th:text="${tcga.filter}">1</td>
+<td th:text="${tcga.cosmic}">1</td>
+<td th:text="${tcga.centers}">1</td>
+<td th:text="${tcga.context}">1</td>
+<td th:text="${tcga.dbvs}">1</td>
+<td th:text="${tcga.ncallers}">1</td>				
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		<!-- TODO
+		<h2>Structure Annotation</h2>
+		<h2>General Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>					
+					<td>PDB_NO</td>
+					<td>PDB_INDEX</td>
+					<td>PDB_RESIDUE</td>
+					<td>Buried or Not</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info: ${annotation.mutatedPositionInfo}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
+					<tr th:if="${ginfo.structureAnnotation}==null">
+						<tr class="table-info">					
+							<td th:text="${ginfo.pdbNo}">1</td>
+							<td th:text="${ginfo.pdbPos}">1</td>
+							<td th:text="${ginfo.pdbResidue}">1</td>																		
+						</tr>
+					</tr>
+					<tr th:else="${ginfo.structureAnnotation}==null">
+						<tr th:each="gi: ${ginfo.structureAnnotation.generalInfo}">
+						<tr class="table-info">					
+							<td th:text="${ginfo.pdbNo}">1</td>
+							<td th:text="${ginfo.pdbPos}">1</td>
+							<td th:text="${ginfo.pdbResidue}">1</td>
+							<td th:text="${gi.pdbAnnoKey}">1</td>																			
+						</tr>
+						</tr>
+					</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+	
+		
+<!--	
+		<h2>Naccess Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+<td>ALL_ATOMS_ABS</td>
+<td>ALL_ATOMS_REL</td>
+<td>TOTAL_SIDE_ABS</td>
+<td>TOTAL_SIDE_REL</td>
+<td>MAIN_CHAIN_ABS</td>
+<td>MAIN_CHAIN_REL</td>
+<td>NON_POLAR_ABS</td>
+<td>NON_POLAR_REL</td>
+<td>ALL_POLAR_ABS</td>
+<td>ALL_POLAR_REL</td>				
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
+				<tr th:each="sa: ${ginfo.structureAnnotation}">
+				<tr class="table-info">
+<td th:text="${sa.naccessAnno.allAtomsAbs}">1</td>
+<td th:text="${sa.naccessAnno.allAtomsRel}">1</td>
+<td th:text="${sa.naccessAnno.totalSideAbs}">1</td>
+<td th:text="${sa.naccessAnno.totalSideRel}">1</td>
+<td th:text="${sa.naccessAnno.mainChainAbs}">1</td>
+<td th:text="${sa.naccessAnno.mainChianRel}">1</td>
+<td th:text="${sa.naccessAnno.nonPolarAbs}">1</td>
+<td th:text="${sa.naccessAnno.nonPolarRel}">1</td>
+<td th:text="${sa.naccessAnno.allPolarAbs}">1</td>
+<td th:text="${sa.naccessAnno.allpolarRel}">1</td>			
+				</tr>
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+
+		
+		<h2>Dssp Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+<td>SEC_STRUCTURE</td>
+<td>THREE_TURN_HELIX</td>
+<td>FOUR_TURN_HELIX</td>
+<td>FIVE_TURN_HELIX</td>
+<td>GEOMETRICAL_BEND</td>
+<td>CHIRALITY</td>
+<td>BETA_BRIDGE_LABELA</td>
+<td>BETA_BRIDGE_LABELB</td>	
+<td>BPA</td>	
+<td>BPB</td>
+<td>BETA_SHEET_LABEL</td>
+<td>ACC</td>	
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="dsspinfo :${info.mutatedResidueInfo[0].dsspAnno}">
+				<tr class="table-info">
+<td th:text="${dsspinfo.secStructure}">1</td>
+<td th:text="${dsspinfo.threeTurnHelix}">1</td>
+<td th:text="${dsspinfo.fourTurnHelix}">1</td>
+<td th:text="${dsspinfo.fiveTurnHelix}">1</td>
+<td th:text="${dsspinfo.geometricalBend}">1</td>
+<td th:text="${dsspinfo.chirality}">1</td>
+<td th:text="${dsspinfo.betaBridgeLabelA}">1</td>
+<td th:text="${dsspinfo.betaBridgeLabelB}">1</td>
+<td th:text="${dsspinfo.bpa}">1</td>
+<td th:text="${dsspinfo.bpb}">1</td>
+<td th:text="${dsspinfo.betaSheetLabel}">1</td>
+<td th:text="${dsspinfo.acc}">1</td>		
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h2>Ligand Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+<td>LIGAND_BINDING_PROTEIN</td>
+<td>LIGAND_BINDING_DIRECT</td>
+<td>LIGAND_NAME</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="ligandinfo :${info.mutatedResidueInfo[0].ligandAnno}">
+				<tr class="table-info">
+<td th:text="${ligandinfo.ligandBindingProtein}">1</td>
+<td th:text="${ligandinfo.ligandBindingDirect}">1</td>
+<td th:text="${ligandinfo.ligandName}">1</td>		
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+				<h2>INTERPRO Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+<td>INTERPRO_ID</td>
+<td>INTERPRO_NAME</td>
+<td>INTERPRO_IDENTIFIER</td>
+<td>INTERPRO_START</td>
+<td>INTERPRO_END</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="interproinfo :${info.mutatedResidueInfo[0].interproAnno}">
+				<tr class="table-info">
+<td th:text="${interproinfo.interproId}">1</td>
+<td th:text="${interproinfo.interproName}">1</td>
+<td th:text="${interproinfo.interproIdentifier}">1</td>	
+<td th:text="${interproinfo.interproStart}">1</td>
+<td th:text="${interproinfo.interproEnd}">1</td>		
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h2>PFAM Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+<td>PFAM_ID</td>
+<td>PFAM_NAME</td>
+<td>PFAM_DESCRIPTION</td>
+<td>PFAM_IDENTIFIER</td>
+<td>PFAM_START</td>
+<td>PFAM_END</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="pfaminfo :${info.mutatedResidueInfo[0].pfamAnno}">
+				<tr class="table-info">
+<td th:text="${pfaminfo.pfamId}">1</td>
+<td th:text="${pfaminfo.pfamName}">1</td>
+<td th:text="${pfaminfo.pfamDescription}">1</td>	
+<td th:text="${pfaminfo.pfamIdentifier}">1</td>
+<td th:text="${pfaminfo.pfamStart}">1</td>
+<td th:text="${pfaminfo.pfamEnd}">1</td>		
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+				<h2>CATH Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+<td>CATH_ID</td>
+<td>CATH_ARCHITECTURE</td>
+<td>CATH_CLASS</td>
+<td>CATH_HOMOLOGY</td>
+<td>CATH_IDENTIFIER</td>
+<td>CATH_NAME</td>
+<td>CATH_TOPOLOGY</td>
+<td>CATH_DOMAIN_ID</td>
+<td>CATH_DOMAIN_START</td>
+<td>CATH_DOMAIN_END</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="cathinfo :${info.mutatedResidueInfo[0].cathAnno}">
+				<tr class="table-info">
+<td th:text="${cathinfo.cathId}">1</td>
+<td th:text="${cathinfo.cathArchitecture}">1</td>
+<td th:text="${cathinfo.cathClass}">1</td>	
+<td th:text="${cathinfo.cathHomology}">1</td>
+<td th:text="${cathinfo.cathIdentifier}">1</td>
+<td th:text="${cathinfo.cathName}">1</td>	
+<td th:text="${cathinfo.cathTopology}">1</td>	
+<td th:text="${cathinfo.cathDomainId}">1</td>
+<td th:text="${cathinfo.cathDomainStart}">1</td>
+<td th:text="${cathinfo.cathDomainEnd}">1</td>	
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		<h2>SCOP Annotation</h2>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+<td>SCOP_ID</td>
+<td>SCOP_DESCRIPTION</td>
+<td>SCOP_IDENTIFIER</td>
+<td>SCOP_SCCS</td>
+<td>SCOP_CLASS_SUNID</td>
+<td>SCOP_CLASS_DESCRIPTION</td>
+<td>SCOP_FOLD_SUNID</td>
+<td>SCOP_FOLD_DESCRIPTION</td>
+<td>SCOP_SUPERFAMILY_SUNID</td>
+<td>SCOP_SUPERFAMILY_DESCRIPTION</td>
+<td>SCOP_START</td>
+<td>SCOP_END</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="info : ${annotation.mutatedPositionInfo}">
+				<tr th:each="scopinfo :${info.mutatedResidueInfo[0].scopAnno}">
+				<tr class="table-info">
+<td th:text="${scopinfo.scopId}">1</td>
+<td th:text="${scopinfo.scopDescription}">1</td>
+<td th:text="${scopinfo.scopIdentifier}">1</td>	
+<td th:text="${scopinfo.scopSccs}">1</td>
+<td th:text="${scopinfo.scopClassSunid}">1</td>
+<td th:text="${scopinfo.scopClassDescription}">1</td>	
+<td th:text="${scopinfo.scopFoldSunid}">1</td>	
+<td th:text="${scopinfo.scopFoldDescription}">1</td>
+<td th:text="${scopinfo.scopSuperfamilySunid}">1</td>
+<td th:text="${scopinfo.scopSuperfamilyDescription}">1</td>	
+<td th:text="${scopinfo.scopStart}">1</td>
+<td th:text="${scopinfo.scopEnd}">1</td>
+				</tr>
+				</tr>
+				</tr>
+			</tbody>
+		</table>
+		-->
+		</div>
+
+	</div>
+</body>
+</html>

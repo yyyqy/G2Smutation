@@ -24,6 +24,7 @@ import org.cbioportal.G2Smutation.web.models.QueryProteinName;
 import org.cbioportal.G2Smutation.web.models.Uniprot;
 import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
 import org.cbioportal.G2Smutation.web.models.mutation.Mutation;
+import org.cbioportal.G2Smutation.web.models.mutation.MutationAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -64,6 +66,10 @@ public class UnifiedMappedProteinMuationController {
     
     @Autowired
     private AlignmentRepository alignmentRepository;
+    
+    @Autowired
+    private MainGetMappedProteinMutationController pmController;
+
 	
 	@RequestMapping(value = "/unifiedProteinMutationQuery/{id}", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -125,5 +131,116 @@ public class UnifiedMappedProteinMuationController {
     	result.setData(outentries);
     	return result;
     }
+	
+	/**
+	 * For display usage
+	 * 
+	 * @param id_type
+	 * @param id
+	 * @param pdb_id
+	 * @param chain_id
+	 * @param positionList
+	 * @return
+	 */
+	@RequestMapping(value = "/unifiedProteinMutationQueryAnno/{idinfo}", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation("POST mutation by uniprot or ensembl and PDB")
+	public ModelAndView postProteinMutationAnnotationByPDB(@ApiParam(required = true, value = "Input id e.g.\n"
+			+ "ensembl:ENSP00000269305.4/ENSG00000141510.11/ENST00000269305.4;\n" + "uniprot:P04637/P53_HUMAN;\n"
+			+ "uniprot_isoform:P04637_1/P53_HUMAN_1; and  2pcx_A_282") @PathVariable String idinfo)// P53_HUMAN_2pcx_A_282
+	{
+
+		String[] tmpp = idinfo.split("_");
+		String id = tmpp[0];
+		for (int i = 1; i < tmpp.length - 3; i++) {
+			id = id + "_" + tmpp[i];
+		}
+		String pdb_id = tmpp[tmpp.length - 3];
+		String chain_id = tmpp[tmpp.length - 2];
+		String position = tmpp[tmpp.length - 1];
+		List<MutationAnnotation> annotations = new ArrayList<MutationAnnotation>();
+		List<String> positionList = new ArrayList<>();
+		positionList.add(position);
+
+		if (id.startsWith("ENSP") || id.startsWith("ENSG")) {// EnsemblID:
+			// ENSP00000269305.4/ENSP00000269305
+			annotations = pmController.postProteinMutationAnnotationByPDB("ensembl", id, pdb_id, chain_id,
+					positionList);
+		} else {
+			annotations = pmController.postProteinMutationAnnotationByPDB("uniprot", id, pdb_id, chain_id,
+					positionList);
+		}
+		//For here, it should only output one element
+		MutationAnnotation annotation = annotations.get(0);
+
+		return new ModelAndView("/annodetail", "annotation", annotation);
+	}
+	
+	
+	/**
+	 * For display usage
+	 * 
+	 * @param id_type
+	 * @param id
+	 * @param pdb_id
+	 * @param chain_id
+	 * @param positionList
+	 * @return
+	 */
+	@RequestMapping(value = "/unifiedProteinMutationQueryPosAnno/{idinfo}", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation("POST mutation by uniprot or ensembl and PDB")
+	public ModelAndView postProteinMutationAnnotationPosByPDB(@ApiParam(required = true, value = "Input id e.g.\n"
+			+ "ensembl:ENSP00000269305.4/ENSG00000141510.11/ENST00000269305.4;\n" + "uniprot:P04637/P53_HUMAN;\n"
+			+ "uniprot_isoform:P04637_1/P53_HUMAN_1; and  2pcx_A_282") @PathVariable String idinfo// P53_HUMAN_282
+	) {
+
+		String[] tmpp = idinfo.split("_");
+		String id = tmpp[0];
+		for (int i = 1; i < tmpp.length - 1; i++) {
+			id = id + "_" + tmpp[i];
+		}
+		String position = tmpp[tmpp.length - 1];
+		List<MutationAnnotation> outList = new ArrayList<MutationAnnotation>();
+		List<String> positionList = new ArrayList<>();
+		positionList.add(position);
+
+		if (id.startsWith("ENSP")) {
+			
+			// ENSP00000269305.4/ENSP00000269305
+			List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
+			for (Ensembl ensembl : ensembllist) {
+				// System.out.println(ensembl.getSeqId());
+
+				outList.addAll(seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), positionList));
+
+			}
+		} else if (id.startsWith("ENSG")) {// EnsemblGene:
+			// ENSG00000141510.11/ENSG00000141510
+			List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
+			// Original implementation, just find exact word
+			// ENSG00000141510.16
+			// List<Ensembl> ensembllist =
+			// ensemblRepository.findByEnsemblGene(id);
+			if (ensembllist.size() >= 1) {
+				for (Ensembl en : ensembllist) {
+
+					outList.addAll(seqController.getMutationUsageAnnotationBySeqId(en.getSeqId(), positionList));
+
+				}
+			}
+		} else if (id.length() == 6 && id.split("_").length != 2) {// Accession:
+			// P04637
+
+			outList.addAll(seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1", positionList));
+
+		} else if (id.split("_").length == 2) {// ID: P53_HUMAN
+
+			outList.addAll(seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1", positionList));
+
+		}
+
+		return new ModelAndView("/annodetail", "outList", outList);
+	}
 
 }

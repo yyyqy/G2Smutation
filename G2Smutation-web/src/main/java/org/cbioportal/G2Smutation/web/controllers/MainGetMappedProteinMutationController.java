@@ -407,7 +407,9 @@ public class MainGetMappedProteinMutationController {
 			@ApiParam(required = false, value = "Input Residue Positions e.g. 202,282;"
 					+ "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
+		System.out.println("***"+id_type+"\t"+id+"\t"+pdb_id+"\t"+chain_id);
 		List<MutationAnnotation> outList = new ArrayList<MutationAnnotation>();
+		try {
 		if (id_type.equals("ensembl")) {
 			if (id.startsWith("ENSP")) {// EnsemblID:
 				// ENSP00000269305.4/ENSP00000269305
@@ -470,14 +472,15 @@ public class MainGetMappedProteinMutationController {
 				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
 
 			} else if (id.split("_").length == 2) {// ID: P53_HUMAN
+				System.out.println("HERE!");
 				List<MutationAnnotation> list = null;
 				if (positionList == null) {
 					list=seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1");
 				} else {
 					list=seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1", positionList);
 				}
+				
 				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
-
 			} else {
 				log.info("Error in Input. id_type:Uniprot id: " + id + " position:" + positionList);
 			}
@@ -511,6 +514,9 @@ public class MainGetMappedProteinMutationController {
 
 		else {
 			log.info("Error in Input. id_type:" + id_type + " id: " + id + " position:" + positionList);
+		}
+		}catch(Exception ex) {
+			ex.printStackTrace();
 		}
 		return outList;
 	}
@@ -578,7 +584,7 @@ public class MainGetMappedProteinMutationController {
         			String pd = tmpArray[0];
                     String ch = tmpArray[1];
                     if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                    	//System.out.println(pd+"\t"+ch);
+                    	System.out.println(pd+"\t"+ch);
                     	MutatedResidueInfo nmr = new MutatedResidueInfo();
                     	nmr.setPdbNo(mr.getPdbNo());
                     	nmr.setPdbPos(mr.getPdbPos());
