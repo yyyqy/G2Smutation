@@ -1409,6 +1409,7 @@ public class StructureAnnotation {
             //log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex + "+" + cathIds + "+" + cathIdentifiers + "+" + cathArchitectures + "+");
             //log.info(cathClasses + "+" + cathHomologys + "+" + cathTopologys + "+" + cathStarts + "+" + cathEnds + "+" + cathDomains);
     	}catch(Exception ex) {
+    		log.error("Error in: "+pdbId + "+" + pdbChain + "+" + pdbResidueIndex);
     		ex.printStackTrace();
     	}
     }
