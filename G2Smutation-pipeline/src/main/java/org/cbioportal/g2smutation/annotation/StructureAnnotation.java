@@ -129,7 +129,7 @@ public class StructureAnnotation {
 							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
 							if(urlFlag) {
-								getCathInfo(sar, pdbOld, contentchain, contentchain, cathLines, cathNamesLines);
+								getCathInfo(sar, pdbOld, contentchain, contentindex, cathLines, cathNamesLines);
 								//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 							}							
 
@@ -197,7 +197,7 @@ public class StructureAnnotation {
 				sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
 				if(urlFlag) {
-					getCathInfo(sar, pdbOld, contentchain, contentchain, cathLines, cathNamesLines);
+					getCathInfo(sar, pdbOld, contentchain, contentindex, cathLines, cathNamesLines);
 					//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 				}				
 
