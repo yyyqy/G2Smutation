@@ -129,8 +129,8 @@ public class StructureAnnotation {
 							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
 							if(urlFlag) {
-								getCathInfo(sar, pdbOld, contentchain, contentindex, cathLines, cathNamesLines);
-								//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+								//getCathInfo(sar, pdbOld, contentchain, contentindex, cathLines, cathNamesLines);
+								getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 							}							
 
 							structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
@@ -207,8 +207,8 @@ public class StructureAnnotation {
 				sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
 				if(urlFlag) {
-					getCathInfo(sar, pdbOld, contentchain, contentindex, cathLines, cathNamesLines);
-					//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+					//getCathInfo(sar, pdbOld, contentchain, contentindex, cathLines, cathNamesLines);
+					getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 				}				
 
 				structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
@@ -612,6 +612,7 @@ public class StructureAnnotation {
             throws Exception {
         // get pfam and interpro info from sequence_domains
         String seUrlName = ReadConfig.getSequenceDomainsUrl() + pdbId;
+        log.info(seUrlName);
         URL seUrl = new URL(seUrlName);
         int residueIndex = Integer.parseInt(pdbResidueIndex);
         String pfamIds = "";
