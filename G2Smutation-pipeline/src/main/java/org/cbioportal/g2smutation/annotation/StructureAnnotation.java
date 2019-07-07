@@ -1336,7 +1336,7 @@ public class StructureAnnotation {
         String cathStarts = "";
         String cathEnds = "";
     	try {
-    		log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex);
+    		//log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex);
     		if(cathLines.containsKey(pdbId)) {
     			for(int i=0; i<cathLines.get(pdbId).size(); i++) {
     				if(cathLines.get(pdbId).get(i).substring(0, 1).equals(pdbChain)) {
