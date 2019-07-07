@@ -1349,6 +1349,8 @@ public class StructureAnnotation {
 		    				int startEndLen = startEnd.split("-").length;
 		    				String start = startEnd.split("-")[startEndLen-2];
 		    				String end = startEnd.split("-")[startEndLen-1];
+		    				start = start.replaceAll("[^\\d]", ""); //keep only numbers
+		    				end = end.replaceAll("[^\\d]", ""); //keep only numbers
 		    				String domain = pdbId + cathLines.get(pdbId).get(i).split(" ")[0];
 		    				if(Integer.parseInt(pdbResidueIndex)>=Integer.parseInt(start) && Integer.parseInt(pdbResidueIndex)<=Integer.parseInt(end)) {
 		    					cathIdTemp = cathLines.get(pdbId).get(i).split(" ")[2];
