@@ -725,7 +725,8 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[File] Read results from file, generate HashMap for usage");        
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
         HashMap<String, String> mutationHm = new HashMap<>();
-        if (updateTag){
+        //Init from known info
+//        if (updateTag){
             String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
             // Deserialize
             try{  
@@ -735,7 +736,7 @@ public class PdbScriptsPipelineRunCommand {
             }catch(Exception ex){
                 ex.printStackTrace();
             }            
-        }
+//        }
         //<mutation_NO, gpos>: saving time for API calling           
         mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);
         
