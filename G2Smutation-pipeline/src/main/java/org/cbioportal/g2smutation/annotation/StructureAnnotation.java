@@ -83,6 +83,8 @@ public class StructureAnnotation {
 			List<String> naccessLines = new ArrayList<>();
 			List<String> dsspLines = new ArrayList<>();
 			List<String> asaLines = new ArrayList<>();
+			List<String> sequenceDomainLines = new ArrayList<>();
+			List<String> structureDomainLines = new ArrayList<>();
 			File dir = new File(ReadConfig.tmpdir);
 			File[] files = dir.listFiles(new FilenameFilter() {
 				public boolean accept(File dir, String name) {
@@ -113,25 +115,21 @@ public class StructureAnnotation {
 					// Save IO
 					if (!pdb.equals(pdbOld)) {
 						
-
 						getNaccessInfo(naccessLines, pdbContentMp);
 						getDSSPInfo(dsspLines, pdbContentMp);
 						getHETInfo(asaLines, struc, pdbContentMp);
+						getSequenceDomainInfo(sequenceDomainLines, pdbOld, pdbContentMp);
+						getStructureDomainInfo(structureDomainLines, pdbOld, pdbContentMp);
 
 						for (String contentKey : pdbContentMp.keySet()) {
 							StructureAnnotationRecord sar = pdbContentMp.get(contentKey);
 							//holder
-							getDomainUrlPlaceholder(sar);
+							//getDomainUrlPlaceholder(sar);
 							String contentchain = contentKey.split("_")[0];
 							String contentindex = contentKey.split("_")[1];
 							sar.setPdbAnnoKey(pdbOld + "_" + contentKey);
 							sar.setPdbNo(pdbOld + "_" + contentchain);
-							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
-
-							if(urlFlag) {
-								//getCathInfo(sar, pdbOld, contentchain, contentindex, cathLines, cathNamesLines);
-								getDomainsUrl(sar, pdbOld, contentchain, contentindex);
-							}							
+							sar.setPdbResidueIndex(Integer.parseInt(contentindex));							
 
 							structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
 							sarList.add(sar);
@@ -139,6 +137,7 @@ public class StructureAnnotation {
 
 						}
 
+						//Get all information from files
 						try {
 							naccessLines = FileUtils.readLines(
 									new File((ReadConfig.tmpdir + pdb + ReadConfig.naccessFileSuffix)),
@@ -146,6 +145,11 @@ public class StructureAnnotation {
 							asaLines = FileUtils.readLines(new File((ReadConfig.tmpdir + pdb + ".asa")),
 									StandardCharsets.UTF_8.name());
 							struc = new PDBFileReader().getStructure(ReadConfig.tmpdir + pdb + ".pdb");
+							//Read sequence domain URL
+							sequenceDomainLines = getSequenceDomainAnnotationsURL(pdb);
+							//Read structrue domain URL
+							structureDomainLines = getStructureDomainAnnotationsURL(pdb);
+							
 							pdbContentMp = new TreeMap<>();
 
 							pdbOld = pdb;
@@ -196,6 +200,8 @@ public class StructureAnnotation {
 			getNaccessInfo(naccessLines, pdbContentMp);
 			getDSSPInfo(dsspLines, pdbContentMp);
 			getHETInfo(asaLines, struc, pdbContentMp);
+			getSequenceDomainInfo(sequenceDomainLines, pdbOld, pdbContentMp);
+			getStructureDomainInfo(structureDomainLines, pdbOld, pdbContentMp);
 
 			for (String contentKey : pdbContentMp.keySet()) {
 				StructureAnnotationRecord sar = pdbContentMp.get(contentKey);
@@ -204,12 +210,7 @@ public class StructureAnnotation {
 				String contentindex = contentKey.split("_")[1];
 				sar.setPdbAnnoKey(pdbOld + "_" + contentKey);
 				sar.setPdbNo(pdbOld + "_" + contentchain);
-				sar.setPdbResidueIndex(Integer.parseInt(contentindex));
-
-				if(urlFlag) {
-					//getCathInfo(sar, pdbOld, contentchain, contentindex, cathLines, cathNamesLines);
-					getDomainsUrl(sar, pdbOld, contentchain, contentindex);
-				}				
+				sar.setPdbResidueIndex(Integer.parseInt(contentindex));			
 
 				structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
 				sarList.add(sar);
@@ -600,7 +601,8 @@ public class StructureAnnotation {
     }
     
     /**
-     * Get domains URL using hashmap
+     * Can be delete later
+     * Get domains URL waste time
      * 
      * @param sar
      * @param pdbId
@@ -1002,6 +1004,445 @@ public class StructureAnnotation {
             sar.setScopEnd(scopEnds);
         }
     }
+    
+    /**
+     * Get sequence domain annotation
+     * https://www.ebi.ac.uk/pdbe/api/mappings/sequence_domains/1cbs
+     * 
+     * @param pdbId
+     * @return
+     */
+    public List<String> getSequenceDomainAnnotationsURL(String pdbId) {
+    	List<String> domainLines = new ArrayList<>();
+    	try {
+    		String seUrlName = ReadConfig.getSequenceDomainsUrl() + pdbId;
+            URL seUrl = new URL(seUrlName);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(seUrl.openStream()));
+            String str;
+            if ((str = reader.readLine()) != null) {
+            	domainLines.add(str);
+            }
+    	}catch(Exception ex) {
+    		ex.printStackTrace();
+    	}   	
+    	return domainLines;    	
+    }
+    
+    /**
+     * Get structure domain annotation
+     * https://www.ebi.ac.uk/pdbe/api/mappings/structural_domains/1cbs
+     * 
+     * @param pdbId
+     * @return
+     */
+    public List<String> getStructureDomainAnnotationsURL(String pdbId) {
+    	List<String> domainLines = new ArrayList<>();
+    	try {
+    		String seUrlName = ReadConfig.getStructureDomainsUrl() + pdbId;
+            URL seUrl = new URL(seUrlName);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(seUrl.openStream()));
+            String str;
+            if ((str = reader.readLine()) != null) {
+            	domainLines.add(str);
+            }
+    	}catch(Exception ex) {
+    		ex.printStackTrace();
+    	}   	
+    	return domainLines;    	
+    }
+    
+
+    /**
+     * Get sequence domains URL
+     * 
+     * @param domainLines
+     * @param pdbId
+     * @param pdbContentMp
+     */
+    public void getSequenceDomainInfo(List<String> domainLines, String pdbId, SortedMap<String, StructureAnnotationRecord> pdbContentMp) {
+		// get pfam and interpro info from sequence_domains
+		String pfamIds = "";
+		String pfamNames = "";
+		String pfamDescriptions = "";
+		String pfamIdentifiers = "";
+		String pfamStarts = "";
+		String pfamEnds = "";
+		String interproIds = "";
+		String interproNames = "";
+		String interproIdentifiers = "";
+		String interproStarts = "";
+		String interproEnds = "";
+
+		try {
+			// String checkStr = currentStr.substring(8, 9) + "_" + currentStr.substring(9,
+			// 13).trim();
+			for (String checkStr : pdbContentMp.keySet()) {
+				String pdbChain = checkStr.split("_")[0];
+				String pdbResidueIndex = checkStr.split("_")[1];
+				int residueIndex = Integer.parseInt(pdbResidueIndex);
+				StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
+
+				for (String domainStr : domainLines) {
+					JSONObject jso = new JSONObject(domainStr);
+					JSONObject name = jso.getJSONObject(pdbId);
+					JSONObject pfam = name.getJSONObject("Pfam");
+					Iterator pfIt = pfam.keySet().iterator();
+					int pfFlag = 0;
+					while (pfIt.hasNext()) {
+						int pfMapFlag = 0;
+						String pfId = pfIt.next().toString();
+						JSONObject pfOb = pfam.getJSONObject(pfId);
+						String pfName = su.toSQLstring(pfOb.getString("name"));
+						String pfDes = su.toSQLstring(pfOb.getString("description"));
+						String pfIdent = su.toSQLstring(pfOb.getString("identifier"));
+						JSONArray pfMaps = pfOb.getJSONArray("mappings");
+						String pfStartsTemp = "";
+						String pfEndsTemp = "";
+						for (int i = 0; i < pfMaps.length(); i++) {
+							JSONObject pfMapInfo = pfMaps.getJSONObject(i);
+							String pfChain = pfMapInfo.getString("chain_id");
+							if (!pdbChain.equals(pfChain))
+								continue;
+							JSONObject pfStartOb = pfMapInfo.getJSONObject("start");
+							int pfStart = pfStartOb.getInt("residue_number");
+							if (residueIndex < pfStart)
+								continue;
+							JSONObject pfEndOb = pfMapInfo.getJSONObject("end");
+							int pfEnd = pfEndOb.getInt("residue_number");
+							if (residueIndex > pfEnd)
+								continue;
+							else {
+								if (pfMapFlag == 0) {
+									pfStartsTemp = pfStartsTemp + String.valueOf(pfStart);
+									pfamEnds = pfamEnds + String.valueOf(pfEnd);
+									pfMapFlag = 1;
+								} else {
+									pfStartsTemp = pfStartsTemp + "," + String.valueOf(pfStart);
+									pfEndsTemp = pfEndsTemp + "," + String.valueOf(pfEnd);
+								}
+							}
+						}
+						if (pfMapFlag == 1) {
+							if (pfFlag == 0) {
+								pfamStarts = pfamStarts + pfStartsTemp;
+								pfamEnds = pfamEnds + pfEndsTemp;
+								pfamIds = pfamIds + pfId;
+								pfamNames = pfamNames + pfName;
+								pfamDescriptions = pfamDescriptions + pfDes;
+								pfamIdentifiers = pfamIdentifiers + pfIdent;
+							} else {
+								pfamStarts = pfamStarts + ";" + pfStartsTemp;
+								pfamEnds = pfamEnds + ";" + pfEndsTemp;
+								pfamIds = pfamIds + ";" + pfId;
+								pfamNames = pfamNames + ";" + pfName;
+								pfamDescriptions = pfamDescriptions + ";" + pfDes;
+								pfamIdentifiers = pfamIdentifiers + ";" + pfIdent;
+							}
+						}
+					}
+					sar.setPfamId(pfamIds);
+					sar.setPfamName(pfamNames);
+					sar.setPfamIdentifier(pfamIdentifiers);
+					sar.setPfamDescription(pfamDescriptions);
+					sar.setPfamStart(pfamStarts);
+					sar.setPfamEnd(pfamEnds);
+
+					JSONObject interPro = name.getJSONObject("InterPro");
+					Iterator iPIt = interPro.keySet().iterator();
+					int iPFlag = 0;
+					while (iPIt.hasNext()) {
+						int iPMapFlag = 0;
+						String iPId = iPIt.next().toString();
+						JSONObject iPOb = interPro.getJSONObject(iPId);
+						String iPName = su.toSQLstring(iPOb.getString("name"));
+						String iPIdent = su.toSQLstring(iPOb.getString("identifier"));
+						JSONArray iPMaps = iPOb.getJSONArray("mappings");
+						String interproStartsTemp = "";
+						String interproEndsTemp = "";
+						for (int i = 0; i < iPMaps.length(); i++) {
+							JSONObject iPMapInfo = iPMaps.getJSONObject(i);
+							String iPChain = iPMapInfo.getString("chain_id");
+							if (!pdbChain.equals(iPChain))
+								continue;
+							JSONObject iPStartOb = iPMapInfo.getJSONObject("start");
+							int iPStart = iPStartOb.getInt("residue_number");
+							if (residueIndex < iPStart)
+								continue;
+							JSONObject iPEndOb = iPMapInfo.getJSONObject("end");
+							int iPEnd = iPEndOb.getInt("residue_number");
+							if (residueIndex > iPEnd)
+								continue;
+							else {
+								if (iPMapFlag == 0) {
+									interproStartsTemp = interproStartsTemp + String.valueOf(iPStart);
+									interproEndsTemp = interproEndsTemp + String.valueOf(iPEnd);
+									iPMapFlag = 1;
+								} else {
+									interproStartsTemp = interproStartsTemp + "," + String.valueOf(iPStart);
+									interproEndsTemp = interproEndsTemp + "," + String.valueOf(iPEnd);
+								}
+							}
+						}
+						if (iPMapFlag == 1) {
+							if (iPFlag == 0) {
+								interproStarts = interproStarts + interproStartsTemp;
+								interproEnds = interproEnds + interproEndsTemp;
+								interproIds = interproIds + iPId;
+								interproNames = interproNames + iPName;
+								interproIdentifiers = interproIdentifiers + iPIdent;
+								iPFlag = 1;
+							} else {
+								interproStarts = interproStarts + ";" + interproStartsTemp;
+								interproEnds = interproEnds + ";" + interproEndsTemp;
+								interproIds = interproIds + ";" + iPId;
+								interproNames = interproNames + ";" + iPName;
+								interproIdentifiers = interproIdentifiers + ";" + iPIdent;
+							}
+						}
+					}
+					sar.setInterproId(interproIds);
+					sar.setInterproName(interproNames);
+					sar.setInterproIdentifier(interproIdentifiers);
+					sar.setInterproStart(interproStarts);
+					sar.setInterproEnd(interproEnds);
+					
+					pdbContentMp.put(checkStr, sar);
+				}
+			}
+		} catch (Exception ex) {
+			log.error(ex);
+		}
+    }
+        
+        
+
+    /**
+     * Get structure domains URL
+     * 
+     * @param domainLines
+     * @param pdbId
+     * @param pdbContentMp
+     */
+	public void getStructureDomainInfo(List<String> domainLines, String pdbId,
+			SortedMap<String, StructureAnnotationRecord> pdbContentMp) {
+		// get cath and scop info from structure_domains
+		String cathIds = "";
+		String cathNames = "";
+		String cathIdentifiers = "";
+		String cathArchitectures = "";
+		String cathClasses = "";
+		String cathHomologys = "";
+		String cathTopologys = "";
+		String cathDomains = "";
+		String cathStarts = "";
+		String cathEnds = "";
+
+		String scopIds = "";
+		String scopSccses = "";
+		String scopIdentifiers = "";
+		String scopDescriptions = "";
+		String scopClassSunids = "";
+		String scopClassDescriptions = "";
+		String scopFoldSunids = "";
+		String scopFoldDescriptions = "";
+		String scopSuperfamilySunids = "";
+		String scopSuperfamilyDescriptions = "";
+		String scopStarts = "";
+		String scopEnds = "";
+
+		try {
+			// String checkStr = currentStr.substring(8, 9) + "_" + currentStr.substring(9,
+			// 13).trim();
+			for (String checkStr : pdbContentMp.keySet()) {
+				String pdbChain = checkStr.split("_")[0];
+				String pdbResidueIndex = checkStr.split("_")[1];
+				int residueIndex = Integer.parseInt(pdbResidueIndex);
+				StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
+
+				for (String domainStr : domainLines) {
+					JSONObject jso = new JSONObject(domainStr);
+					JSONObject name = jso.getJSONObject(pdbId);
+					JSONObject cath = name.getJSONObject("CATH");
+					Iterator caIt = cath.keySet().iterator();
+					int caFlag = 0;
+					while (caIt.hasNext()) {
+						int caMapFlag = 0;
+						String caId = caIt.next().toString();
+						// log.info(caId);
+						JSONObject caOb = cath.getJSONObject(caId);
+						String caName = su.toSQLstring(caOb.getString("name"));
+						String caArchitecture = su.toSQLstring(caOb.getString("architecture"));
+						String caIdent = su.toSQLstring(caOb.getString("identifier"));
+						String caClass = su.toSQLstring(caOb.getString("class"));
+						String caHomology = su.toSQLstring(caOb.getString("homology"));
+						String caTopology = su.toSQLstring(caOb.getString("topology"));
+						// log.info(caName+caArchitecture+caIdent+caClass+caHomology+caTopology);
+						JSONArray caMaps = caOb.getJSONArray("mappings");
+						String caStartsTemp = "";
+						String caEndsTemp = "";
+						String caDomainTemp = "";
+						for (int i = 0; i < caMaps.length(); i++) {
+							JSONObject caMapInfo = caMaps.getJSONObject(i);
+							String caChain = caMapInfo.getString("chain_id");
+							String caDomianId = caMapInfo.getString("domain");
+							if (!pdbChain.equals(caChain))
+								continue;
+							JSONObject caStartOb = caMapInfo.getJSONObject("start");
+							int caStart = caStartOb.getInt("residue_number");
+							if (residueIndex < caStart)
+								continue;
+							JSONObject caEndOb = caMapInfo.getJSONObject("end");
+							int caEnd = caEndOb.getInt("residue_number");
+							if (residueIndex > caEnd)
+								continue;
+							else {
+								if (caMapFlag == 0) {
+									caStartsTemp = caStartsTemp + String.valueOf(caStart);
+									caEndsTemp = caEndsTemp + String.valueOf(caEnd);
+									caDomainTemp = caDomainTemp + caDomianId;
+									caMapFlag = 1;
+								} else {
+									caStartsTemp = caStartsTemp + "," + String.valueOf(caStart);
+									caEndsTemp = caEndsTemp + "," + String.valueOf(caEnd);
+									caDomainTemp = caDomainTemp + "," + caDomianId;
+								}
+							}
+						}
+						if (caMapFlag == 1) {
+							if (caFlag == 0) {
+								cathStarts = cathStarts + caStartsTemp;
+								cathEnds = cathEnds + caEndsTemp;
+								cathDomains = cathDomains + caDomainTemp;
+								cathIds = cathIds + caId;
+								cathNames = cathNames + caName;
+								cathIdentifiers = cathIdentifiers + caIdent;
+								cathArchitectures = cathArchitectures + caArchitecture;
+								cathClasses = cathClasses + caClass;
+								cathHomologys = cathHomologys + caHomology;
+								cathTopologys = cathTopologys + caTopology;
+							} else {
+								cathStarts = cathStarts + ";" + caStartsTemp;
+								cathEnds = cathEnds + ";" + caEndsTemp;
+								cathDomains = cathDomains + ";" + caDomainTemp;
+								cathIds = cathIds + ";" + caId;
+								cathNames = cathNames + ";" + caName;
+								cathIdentifiers = cathIdentifiers + ";" + caIdent;
+								cathArchitectures = cathArchitectures + ";" + caArchitecture;
+								cathClasses = cathClasses + ";" + caClass;
+								cathHomologys = cathHomologys + ";" + caHomology;
+								cathTopologys = cathTopologys + ";" + caTopology;
+							}
+						}
+					}
+					sar.setCathId(cathIds);
+					sar.setCathName(cathNames);
+					sar.setCathIdentifier(cathIdentifiers);
+					sar.setCathArchitecture(cathArchitectures);
+					sar.setCathClass(cathClasses);
+					sar.setCathHomology(cathHomologys);
+					sar.setCathTopology(cathTopologys);
+					sar.setCathDomainStart(cathStarts);
+					sar.setCathDomainEnd(cathEnds);
+					sar.setCathDomainId(cathDomains);
+
+					JSONObject scop = name.getJSONObject("SCOP");
+					Iterator scIt = scop.keySet().iterator();
+					int scFlag = 0;
+					while (scIt.hasNext()) {
+						int scMapFlag = 0;
+						String scId = scIt.next().toString();
+						// log.info(scId);
+						JSONObject scOb = scop.getJSONObject(scId);
+						String scDes = su.toSQLstring(scOb.getString("description"));
+						String scSccs = su.toSQLstring(scOb.getString("sccs"));
+						String scIdent = su.toSQLstring(scOb.getString("identifier"));
+						JSONObject scClass = scOb.getJSONObject("class");
+						int scClassSunid = scClass.getInt("sunid");
+						String scClassDes = su.toSQLstring(scClass.getString("description"));
+						JSONObject scFold = scOb.getJSONObject("fold");
+						int scFoldSunid = scFold.getInt("sunid");
+						String scFoldDes = su.toSQLstring(scFold.getString("description"));
+						JSONObject scSF = scOb.getJSONObject("superfamily");
+						int scSFSunid = scSF.getInt("sunid");
+						String scSFDes = su.toSQLstring(scSF.getString("description"));
+						// log.info(scDes+scSccs+scIdent+scClassSunid+scClassDes+scFoldSunid+scFoldDes+scSFSunid+scSFDes);
+						JSONArray scMaps = scOb.getJSONArray("mappings");
+						String scStartsTemp = "";
+						String scEndsTemp = "";
+						for (int i = 0; i < scMaps.length(); i++) {
+							JSONObject scMapInfo = scMaps.getJSONObject(i);
+							String scChain = scMapInfo.getString("chain_id");
+							if (!scChain.equals(scChain))
+								continue;
+							JSONObject scStartOb = scMapInfo.getJSONObject("start");
+							int scStart = scStartOb.getInt("residue_number");
+							if (residueIndex < scStart)
+								continue;
+							JSONObject scEndOb = scMapInfo.getJSONObject("end");
+							int scEnd = scEndOb.getInt("residue_number");
+							if (residueIndex > scEnd)
+								continue;
+							else {
+								if (scMapFlag == 0) {
+									scStartsTemp = scStartsTemp + String.valueOf(scStart);
+									scEndsTemp = scEndsTemp + String.valueOf(scEnd);
+									scMapFlag = 1;
+								} else {
+									scStartsTemp = scStartsTemp + "," + String.valueOf(scStart);
+									scEndsTemp = scEndsTemp + "," + String.valueOf(scEnd);
+								}
+							}
+						}
+						if (scMapFlag == 1) {
+							if (scFlag == 0) {
+								scopStarts = scopStarts + scStartsTemp;
+								scopEnds = scopEnds + scEndsTemp;
+								scopIds = scopIds + scId;
+								scopSccses = scopSccses + scSccs;
+								scopIdentifiers = scopIdentifiers + scIdent;
+								scopDescriptions = scopDescriptions + scDes;
+								scopClassSunids = scopClassSunids + String.valueOf(scClassSunid);
+								scopClassDescriptions = scopClassDescriptions + scClassDes;
+								scopFoldSunids = scopFoldSunids + String.valueOf(scFoldSunid);
+								scopFoldDescriptions = scopFoldDescriptions + scFoldDes;
+								scopSuperfamilySunids = scopSuperfamilySunids + String.valueOf(scSFSunid);
+								scopSuperfamilyDescriptions = scopSuperfamilyDescriptions + scSFDes;
+							} else {
+								scopStarts = scopStarts + ";" + scStartsTemp;
+								scopEnds = scopEnds + ";" + scEndsTemp;
+								scopIds = scopIds + ";" + scId;
+								scopSccses = scopSccses + ";" + scSccs;
+								scopIdentifiers = scopIdentifiers + ";" + scIdent;
+								scopDescriptions = scopDescriptions + ";" + scDes;
+								scopClassSunids = scopClassSunids + ";" + String.valueOf(scClassSunid);
+								scopClassDescriptions = scopClassDescriptions + ";" + scClassDes;
+								scopFoldSunids = scopFoldSunids + ";" + String.valueOf(scFoldSunid);
+								scopFoldDescriptions = scopFoldDescriptions + ";" + scFoldDes;
+								scopSuperfamilySunids = scopSuperfamilySunids + ";" + String.valueOf(scSFSunid);
+								scopSuperfamilyDescriptions = scopSuperfamilyDescriptions + ";" + scSFDes;
+							}
+						}
+					}
+					sar.setScopId(scopIds);
+					sar.setScopSccs(scopSccses);
+					sar.setScopIdentifier(scopIdentifiers);
+					sar.setScopDescription(scopDescriptions);
+					sar.setScopClassSunid(scopClassSunids);
+					sar.setScopClassDescription(scopClassDescriptions);
+					sar.setScopFoldSunid(scopFoldSunids);
+					sar.setScopFoldDescription(scopFoldDescriptions);
+					sar.setScopSuperfamilySunid(scopSuperfamilySunids);
+					sar.setScopSuperfamilyDescription(scopSuperfamilyDescriptions);
+					sar.setScopStart(scopStarts);
+					sar.setScopEnd(scopEnds);
+
+					pdbContentMp.put(checkStr, sar);
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
     public int stringToInt(String str) {
         int pos = 0;
