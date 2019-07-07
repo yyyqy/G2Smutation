@@ -45,6 +45,12 @@ public class MutationUsageTable {
     @Column(name = "PDB_RESIDUE")
     private String pdbResidue;
     
+    @Column(name = "Identity")
+    private float identity;
+    
+    @Column(name = "IdentityP")
+    private float identityP;
+    
     @Column(name = "ALIGNMENT_ID")
     private int alignmentId;
     
@@ -139,5 +145,23 @@ public class MutationUsageTable {
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
+
+	public float getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(float identity) {
+		this.identity = identity;
+	}
+
+	public float getIdentityP() {
+		return identityP;
+	}
+
+	public void setIdentityP(float identityP) {
+		this.identityP = identityP;
+	}
+    
+    
 
 }

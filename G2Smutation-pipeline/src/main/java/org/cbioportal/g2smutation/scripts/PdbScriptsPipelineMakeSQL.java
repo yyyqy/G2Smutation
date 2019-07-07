@@ -395,15 +395,6 @@ public class PdbScriptsPipelineMakeSQL {
                 if (!hits.getHit().isEmpty()) {
                     sequence_count++;
                 }
-                /*
-                 * Old, huge bug here
-                for (Hit hit : hits.getHit()) {
-                    MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
-                    alignmentList.addAll(mar.getAlignmentList());
-                    mutationList.addAll(mar.getMutationList()); 
-                    count = mar.getAlignmentId();
-                }
-                */
                 //Use indexSet to store index of mutation in the query protein
                 //<index,HashSet<ResidueName>>
                 HashMap <Integer,HashSet<String>> indexHm = new HashMap<>();
@@ -476,10 +467,10 @@ public class PdbScriptsPipelineMakeSQL {
      * @return generated SQL statements
      */
     public String makeTable_mutation_insert(MutationRecord mr) {
-        String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
+        String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`IDENTITY`,`IDENTITYP`,`ALIGNMENT_ID`)VALUES ('"
                 + mr.getSeqId() + "_" + mr.getSeqResidueIndex() + "','" + mr.getSeqId() + "','" + mr.getSeqName() + "',"
                 + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "',"
-                + mr.getPdbResidueIndex() + ",'" + mr.getPdbResidueName() + "'," + mr.getAlignmentId() + ");\n";
+                + mr.getPdbResidueIndex() + ",'" + mr.getPdbResidueName() + "'," + mr.getIdentity()+ "," + mr.getIdentityP()+ "," + mr.getAlignmentId() + ");\n";
         return str;
     }
 
@@ -913,6 +904,8 @@ public class PdbScriptsPipelineMakeSQL {
 							mr.setPdbNo(pdbNO);
 							mr.setPdbResidueIndex(correctPDBIndex);
 							mr.setPdbResidueName(br.pdb_align.substring(i, i + 1));
+							mr.setIdentity((float)(br.ident/br.midline_align.length()));
+							mr.setIdentityP((float)(br.identp/br.midline_align.length()));
 							mr.setAlignmentId(count);
 
 							mutationList.add(mr);

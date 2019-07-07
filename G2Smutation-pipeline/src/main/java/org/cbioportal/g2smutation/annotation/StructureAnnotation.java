@@ -108,6 +108,7 @@ public class StructureAnnotation {
 
 					// Save IO
 					if (!pdb.equals(pdbOld)) {
+						
 
 						getNaccessInfo(naccessLines, pdbContentMp);
 						getDSSPInfo(dsspLines, pdbContentMp);
@@ -115,6 +116,8 @@ public class StructureAnnotation {
 
 						for (String contentKey : pdbContentMp.keySet()) {
 							StructureAnnotationRecord sar = pdbContentMp.get(contentKey);
+							//holder
+							getDomainUrlPlaceholder(sar);
 							String contentchain = contentKey.split("_")[0];
 							String contentindex = contentKey.split("_")[1];
 							sar.setPdbAnnoKey(pdbOld + "_" + contentKey);
@@ -122,7 +125,8 @@ public class StructureAnnotation {
 							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
 							if(urlFlag) {
-								getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+								getCathInfo(sar, pdbOld, contentchain, contentchain);
+								//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 							}
 							
 
@@ -182,6 +186,7 @@ public class StructureAnnotation {
 
 			for (String contentKey : pdbContentMp.keySet()) {
 				StructureAnnotationRecord sar = pdbContentMp.get(contentKey);
+				getDomainUrlPlaceholder(sar);
 				String contentchain = contentKey.split("_")[0];
 				String contentindex = contentKey.split("_")[1];
 				sar.setPdbAnnoKey(pdbOld + "_" + contentKey);
@@ -189,7 +194,8 @@ public class StructureAnnotation {
 				sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
 				if(urlFlag) {
-					getDomainsUrl(sar, pdbOld, contentchain, contentindex);
+					getCathInfo(sar, pdbOld, contentchain, contentchain);
+					//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 				}				
 
 				structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
@@ -1300,7 +1306,7 @@ public class StructureAnnotation {
      * @param pdbResidueIndex
      * @throws Exception
      */
-    public void getCathInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) throws Exception{
+    public void getCathInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) {
     	String cathIds = "";
         String cathIdentifiers = "";
         String cathArchitectures = "";
@@ -1312,7 +1318,7 @@ public class StructureAnnotation {
         String cathEnds = "";
     	HashMap<String, List<String>> cathLines = new HashMap<>();
     	HashMap<String, String> cathNamesLines = new HashMap<>();
-    	//try {
+    	try {
     		//log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex);
     		cathLines = readCathAllFile();
     		cathNamesLines = readCathNamesFile();
@@ -1387,5 +1393,8 @@ public class StructureAnnotation {
             sar.setCathDomainId(cathDomains);
             //log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex + "+" + cathIds + "+" + cathIdentifiers + "+" + cathArchitectures + "+");
             //log.info(cathClasses + "+" + cathHomologys + "+" + cathTopologys + "+" + cathStarts + "+" + cathEnds + "+" + cathDomains);
+    	}catch(Exception ex) {
+    		ex.printStackTrace();
+    	}
     }
 }

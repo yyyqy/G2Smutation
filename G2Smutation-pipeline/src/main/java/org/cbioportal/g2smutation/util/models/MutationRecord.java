@@ -23,6 +23,10 @@ public class MutationRecord {
     private int pdbResidueIndex;
 
     private String pdbResidueName;
+    
+    private float identity;
+    
+    private float identityP;
 
     // alignmentId: id of Alignment
     private int alignmentId;
@@ -31,11 +35,28 @@ public class MutationRecord {
      * getter and setter methods
      */
 
+    
     public int getSeqId() {
         return seqId;
     }
 
-    public void setSeqId(int seqId) {
+    public float getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(float identity) {
+		this.identity = identity;
+	}
+
+	public float getIdentityP() {
+		return identityP;
+	}
+
+	public void setIdentityP(float identityP) {
+		this.identityP = identityP;
+	}
+
+	public void setSeqId(int seqId) {
         this.seqId = seqId;
     }
 
