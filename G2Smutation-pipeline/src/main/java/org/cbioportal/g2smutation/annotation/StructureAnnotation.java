@@ -94,6 +94,10 @@ public class StructureAnnotation {
 			SortedMap<String, StructureAnnotationRecord> pdbContentMp = new TreeMap<>();
 
 			String pdbOld = "";
+			
+			//CATH related:
+			HashMap<String, List<String>> cathLines = readCathAllFile();
+			HashMap<String, String> cathNamesLines = readCathNamesFile();
 
 			Iterator it = annoKeySet.iterator();
 			while (it.hasNext()) {
@@ -125,10 +129,9 @@ public class StructureAnnotation {
 							sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
 							if(urlFlag) {
-								getCathInfo(sar, pdbOld, contentchain, contentchain);
+								getCathInfo(sar, pdbOld, contentchain, contentchain, cathLines, cathNamesLines);
 								//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
-							}
-							
+							}							
 
 							structureAnnoHm.put(pdbOld + "_" + contentKey, sar);
 							sarList.add(sar);
@@ -194,7 +197,7 @@ public class StructureAnnotation {
 				sar.setPdbResidueIndex(Integer.parseInt(contentindex));
 
 				if(urlFlag) {
-					getCathInfo(sar, pdbOld, contentchain, contentchain);
+					getCathInfo(sar, pdbOld, contentchain, contentchain, cathLines, cathNamesLines);
 					//getDomainsUrl(sar, pdbOld, contentchain, contentindex);
 				}				
 
@@ -1263,37 +1266,53 @@ public class StructureAnnotation {
         }
     }
     
-    public HashMap<String, List<String>> readCathAllFile() throws IOException{
+    /**
+     * Cath Information as hashmap
+     * @return
+     */
+    public HashMap<String, List<String>> readCathAllFile(){
     	HashMap<String, List<String>> hm = new HashMap<>();
 		String cathpwd = new String(ReadConfig.workspace + ReadConfig.cathFile);
-		File cathfile = new File(cathpwd);
-		List<String> lines = FileUtils.readLines(cathfile, StandardCharsets.UTF_8.name());
-		for(int i=0; i<lines.size(); i++) {
-			String key = lines.get(i).substring(0, 4);
-			List<String> val = new ArrayList<>();
-			if(!hm.containsKey(key)) {
-				val.add(lines.get(i).substring(4));
-				hm.put(key, val);
+		try {
+			File cathfile = new File(cathpwd);
+			List<String> lines = FileUtils.readLines(cathfile, StandardCharsets.UTF_8.name());
+			for(int i=0; i<lines.size(); i++) {
+				String key = lines.get(i).substring(0, 4);
+				List<String> val = new ArrayList<>();
+				if(!hm.containsKey(key)) {
+					val.add(lines.get(i).substring(4));
+					hm.put(key, val);
+				}
+				else {
+					val = hm.get(key);
+					val.add(lines.get(i).substring(4));
+					hm.put(key, val);
+				}
 			}
-			else {
-				val = hm.get(key);
-				val.add(lines.get(i).substring(4));
-				hm.put(key, val);
-			}
-		}
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}		
     	return hm;
     }
     
-    public HashMap<String, String> readCathNamesFile() throws IOException{
+    /**
+     * Cath Information as hashmap
+     * @return
+     */
+    public HashMap<String, String> readCathNamesFile() {
     	HashMap<String, String> hm = new HashMap<>();
 		String cathNamespwd = new String(ReadConfig.workspace + ReadConfig.cathNamesFile);
-		File cathNamesfile = new File(cathNamespwd);
-		List<String> lines = FileUtils.readLines(cathNamesfile, StandardCharsets.UTF_8.name());
-		for(int i=0; i<lines.size(); i++) {
-			String key = lines.get(i).split(" ", 2)[0];
-			String val = lines.get(i).split(" ", 2)[1];
-			hm.put(key, val);
-		}
+		try {
+			File cathNamesfile = new File(cathNamespwd);
+			List<String> lines = FileUtils.readLines(cathNamesfile, StandardCharsets.UTF_8.name());
+			for(int i=0; i<lines.size(); i++) {
+				String key = lines.get(i).split(" ", 2)[0];
+				String val = lines.get(i).split(" ", 2)[1];
+				hm.put(key, val);
+			}			
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}		
     	return hm;
     }
     
@@ -1306,7 +1325,7 @@ public class StructureAnnotation {
      * @param pdbResidueIndex
      * @throws Exception
      */
-    public void getCathInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex) {
+    public void getCathInfo(StructureAnnotationRecord sar, String pdbId, String pdbChain, String pdbResidueIndex, HashMap<String, List<String>> cathLines, HashMap<String, String> cathNamesLines) {
     	String cathIds = "";
         String cathIdentifiers = "";
         String cathArchitectures = "";
@@ -1316,12 +1335,8 @@ public class StructureAnnotation {
         String cathDomains = "";
         String cathStarts = "";
         String cathEnds = "";
-    	HashMap<String, List<String>> cathLines = new HashMap<>();
-    	HashMap<String, String> cathNamesLines = new HashMap<>();
     	try {
-    		//log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex);
-    		cathLines = readCathAllFile();
-    		cathNamesLines = readCathNamesFile();
+    		log.info(pdbId + "+" + pdbChain + "+" + pdbResidueIndex);
     		if(cathLines.containsKey(pdbId)) {
     			for(int i=0; i<cathLines.get(pdbId).size(); i++) {
     				if(cathLines.get(pdbId).get(i).substring(0, 1).equals(pdbChain)) {
