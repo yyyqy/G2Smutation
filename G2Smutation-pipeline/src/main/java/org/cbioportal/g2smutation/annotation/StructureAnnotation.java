@@ -142,17 +142,27 @@ public class StructureAnnotation {
 						try {
 							naccessLines = FileUtils.readLines(
 									new File((ReadConfig.tmpdir + pdb + ReadConfig.naccessFileSuffix)),
-									StandardCharsets.UTF_8.name());
-							dsspLines = FileUtils.readLines(
-									new File(ReadConfig.dsspLocalDataFile + pdb + ReadConfig.dsspFileSuffix),
-									StandardCharsets.UTF_8.name());
+									StandardCharsets.UTF_8.name());							
 							asaLines = FileUtils.readLines(new File((ReadConfig.tmpdir + pdb + ".asa")),
 									StandardCharsets.UTF_8.name());
 							struc = new PDBFileReader().getStructure(ReadConfig.tmpdir + pdb + ".pdb");
 							pdbContentMp = new TreeMap<>();
 
 							pdbOld = pdb;
-						} catch (Exception ex) {
+						}catch(FileNotFoundException ex) {
+							log.info(ex);
+						}catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						
+						// For many cases, dssp dose not existed
+						try {
+							dsspLines = FileUtils.readLines(
+									new File(ReadConfig.dsspLocalDataFile + pdb + ReadConfig.dsspFileSuffix),
+									StandardCharsets.UTF_8.name());							
+						}catch(FileNotFoundException ex) {
+							log.info(ex);
+						}catch (Exception ex) {
 							ex.printStackTrace();
 						}
 					}
