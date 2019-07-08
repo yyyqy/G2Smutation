@@ -159,6 +159,7 @@ public class StructureAnnotation {
 							ex.printStackTrace();
 						}
 						
+
 						// For many cases, dssp dose not existed
 						try {
 							dsspLines = FileUtils.readLines(
@@ -1022,6 +1023,8 @@ public class StructureAnnotation {
             if ((str = reader.readLine()) != null) {
             	domainLines.add(str);
             }
+    	}catch (FileNotFoundException ex) {
+    		log.info(ex);
     	}catch(Exception ex) {
     		ex.printStackTrace();
     	}   	
@@ -1045,6 +1048,8 @@ public class StructureAnnotation {
             if ((str = reader.readLine()) != null) {
             	domainLines.add(str);
             }
+    	}catch (FileNotFoundException ex) {
+    		log.info(ex);
     	}catch(Exception ex) {
     		ex.printStackTrace();
     	}   	
@@ -1081,6 +1086,18 @@ public class StructureAnnotation {
 				String pdbResidueIndex = checkStr.split("_")[1];
 				int residueIndex = Integer.parseInt(pdbResidueIndex);
 				StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
+				//placeholder
+		        sar.setPfamId("");
+		        sar.setPfamName("");
+		        sar.setPfamIdentifier("");
+		        sar.setPfamDescription("");
+		        sar.setPfamStart("");
+		        sar.setPfamEnd("");
+		        sar.setInterproId("");
+		        sar.setInterproName("");
+		        sar.setInterproIdentifier("");
+		        sar.setInterproStart("");
+		        sar.setInterproEnd("");
 
 				for (String domainStr : domainLines) {
 					JSONObject jso = new JSONObject(domainStr);
@@ -1258,6 +1275,30 @@ public class StructureAnnotation {
 				String pdbResidueIndex = checkStr.split("_")[1];
 				int residueIndex = Integer.parseInt(pdbResidueIndex);
 				StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
+				//placeholder
+				sar.setCathId(cathIds);
+				sar.setCathName(cathNames);
+				sar.setCathIdentifier(cathIdentifiers);
+				sar.setCathArchitecture(cathArchitectures);
+				sar.setCathClass(cathClasses);
+				sar.setCathHomology(cathHomologys);
+				sar.setCathTopology(cathTopologys);
+				sar.setCathDomainStart(cathStarts);
+				sar.setCathDomainEnd(cathEnds);
+				sar.setCathDomainId(cathDomains);
+				sar.setScopId(scopIds);
+				sar.setScopSccs(scopSccses);
+				sar.setScopIdentifier(scopIdentifiers);
+				sar.setScopDescription(scopDescriptions);
+				sar.setScopClassSunid(scopClassSunids);
+				sar.setScopClassDescription(scopClassDescriptions);
+				sar.setScopFoldSunid(scopFoldSunids);
+				sar.setScopFoldDescription(scopFoldDescriptions);
+				sar.setScopSuperfamilySunid(scopSuperfamilySunids);
+				sar.setScopSuperfamilyDescription(scopSuperfamilyDescriptions);
+				sar.setScopStart(scopStarts);
+				sar.setScopEnd(scopEnds);
+				
 
 				for (String domainStr : domainLines) {
 					JSONObject jso = new JSONObject(domainStr);
