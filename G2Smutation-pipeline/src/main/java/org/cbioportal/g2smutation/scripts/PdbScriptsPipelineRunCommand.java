@@ -763,7 +763,7 @@ public class PdbScriptsPipelineRunCommand {
         }
         */
         
-                 
+        /*         
         log.info("********************[STEP 3.2]********************");
         log.info("[SQL] Use mutation results, generate table mutation_location_entry. Rebuild in updates");        
         parseprocess.parseGenerateMutationResultSQL4MutationLocationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLLocation);       
@@ -776,7 +776,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.mutationInjectSQLLocation);
         cu.runCommand("mysql", paralist);  
-          
+        */  
 
         log.info("********************[STEP 3.3]********************");
         log.info("[STRUCTURE] Download weekly Cath");
