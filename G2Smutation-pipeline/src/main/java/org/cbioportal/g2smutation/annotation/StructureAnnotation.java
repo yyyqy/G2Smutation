@@ -189,10 +189,10 @@ public class StructureAnnotation {
 				}
 
 				count++;
-				if (count % 100000 == 0) {
-					generateMutationResultSQL4StructureAnnotation(sarList,
-							outputFilename + "." + Integer.toString(filecount));
+				if (count % 20000 == 0) {
 					System.out.println(sarList.size());
+					generateMutationResultSQL4StructureAnnotation(sarList,
+							outputFilename + "." + Integer.toString(filecount));					
 					filecount++;
 					sarList = new ArrayList<StructureAnnotationRecord>();
 				}
@@ -246,8 +246,9 @@ public class StructureAnnotation {
                 outputlist.add(makeTable_structureAnnotation_insert(sar));
             }
             outputlist.add("commit;");
-            FileUtils.writeLines(new File(outputFilename), outputlist);
+            FileUtils.writeLines(new File(outputFilename), outputlist);            
             log.info("Total Structure mutation is "+outputlist.size());
+            outputlist = null;
             
         } catch (Exception ex) {
             ex.printStackTrace();
