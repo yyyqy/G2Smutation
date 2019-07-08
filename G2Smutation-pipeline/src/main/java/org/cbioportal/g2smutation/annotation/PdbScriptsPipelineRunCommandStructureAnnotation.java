@@ -39,6 +39,7 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		log.info("[File] Read results from file, generate HashMap for usage");
 		MutationUsageRecord mUsageRecord = new MutationUsageRecord();
 		HashMap<String, String> mutationHm = new HashMap<>();
+		//Will check later, this is original implementation, 
 		HashMap<String, StructureAnnotationRecord> structureAnnoHm = new HashMap<>();
 
 		String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;

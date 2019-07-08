@@ -821,7 +821,9 @@ public class PdbScriptsPipelineRunCommand {
         
         log.info("[STRUCTURE] Start running naccess");
         HashSet<String> pdbSet = new HashSet<>();
-        HashMap<String, StructureAnnotationRecord> structureAnnoHm = new HashMap<>();
+        DB structureAnnoHmdb = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.structureAnnoHmFile).checksumHeaderBypass().make();        
+        Map structureAnnoHm = structureAnnoHmdb.hashMap("map").createOrOpen();
+        //It is HashMap<String, StructureAnnotationRecord> structureAnnoHm = new HashMap<>();
         
         if(!updateTag){
         	sanno.generateNaccessResults(mUsageRecord, new HashSet<>(), false);
@@ -829,16 +831,13 @@ public class PdbScriptsPipelineRunCommand {
         	sanno.generateNaccessResultsBuried(mUsageRecord, new HashSet<>(), false);
         	
         	log.info("[STRUCTURE] naccess complete and start parsing from scratch"); 
-            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, new HashMap<String, StructureAnnotationRecord >(), true);       
+            sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm, true);       
             
         }else{
-        	String pdbSetFilename = ReadConfig.workspace + ReadConfig.pdbSetFile;
-        	String structureAnnoHmFilename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile;
-            
+        	String pdbSetFilename = ReadConfig.workspace + ReadConfig.pdbSetFile;            
         	// Deserialize
             try{           
                 pdbSet = (HashSet<String>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(pdbSetFilename)));
-                structureAnnoHm = (HashMap<String, StructureAnnotationRecord>)SerializationUtils.deserialize(FileUtils.readFileToByteArray(new File(structureAnnoHmFilename)));
             }catch(Exception ex){
                 ex.printStackTrace();
             }
@@ -868,7 +867,8 @@ public class PdbScriptsPipelineRunCommand {
     		
     		log.info("[STRUCTURE] naccess complete and start parsing in update"); 
             sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord, currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm, false);                         	
-        }                      
+        }
+        structureAnnoHmdb.close();
         
         
         log.info("[STRUCTURE] Dump mutation_inject_structure.sql to structure_annotation_entry");

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -59,13 +60,13 @@ public class StructureAnnotation {
      * 
      * @param MutationUsageRecord
      * @param outputFilename
-     * @param structureAnnoHm<pdb_chain_index, information>
+     * @param structureAnnoHm <String, StructureAnnotationRecord>
      * @param urlFlag True:  Call URL
      * 				  False: not call URL
      * 
      */
 	public void parseGenerateMutationResultSQL4StructureAnnotationEntry(MutationUsageRecord mUsageRecord,
-			String outputFilename, HashMap<String, StructureAnnotationRecord> structureAnnoHm, boolean urlFlag) {
+			String outputFilename, Map structureAnnoHm, boolean urlFlag) {
 		HashMap<Integer, String> mutationIdHm = mUsageRecord.getMutationIdHm();
 		HashMap<Integer, String> residueHm = mUsageRecord.getResidueHm();
 		int filecount = 0;
@@ -179,7 +180,7 @@ public class StructureAnnotation {
 					// getDomainUrlPlaceholder(sar);
 
 				} else {
-					sarOut = structureAnnoHm.get(annoKey);
+					sarOut = (StructureAnnotationRecord)structureAnnoHm.get(annoKey);
 					sarList.add(sarOut);
 				}
 
@@ -219,17 +220,6 @@ public class StructureAnnotation {
 			}
 
 			generateMutationResultSQL4StructureAnnotation(sarList, outputFilename + "." + Integer.toString(filecount));
-
-			
-			// save structureAnnoHm
-			String filename = ReadConfig.workspace + ReadConfig.structureAnnoHmFile +".all";
-			try {
-				log.info("Serialize structureAnnoH, size is " + structureAnnoHm.size());
-				FileUtils.writeByteArrayToFile(new File(filename), SerializationUtils.serialize(structureAnnoHm));
-				log.info("Serialization completed");
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
 			
 			this.structureAnnotationFilenum = filecount;
 
