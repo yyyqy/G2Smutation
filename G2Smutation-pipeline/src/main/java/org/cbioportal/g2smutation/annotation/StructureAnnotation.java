@@ -1057,17 +1057,6 @@ public class StructureAnnotation {
      */
     public void getSequenceDomainInfo(List<String> domainLines, String pdbId, SortedMap<String, StructureAnnotationRecord> pdbContentMp) {
 		// get pfam and interpro info from sequence_domains
-		String pfamIds = "";
-		String pfamNames = "";
-		String pfamDescriptions = "";
-		String pfamIdentifiers = "";
-		String pfamStarts = "";
-		String pfamEnds = "";
-		String interproIds = "";
-		String interproNames = "";
-		String interproIdentifiers = "";
-		String interproStarts = "";
-		String interproEnds = "";
 
 		try {
 			// String checkStr = currentStr.substring(8, 9) + "_" + currentStr.substring(9,
@@ -1077,6 +1066,17 @@ public class StructureAnnotation {
 				String pdbResidueIndex = checkStr.split("_")[1];
 				int residueIndex = Integer.parseInt(pdbResidueIndex);
 				StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
+				String pfamIds = "";
+				String pfamNames = "";
+				String pfamDescriptions = "";
+				String pfamIdentifiers = "";
+				String pfamStarts = "";
+				String pfamEnds = "";
+				String interproIds = "";
+				String interproNames = "";
+				String interproIdentifiers = "";
+				String interproStarts = "";
+				String interproEnds = "";
 				//placeholder
 		        sar.setPfamId("");
 		        sar.setPfamName("");
@@ -1234,29 +1234,7 @@ public class StructureAnnotation {
 	public void getStructureDomainInfo(List<String> domainLines, String pdbId,
 			SortedMap<String, StructureAnnotationRecord> pdbContentMp) {
 		// get cath and scop info from structure_domains
-		String cathIds = "";
-		String cathNames = "";
-		String cathIdentifiers = "";
-		String cathArchitectures = "";
-		String cathClasses = "";
-		String cathHomologys = "";
-		String cathTopologys = "";
-		String cathDomains = "";
-		String cathStarts = "";
-		String cathEnds = "";
 
-		String scopIds = "";
-		String scopSccses = "";
-		String scopIdentifiers = "";
-		String scopDescriptions = "";
-		String scopClassSunids = "";
-		String scopClassDescriptions = "";
-		String scopFoldSunids = "";
-		String scopFoldDescriptions = "";
-		String scopSuperfamilySunids = "";
-		String scopSuperfamilyDescriptions = "";
-		String scopStarts = "";
-		String scopEnds = "";
 
 		try {
 			// String checkStr = currentStr.substring(8, 9) + "_" + currentStr.substring(9,
@@ -1267,6 +1245,29 @@ public class StructureAnnotation {
 				int residueIndex = Integer.parseInt(pdbResidueIndex);
 				StructureAnnotationRecord sar = pdbContentMp.get(checkStr);
 				//placeholder
+				String cathIds = "";
+				String cathNames = "";
+				String cathIdentifiers = "";
+				String cathArchitectures = "";
+				String cathClasses = "";
+				String cathHomologys = "";
+				String cathTopologys = "";
+				String cathDomains = "";
+				String cathStarts = "";
+				String cathEnds = "";
+
+				String scopIds = "";
+				String scopSccses = "";
+				String scopIdentifiers = "";
+				String scopDescriptions = "";
+				String scopClassSunids = "";
+				String scopClassDescriptions = "";
+				String scopFoldSunids = "";
+				String scopFoldDescriptions = "";
+				String scopSuperfamilySunids = "";
+				String scopSuperfamilyDescriptions = "";
+				String scopStarts = "";
+				String scopEnds = "";
 				sar.setCathId(cathIds);
 				sar.setCathName(cathNames);
 				sar.setCathIdentifier(cathIdentifiers);

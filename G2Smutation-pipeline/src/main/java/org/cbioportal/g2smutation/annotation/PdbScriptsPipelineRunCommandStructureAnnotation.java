@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -13,6 +14,8 @@ import org.cbioportal.g2smutation.util.FileOperatingUtil;
 import org.cbioportal.g2smutation.util.ReadConfig;
 import org.cbioportal.g2smutation.util.models.MutationUsageRecord;
 import org.cbioportal.g2smutation.util.models.StructureAnnotationRecord;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 
 /**
  * Run tedious structure annotation Part of copying from main function in
@@ -39,8 +42,9 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		log.info("[File] Read results from file, generate HashMap for usage");
 		MutationUsageRecord mUsageRecord = new MutationUsageRecord();
 		HashMap<String, String> mutationHm = new HashMap<>();
-		//Will check later, this is original implementation, 
-		HashMap<String, StructureAnnotationRecord> structureAnnoHm = new HashMap<>();
+		
+        DB structureAnnoHmdb = DBMaker.fileDB(ReadConfig.workspace+ReadConfig.structureAnnoHmFile).checksumHeaderBypass().make();        
+        Map structureAnnoHm = structureAnnoHmdb.hashMap("map").createOrOpen();
 
 		String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
 		// Deserialize
@@ -79,6 +83,8 @@ public class PdbScriptsPipelineRunCommandStructureAnnotation {
 		log.info("[STRUCTURE] naccess complete and start parsing from scratch");
 		sanno.parseGenerateMutationResultSQL4StructureAnnotationEntry(mUsageRecord,
 				currentDir + ReadConfig.mutationInjectSQLStructure, structureAnnoHm, true);
+		
+		structureAnnoHmdb.close();
 
 		// Careful
 		// log.info("[STRUCTURE] Dump mutation_inject_structure.sql to
