@@ -35,7 +35,11 @@ public class PdbScriptsPipelineRunCommandTest {
         */
 		PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
 		PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
-		app.generateWeeklyTag(preprocess);
+		//app.generateWeeklyTag(preprocess);
+		
+		
+		PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(app);
+		parseprocess.parseGenerateMutationResultSQL4MutatationUsageTable(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage); 
 	}
 
 }

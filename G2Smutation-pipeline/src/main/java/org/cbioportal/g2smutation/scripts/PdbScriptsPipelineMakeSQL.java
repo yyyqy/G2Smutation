@@ -1642,9 +1642,9 @@ public class PdbScriptsPipelineMakeSQL {
             List<String> list = FileUtils.readLines(inFile);
             for (int i = 1; i < list.size(); i++) {
                 String[] str = list.get(i).split("\t");
-                String strr = "INSERT INTO `mutation_usage_table` (`MUTATION_ID`,`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`,`UPDATE_DATE`)VALUES('"
+                String strr = "INSERT INTO `mutation_usage_table` (`MUTATION_ID`,`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`IDENTITY`,`IDENTITYP`,`ALIGNMENT_ID`,`UPDATE_DATE`)VALUES('"
                         + str[0] + "','" + str[1] + "','" + str[2] + "','" + str[3] + "','" + str[4] + "','" + str[5]
-                        + "','" + str[6] + "','" + str[7] + "','" + str[8] + "','" + str[9] + "',CURDATE());\n";
+                        + "','" + str[6] + "','" + str[7] + "','" + str[8] + "','" + str[9] + "','" + str[10] + "','" + str[11] + "',CURDATE());\n";
                 outputlist.add(strr);
             }
             outputlist.add("commit;");

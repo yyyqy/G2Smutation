@@ -189,7 +189,7 @@ public class StructureAnnotation {
 				}
 
 				count++;
-				if (count % 20000 == 0) {
+				if (count % 100000 == 0) {
 					System.out.println(sarList.size());
 					generateMutationResultSQL4StructureAnnotation(sarList,
 							outputFilename + "." + Integer.toString(filecount));					
