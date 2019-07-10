@@ -114,6 +114,7 @@ public class UnifiedMappedProteinMuationController {
 		        }
 			}   		
     	}
+    	System.out.println(id+"\t"+entries.size());
     	
     	result.setData(entries);
     	return result;
