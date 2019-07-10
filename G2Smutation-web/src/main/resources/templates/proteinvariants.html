@@ -160,22 +160,6 @@
 	
 	<script>
 	
-function filterGlobal () {
-    $('#contents').DataTable().search(
-        $('#global_filter').val(),
-        $('#global_regex').prop('checked'),
-        $('#global_smart').prop('checked')
-    ).draw();
-}
- 
-function filterColumn ( i ) {
-    $('#contents').DataTable().column( i ).search(
-        $('#col'+i+'_filter').val(),
-        $('#col'+i+'_regex').prop('checked'),
-        $('#col'+i+'_smart').prop('checked')
-    ).draw();
-}
-	
 	
 	var demo = document.getElementById("proteinname");
 	document.getElementById("proteinnameshow").innerHTML = 'Single Residue Variants in: '+demo.value;
@@ -194,16 +178,13 @@ function filterColumn ( i ) {
 			data : 'seqResidue'
 		}, 
 		{
-			data : 'pdbInfo',
-			render: function (data) { return data.split("_")[0]; }
+			data : 'pdbInfo'
 		}, 
 		{
-			data : 'pdbInfo',
-			render: function (data) { return data.split("_")[1]; }
+			data : 'pdbInfo'
 		},
 		{
-			data : 'pdbInfo',
-			render: function (data) { return data.split("_")[2]; }
+			data : 'pdbInfo'
 		}, 
 		{
 			data : 'pdbResidue'
@@ -213,34 +194,8 @@ function filterColumn ( i ) {
 		},
 		{
 			data : 'bitscore'
-		},
-		{
-			data : 'identity'
-		},
-		{
-			data : 'identityP'
-		},		
-		{
-			data : 'pdbInfo',
-			render: function (data, type, row, meta ) {
-      		return '<div style="padding:0px" class="panel-body"> <a target="_blank" href="'+'/ngl?pdbInfo2='+data+'">Structure Details</a></div>';
-      		}
-		},		
-		{
-			data : 'pdbInfo',
-			render: function (data, type, row, meta ) {
-      		return '<a href="'+'unifiedProteinMutationQueryAnno/'+demo.value+'_'+data+'">Annotation</a>';
-      		}
-		}]
+		}
 	});	
-	
-	$('input.global_filter').on( 'keyup click', function () {
-        filterGlobal();
-    } );
- 
-    $('input.column_filter').on( 'keyup click', function () {
-        filterColumn( $(this).parents('tr').attr('data-column') );
-    } );
 
 
 } );
