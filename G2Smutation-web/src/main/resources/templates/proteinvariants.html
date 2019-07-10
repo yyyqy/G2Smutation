@@ -133,8 +133,7 @@
 	<table id="contents" class="table table-bordered table-striped" style="width: 100%">
 			<thead>
 				<tr>
-					<td><abbr title="ENSG in Ensembl">GeneName</abbr></td>
-					<td><abbr title="Uniprot or ENSP in Ensembl">ProteinName</abbr></td>
+					<td><abbr title="Query Protein Name">ProteinName</abbr></td>
 					<td><abbr title="Query Protein Index">SeqIndex</abbr></td>
 					<td><abbr title="Query Protein Widetype Residue">SeqResidue</abbr></td>
 					<td><abbr title="Mapped PDB ID">PDB</abbr></td>
@@ -186,10 +185,7 @@ function filterColumn ( i ) {
         processing: true,
 		columns : [
 		{
-			data : 'geneName'
-		}, 
-		{
-			data : 'proteinName'
+			data : 'seqName'
 		},
 		{
 			data : 'seqIndex'
