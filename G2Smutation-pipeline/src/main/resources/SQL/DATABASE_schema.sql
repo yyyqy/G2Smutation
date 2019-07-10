@@ -71,6 +71,7 @@ CREATE TABLE `pdb_seq_alignment` (
   `SEQ_ALIGN` text,
   `PDB_ALIGN` text,
   `MIDLINE_ALIGN` text,
+  `ALIGNLENGTH` int,
   `UPDATE_DATE` DATE,
   PRIMARY KEY (`ALIGNMENT_ID`),
   KEY(`SEQ_ID`),

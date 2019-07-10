@@ -21,6 +21,7 @@ public class BlastResult {
     public String seq_align;
     public String pdb_align;
     public String midline_align;
+    public int alignLength;
 
     public BlastResult(int id) {
         this.oligoID = id;
@@ -37,6 +38,7 @@ public class BlastResult {
         this.seq_align = "";
         this.pdb_align = "";
         this.midline_align = "";
+        this.alignLength = 0;
     }
 
     public long getOligoID() {
@@ -150,8 +152,22 @@ public class BlastResult {
     public void setMidline_align(String midline_align) {
         this.midline_align = midline_align;
     }
+    
+    
 
-    @Override
+    public int getAlignLength() {
+		return alignLength;
+	}
+
+	public void setAlignLength(int alignLength) {
+		this.alignLength = alignLength;
+	}
+
+	public void setOligoID(int oligoID) {
+		this.oligoID = oligoID;
+	}
+
+	@Override
     public String toString() {
         return oligoID + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString() + "\t"
                 + bitscore.toString() + "\t" + qStart.toString() + "\t" + qEnd.toString() + "\t" + sStart.toString()

@@ -19,6 +19,7 @@ import org.cbioportal.G2Smutation.web.domain.UniprotRepository;
 import org.cbioportal.G2Smutation.web.models.Alignment;
 import org.cbioportal.G2Smutation.web.models.Ensembl;
 import org.cbioportal.G2Smutation.web.models.MutationUsageTableResult;
+import org.cbioportal.G2Smutation.web.models.MutationUsageTableVariantsInfo;
 import org.cbioportal.G2Smutation.web.models.QueryProteinName;
 import org.cbioportal.G2Smutation.web.models.Uniprot;
 import org.cbioportal.G2Smutation.web.models.db.MutationUsageTable;
@@ -76,7 +77,8 @@ public class UnifiedMappedProteinMuationController {
     public MutationUsageTableResult postUnifiedProteinQuery(
     		@ApiParam(required = true, value = "Input id: e.g.ENSP00000484409.1/ENSG00000141510/P04637/P53_HUMAN") @PathVariable String id) {
 		
-		MutationUsageTableResult result = new MutationUsageTableResult();    	
+		MutationUsageTableResult result = new MutationUsageTableResult(); 
+		List<MutationUsageTableVariantsInfo> outentries = new ArrayList<>();
     	List<MutationUsageTable> entries = new ArrayList<>();
     	if(id.startsWith("ENSP")) {    		
     		List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
@@ -114,7 +116,11 @@ public class UnifiedMappedProteinMuationController {
 		        }
 			}   		
     	}
-    	System.out.println(id+"\t"+entries.size());
+    	
+    	//Output
+    	for(MutationUsageTable entry: entries) {
+    		outentries.add(new MutationUsageTableVariantsInfo(entry));
+    	}
     	
     	result.setData(entries);
     	return result;

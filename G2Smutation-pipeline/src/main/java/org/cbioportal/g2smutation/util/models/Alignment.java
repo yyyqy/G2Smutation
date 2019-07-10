@@ -43,6 +43,8 @@ public class Alignment {
     private String pdbAlign;
 
     private String midlineAlign;
+    
+    private int alignLength;
 
     private String updateDate;
 
@@ -212,5 +214,15 @@ public class Alignment {
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
+
+	public int getAlignLength() {
+		return alignLength;
+	}
+
+	public void setAlignLength(int alignLength) {
+		this.alignLength = alignLength;
+	}
+    
+    
 
 }

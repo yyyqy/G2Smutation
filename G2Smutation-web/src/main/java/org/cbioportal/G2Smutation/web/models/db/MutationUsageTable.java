@@ -45,14 +45,23 @@ public class MutationUsageTable {
     @Column(name = "PDB_RESIDUE")
     private String pdbResidue;
     
-    @Column(name = "Identity")
-    private float identity;
-    
-    @Column(name = "IdentityP")
-    private float identityP;
-    
     @Column(name = "ALIGNMENT_ID")
     private int alignmentId;
+    
+    @Column(name = "IDENTITY")
+    private float identity;
+    
+    @Column(name = "IDENTITYP")
+    private float identityP;
+    
+    @Column(name = "EVALUE")
+    private String evalue;
+    
+    @Column(name = "BITSCORE")
+    private float bitscore;
+    
+    @Column(name = "ALIGNLENGTH")
+    private int alignLength;
     
     @Column(name = "UPDATE_DATE")
     private String updateDate;
@@ -161,7 +170,33 @@ public class MutationUsageTable {
 	public void setIdentityP(float identityP) {
 		this.identityP = identityP;
 	}
+
+	public String getEvalue() {
+		return evalue;
+	}
+
+	public void setEvalue(String evalue) {
+		this.evalue = evalue;
+	}
+
+	public float getBitscore() {
+		return bitscore;
+	}
+
+	public void setBitscore(float bitscore) {
+		this.bitscore = bitscore;
+	}
+
+	public int getAlignLength() {
+		return alignLength;
+	}
+
+	public void setAlignLength(int alignLength) {
+		this.alignLength = alignLength;
+	}
     
+	
+	
     
 
 }

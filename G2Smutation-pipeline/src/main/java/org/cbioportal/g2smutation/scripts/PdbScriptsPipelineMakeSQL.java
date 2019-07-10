@@ -452,11 +452,11 @@ public class PdbScriptsPipelineMakeSQL {
         String pdbNo = br.getSseqid().split("\\s+")[0];
         String[] strarrayS = pdbNo.split("_");
         String segStart = br.getSseqid().split("\\s+")[3];
-        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`ALIGNLENGTH`,`UPDATE_DATE`)VALUES ('"
                 + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','"
                 + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
                 + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
-                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
+                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',"+br.getAlignLength()+",CURDATE());\n";
         return str;
     }
 
@@ -467,10 +467,10 @@ public class PdbScriptsPipelineMakeSQL {
      * @return generated SQL statements
      */
     public String makeTable_mutation_insert(MutationRecord mr) {
-        String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`IDENTITY`,`IDENTITYP`,`ALIGNMENT_ID`)VALUES ('"
+        String str = "INSERT INTO `mutation_entry` (`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`)VALUES ('"
                 + mr.getSeqId() + "_" + mr.getSeqResidueIndex() + "','" + mr.getSeqId() + "','" + mr.getSeqName() + "',"
                 + mr.getSeqResidueIndex() + ",'" + mr.getSeqResidueName() + "','" + mr.getPdbNo() + "',"
-                + mr.getPdbResidueIndex() + ",'" + mr.getPdbResidueName() + "'," + mr.getIdentity()+ "," + mr.getIdentityP()+ "," + mr.getAlignmentId() + ");\n";
+                + mr.getPdbResidueIndex() + ",'" + mr.getPdbResidueName() + "'," + mr.getAlignmentId() + ");\n";
         return str;
     }
 
@@ -848,6 +848,7 @@ public class PdbScriptsPipelineMakeSQL {
             br.seq_align = tmp.getHspQseq();
             br.pdb_align = tmp.getHspHseq();
             br.midline_align = tmp.getHspMidline();
+            br.alignLength = tmp.getHspMidline().length();
 
             /*
              * //Original solution: Include all the blast results
@@ -904,8 +905,6 @@ public class PdbScriptsPipelineMakeSQL {
 							mr.setPdbNo(pdbNO);
 							mr.setPdbResidueIndex(correctPDBIndex);
 							mr.setPdbResidueName(br.pdb_align.substring(i, i + 1));
-							mr.setIdentity((float)(br.ident/br.midline_align.length()));
-							mr.setIdentityP((float)(br.identp/br.midline_align.length()));
 							mr.setAlignmentId(count);
 
 							mutationList.add(mr);
@@ -1642,9 +1641,9 @@ public class PdbScriptsPipelineMakeSQL {
             List<String> list = FileUtils.readLines(inFile);
             for (int i = 1; i < list.size(); i++) {
                 String[] str = list.get(i).split("\t");
-                String strr = "INSERT INTO `mutation_usage_table` (`MUTATION_ID`,`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`IDENTITY`,`IDENTITYP`,`ALIGNMENT_ID`,`UPDATE_DATE`)VALUES('"
+                String strr = "INSERT INTO `mutation_usage_table` (`MUTATION_ID`,`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`,`IDENTITY`,`IDENTITYP`,`EVALUE`,`BITSCORE`,`ALIGNLENGTH`,`UPDATE_DATE`)VALUES('"
                         + str[0] + "','" + str[1] + "','" + str[2] + "','" + str[3] + "','" + str[4] + "','" + str[5]
-                        + "','" + str[6] + "','" + str[7] + "','" + str[8] + "','" + str[9] + "','" + str[10] + "','" + str[11] + "',CURDATE());\n";
+                        + "','" + str[6] + "','" + str[7] + "','" + str[8] + "'," + str[9] + "," + str[10] + "," + str[11] + ",'" + str[12] + "'," + str[13] + "," + str[14] + ",CURDATE());\n";
                 outputlist.add(strr);
             }
             outputlist.add("commit;");
