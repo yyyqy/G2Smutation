@@ -456,7 +456,7 @@ public class PdbScriptsPipelineMakeSQL {
                 + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','"
                 + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
                 + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
-                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',"+br.getAlignLength()+",CURDATE());\n";
+                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',"+br.getMidline_align().length()+",CURDATE());\n";
         return str;
     }
 
