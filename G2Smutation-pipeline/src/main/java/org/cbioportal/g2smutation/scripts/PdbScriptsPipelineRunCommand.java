@@ -463,7 +463,6 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         boolean mutationTag = false;
         
-        /*
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -605,7 +604,6 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
-        */
            
         //For Debug
         this.seqFileCount=10;
@@ -730,7 +728,7 @@ public class PdbScriptsPipelineRunCommand {
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
         HashMap<String, String> mutationHm = new HashMap<>();
         //Init from known info
-//        if (updateTag){
+        if (updateTag){
             String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
             // Deserialize
             try{  
@@ -740,7 +738,7 @@ public class PdbScriptsPipelineRunCommand {
             }catch(Exception ex){
                 ex.printStackTrace();
             }            
-//        }
+        }
         //<mutation_NO, gpos>: saving time for API calling           
         mUsageRecord = fou.readMutationResult2MutationUsageRecord(currentDir + ReadConfig.mutationResult, mutationHm);
         
