@@ -122,7 +122,7 @@ public class UnifiedMappedProteinMuationController {
     		outentries.add(new MutationUsageTableVariantsInfo(entry));
     	}
     	
-    	result.setData(entries);
+    	result.setData(outentries);
     	return result;
     }
 	
@@ -173,6 +173,7 @@ public class UnifiedMappedProteinMuationController {
 	
 	
 	/**
+	 * Currently not used
 	 * For display usage
 	 * 
 	 * @param id_type
