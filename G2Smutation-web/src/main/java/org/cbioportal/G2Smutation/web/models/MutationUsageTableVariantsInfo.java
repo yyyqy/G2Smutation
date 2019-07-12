@@ -8,13 +8,12 @@ public class MutationUsageTableVariantsInfo {
 	private String proteinName;	
     private int seqIndex;   
     private String seqResidue;    
-    private String pdbNo;//XXXX_X 
-    private int pdbIndex;    
+    private String pdbInfo;//XXXX_X_X    
     private String pdbResidue;    
     private String evalue;
     private float bitscore;    
-    private float identityRatio;    
-    private float identityPRatio;
+    private float identity;    
+    private float identityP;
     
     //Constructor
     public MutationUsageTableVariantsInfo(MutationUsageTable mut){
@@ -49,13 +48,12 @@ public class MutationUsageTableVariantsInfo {
     	this.setSeqIndex(mut.getSeqIndex());
     	this.setSeqResidue(mut.getSeqResidue());
     	String[] temp = mut.getPdbNo().split("_");
-    	this.setPdbNo(temp[0]+"_"+temp[1]);
-    	this.setPdbIndex(mut.getPdbIndex());
+    	this.setPdbInfo(temp[0]+"_"+temp[1]+"_"+mut.getPdbIndex());
     	this.setPdbResidue(mut.getPdbResidue());
     	this.setEvalue(mut.getEvalue());
     	this.setBitscore(mut.getBitscore());
-    	this.setIdentityRatio((float)(mut.getIdentity()/mut.getAlignLength()));
-    	this.setIdentityPRatio((float)(mut.getIdentityP()/mut.getAlignLength())); 
+    	this.setIdentity((float)(mut.getIdentity()/mut.getAlignLength()));
+    	this.setIdentityP((float)(mut.getIdentityP()/mut.getAlignLength())); 
     }
 
 	public String getGeneName() {
@@ -90,20 +88,12 @@ public class MutationUsageTableVariantsInfo {
 		this.seqResidue = seqResidue;
 	}
 
-	public String getPdbNo() {
-		return pdbNo;
+	public String getPdbInfo() {
+		return pdbInfo;
 	}
 
-	public void setPdbNo(String pdbNo) {
-		this.pdbNo = pdbNo;
-	}
-
-	public int getPdbIndex() {
-		return pdbIndex;
-	}
-
-	public void setPdbIndex(int pdbIndex) {
-		this.pdbIndex = pdbIndex;
+	public void setPdbInfo(String pdbInfo) {
+		this.pdbInfo = pdbInfo;
 	}
 
 	public String getPdbResidue() {
@@ -130,21 +120,25 @@ public class MutationUsageTableVariantsInfo {
 		this.bitscore = bitscore;
 	}
 
-	public float getIdentityRatio() {
-		return identityRatio;
+	public float getIdentity() {
+		return identity;
 	}
 
-	public void setIdentityRatio(float identityRatio) {
-		this.identityRatio = identityRatio;
+	public void setIdentity(float identity) {
+		this.identity = identity;
 	}
 
-	public float getIdentityPRatio() {
-		return identityPRatio;
+	public float getIdentityP() {
+		return identityP;
 	}
 
-	public void setIdentityPRatio(float identityPRatio) {
-		this.identityPRatio = identityPRatio;
+	public void setIdentityP(float identityP) {
+		this.identityP = identityP;
 	}
+	
+	
+
+
     
     
 

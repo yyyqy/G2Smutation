@@ -179,6 +179,45 @@
 		},  
 		{
 			data : 'seqResidue'
+		},
+		{
+			data : 'pdbInfo',
+			render: function (data) { return data.split("_")[0]; }
+		}, 
+		{
+			data : 'pdbInfo',
+			render: function (data) { return data.split("_")[1]; }
+		},
+		{
+			data : 'pdbInfo',
+			render: function (data) { return data.split("_")[2]; }
+		}, 
+		{
+			data : 'pdbResidue'
+		},
+		{
+			data : 'evalue'
+		},
+		{
+			data : 'bitscore'
+		},
+		{
+			data : 'identity'
+		},
+		{
+			data : 'identityP'
+		},		
+		{
+			data : 'pdbInfo',
+			render: function (data, type, row, meta ) {
+      			return '<div style="padding:0px" class="panel-body"> <a target="_blank" href="'+'/ngl?pdbInfo2='+data+'">Structure Details</a></div>';
+      		}
+		},		
+		{
+			data : 'pdbInfo',
+			render: function (data, type, row, meta ) {
+      			return '<a href="'+'unifiedProteinMutationQueryAnno/'+demo.value+'_'+data+'">Annotation</a>';
+      		}
 		}]
 	});
 	});
