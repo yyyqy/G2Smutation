@@ -164,9 +164,13 @@ public class UnifiedMappedProteinMuationController {
 			annotations = pmController.postProteinMutationAnnotationByPDB("uniprot", id, pdb_id, chain_id,
 					positionList);
 		}
-		//For here, it should only output one element
-		MutationAnnotation annotation = annotations.get(0);
-		annotation.setProteinName(id);
+		
+		MutationAnnotation annotation = new MutationAnnotation();
+		if(annotations.size()>0) {
+			//For here, it should only output one element
+			annotation = annotations.get(0);						
+		}
+		annotation.setProteinName(id);		
 
 		return new ModelAndView("/annodetail", "annotation", annotation);
 	}
