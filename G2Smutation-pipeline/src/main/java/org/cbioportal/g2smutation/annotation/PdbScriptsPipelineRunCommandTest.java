@@ -56,9 +56,11 @@ public class PdbScriptsPipelineRunCommandTest {
         paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
         cu.runCommand("releaseTag", paralist);
         
+        paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
         cu.runCommand("gzip", paralist);
         
+        paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt.gz");
         paralist.add(ReadConfig.resourceDir + "currentRelease.gz");
         cu.runCommand("cp", paralist);

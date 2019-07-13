@@ -1122,13 +1122,16 @@ public class PdbScriptsPipelineRunCommand {
         log.info("********************[Update STEP 4.3]********************");
         log.info("Generate Realease download files: currentRelease.gz");
         String[] date = currentDir.split("\\/");
+        paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.updateReleaseWeeklydownloadScript);        
         paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
         cu.runCommand("releaseTag", paralist);
         
+        paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
         cu.runCommand("gzip", paralist);
         
+        paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt.gz");
         paralist.add(ReadConfig.resourceDir + "currentRelease.gz");
         cu.runCommand("cp", paralist);
