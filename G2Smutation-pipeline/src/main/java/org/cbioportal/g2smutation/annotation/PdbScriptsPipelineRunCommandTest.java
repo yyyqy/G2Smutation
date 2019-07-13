@@ -38,8 +38,30 @@ public class PdbScriptsPipelineRunCommandTest {
 		//app.generateWeeklyTag(preprocess);
 		
 		
-		PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(app);
-		parseprocess.parseGenerateMutationResultSQL4MutatationUsageTable(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage); 
+		//PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(app);
+		//parseprocess.parseGenerateMutationResultSQL4MutatationUsageTable(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage);
+		
+		
+		CommandProcessUtil cu = new CommandProcessUtil();
+    	ArrayList<String> paralist = new ArrayList<String>();
+    	String currentDir = ReadConfig.workspace+"20190712/";
+        
+    	String[] date = currentDir.split("\\/");
+        log.info("********************[Update STEP 4.3]********************");
+        log.info("Generate Realease download files: currentRelease.gz");
+        log.info("From "+ReadConfig.resourceDir + ReadConfig.updateReleaseWeeklydownloadScript);
+        log.info("To "+currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
+        
+        paralist.add(ReadConfig.resourceDir + ReadConfig.updateReleaseWeeklydownloadScript);        
+        paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
+        cu.runCommand("releaseTag", paralist);
+        
+        paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt");
+        cu.runCommand("gzip", paralist);
+        
+        paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt.gz");
+        paralist.add(ReadConfig.resourceDir + "currentRelease.gz");
+        cu.runCommand("cp", paralist);
 	}
 
 }
