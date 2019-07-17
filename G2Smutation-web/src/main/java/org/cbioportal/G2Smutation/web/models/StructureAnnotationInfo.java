@@ -19,10 +19,20 @@ import org.cbioportal.G2Smutation.web.models.db.StructureAnnotation;
 //@Table(name = "structure_annotation_entry")
 public class StructureAnnotationInfo {
 	
-	private GeneralInfo generalInfo;
+    @Column(name = "PDB_ANNOKEY")
+    public String pdbAnnoKey;
+    
+    @Column(name = "PDB_NO")
+    private String pdbNo;
+    
+    @Column(name = "PDB_INDEX")
+    private int pdbIndex;
+    
+    @Column(name = "PDB_RESIDUE")
+    private String pdbResidue;
 	
 	@Column(name = "BURIED")
-	public String Buried;
+	public String buried;
 	
 	private NaccessAnno naccessAnno;
 	private DsspAnno dsspAnno;
@@ -37,7 +47,6 @@ public class StructureAnnotationInfo {
 	 * @param sa
 	 */
 	public StructureAnnotationInfo(StructureAnnotation sa){
-		GeneralInfo generalInfo = new GeneralInfo(sa);
 		NaccessAnno naccessAnno = new NaccessAnno(sa);
 		DsspAnno dsspAnno = new DsspAnno(sa);
 		LigandAnno ligandAnno = new LigandAnno(sa);
@@ -45,7 +54,10 @@ public class StructureAnnotationInfo {
 		PfamAnno pfamAnno = new PfamAnno(sa);
 		CathAnno cathAnno = new CathAnno(sa);
 		ScopAnno scopAnno = new ScopAnno(sa);
-		this.setGeneralInfo(generalInfo);
+		this.setPdbAnnoKey(sa.getPdbAnnoKey());
+		this.setPdbNo(sa.getPdbNo());
+		this.setPdbIndex(sa.getPdbIndex());
+		this.setPdbResidue(sa.getPdbResidue());
 		this.setBuried(sa.getBuried());
 		this.setNaccessAnno(naccessAnno);
 		this.setDsspAnno(dsspAnno);
@@ -57,7 +69,6 @@ public class StructureAnnotationInfo {
 	}
 	
 	public StructureAnnotationInfo(){
-		GeneralInfo generalInfo = new GeneralInfo();
 		NaccessAnno naccessAnno = new NaccessAnno();
 		DsspAnno dsspAnno = new DsspAnno();
 		LigandAnno ligandAnno = new LigandAnno();
@@ -67,17 +78,45 @@ public class StructureAnnotationInfo {
 		ScopAnno scopAnno = new ScopAnno();
 	}
 	
-	public GeneralInfo getGeneralInfo() {
-		return generalInfo;
+	
+	
+	public String getPdbAnnoKey() {
+		return pdbAnnoKey;
 	}
-	public void setGeneralInfo(GeneralInfo generalInfo) {
-		this.generalInfo = generalInfo;
+
+	public void setPdbAnnoKey(String pdbAnnoKey) {
+		this.pdbAnnoKey = pdbAnnoKey;
 	}
+
+	public String getPdbNo() {
+		return pdbNo;
+	}
+
+	public void setPdbNo(String pdbNo) {
+		this.pdbNo = pdbNo;
+	}
+
+	public int getPdbIndex() {
+		return pdbIndex;
+	}
+
+	public void setPdbIndex(int pdbIndex) {
+		this.pdbIndex = pdbIndex;
+	}
+
+	public String getPdbResidue() {
+		return pdbResidue;
+	}
+
+	public void setPdbResidue(String pdbResidue) {
+		this.pdbResidue = pdbResidue;
+	}
+
 	public String getBuried() {
-		return Buried;
+		return buried;
 	}
 	public void setBuried(String buried) {
-		Buried = buried;
+		buried = buried;
 	}
 	public NaccessAnno getNaccessAnno() {
 		return naccessAnno;
@@ -122,64 +161,6 @@ public class StructureAnnotationInfo {
 		this.scopAnno = scopAnno;
 	}
 		
-}
-
-class GeneralInfo {    
-    @Column(name = "PDB_ANNOKEY")
-    public String pdbAnnoKey;
-    
-    @Column(name = "PDB_NO")
-    private String pdbNo;
-    
-    @Column(name = "PDB_INDEX")
-    private int pdbIndex;
-    
-    @Column(name = "PDB_RESIDUE")
-    private String pdbResidue;
-    
-    GeneralInfo(StructureAnnotation sa){
-    	this.setPdbAnnoKey(sa.getPdbAnnoKey());
-    	this.setPdbNo(sa.getPdbNo());
-    	this.setPdbIndex(sa.getPdbIndex());
-    	this.setPdbResidue(this.getPdbResidue());
-    }
-    
-    GeneralInfo(){
-    	
-    }
-
-	public String getPdbAnnoKey() {
-		return pdbAnnoKey;
-	}
-
-	public void setPdbAnnoKey(String pdbAnnoKey) {
-		this.pdbAnnoKey = pdbAnnoKey;
-	}
-
-	public String getPdbNo() {
-		return pdbNo;
-	}
-
-	public void setPdbNo(String pdbNo) {
-		this.pdbNo = pdbNo;
-	}
-
-	public int getPdbIndex() {
-		return pdbIndex;
-	}
-
-	public void setPdbIndex(int pdbIndex) {
-		this.pdbIndex = pdbIndex;
-	}
-
-	public String getPdbResidue() {
-		return pdbResidue;
-	}
-
-	public void setPdbResidue(String pdbResidue) {
-		this.pdbResidue = pdbResidue;
-	}
-	
 }
 
 class NaccessAnno {

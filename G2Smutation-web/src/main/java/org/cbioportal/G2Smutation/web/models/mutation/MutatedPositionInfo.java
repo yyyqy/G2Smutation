@@ -18,6 +18,7 @@ public class MutatedPositionInfo {
     private List<Dbsnp> dbsnpAnnotation;
     private List<Clinvar> clinvarAnnotation;
     private List<Cosmic> cosmicAnnotation;
+    // genie project is not allowed for redistribution
     // private List<Genie> genieAnnotation;
     private List<Tcga> tcgaAnnotation;
 	public int getProteinPos() {
