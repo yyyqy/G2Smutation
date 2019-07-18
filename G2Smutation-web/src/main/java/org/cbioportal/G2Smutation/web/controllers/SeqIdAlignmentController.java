@@ -1058,6 +1058,7 @@ public class SeqIdAlignmentController {
 			mr.setPdbResidue(entry.getPdbResidue());
 			// TODO, can improve use OO Design
 			String queryPdbNo = pdbNoUse[0] + "_" + pdbNoUse[1] + "_" + entry.getPdbIndex();
+			//System.out.println(queryPdbNo);
 
 			StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
 

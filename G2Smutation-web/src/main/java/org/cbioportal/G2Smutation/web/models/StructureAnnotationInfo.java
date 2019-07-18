@@ -116,7 +116,7 @@ public class StructureAnnotationInfo {
 		return buried;
 	}
 	public void setBuried(String buried) {
-		buried = buried;
+		this.buried = buried;
 	}
 	public NaccessAnno getNaccessAnno() {
 		return naccessAnno;
