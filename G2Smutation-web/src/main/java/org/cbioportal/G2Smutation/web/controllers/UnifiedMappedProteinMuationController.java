@@ -151,18 +151,18 @@ public class UnifiedMappedProteinMuationController {
 		}
 		String pdb_id = tmpp[tmpp.length - 3];
 		String chain_id = tmpp[tmpp.length - 2];
-		String position = tmpp[tmpp.length - 1];
+		String pdbPosition = tmpp[tmpp.length - 1];
 		List<MutationAnnotation> annotations = new ArrayList<MutationAnnotation>();
-		List<String> positionList = new ArrayList<>();
-		positionList.add(position);
+		List<String> pdbPositionList = new ArrayList<>();
+		pdbPositionList.add(pdbPosition);
 
 		if (id.startsWith("ENSP") || id.startsWith("ENSG")) {// EnsemblID:
 			// ENSP00000269305.4/ENSP00000269305
-			annotations = pmController.postProteinMutationAnnotationByPDB("ensembl", id, pdb_id, chain_id,
-					positionList);
+			annotations = pmController.postProteinMutationAnnotationByPDBResidue("ensembl", id, pdb_id, chain_id,
+					pdbPositionList);
 		} else {
-			annotations = pmController.postProteinMutationAnnotationByPDB("uniprot", id, pdb_id, chain_id,
-					positionList);
+			annotations = pmController.postProteinMutationAnnotationByPDBResidue("uniprot", id, pdb_id, chain_id,
+					pdbPositionList);
 		}
 		
 		MutationAnnotation annotation = new MutationAnnotation();
