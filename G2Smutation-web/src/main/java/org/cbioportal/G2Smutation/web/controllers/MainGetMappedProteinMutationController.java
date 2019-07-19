@@ -713,7 +713,7 @@ public class MainGetMappedProteinMutationController {
         			String pd = tmpArray[0];
                     String ch = tmpArray[1];
                     if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                    	System.out.println(pd+"\t"+ch);
+                    	//System.out.println(pd+"\t"+ch);
                     	MutatedResidueInfo nmr = new MutatedResidueInfo();
                     	nmr.setPdbNo(mr.getPdbNo());
                     	nmr.setPdbPos(mr.getPdbPos());

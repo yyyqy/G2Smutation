@@ -530,7 +530,6 @@
 		</table>
 		
 		
-	<!--
 		<h2>Structure Annotation</h2>
 		<h2>General Annotation</h2>
 		<table class="table table-bordered table-striped">
@@ -545,20 +544,18 @@
 			<tbody>
 				<tr th:each="info: ${annotation.mutatedPositionInfo}">
 				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
-				<tr th:each="gi: ${ginfo.structureAnnotation}">
 					<tr class="table-info">					
-						<td th:text="${gi.pdbNo}">1</td>
-						<td th:text="${gi.pdbPos}">1</td>
-						<td th:text="${gi.pdbResidue}">1</td>
-						<td th:text="${gi.buried}"></td>																								
+						<td th:text="${ginfo.structureAnnotation.pdbNo}">1</td>
+						<td th:text="${ginfo.structureAnnotation.pdbIndex}">1</td>
+						<td th:text="${ginfo.structureAnnotation.pdbResidue}">1</td>
+						<td th:text="${ginfo.structureAnnotation.buried}"></td>																								
 					</tr>
-				</tr>
 				</tr>
 				</tr>
 			</tbody>
 		</table>
 	
-
+		<!--
 		<h2>Naccess Annotation</h2>
 		<table class="table table-bordered table-striped">
 			<thead>
