@@ -1204,7 +1204,7 @@ public class SeqIdAlignmentController {
      */
 	public List<MutationAnnotation> getMutationUsageAnnotationBySeqIdPDB(
 			@ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId,
-			@ApiParam(required = true, value = "Input Residue Position e.g. 99,100") @PathVariable List<String> pdbPositionList) {
+			@ApiParam(required = true, value = "Input PDB Residue Position e.g. 99,100") @PathVariable List<String> pdbPositionList) {
 
 		List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
 		List<MutationAnnotation> outit = new ArrayList<>();
@@ -1231,6 +1231,7 @@ public class SeqIdAlignmentController {
 				// TODO, can improve use OO Design
 				// queryPdbNo: 2pcx_A_282
 				String queryPdbNo = pdbNoUse[0] + "_" + pdbNoUse[1] + "_" + entry.getPdbIndex();
+				System.out.println("queryPdbNo:"+queryPdbNo);
 
 				StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
 				StructureAnnotationInfo maInfo = new StructureAnnotationInfo();

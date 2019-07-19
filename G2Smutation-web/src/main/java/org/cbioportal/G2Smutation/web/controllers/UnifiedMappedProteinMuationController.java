@@ -152,6 +152,7 @@ public class UnifiedMappedProteinMuationController {
 		String pdb_id = tmpp[tmpp.length - 3];
 		String chain_id = tmpp[tmpp.length - 2];
 		String pdbPosition = tmpp[tmpp.length - 1];
+		System.out.println("idinfo:"+pdb_id+"&"+chain_id+"&"+pdbPosition);
 		List<MutationAnnotation> annotations = new ArrayList<MutationAnnotation>();
 		List<String> pdbPositionList = new ArrayList<>();
 		pdbPositionList.add(pdbPosition);
