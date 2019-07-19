@@ -531,7 +531,7 @@
 		
 		
 		<h2>Structure Annotation</h2>
-		<h2>General Annotation</h2>
+		<h3>General Annotation</h3>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>					
@@ -555,8 +555,7 @@
 			</tbody>
 		</table>
 	
-		<!--
-		<h2>Naccess Annotation</h2>
+		<h3>Naccess Annotation</h3>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -575,26 +574,24 @@
 			<tbody>
 				<tr th:each="info : ${annotation.mutatedPositionInfo}">
 				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
-				<tr th:each="sa: ${ginfo.structureAnnotation}">
 				<tr class="table-info">
-<td th:text="${sa.naccessAnno.allAtomsAbs}">1</td>
-<td th:text="${sa.naccessAnno.allAtomsRel}">1</td>
-<td th:text="${sa.naccessAnno.totalSideAbs}">1</td>
-<td th:text="${sa.naccessAnno.totalSideRel}">1</td>
-<td th:text="${sa.naccessAnno.mainChainAbs}">1</td>
-<td th:text="${sa.naccessAnno.mainChianRel}">1</td>
-<td th:text="${sa.naccessAnno.nonPolarAbs}">1</td>
-<td th:text="${sa.naccessAnno.nonPolarRel}">1</td>
-<td th:text="${sa.naccessAnno.allPolarAbs}">1</td>
-<td th:text="${sa.naccessAnno.allpolarRel}">1</td>			
-				</tr>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.allAtomsAbs}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.allAtomsRel}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.totalSideAbs}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.totalSideRel}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.mainChainAbs}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.mainChianRel}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.nonPolarAbs}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.nonPolarRel}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.allPolarAbs}">1</td>
+<td th:text="${ginfo.structureAnnotation.naccessAnno.allpolarRel}">1</td>
 				</tr>
 				</tr>
 				</tr>
 			</tbody>
 		</table>
 
-		<h2>Dssp Annotation</h2>
+		<h3>Dssp Annotation</h3>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -614,27 +611,27 @@
 			</thead>
 			<tbody>
 				<tr th:each="info : ${annotation.mutatedPositionInfo}">
-				<tr th:each="dsspinfo :${info.mutatedResidueInfo[0].dsspAnno}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
 				<tr class="table-info">
-<td th:text="${dsspinfo.secStructure}">1</td>
-<td th:text="${dsspinfo.threeTurnHelix}">1</td>
-<td th:text="${dsspinfo.fourTurnHelix}">1</td>
-<td th:text="${dsspinfo.fiveTurnHelix}">1</td>
-<td th:text="${dsspinfo.geometricalBend}">1</td>
-<td th:text="${dsspinfo.chirality}">1</td>
-<td th:text="${dsspinfo.betaBridgeLabelA}">1</td>
-<td th:text="${dsspinfo.betaBridgeLabelB}">1</td>
-<td th:text="${dsspinfo.bpa}">1</td>
-<td th:text="${dsspinfo.bpb}">1</td>
-<td th:text="${dsspinfo.betaSheetLabel}">1</td>
-<td th:text="${dsspinfo.acc}">1</td>		
+<td th:text="${ginfo.structureAnnotation.dsspAnno.secStructure}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.threeTurnHelix}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.fourTurnHelix}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.fiveTurnHelix}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.geometricalBend}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.chirality}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.betaBridgeLabelA}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.betaBridgeLabelB}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.bpa}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.bpb}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.betaSheetLabel}">1</td>
+<td th:text="${ginfo.structureAnnotation.dsspAnno.acc}">1</td>		
 				</tr>
 				</tr>
 				</tr>
 			</tbody>
 		</table>
 		
-		<h2>Ligand Annotation</h2>
+		<h3>Ligand Annotation</h3>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -645,18 +642,18 @@
 			</thead>
 			<tbody>
 				<tr th:each="info : ${annotation.mutatedPositionInfo}">
-				<tr th:each="ligandinfo :${info.mutatedResidueInfo[0].ligandAnno}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
 				<tr class="table-info">
-<td th:text="${ligandinfo.ligandBindingProtein}">1</td>
-<td th:text="${ligandinfo.ligandBindingDirect}">1</td>
-<td th:text="${ligandinfo.ligandName}">1</td>		
+<td th:text="${ginfo.structureAnnotation.ligandAnno.ligandBindingProtein}">1</td>
+<td th:text="${ginfo.structureAnnotation.ligandAnno.ligandBindingDirect}">1</td>
+<td th:text="${ginfo.structureAnnotation.ligandAnno.ligandName}">1</td>		
 				</tr>
 				</tr>
 				</tr>
 			</tbody>
 		</table>
 		
-				<h2>INTERPRO Annotation</h2>
+		<h3>INTERPRO Annotation</h3>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -669,20 +666,20 @@
 			</thead>
 			<tbody>
 				<tr th:each="info : ${annotation.mutatedPositionInfo}">
-				<tr th:each="interproinfo :${info.mutatedResidueInfo[0].interproAnno}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
 				<tr class="table-info">
-<td th:text="${interproinfo.interproId}">1</td>
-<td th:text="${interproinfo.interproName}">1</td>
-<td th:text="${interproinfo.interproIdentifier}">1</td>	
-<td th:text="${interproinfo.interproStart}">1</td>
-<td th:text="${interproinfo.interproEnd}">1</td>		
+<td th:text="${ginfo.structureAnnotation.interproAnno.interproId}">1</td>
+<td th:text="${ginfo.structureAnnotation.interproAnno.interproName}">1</td>
+<td th:text="${ginfo.structureAnnotation.interproAnno.interproIdentifier}">1</td>	
+<td th:text="${ginfo.structureAnnotation.interproAnno.interproStart}">1</td>
+<td th:text="${ginfo.structureAnnotation.interproAnno.interproEnd}">1</td>		
 				</tr>
 				</tr>
 				</tr>
 			</tbody>
 		</table>
 		
-		<h2>PFAM Annotation</h2>
+		<h3>PFAM Annotation</h3>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -696,21 +693,21 @@
 			</thead>
 			<tbody>
 				<tr th:each="info : ${annotation.mutatedPositionInfo}">
-				<tr th:each="pfaminfo :${info.mutatedResidueInfo[0].pfamAnno}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
 				<tr class="table-info">
-<td th:text="${pfaminfo.pfamId}">1</td>
-<td th:text="${pfaminfo.pfamName}">1</td>
-<td th:text="${pfaminfo.pfamDescription}">1</td>	
-<td th:text="${pfaminfo.pfamIdentifier}">1</td>
-<td th:text="${pfaminfo.pfamStart}">1</td>
-<td th:text="${pfaminfo.pfamEnd}">1</td>		
+<td th:text="${ginfo.structureAnnotation.pfamAnno.pfamId}">1</td>
+<td th:text="${ginfo.structureAnnotation.pfamAnno.pfamName}">1</td>
+<td th:text="${ginfo.structureAnnotation.pfamAnno.pfamDescription}">1</td>	
+<td th:text="${ginfo.structureAnnotation.pfamAnno.pfamIdentifier}">1</td>
+<td th:text="${ginfo.structureAnnotation.pfamAnno.pfamStart}">1</td>
+<td th:text="${ginfo.structureAnnotation.pfamAnno.pfamEnd}">1</td>		
 				</tr>
 				</tr>
 				</tr>
 			</tbody>
 		</table>
 		
-				<h2>CATH Annotation</h2>
+		<h3>CATH Annotation</h3>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -728,18 +725,18 @@
 			</thead>
 			<tbody>
 				<tr th:each="info : ${annotation.mutatedPositionInfo}">
-				<tr th:each="cathinfo :${info.mutatedResidueInfo[0].cathAnno}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
 				<tr class="table-info">
-<td th:text="${cathinfo.cathId}">1</td>
-<td th:text="${cathinfo.cathArchitecture}">1</td>
-<td th:text="${cathinfo.cathClass}">1</td>	
-<td th:text="${cathinfo.cathHomology}">1</td>
-<td th:text="${cathinfo.cathIdentifier}">1</td>
-<td th:text="${cathinfo.cathName}">1</td>	
-<td th:text="${cathinfo.cathTopology}">1</td>	
-<td th:text="${cathinfo.cathDomainId}">1</td>
-<td th:text="${cathinfo.cathDomainStart}">1</td>
-<td th:text="${cathinfo.cathDomainEnd}">1</td>	
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathId}">1</td>
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathArchitecture}">1</td>
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathClass}">1</td>	
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathHomology}">1</td>
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathIdentifier}">1</td>
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathName}">1</td>	
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathTopology}">1</td>	
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathDomainId}">1</td>
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathDomainStart}">1</td>
+<td th:text="${ginfo.structureAnnotation.cathAnno.cathDomainEnd}">1</td>	
 				</tr>
 				</tr>
 				</tr>
@@ -747,7 +744,7 @@
 		</table>
 		
 		
-		<h2>SCOP Annotation</h2>
+		<h3>SCOP Annotation</h3>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -767,26 +764,25 @@
 			</thead>
 			<tbody>
 				<tr th:each="info : ${annotation.mutatedPositionInfo}">
-				<tr th:each="scopinfo :${info.mutatedResidueInfo[0].scopAnno}">
+				<tr th:each="ginfo: ${info.mutatedResidueInfo}">
 				<tr class="table-info">
-<td th:text="${scopinfo.scopId}">1</td>
-<td th:text="${scopinfo.scopDescription}">1</td>
-<td th:text="${scopinfo.scopIdentifier}">1</td>	
-<td th:text="${scopinfo.scopSccs}">1</td>
-<td th:text="${scopinfo.scopClassSunid}">1</td>
-<td th:text="${scopinfo.scopClassDescription}">1</td>	
-<td th:text="${scopinfo.scopFoldSunid}">1</td>	
-<td th:text="${scopinfo.scopFoldDescription}">1</td>
-<td th:text="${scopinfo.scopSuperfamilySunid}">1</td>
-<td th:text="${scopinfo.scopSuperfamilyDescription}">1</td>	
-<td th:text="${scopinfo.scopStart}">1</td>
-<td th:text="${scopinfo.scopEnd}">1</td>
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopId}">1</td>
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopDescription}">1</td>
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopIdentifier}">1</td>	
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopSccs}">1</td>
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopClassSunid}">1</td>
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopClassDescription}">1</td>	
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopFoldSunid}">1</td>	
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopFoldDescription}">1</td>
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopSuperfamilySunid}">1</td>
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopSuperfamilyDescription}">1</td>	
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopStart}">1</td>
+<td th:text="${ginfo.structureAnnotation.scopAnno.scopEnd}">1</td>
 				</tr>
 				</tr>
 				</tr>
 			</tbody>
 		</table>
-		-->
 
 		</div>
 
