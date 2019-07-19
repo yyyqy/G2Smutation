@@ -1195,6 +1195,92 @@ public class SeqIdAlignmentController {
 		outit.add(entry);
 		return outit;
 	}
+	
+    /**
+     * "Get All MutationUsageTable by Protein SeqId, use residue in PDB as the pdbPosistionList
+     * 
+     * @param seqId
+     * @return
+     */
+	public List<MutationAnnotation> getMutationUsageAnnotationBySeqIdPDB(
+			@ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId,
+			@ApiParam(required = true, value = "Input Residue Position e.g. 99,100") @PathVariable List<String> pdbPositionList) {
+
+		List<MutationUsageTable> it = mutationUsageTableRepository.findBySeqId(Integer.parseInt(seqId));
+		List<MutationAnnotation> outit = new ArrayList<>();
+
+		HashMap<String, List<MutatedResidueInfo>> hm = new HashMap<>();
+
+		HashSet<String> posSet = new HashSet<>();
+		for (String pos : pdbPositionList) {
+			posSet.add(pos);
+		}
+
+		String proteinName = "";
+
+		for (MutationUsageTable entry : it) {
+			if (posSet.contains(Integer.toString(entry.getPdbIndex()))) {
+				proteinName = entry.getSeqName();
+				String key = Integer.toString(entry.getSeqIndex()) + "\t" + entry.getSeqResidue();
+				MutatedResidueInfo mr = new MutatedResidueInfo();
+				String[] pdbNoUse = entry.getPdbNo().split("_");
+				// System.out.println(pdbNoUse[0]+"_"+pdbNoUse[1]);
+				mr.setPdbNo(pdbNoUse[0] + "_" + pdbNoUse[1]);
+				mr.setPdbPos(entry.getPdbIndex());
+				mr.setPdbResidue(entry.getPdbResidue());
+				// TODO, can improve use OO Design
+				// queryPdbNo: 2pcx_A_282
+				String queryPdbNo = pdbNoUse[0] + "_" + pdbNoUse[1] + "_" + entry.getPdbIndex();
+
+				StructureAnnotation ma = structureAnnotationRepository.findTopByPdbAnnoKey(queryPdbNo);
+				StructureAnnotationInfo maInfo = new StructureAnnotationInfo();
+				try {
+					maInfo = new StructureAnnotationInfo(ma);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				mr.setStructureAnnotationInfo(maInfo);
+
+				List<MutatedResidueInfo> list = new ArrayList<>();
+				if (hm.containsKey(key)) {
+					list = hm.get(key);
+					list.add(mr);
+				} else {
+					list.add(mr);
+				}
+				hm.put(key, list);
+			}
+		}
+
+		MutationAnnotation entry = new MutationAnnotation();
+		entry.setProteinName(proteinName);
+		List<MutatedPositionInfo> mplist = new ArrayList<>();
+
+		SortedSet<String> keys = new TreeSet<>(hm.keySet());
+		for (String key : keys) {
+			int proteinPos = Integer.parseInt(key.split("\t")[0]);
+			String proteinResidue = key.split("\t")[1];
+			MutatedPositionInfo mp = new MutatedPositionInfo();
+			mp.setProteinPos(proteinPos);
+			mp.setProteinResidue(proteinResidue);
+			mp.setMutatedResidueInfo(hm.get(key));
+			List<Dbsnp> dbsnpList = dbsnpRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setDbsnpAnnotation(dbsnpList);
+			List<Clinvar> clinvarList = clinvarRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setClinvarAnnotation(clinvarList);
+			List<Cosmic> cosmicList = cosmicRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setCosmicAnnotation(cosmicList);
+			// No Redistributed genie project
+			//List<Genie> genieList = genieRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			//mp.setGenieAnnotation(genieList);
+			List<Tcga> tcgaList = tcgaRepository.findByMutationNo(seqId + "_" + Integer.toString(proteinPos));
+			mp.setTcgaAnnotation(tcgaList);
+			mplist.add(mp);
+		}
+		entry.setMutatedPositionInfo(mplist);
+		outit.add(entry);
+		return outit;
+	}
     
  // P04637_9
     public List<MutationAnnotation> getMutationUsageAnnotationByUniprotAccessionIso(String uniprotAccession, String isoform) {
@@ -1214,6 +1300,25 @@ public class SeqIdAlignmentController {
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(uniprotAccession + "_" + isoform);
         if (uniprotlist.size() == 1) {
             return seqController.getMutationUsageAnnotationBySeqId(uniprotlist.get(0).getSeqId(), positionList);
+        } else {
+            return new ArrayList<MutationAnnotation>();
+        }
+    }
+    
+    /**
+     * P04637_9 99,100
+     * 
+     * @param uniprotAccession
+     * @param isoform
+     * @param pdbPositionList
+     * @return
+     */
+    public List<MutationAnnotation> getMutationUsageAnnotationByUniprotAccessionIsoPDB(String uniprotAccession, String isoform,
+            List<String> pdbPositionList) {
+
+        List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(uniprotAccession + "_" + isoform);
+        if (uniprotlist.size() == 1) {
+            return seqController.getMutationUsageAnnotationBySeqIdPDB(uniprotlist.get(0).getSeqId(), pdbPositionList);
         } else {
             return new ArrayList<MutationAnnotation>();
         }
@@ -1252,6 +1357,33 @@ public class SeqIdAlignmentController {
         Iterator<String> it = uniprotAccSet.iterator();
         while (it.hasNext()) {
             outlist.addAll(getMutationUsageAnnotationByUniprotAccessionIso(it.next(), isoform, positionList));
+        }
+
+        return outlist;
+    }
+    
+
+    /**
+     * P53_HUMAN_9 99,100
+     *  
+     * @param uniprotId
+     * @param isoform
+     * @param pdbPositionList
+     * @return
+     */
+    public List<MutationAnnotation> getMutationUsageAnnotationByUniprotIdIsoPDB(String uniprotId, String isoform, List<String> pdbPositionList) {
+
+        List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
+
+        Set<String> uniprotAccSet = new HashSet<String>();
+        for (Uniprot uniprot : uniprotList) {
+            uniprotAccSet.add(uniprot.getUniprotAccession());
+        }
+
+        List<MutationAnnotation> outlist = new ArrayList<MutationAnnotation>();
+        Iterator<String> it = uniprotAccSet.iterator();
+        while (it.hasNext()) {
+            outlist.addAll(getMutationUsageAnnotationByUniprotAccessionIsoPDB(it.next(), isoform, pdbPositionList));
         }
 
         return outlist;

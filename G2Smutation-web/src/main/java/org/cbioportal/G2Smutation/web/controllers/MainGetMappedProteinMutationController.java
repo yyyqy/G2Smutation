@@ -405,6 +405,135 @@ public class MainGetMappedProteinMutationController {
 			@ApiParam(required = true, value = "Input PDB Id e.g. 2pcx") @PathVariable String pdb_id,
             @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain_id,
 			@ApiParam(required = false, value = "Input Residue Positions e.g. 202,282;"
+					+ "Return all residue mappings if none") @RequestParam(required = false) List<String> pdbPositionList) {
+
+		System.out.println("***"+id_type+"\t"+id+"\t"+pdb_id+"\t"+chain_id);
+		List<MutationAnnotation> outList = new ArrayList<MutationAnnotation>();
+		try {
+		if (id_type.equals("ensembl")) {
+			if (id.startsWith("ENSP")) {// EnsemblID:
+				// ENSP00000269305.4/ENSP00000269305
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
+				for (Ensembl ensembl : ensembllist) {					
+					List<MutationAnnotation> list = null;
+                    if (pdbPositionList == null) {
+                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId());
+                    } else {
+                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), pdbPositionList);
+                    }
+
+                    outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
+				}
+			} else if (id.startsWith("ENSG")) {// EnsemblGene:
+				// ENSG00000141510.11/ENSG00000141510
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
+				// Original implementation, just find exact word
+				// ENSG00000141510
+				// List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
+				if (ensembllist.size() >= 1) {
+					for (Ensembl ensembl : ensembllist) {					
+						List<MutationAnnotation> list = null;
+	                    if (pdbPositionList == null) {
+	                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId());
+	                    } else {
+	                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), pdbPositionList);
+	                    }
+
+	                    outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
+					}
+				}
+			} else if (id.startsWith("ENST")) {// EnsemblTranscript:
+				// ENST00000269305.4/ENST00000269305
+				List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
+				if (ensembllist.size() >= 1) {
+					for (Ensembl ensembl : ensembllist) {					
+						List<MutationAnnotation> list = null;
+	                    if (pdbPositionList == null) {
+	                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId());
+	                    } else {
+	                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), pdbPositionList);
+	                    }
+
+	                    outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
+					}
+				}
+			} else {
+				log.info("Error in Input. id_type:Ensembl id: " + id + " position:" + pdbPositionList);
+			}
+
+		} else if (id_type.equals("uniprot")) {
+			if (id.length() == 6 && id.split("_").length != 2) { // Accession: P04637
+				List<MutationAnnotation> list = null;
+				if (pdbPositionList == null) {
+					list=seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1");
+				} else {
+					list=seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1", pdbPositionList);
+				}
+				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
+
+			} else if (id.split("_").length == 2) {// ID: P53_HUMAN
+				System.out.println("HERE!");
+				List<MutationAnnotation> list = null;
+				if (pdbPositionList == null) {
+					list=seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1");
+				} else {
+					list=seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1", pdbPositionList);
+				}
+				
+				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
+			} else {
+				log.info("Error in Input. id_type:Uniprot id: " + id + " position:" + pdbPositionList);
+			}
+
+		} else if (id_type.equals("uniprot_isoform")) {
+			if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession: P04637
+				List<MutationAnnotation> list = null;
+				if (pdbPositionList == null) {
+					list = seqController.getMutationUsageAnnotationByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]);
+				} else {
+					list = seqController.getMutationUsageAnnotationByUniprotAccessionIso(id.split("_")[0],
+							id.split("_")[1], pdbPositionList);
+				}
+				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
+
+			} else if (id.split("_").length == 3) {// ID: P53_HUMAN
+				List<MutationAnnotation> list = null;
+				if (pdbPositionList == null) {
+					list = seqController.getMutationUsageAnnotationByUniprotIdIso(
+							id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2]);
+				} else {
+					list = seqController.getMutationUsageAnnotationByUniprotIdIso(
+							id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2], pdbPositionList);
+				}
+				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
+
+			} else {
+				log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
+			}
+		}
+
+		else {
+			log.info("Error in Input. id_type:" + id_type + " id: " + id + " position:" + pdbPositionList);
+		}
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return outList;
+	}
+	
+	
+	@RequestMapping(value = "/proteinMutationAnnoPDB/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation("POST mutation annotation by ProteinId and PDB residue")
+	public List<MutationAnnotation> postProteinMutationAnnotationByPDBResidue(
+			@ApiParam(required = true, value = "Input id_type: ensembl; uniprot;"
+					+ "uniprot_isoform;") @PathVariable String id_type,
+			@ApiParam(required = true, value = "Input id e.g.\n"
+					+ "ensembl:ENSP00000269305.4/ENSG00000141510.11/ENST00000269305.4;\n"
+					+ "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_1/P53_HUMAN_1;") @PathVariable String id,
+			@ApiParam(required = true, value = "Input PDB Id e.g. 2pcx") @PathVariable String pdb_id,
+            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain_id,
+			@ApiParam(required = false, value = "Input PDB Residue Positions e.g. 202,282;"
 					+ "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
 		System.out.println("***"+id_type+"\t"+id+"\t"+pdb_id+"\t"+chain_id);
@@ -419,7 +548,7 @@ public class MainGetMappedProteinMutationController {
                     if (positionList == null) {
                         list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId());
                     } else {
-                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), positionList);
+                        list = seqController.getMutationUsageAnnotationBySeqIdPDB(ensembl.getSeqId(), positionList);
                     }
 
                     outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
@@ -436,7 +565,7 @@ public class MainGetMappedProteinMutationController {
 	                    if (positionList == null) {
 	                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId());
 	                    } else {
-	                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), positionList);
+	                        list = seqController.getMutationUsageAnnotationBySeqIdPDB(ensembl.getSeqId(), positionList);
 	                    }
 
 	                    outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
@@ -451,7 +580,7 @@ public class MainGetMappedProteinMutationController {
 	                    if (positionList == null) {
 	                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId());
 	                    } else {
-	                        list = seqController.getMutationUsageAnnotationBySeqId(ensembl.getSeqId(), positionList);
+	                        list = seqController.getMutationUsageAnnotationBySeqIdPDB(ensembl.getSeqId(), positionList);
 	                    }
 
 	                    outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
@@ -467,7 +596,7 @@ public class MainGetMappedProteinMutationController {
 				if (positionList == null) {
 					list=seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1");
 				} else {
-					list=seqController.getMutationUsageAnnotationByUniprotAccessionIso(id, "1", positionList);
+					list=seqController.getMutationUsageAnnotationByUniprotAccessionIsoPDB(id, "1", positionList);
 				}
 				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
 
@@ -477,7 +606,7 @@ public class MainGetMappedProteinMutationController {
 				if (positionList == null) {
 					list=seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1");
 				} else {
-					list=seqController.getMutationUsageAnnotationByUniprotIdIso(id, "1", positionList);
+					list=seqController.getMutationUsageAnnotationByUniprotIdIsoPDB(id, "1", positionList);
 				}
 				
 				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
@@ -491,7 +620,7 @@ public class MainGetMappedProteinMutationController {
 				if (positionList == null) {
 					list = seqController.getMutationUsageAnnotationByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]);
 				} else {
-					list = seqController.getMutationUsageAnnotationByUniprotAccessionIso(id.split("_")[0],
+					list = seqController.getMutationUsageAnnotationByUniprotAccessionIsoPDB(id.split("_")[0],
 							id.split("_")[1], positionList);
 				}
 				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
@@ -502,7 +631,7 @@ public class MainGetMappedProteinMutationController {
 					list = seqController.getMutationUsageAnnotationByUniprotIdIso(
 							id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2]);
 				} else {
-					list = seqController.getMutationUsageAnnotationByUniprotIdIso(
+					list = seqController.getMutationUsageAnnotationByUniprotIdIsoPDB(
 							id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2], positionList);
 				}
 				outList = choosePDBresultAnnotation(list, outList, pdb_id, chain_id);
