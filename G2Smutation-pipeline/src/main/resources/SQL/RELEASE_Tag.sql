@@ -20,7 +20,10 @@ select count(DISTINCT(CHR_POS)) from gpos_allmapping_entry where CLINVAR_ID<>'';
 select count(DISTINCT(CHR_POS)) from gpos_allmapping_entry where COSMIC_ID<>'';
 select count(DISTINCT(CHR_POS)) from gpos_allmapping_entry where GENIE_ID<>'';
 select count(DISTINCT(CHR_POS)) from gpos_allmapping_entry where TCGA_ID<>'';
-select count(DISTINCT(MUTATION_NO)) from mutation_usage_table;
+-- three number in the proposal
+SELECT count(DISTINCT y.MUTATION_NO) FROM gpos_allmapping_pdb_entry x JOIN gpos_protein_entry y ON y.CHR_POS=x.CHR_POS;
+SELECT count(DISTINCT x.SEQ_ID,x.SEQ_INDEX) FROM gpos_allmapping_pdb_entry x JOIN gpos_allmapping_entry y ON y.CHR_POS=x.CHR_POS;
+SELECT count(DISTINCT(MUTATION_NO)) FROM mutation_usage_table;
 -- update table
 SELECT count(DISTINCT x.MUTATION_NO)  FROM mutation_usage_table x JOIN mutation_usage_table y ON y.MUTATION_NO = x.MUTATION_NO AND y.PDB_RESIDUE = 'A' AND x.PDB_RESIDUE='R';
 SELECT count(DISTINCT x.MUTATION_NO)  FROM mutation_usage_table x JOIN mutation_usage_table y ON y.MUTATION_NO = x.MUTATION_NO AND y.PDB_RESIDUE = 'A' AND x.PDB_RESIDUE='N';
@@ -213,14 +216,9 @@ SELECT count(DISTINCT x.MUTATION_NO)  FROM mutation_usage_table x JOIN mutation_
 SELECT count(DISTINCT x.MUTATION_NO)  FROM mutation_usage_table x JOIN mutation_usage_table y ON y.MUTATION_NO = x.MUTATION_NO AND y.PDB_RESIDUE = 'W' AND x.PDB_RESIDUE='V';
 SELECT count(DISTINCT x.MUTATION_NO)  FROM mutation_usage_table x JOIN mutation_usage_table y ON y.MUTATION_NO = x.MUTATION_NO AND y.PDB_RESIDUE = 'Y' AND x.PDB_RESIDUE='V';
 -- update table, add index
-ALTER TABLE `mutation_usage_table` ADD INDEX `SEQ_ID` (`SEQ_ID`);
+-- ALTER TABLE `mutation_usage_table` ADD INDEX `SEQ_ID` (`SEQ_ID`);
 -- ALTER TABLE `clinvar_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 -- ALTER TABLE `dbsnp_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 -- ALTER TABLE `cosmic_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 -- ALTER TABLE `genie_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
 -- ALTER TABLE `tcga_entry` ADD INDEX `MUTATION_NO` (`MUTATION_NO`);
--- three number in the proposal
--- SELECT count(DISTINCT y.MUTATION_NO) FROM gpos_allmapping_pdb_entry x JOIN gpos_protein_entry y ON y.CHR_POS=x.CHR_POS;
--- SELECT count(DISTINCT x.SEQ_ID,x.SEQ_INDEX) FROM gpos_allmapping_pdb_entry x JOIN gpos_allmapping_entry y ON y.CHR_POS=x.CHR_POS;
--- select count(DISTINCT(MUTATION_NO)) from mutation_usage_table;
-

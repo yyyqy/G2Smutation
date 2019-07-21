@@ -682,14 +682,21 @@ public class PdbScriptsPipelineMakeSQL {
                 outputlist.add(makeTable_pdb_entry_insert(br));
                 pdbHm.put(br.getSseqid(), "");
             }
+            
+            /**
+             * Old implementation for G2S V1, we only Keep 50 alignments at that time
+             * Now, we use all the alignments 
+             */
+            /*
             // If it is update, then call function
-            if (this.updateTag) {// TODO
+            if (this.updateTag) {
                 outputlist.add(makeTable_pdb_seq_insert_Update(br));
                 // If it is init, generate INSERT statements
             } else {
                 outputlist.add(makeTable_pdb_seq_insert(br));
             }
-
+            */
+            outputlist.add(makeTable_pdb_seq_insert(br));
         }
         outputlist.add("commit;");
         return outputlist;
