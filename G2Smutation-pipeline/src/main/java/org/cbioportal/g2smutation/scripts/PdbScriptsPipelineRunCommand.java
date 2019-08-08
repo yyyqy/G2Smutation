@@ -740,16 +740,16 @@ public class PdbScriptsPipelineRunCommand {
     	ArrayList<String> paralist = new ArrayList<String>();
         CommandProcessUtil cu = new CommandProcessUtil();
         String currentDir = this.currentDir;
-        FileOperatingUtil fou = new FileOperatingUtil();
-        
+        FileOperatingUtil fou = new FileOperatingUtil();        
         
         log.info("********************[STEP 3.1]********************");
         log.info("[File] Read results from file, generate HashMap for usage");        
         MutationUsageRecord mUsageRecord = new MutationUsageRecord();
         HashMap<String, String> mutationHm = new HashMap<>();
-        //Init from known info
-        if (updateTag){
-            String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
+        //If mutationHmFile existed, Init from known info 
+        String filename = ReadConfig.workspace + ReadConfig.mutationHmFile;
+        File knowledgeFile = new File(filename);
+        if (updateTag||knowledgeFile.exists()){
             // Deserialize
             try{  
                 log.info("Deserialize "+ filename);
