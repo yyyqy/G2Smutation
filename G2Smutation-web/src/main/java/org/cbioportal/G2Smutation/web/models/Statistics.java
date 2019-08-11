@@ -80,6 +80,12 @@ public class Statistics {
     @Column(name = "TCGA_MAPPING_NUM")
     private int tcgaMappingNum;
     
+    @Column(name = "MUTATION_LOCATION_NUM_WHOLE")
+    private int mutationLocationNumWhole;
+    
+    @Column(name = "MUTATION_LOCATION_NUM_ALL")
+    private int mutationLocationNumAll;
+    
     @Column(name = "MUTATION_LOCATION_NUM")
     private int mutationLocationNum;
     
@@ -843,6 +849,22 @@ public class Statistics {
 
 	public void setMutationLocationNum(int mutationLocationNum) {
 		this.mutationLocationNum = mutationLocationNum;
+	}
+
+	public int getMutationLocationNumWhole() {
+		return mutationLocationNumWhole;
+	}
+
+	public void setMutationLocationNumWhole(int mutationLocationNumWhole) {
+		this.mutationLocationNumWhole = mutationLocationNumWhole;
+	}
+
+	public int getMutationLocationNumAll() {
+		return mutationLocationNumAll;
+	}
+
+	public void setMutationLocationNumAll(int mutationLocationNumAll) {
+		this.mutationLocationNumAll = mutationLocationNumAll;
 	}
 
 	public int getA2R() {
