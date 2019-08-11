@@ -102,12 +102,26 @@ public class StructureAnnotation {
 			HashMap<String, List<String>> cathLines = readCathAllFile();
 			HashMap<String, String> cathNamesLines = readCathNamesFile();
 
+			//default updateFlag is false
+			boolean updateFlag = Boolean.parseBoolean(ReadConfig.structureAnnoHmUpdate);
 			Iterator it = annoKeySet.iterator();
 			while (it.hasNext()) {
 				String annoKey = it.next().toString();
 				StructureAnnotationRecord sarOut = new StructureAnnotationRecord();
-
-				if (!structureAnnoHm.containsKey(annoKey)) {
+				
+				boolean doFlag = false;				
+				//flag to override hashmap, in case the API results are not perfect
+				if (structureAnnoHm.containsKey(annoKey)) {
+					if(updateFlag) {
+						StructureAnnotationRecord tmpsar = (StructureAnnotationRecord)structureAnnoHm.get(annoKey);
+						if(tmpsar.getCathName().equals("")) {
+							doFlag = true;
+						}
+					}					
+				}else {
+					doFlag = true;
+				}
+				if (doFlag) {
 					String pdb = annoKey.split("_")[0];
 					String chain = annoKey.split("_")[1];
 					String index = annoKey.split("_")[2];

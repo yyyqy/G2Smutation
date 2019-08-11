@@ -35,13 +35,14 @@ public class PdbScriptsPipelineRunCommandTest {
         */
 		PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
 		PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
-		//app.generateWeeklyTag(preprocess);
+		app.setCurrentDir(ReadConfig.workspace);
+		app.generateWeeklyTag(preprocess);
 		
 		
 		//PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(app);
 		//parseprocess.parseGenerateMutationResultSQL4MutatationUsageTable(ReadConfig.workspace + ReadConfig.mutationResult, ReadConfig.workspace + ReadConfig.mutationInjectSQLUsage);
 		
-		
+		/*
 		CommandProcessUtil cu = new CommandProcessUtil();
     	ArrayList<String> paralist = new ArrayList<String>();
     	String currentDir = ReadConfig.workspace+"20190712/";
@@ -64,6 +65,7 @@ public class PdbScriptsPipelineRunCommandTest {
         paralist.add(currentDir + ReadConfig.updateReleaseWeeklydownload + date[date.length-2] + ".txt.gz");
         paralist.add(ReadConfig.resourceDir + "currentRelease.gz");
         cu.runCommand("cp", paralist);
+        */
 	}
 
 }

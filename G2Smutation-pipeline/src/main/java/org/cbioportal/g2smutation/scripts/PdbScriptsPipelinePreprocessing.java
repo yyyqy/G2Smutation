@@ -612,7 +612,7 @@ public class PdbScriptsPipelinePreprocessing {
 
 			String outstr = "SET autocommit = 0;\nstart transaction;\n";
 			outstr = outstr
-					+ "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`,`DBSNP_NUM`,`CLINVAR_NUM`,`COSMIC_NUM`,`GENIE_NUM`,`TCGA_NUM`,`DBSNP_NUM_UNIQUE`,`CLINVAR_NUM_UNIQUE`,`COSMIC_NUM_UNIQUE`,`GENIE_NUM_UNIQUE`,`TCGA_NUM_UNIQUE`,`DBSNP_MAPPING_NUM`,`CLINVAR_MAPPING_NUM`,`COSMIC_MAPPING_NUM`,`GENIE_MAPPING_NUM`,`TCGA_MAPPING_NUM`,`MUTATION_LOCATION_NUM`";
+					+ "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`,`DBSNP_NUM`,`CLINVAR_NUM`,`COSMIC_NUM`,`GENIE_NUM`,`TCGA_NUM`,`DBSNP_NUM_UNIQUE`,`CLINVAR_NUM_UNIQUE`,`COSMIC_NUM_UNIQUE`,`GENIE_NUM_UNIQUE`,`TCGA_NUM_UNIQUE`,`DBSNP_MAPPING_NUM`,`CLINVAR_MAPPING_NUM`,`COSMIC_MAPPING_NUM`,`GENIE_MAPPING_NUM`,`TCGA_MAPPING_NUM`,`MUTATION_LOCATION_NUM_WHOLE`,`MUTATION_LOCATION_NUM_ALL`,`MUTATION_LOCATION_NUM`";
 			for (String col: colList) {
 				outstr = outstr + ",`" + col + "`";
 			}					
@@ -623,10 +623,11 @@ public class PdbScriptsPipelinePreprocessing {
 					+ contents.get(21) + "', '" + contents.get(23) + "', '" + contents.get(25) + "', '"
 					+ contents.get(27) + "', '" + contents.get(29) + "', '" + contents.get(31) + "', '"
 					+ contents.get(33) + "', '" + contents.get(35) + "', '" + contents.get(37) + "', '"
-					+ contents.get(39) + "'";
+					+ contents.get(39) + "', '" + contents.get(41) + "', '" + contents.get(43) + "'";
 			
+			//45 is the magic number corresponds to 43+2
 			for (int i = 0; i<colList.size()*2; i=i+2) {
-				outstr = outstr + ", '" + contents.get(i+41) + "'";
+				outstr = outstr + ", '" + contents.get(i+45) + "'";
 			}
 
 			outstr = outstr + ");\ncommit;\n";
