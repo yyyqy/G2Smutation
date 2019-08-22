@@ -25,6 +25,7 @@ import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.io.PDBFileReader;
 import org.cbioportal.g2smutation.util.FileOperatingUtil;
 import org.cbioportal.g2smutation.util.ReadConfig;
+import org.cbioportal.g2smutation.util.StringUtil;
 import org.cbioportal.g2smutation.util.blast.BlastDataBase;
 import org.cbioportal.g2smutation.util.blast.BlastOutput;
 import org.cbioportal.g2smutation.util.blast.BlastOutputIterations;
@@ -90,7 +91,7 @@ public class PdbScriptsPipelineMakeSQL {
      * 
      * @param app
      */
-    PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app) {
+    public PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app) {
         this.db = app.getDb();
         this.matches = app.getMatches();
         this.seqFileCount = app.getSeqFileCount();
@@ -109,7 +110,7 @@ public class PdbScriptsPipelineMakeSQL {
      * 
      * @param app
      */
-    PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, int testcase) {
+    public PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, int testcase) {
         this.db = app.getDb();
         this.matches = app.getMatches();
         this.seqFileCount = app.getSeqFileCount();
@@ -394,8 +395,14 @@ public class PdbScriptsPipelineMakeSQL {
                 if (!hits.getHit().isEmpty()) {
                     sequence_count++;
                 }
+                //Use indexSet to store index of mutation in the query protein
+                //<index,HashSet<ResidueName>>
+                HashMap <Integer,HashSet<String>> indexHm = new HashMap<>();
                 for (Hit hit : hits.getHit()) {
-                    MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
+                	indexHm = parseSingleAlignmentMutationFindMutatedIndex(querytext, hit, count, indexHm);
+                }
+                for (Hit hit : hits.getHit()) {
+                    MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count, indexHm);
                     alignmentList.addAll(mar.getAlignmentList());
                     mutationList.addAll(mar.getMutationList()); 
                     count = mar.getAlignmentId();
@@ -445,11 +452,11 @@ public class PdbScriptsPipelineMakeSQL {
         String pdbNo = br.getSseqid().split("\\s+")[0];
         String[] strarrayS = pdbNo.split("_");
         String segStart = br.getSseqid().split("\\s+")[3];
-        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`ALIGNLENGTH`,`UPDATE_DATE`)VALUES ('"
                 + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','"
                 + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
                 + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
-                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
+                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',"+br.getMidline_align().length()+",CURDATE());\n";
         return str;
     }
 
@@ -675,14 +682,21 @@ public class PdbScriptsPipelineMakeSQL {
                 outputlist.add(makeTable_pdb_entry_insert(br));
                 pdbHm.put(br.getSseqid(), "");
             }
+            
+            /**
+             * Old implementation for G2S V1, we only Keep 50 alignments at that time
+             * Now, we use all the alignments 
+             */
+            /*
             // If it is update, then call function
-            if (this.updateTag) {// TODO
+            if (this.updateTag) {
                 outputlist.add(makeTable_pdb_seq_insert_Update(br));
                 // If it is init, generate INSERT statements
             } else {
                 outputlist.add(makeTable_pdb_seq_insert(br));
             }
-
+            */
+            outputlist.add(makeTable_pdb_seq_insert(br));
         }
         outputlist.add("commit;");
         return outputlist;
@@ -744,7 +758,8 @@ public class PdbScriptsPipelineMakeSQL {
                 String querytext = iteration.getIterationQueryDef();
                 IterationHits hits = iteration.getIterationHits();
                 for (Hit hit : hits.getHit()) {
-                    MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count);
+                	//Have not test yet! for new HashSet<Integer>()
+                    MutationAlignmentResult mar = parseSingleAlignmentMutation(querytext, hit, count, new HashMap<Integer,HashSet<String>>());
                     results.addAll(mar.getAlignmentList());
                     count = results.size() + 1;
                 }
@@ -806,7 +821,7 @@ public class PdbScriptsPipelineMakeSQL {
      *            // number of alignment, it is the alignmentId
      * @return
      */
-    public MutationAlignmentResult parseSingleAlignmentMutation(String querytext, Hit hit, int count) {
+    public MutationAlignmentResult parseSingleAlignmentMutation(String querytext, Hit hit, int count, HashMap <Integer,HashSet<String>> indexHm) {
 
         // TODO Different criteria
         List<BlastResult> alignmentList = new ArrayList<BlastResult>();
@@ -840,6 +855,7 @@ public class PdbScriptsPipelineMakeSQL {
             br.seq_align = tmp.getHspQseq();
             br.pdb_align = tmp.getHspHseq();
             br.midline_align = tmp.getHspMidline();
+            br.alignLength = tmp.getHspMidline().length();
 
             /*
              * //Original solution: Include all the blast results
@@ -870,30 +886,37 @@ public class PdbScriptsPipelineMakeSQL {
                     // if we have point mutation here:
                     // Criteria: either space and + are mismatch, and no X as
                     // the linker
-                    if ((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")) {
-                        // log.info("*"+residueAlign+"&"+residue+"@");
+                    //if ((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")) {
+                    
 
-                        int correctProteinIndex = br.qStart + i - seqGapCount;
+                    int correctProteinIndex = br.qStart + i - seqGapCount;
                         /*
                          * Example here: Seq ID: 13, hitPDB: 1eg14_A_1; q:
                          * 7-239. s:29-260, PDB: 47-306
                          */
-                        int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i
-                                - pdbGapCount;
-                        String pdbNO = br.sseqid.split("\\s+")[0];
-                        
-                        MutationRecord mr = new MutationRecord();
-                        mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
-                        mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
-                        mr.setSeqResidueIndex(correctProteinIndex);
-                        mr.setSeqResidueName(br.seq_align.substring(i, i + 1));
-                        mr.setPdbNo(pdbNO);
-                        mr.setPdbResidueIndex(correctPDBIndex);
-                        mr.setPdbResidueName(br.pdb_align.substring(i, i + 1));
-                        mr.setAlignmentId(count);
+					if (indexHm.containsKey(correctProteinIndex)) {
+						HashSet<String> indexSet = indexHm.get(correctProteinIndex);
+//						if(querytext.startsWith("59996;P04637_1") && correctProteinIndex==106) {
+//							System.out.println(correctProteinIndex+"\t"+indexSet.size()+"\t"+indexSet.toString());
+//						}
+						//if (indexSet.size() >= 2) {
+							int correctPDBIndex = Integer.parseInt(br.sseqid.split("\\s+")[3]) + br.sStart - 1 + i
+									- pdbGapCount;
+							String pdbNO = br.sseqid.split("\\s+")[0];
 
-                        mutationList.add(mr);
-                    }
+							MutationRecord mr = new MutationRecord();
+							mr.setSeqId(Integer.parseInt(querytext.split(";")[0]));
+							mr.setSeqName(querytext.substring(querytext.indexOf(";") + 1));
+							mr.setSeqResidueIndex(correctProteinIndex);
+							mr.setSeqResidueName(br.seq_align.substring(i, i + 1));
+							mr.setPdbNo(pdbNO);
+							mr.setPdbResidueIndex(correctPDBIndex);
+							mr.setPdbResidueName(br.pdb_align.substring(i, i + 1));
+							mr.setAlignmentId(count);
+
+							mutationList.add(mr);
+						//}
+					}
                 }
                 alignmentList.add(br);                
             }
@@ -906,6 +929,94 @@ public class PdbScriptsPipelineMakeSQL {
         result.setAlignmentId(count);
 
         return result;
+    }
+    
+    
+    /**
+     * Parsing XML first to find mutation index as MUTATION_NO: as TP53: 59996_282
+     * Parse XML structure into Object BlastResult Core function
+     *
+     * 
+     * @param querytext
+     *            e.g. 13;P11532_7 DMD_HUMAN;ENSP00000367974.4
+     *            ENSG00000198947.15 ENST00000378702.8
+     * @param hit
+     * @return iHashMap <Integer,HashSet<String>> indexHm: proteinIndex, HashSet of residue 
+     */
+    public HashMap <Integer,HashSet<String>> parseSingleAlignmentMutationFindMutatedIndex(String querytext, Hit hit, int count, HashMap <Integer,HashSet<String>> indexHm) {
+
+        List<Hsp> tmplist = hit.getHitHsps().getHsp();
+        for (Hsp tmp : tmplist) {
+        	
+        	BlastResult br = new BlastResult(count);
+            br.qseqid = querytext;
+            br.sseqid = hit.getHitDef();
+            br.ident = Double.parseDouble(tmp.getHspIdentity());
+            br.identp = Double.parseDouble(tmp.getHspPositive());
+            br.evalue = Double.parseDouble(tmp.getHspEvalue());
+            br.bitscore = Double.parseDouble(tmp.getHspBitScore());
+            br.qStart = Integer.parseInt(tmp.getHspQueryFrom());
+            br.qEnd = Integer.parseInt(tmp.getHspQueryTo());
+            br.sStart = Integer.parseInt(tmp.getHspHitFrom());
+            br.sEnd = Integer.parseInt(tmp.getHspHitTo());
+            br.seq_align = tmp.getHspQseq();
+            br.pdb_align = tmp.getHspHseq();
+            br.midline_align = tmp.getHspMidline();
+
+            /*
+             * //Original solution: Include all the blast results
+             * resultList.add(br); count++;
+             */
+            // Add filter: Only choose best alignment
+            Double alignlen = Double.parseDouble(tmp.getHspAlignLen());
+            // count "-" in genSequence
+            int seqGapCount = 0;
+            // count "-" in pdbSequence
+            int pdbGapCount = 0;
+            // Hardcode now, for testcase = 1
+            if (isFilterAlignHighQuality(br, alignlen, testcase)) {
+            //if (Double.parseDouble(tmp.getHspPositive()) / alignlen >= 0.90) {
+            	for (int i = 0; i < br.midline_align.length(); i++) {
+                    String residueAlign = br.midline_align.substring(i, i + 1);
+                    String residue = br.pdb_align.substring(i, i + 1);
+                    String residueQuery = br.seq_align.substring(i, i + 1);
+                    // if there is a "-" in genSequence, seqGapCount +1
+                    if (residueQuery.equals("-")) {
+                        seqGapCount++;
+                        continue;
+                    }
+                    // if there is a "-" in pdbSequence, pdbGapCount+1
+                    if (residue.equals("-")) {
+                        pdbGapCount++;
+                        continue;
+                    }
+                    // if we have point mutation here:
+                    // Criteria: either space and + are mismatch, and no X as
+                    // the linker
+                    if ((residueAlign.equals(" ") || residueAlign.equals("+")) && !residue.equals("X")) {
+                        // log.info("*"+residueAlign+"&"+residue+"@");
+                    	int correctProteinIndex = br.qStart + i - seqGapCount;
+                    	
+                        HashSet<String> indexSet;
+                        if(indexHm.containsKey(correctProteinIndex)) {
+                        	indexSet = indexHm.get(correctProteinIndex);
+                        }else {
+                        	indexSet = new HashSet<>();                       	
+                        }
+                        indexSet.add(residue);
+//                        if(indexSet.size()>=2) {
+//                        	System.out.println(indexSet.size());
+//                        }
+                        indexHm.put(correctProteinIndex, indexSet); 
+//                        if(querytext.startsWith("59996;P04637_1") && correctProteinIndex==106) {
+//                        	System.out.println(residue+"\t"+indexHm.get(correctProteinIndex).toString());
+//                    	}
+                    }
+                }               
+            }
+        }
+
+        return indexHm;
     }
 
     /*
@@ -1537,9 +1648,9 @@ public class PdbScriptsPipelineMakeSQL {
             List<String> list = FileUtils.readLines(inFile);
             for (int i = 1; i < list.size(); i++) {
                 String[] str = list.get(i).split("\t");
-                String strr = "INSERT INTO `mutation_usage_table` (`MUTATION_ID`,`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`,`UPDATE_DATE`)VALUES('"
+                String strr = "INSERT INTO `mutation_usage_table` (`MUTATION_ID`,`MUTATION_NO`,`SEQ_ID`,`SEQ_NAME`,`SEQ_INDEX`,`SEQ_RESIDUE`,`PDB_NO`,`PDB_INDEX`,`PDB_RESIDUE`,`ALIGNMENT_ID`,`IDENTITY`,`IDENTITYP`,`EVALUE`,`BITSCORE`,`ALIGNLENGTH`,`UPDATE_DATE`)VALUES('"
                         + str[0] + "','" + str[1] + "','" + str[2] + "','" + str[3] + "','" + str[4] + "','" + str[5]
-                        + "','" + str[6] + "','" + str[7] + "','" + str[8] + "','" + str[9] + "',CURDATE());\n";
+                        + "','" + str[6] + "','" + str[7] + "','" + str[8] + "'," + str[9] + "," + str[10] + "," + str[11] + ",'" + str[12] + "'," + str[13] + "," + str[14] + ",CURDATE());\n";
                 outputlist.add(strr);
             }
             outputlist.add("commit;");
@@ -1559,6 +1670,7 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public void parseGenerateMutationResultSQL4MutationLocationEntry(MutationUsageRecord mUsageRecord,
             String outputFilename) {
+    	log.info("Start writing " + outputFilename);
         HashMap<Integer, String> mutationIdHm = mUsageRecord.getMutationIdHm();
         HashMap<Integer, String> mutationNoIdRHm = mUsageRecord.getMutationNoIdRHm();
         try {
@@ -1576,21 +1688,25 @@ public class PdbScriptsPipelineMakeSQL {
                 // Corner Case:
                 // HSCHR6_MHC_MCF_29989718_29989720
                 String[] strArray = chr_pos.split("_");
-                String chr = strArray[0];
-                for (int i = 1; i < strArray.length - 2; i++) {
-                    chr = chr + strArray[i] + "_";
-                }
+                // in case chr_pos == " "
+                if (strArray.length>1) {
+					String chr = strArray[0];
+					for (int i = 1; i < strArray.length - 2; i++) {
+						chr = chr + strArray[i] + "_";
+					}
 
-                String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`MUTATION_NO`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
-                        + mutationId + "','" + mutationNo + "','" + chr_pos + "','" + chr + "','"
-                        + strArray[strArray.length - 2] + "','" + strArray[strArray.length - 1] + "');\n";
-                outputlist.add(str);
+					String str = "INSERT INTO `mutation_location_entry` (`MUTATION_ID`,`MUTATION_NO`,`CHR_POS`,`CHR`,`POS_START`,`POS_END`)VALUES('"
+							+ mutationId + "','" + mutationNo + "','" + chr_pos + "','" + chr + "','"
+							+ strArray[strArray.length - 2] + "','" + strArray[strArray.length - 1] + "');\n";
+					outputlist.add(str);
+                }
 
             }
             outputlist.add("commit;");
+            log.info(outputlist.size());
             FileUtils.writeLines(new File(outputFilename), outputlist);
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+        	log.error(outputFilename + " has something wrong, please check!");
             ex.printStackTrace();
         }
     }
@@ -1665,6 +1781,7 @@ public class PdbScriptsPipelineMakeSQL {
                                                         // all information in
                                                         // the line>
         FileOperatingUtil fou = new FileOperatingUtil();
+        StringUtil su = new StringUtil();
         try {
             LineIterator it = FileUtils.lineIterator(new File(inputFilename));
             while (it.hasNext()) {
@@ -1707,7 +1824,7 @@ public class PdbScriptsPipelineMakeSQL {
 
                 for (String key : contentHm.keySet()) {
                     keystr = keystr + ",`" + key + "`";
-                    valstr = valstr + ",'" + contentHm.get(key) + "'";
+                    valstr = valstr + ",'" + su.toSQLstring(contentHm.get(key)) + "'";
                 }
                 valstr = valstr + ",CURDATE());\n";
 
@@ -1749,6 +1866,7 @@ public class PdbScriptsPipelineMakeSQL {
             while (it.hasNext()) {
                 String contentStr = it.nextLine();
                 String[] strArray = contentStr.split("\t");
+                
                 if (count == 0) {
                     // header, convert header to inject key string
                     for (String str : strArray) {
@@ -1757,13 +1875,16 @@ public class PdbScriptsPipelineMakeSQL {
                                                         // Cosmic, we changed
                                                         // accordingly
                             str = "COSMIC_MUTATION_ID";
+                        }if (str.equals("GENOME-WIDE_SCREEN")) {// duplicate key in
+                            // Cosmic, we changed accordingly
+                        	str = "GENOME_WIDE_SCREEN";
                         }
                         keystr = keystr + ",`" + str + "`";
                     }
                     keystr = keystr + ",`COSMIC_VERSION`)VALUES('";
                 } else {
-                    // System.out.println(count + " * " + strArray[23]);
-                    if (!strArray[23].equals("")) {
+                    //System.out.println(count + " * " + strArray[23]);
+                    if (!strArray[23].equals("")) {                   	
                         String[] tmpArray = strArray[23].split(":");
                         String[] posArray = tmpArray[1].split("-");
                         int start = Integer.parseInt(posArray[0]);
@@ -1813,11 +1934,14 @@ public class PdbScriptsPipelineMakeSQL {
                 for (String str : strArray) {
                     valstr = valstr + ",'" + str + "'";
                 }
-                // deal with the last character may miss
-                if (strArray.length == 34) {// temp hardcode here related with
-                                            // the cosmic_entry;
-                    valstr = valstr + ",''";
-                }
+                //For some reasons, the end of some cosmic annotation has been trimmed off
+            	//So we have to complete them
+            	int lengthNormal = 35; // 35 is the length of normal COSMIC annotation
+            	if (strArray.length<lengthNormal) {
+            		for(int i=strArray.length; i<lengthNormal; i++) {
+            			valstr = valstr + ",''";
+            		}
+            	}
                 valstr = valstr + ",'COSMIC v87, released 13-NOV-18');\n";
 
                 outputlist.add(keystr + valstr);
@@ -1919,7 +2043,7 @@ public class PdbScriptsPipelineMakeSQL {
                     for (String str : strArray) {
                         if (annotationType.equals("tcga")) {
                             if (str.equals("STRAND")) {
-                                str = "STRAND-VEP";
+                                str = "STRAND_VEP";
                             }
                         }
                         str = str.replaceAll("\\s+", "_").toUpperCase();

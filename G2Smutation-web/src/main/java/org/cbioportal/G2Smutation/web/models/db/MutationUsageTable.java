@@ -48,6 +48,21 @@ public class MutationUsageTable {
     @Column(name = "ALIGNMENT_ID")
     private int alignmentId;
     
+    @Column(name = "IDENTITY")
+    private float identity;
+    
+    @Column(name = "IDENTITYP")
+    private float identityP;
+    
+    @Column(name = "EVALUE")
+    private String evalue;
+    
+    @Column(name = "BITSCORE")
+    private float bitscore;
+    
+    @Column(name = "ALIGNLENGTH")
+    private int alignLength;
+    
     @Column(name = "UPDATE_DATE")
     private String updateDate;
 
@@ -139,5 +154,49 @@ public class MutationUsageTable {
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
+
+	public float getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(float identity) {
+		this.identity = identity;
+	}
+
+	public float getIdentityP() {
+		return identityP;
+	}
+
+	public void setIdentityP(float identityP) {
+		this.identityP = identityP;
+	}
+
+	public String getEvalue() {
+		return evalue;
+	}
+
+	public void setEvalue(String evalue) {
+		this.evalue = evalue;
+	}
+
+	public float getBitscore() {
+		return bitscore;
+	}
+
+	public void setBitscore(float bitscore) {
+		this.bitscore = bitscore;
+	}
+
+	public int getAlignLength() {
+		return alignLength;
+	}
+
+	public void setAlignLength(int alignLength) {
+		this.alignLength = alignLength;
+	}
+    
+	
+	
+    
 
 }

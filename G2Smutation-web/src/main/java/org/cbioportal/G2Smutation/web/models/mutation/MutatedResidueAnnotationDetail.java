@@ -9,7 +9,7 @@ import org.cbioportal.G2Smutation.web.models.Alignment;
 *
 */
 
-public class MutatedResidueAnnotationDetail extends MutatedResidueAnnotation {
+public class MutatedResidueAnnotationDetail extends MutatedResidueInfo {
     private String updateDate; //UPDATE_DATE
     private Alignment alignment; //linked from ALIGNMENT_ID
     

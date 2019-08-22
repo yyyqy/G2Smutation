@@ -25,21 +25,18 @@
   		
   		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
     		<ul class="navbar-nav mr-auto">
-      			
-      			<li class="nav-item dropdown">
-        			<a style="font-size:1.2em" class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Databases</a>
-        				<div class="dropdown-menu" aria-labelledby="dropdown01">
-          					<a class="dropdown-item" th:href="@{/database}" href="database.html">Usage Database</a>
-          					<a class="dropdown-item" th:href="@{/rs}" href="rs.html">RS Databases</a>
-        				</div>
-      			</li>
       			<li class="nav-item">
         			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
       			</li>
       			<li class="nav-item">
         			<a style="font-size:1.2em" class="nav-link" th:href="@{/sequence}" href="sequence.html">Sequence</a>
       			</li>
-      		
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/database}" href="database.html">Database</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/Statistics}" href="statistics.html">Statistics</a>
+      			</li>
     		</ul>
   		</div>
 	</nav>
@@ -155,9 +152,7 @@
 			</p>
 		</form>
 
-
 	</div>
-
 
 </body>
 </html>

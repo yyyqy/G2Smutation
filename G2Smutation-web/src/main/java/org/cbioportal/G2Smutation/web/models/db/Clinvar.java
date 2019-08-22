@@ -24,8 +24,8 @@ public class Clinvar {
     @Column(name = "CHR_POS")
     private String chrPos;
     
-    @Column(name = "MUTATION_ID")
-    private int mutationId;
+    @Column(name = "MUTATION_NO")
+    private String mutationNo;
     
     @Column(name = "CLINVAR_ID")
     private int clinvarId;
@@ -121,15 +121,15 @@ public class Clinvar {
         this.chrPos = chrPos;
     }
 
-    public int getMutationId() {
-        return mutationId;
-    }
+    public String getMutationNo() {
+		return mutationNo;
+	}
 
-    public void setMutationId(int mutationId) {
-        this.mutationId = mutationId;
-    }
+	public void setMutationNo(String mutationNo) {
+		this.mutationNo = mutationNo;
+	}
 
-    public int getClinvarId() {
+	public int getClinvarId() {
         return clinvarId;
     }
 

@@ -18,34 +18,43 @@
 
 <body>
 	<nav style="margin:0px" class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
-  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">G2S Web Service</a>
+  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">Variant3D</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
     		<span class="navbar-toggler-icon"></span>
   		</button>
   		
   		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
     		<ul class="navbar-nav mr-auto">
-      			
-      			<li class="nav-item dropdown">
-        			<a style="font-size:1.2em" class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Databases</a>
-        				<div class="dropdown-menu" aria-labelledby="dropdown01">
-          					<a class="dropdown-item" th:href="@{/database}" href="database.html">Usage Database</a>
-          					<a class="dropdown-item" th:href="@{/rs}" href="rs.html">RS Databases</a>
-        				</div>
-      			</li>
       			<li class="nav-item">
         			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
       			</li>
       			<li class="nav-item">
-        			<a style="font-size:1.2em" class="nav-link" th:href="@{/sequence}" href="sequence.html">Sequence</a>
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/download}" href="download.html">Download</a>
       			</li>
-      		
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/clients}" href="clients.html">Clients</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/statistics}" href="statistics.html">Statistics</a>
+      			</li>     			
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" target="_blank" href="https://github.com/juexinwang/G2Smutation">Github</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/tutorial}" href="tutorial.html">Tutorial</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" target="_blank" href="https://g2s.genomenexus.org/">G2S</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/about}" href="about.html">About</a>
+      			</li> 
     		</ul>
   		</div>
 	</nav>
 	
 	<div style="padding:0px" class="container-fluid">
-		<iframe src="http://localhost:8080/swagger-ui.html" height="1000px" width="100%" style="border: none;">
+		<iframe src="http://variant3d.genomenexus.org/swagger-ui.html" height="1000px" width="100%" style="border: none;">
 			<p>Your browser does not support iframes. Chrome is recommend to get better view</p>
 		</iframe>
 	</div>

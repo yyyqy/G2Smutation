@@ -65,16 +65,16 @@ public class Application extends SpringBootServletInitializer {
          * "https://github.com/cBioPortal/pdb-annotation/blob/master/LICENSE").
          * version("2.0").build();
          */
-        ApiInfo apiInfo = new ApiInfo("G2S web API",
-                "A Genome to Strucure (G2S) API Supports Automated Mapping and Annotating Genomic Variants in 3D Protein Structures. Supports Inputs from Human Genome Position, Uniprot and Human Ensembl Names.",
-                "1.0 (beta)", "g2s.genomenexus.org",
-                new Contact("G2S", "http://g2s.genomenexus.org", "wangjue@missouri.edu"), "License",
+        ApiInfo apiInfo = new ApiInfo("Variant3D API",
+                "A variant to 3D structures (Variant3D) API Supports Automated Mapping and Annotating Genomic Variants in 3D Protein Structures. Supports Inputs from Human Genome Position, Uniprot and Human Ensembl Names.",
+                "1.0 (beta)", "variant3d.genomenexus.org",
+                new Contact("Variant3D", "http://variant3d.genomenexus.org", "wangjue@missouri.edu"), "License",
                 "https://github.com/cBioPortal/cbioportal/blob/master/LICENSE");
         return apiInfo;
     }
 
     // http to https
-/*
+    /*
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
         TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
@@ -102,5 +102,6 @@ public class Application extends SpringBootServletInitializer {
 
         return connector;
     }
-*/
+    */
+
 }

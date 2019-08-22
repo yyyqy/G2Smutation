@@ -18,34 +18,44 @@
 
 <body>
 	<nav style="margin:0px" class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
-  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">G2S Web Service</a>
+  		<a class="navbar-brand" th:href="@{/}" href="frontpage.html">Variant3D</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
     		<span class="navbar-toggler-icon"></span>
   		</button>
   		
   		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
     		<ul class="navbar-nav mr-auto">
-      			
-      			<li class="nav-item dropdown">
-        			<a style="font-size:1.2em" class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Databases</a>
-        				<div class="dropdown-menu" aria-labelledby="dropdown01">
-          					<a class="dropdown-item" th:href="@{/database}" href="database.html">Usage Database</a>
-          					<a class="dropdown-item" th:href="@{/rs}" href="rs.html">RS Databases</a>
-        				</div>
-      			</li>
       			<li class="nav-item">
         			<a style="font-size:1.2em" class="nav-link" th:href="@{/pageapi}" href="api.html">API</a>
       			</li>
       			<li class="nav-item">
-        			<a style="font-size:1.2em" class="nav-link" th:href="@{/sequence}" href="sequence.html">Sequence</a>
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/download}" href="download.html">Download</a>
       			</li>
-      		
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/clients}" href="clients.html">Clients</a>
+      			</li>
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/statistics}" href="statistics.html">Statistics</a>
+      			</li>     			
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" target="_blank" href="https://github.com/juexinwang/G2Smutation">Github</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/tutorial}" href="tutorial.html">Tutorial</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" target="_blank" href="https://g2s.genomenexus.org/">G2S</a>
+      			</li> 
+      			<li class="nav-item">
+        			<a style="font-size:1.2em" class="nav-link" th:href="@{/about}" href="about.html">About</a>
+      			</li> 
     		</ul>
   		</div>
 	</nav>
 	
 	<div class="container">
 	<h1 layout:fragment="header">Statistics of G2S databases:</h1>
+	<h2 layout:fragment="header">Alignment Summary</h2>
 	<div layout:fragment="content" class="container-fluid">
 
 		<table
@@ -63,59 +73,584 @@
 					<td th:text="${statistics[0].updateDate}">1</td>
 				</tr>
 				<tr>
-					<td>Ensembl version</td>
-					<td>Human Release-96</td>
+					<td>Ensembl Human Nonredundant (Release-96)</td>
+					<td>104763</td>
 				</tr>
 				<tr>
-					<td>Number of Nonredundant Ensembl Entries:</td>
-					<td>104817</td>
+					<td>Uniprot Human Nonredundant (Release 2019_04)</td>
+					<td>42190</td>
 				</tr>
 				<tr>
-					<td>Uniprot(Swissprot) version</td>
-					<td>UniProt Release 2019_02</td>
-				</tr>
-				<tr>
-					<td>Number of Nonredundant Uniprot Entries:</td>
-					<td>594927</td>
-				</tr>
-				<tr>
-					<td>Number of Combined Nonredundant Ensembl/Uniprot Entires:</td>
-					<td>559575</td>
+					<td>Comined Human Nonredundant Ensembl/Uniprot Entires:</td>
+					<td>92780</td>
 				</tr>
 				<tr>
 					<td>Number of PDB Entries of Chains and Segments:</td>
-					<td th:text="${statistics[0].segNum}">284458</td>
+					<td th:text="${statistics[0].segNum}">91061</td>
 				</tr>
 				<tr>
 					<td>Number of PDB Biological Macromolecular Structures:</td>
-					<td th:text="${statistics[0].pdbNum}">108237</td>
+					<td th:text="${statistics[0].pdbNum}">41966</td>
 				</tr>
 				<tr>
 					<td>Number of Protein-PDB alignments:</td>
-					<td th:text="${statistics[0].alignmentNum}">108237</td>
+					<td th:text="${statistics[0].alignmentNum}">659592</td>
 				</tr>
 			</tbody>
 		</table>
-		<p>G2S database stored alignments from protein
-			sequences against PDB sequences.</p>
-		<p>
-			The sources of protein sequences are from <a
-				href="ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/">Uniprot</a>
-			(Only includes Swissprot) and <a
-				href="http://ftp.ensembl.org/pub/release-90/fasta/homo_sapiens/pep/">HUMAN
-				ENSEMBL</a>. All the protein sequences are combined together to remove
-			redundancy.
-		</p>
-		<p>
-			G2S makes automatic frequent (<b>WEEKLY</b>) updates to
-			the set of pre-caculated alignments as new/obsolete/modified protein
-			structures are added to <a href="http://www.rcsb.org/">RCSB
-				Protein Data Bank</a>, while keeping the set of protein sequences from
-			public protein sequence databases fixed. Less frequently (<b>MONTHS</b>),
-			the system is re-initialized using an updated set of protein
-			sequences in new release of Uniprot/Ensembl, and during
-			re-initialization an all-against-all alignment process is executed.
-		</p>
+		
+		
+		<h2 layout:fragment="header">Annotation Summary</h2>
+		<table
+			class="table table-bordered table-striped table-sm table-condensed"
+			style="width: 75%">
+			<thead>
+				<tr>
+					<td>Name</td>
+					<td>Total Human Genomic Positions</td>
+					<td>Protein Variants positions</td>
+					<td>Genomic Positions with Protein Variants</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>DBSNP entries</td>
+					<td th:text="${statistics[0].dbsnpMappingNum}">2903</td>
+					<td th:text="${statistics[0].dbsnpNum}">2344830</td>
+					<td th:text="${statistics[0].dbsnpNumUnique}">2344830</td>
+				</tr>
+				<tr>
+					<td>CLINVAR entries</td>
+					<td th:text="${statistics[0].clinvarMappingNum}">281</td>
+					<td th:text="${statistics[0].clinvarNum}">416218</td>
+					<td th:text="${statistics[0].clinvarNumUnique}">416218</td>
+				</tr>
+				<tr>
+					<td>COSMIC entries</td>
+					<td th:text="${statistics[0].cosmicMappingNum}">1803</td>
+					<td th:text="${statistics[0].cosmicNum}">5452069</td>
+					<td th:text="${statistics[0].cosmicNumUnique}">5452069</td>
+				</tr>
+				<!--<tr>
+					<td>GENIE entries</td>
+					<td th:text="${statistics[0].genieMappingNum}">234</td>
+					<td th:text="${statistics[0].genieNum}">434567</td>
+					<td th:text="${statistics[0].genieNumUnique}">434567</td>
+				</tr>//-->
+				<tr>
+					<td>TCGA entries</td>
+					<td th:text="${statistics[0].tcgaMappingNum}">1460</td>
+					<td th:text="${statistics[0].tcgaNum}">5625059</td>
+					<td th:text="${statistics[0].tcgaNumUnique}">5625059</td>
+				</tr>
+				<tr>
+					<td>Number of protein locations with vaiants on PDB</td>
+					<td th:text="${statistics[0].mutationLocationNumWhole}">11785</td>
+					<td th:text="${statistics[0].mutationLocationNumAll}">11785</td>
+					<td th:text="${statistics[0].mutationLocationNum}">11785</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h2 layout:fragment="header">Residue Mutation Summary</h2>
+		<table
+			class="table table-bordered table-striped table-sm table-condensed"
+			style="width: 75%">
+			<thead>
+				<tr>
+					<td>Residue Name</td>
+					<td>A</td>
+					<td>R</td>
+					<td>N</td>
+					<td>D</td>
+					<td>C</td>
+					<td>Q</td>
+					<td>E</td>
+					<td>G</td>
+					<td>H</td>
+					<td>I</td>
+					<td>L</td>
+					<td>K</td>
+					<td>M</td>
+					<td>F</td>
+					<td>P</td>
+					<td>S</td>
+					<td>T</td>
+					<td>W</td>
+					<td>Y</td>
+					<td>V</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>A</td>
+					<td></td>
+					<td th:text="${statistics[0].a2R}">NA</td>
+					<td th:text="${statistics[0].a2N}">NA</td>
+					<td th:text="${statistics[0].a2D}">NA</td>
+					<td th:text="${statistics[0].a2C}">NA</td>
+					<td th:text="${statistics[0].a2Q}">NA</td>
+					<td th:text="${statistics[0].a2E}">NA</td>
+					<td th:text="${statistics[0].a2G}">NA</td>
+					<td th:text="${statistics[0].a2H}">NA</td>
+					<td th:text="${statistics[0].a2I}">NA</td>
+					<td th:text="${statistics[0].a2L}">NA</td>
+					<td th:text="${statistics[0].a2K}">NA</td>
+					<td th:text="${statistics[0].a2M}">NA</td>
+					<td th:text="${statistics[0].a2F}">NA</td>
+					<td th:text="${statistics[0].a2P}">NA</td>
+					<td th:text="${statistics[0].a2S}">NA</td>
+					<td th:text="${statistics[0].a2T}">NA</td>
+					<td th:text="${statistics[0].a2W}">NA</td>
+					<td th:text="${statistics[0].a2Y}">NA</td>
+					<td th:text="${statistics[0].a2V}">NA</td>
+				</tr>
+				<tr>
+					<td>R</td>
+					<td></td>
+					<td></td>										
+					<td th:text="${statistics[0].r2N}">NA</td>
+					<td th:text="${statistics[0].r2D}">NA</td>
+					<td th:text="${statistics[0].r2C}">NA</td>
+					<td th:text="${statistics[0].r2Q}">NA</td>
+					<td th:text="${statistics[0].r2E}">NA</td>
+					<td th:text="${statistics[0].r2G}">NA</td>
+					<td th:text="${statistics[0].r2H}">NA</td>
+					<td th:text="${statistics[0].r2I}">NA</td>
+					<td th:text="${statistics[0].r2L}">NA</td>
+					<td th:text="${statistics[0].r2K}">NA</td>
+					<td th:text="${statistics[0].r2M}">NA</td>
+					<td th:text="${statistics[0].r2F}">NA</td>
+					<td th:text="${statistics[0].r2P}">NA</td>
+					<td th:text="${statistics[0].r2S}">NA</td>
+					<td th:text="${statistics[0].r2T}">NA</td>
+					<td th:text="${statistics[0].r2W}">NA</td>
+					<td th:text="${statistics[0].r2Y}">NA</td>
+					<td th:text="${statistics[0].r2V}">NA</td>
+				</tr>
+				<tr>
+					<td>N</td>
+					<td></td>
+					<td></td>
+					<td></td>										
+					<td th:text="${statistics[0].n2D}">NA</td>
+					<td th:text="${statistics[0].n2C}">NA</td>
+					<td th:text="${statistics[0].n2Q}">NA</td>
+					<td th:text="${statistics[0].n2E}">NA</td>
+					<td th:text="${statistics[0].n2G}">NA</td>
+					<td th:text="${statistics[0].n2H}">NA</td>
+					<td th:text="${statistics[0].n2I}">NA</td>
+					<td th:text="${statistics[0].n2L}">NA</td>
+					<td th:text="${statistics[0].n2K}">NA</td>
+					<td th:text="${statistics[0].n2M}">NA</td>
+					<td th:text="${statistics[0].n2F}">NA</td>
+					<td th:text="${statistics[0].n2P}">NA</td>
+					<td th:text="${statistics[0].n2S}">NA</td>
+					<td th:text="${statistics[0].n2T}">NA</td>
+					<td th:text="${statistics[0].n2W}">NA</td>
+					<td th:text="${statistics[0].n2Y}">NA</td>
+					<td th:text="${statistics[0].n2V}">NA</td>
+				</tr>
+				<tr>
+					<td>D</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].d2C}">NA</td>
+					<td th:text="${statistics[0].d2Q}">NA</td>
+					<td th:text="${statistics[0].d2E}">NA</td>
+					<td th:text="${statistics[0].d2G}">NA</td>
+					<td th:text="${statistics[0].d2H}">NA</td>
+					<td th:text="${statistics[0].d2I}">NA</td>
+					<td th:text="${statistics[0].d2L}">NA</td>
+					<td th:text="${statistics[0].d2K}">NA</td>
+					<td th:text="${statistics[0].d2M}">NA</td>
+					<td th:text="${statistics[0].d2F}">NA</td>
+					<td th:text="${statistics[0].d2P}">NA</td>
+					<td th:text="${statistics[0].d2S}">NA</td>
+					<td th:text="${statistics[0].d2T}">NA</td>
+					<td th:text="${statistics[0].d2W}">NA</td>
+					<td th:text="${statistics[0].d2Y}">NA</td>
+					<td th:text="${statistics[0].d2V}">NA</td>
+				</tr>
+				<tr>
+					<td>C</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].c2Q}">NA</td>
+					<td th:text="${statistics[0].c2E}">NA</td>
+					<td th:text="${statistics[0].c2G}">NA</td>
+					<td th:text="${statistics[0].c2H}">NA</td>
+					<td th:text="${statistics[0].c2I}">NA</td>
+					<td th:text="${statistics[0].c2L}">NA</td>
+					<td th:text="${statistics[0].c2K}">NA</td>
+					<td th:text="${statistics[0].c2M}">NA</td>
+					<td th:text="${statistics[0].c2F}">NA</td>
+					<td th:text="${statistics[0].c2P}">NA</td>
+					<td th:text="${statistics[0].c2S}">NA</td>
+					<td th:text="${statistics[0].c2T}">NA</td>
+					<td th:text="${statistics[0].c2W}">NA</td>
+					<td th:text="${statistics[0].c2Y}">NA</td>
+					<td th:text="${statistics[0].c2V}">NA</td>
+				</tr>
+				<tr>
+					<td>Q</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].q2E}">NA</td>
+					<td th:text="${statistics[0].q2G}">NA</td>
+					<td th:text="${statistics[0].q2H}">NA</td>
+					<td th:text="${statistics[0].q2I}">NA</td>
+					<td th:text="${statistics[0].q2L}">NA</td>
+					<td th:text="${statistics[0].q2K}">NA</td>
+					<td th:text="${statistics[0].q2M}">NA</td>
+					<td th:text="${statistics[0].q2F}">NA</td>
+					<td th:text="${statistics[0].q2P}">NA</td>
+					<td th:text="${statistics[0].q2S}">NA</td>
+					<td th:text="${statistics[0].q2T}">NA</td>
+					<td th:text="${statistics[0].q2W}">NA</td>
+					<td th:text="${statistics[0].q2Y}">NA</td>
+					<td th:text="${statistics[0].q2V}">NA</td>
+				</tr>
+				<tr>
+					<td>E</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].e2G}">NA</td>
+					<td th:text="${statistics[0].e2H}">NA</td>
+					<td th:text="${statistics[0].e2I}">NA</td>
+					<td th:text="${statistics[0].e2L}">NA</td>
+					<td th:text="${statistics[0].e2K}">NA</td>
+					<td th:text="${statistics[0].e2M}">NA</td>
+					<td th:text="${statistics[0].e2F}">NA</td>
+					<td th:text="${statistics[0].e2P}">NA</td>
+					<td th:text="${statistics[0].e2S}">NA</td>
+					<td th:text="${statistics[0].e2T}">NA</td>
+					<td th:text="${statistics[0].e2W}">NA</td>
+					<td th:text="${statistics[0].e2Y}">NA</td>
+					<td th:text="${statistics[0].e2V}">NA</td>
+				</tr>
+				<tr>
+					<td>G</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].g2H}">NA</td>
+					<td th:text="${statistics[0].g2I}">NA</td>
+					<td th:text="${statistics[0].g2L}">NA</td>
+					<td th:text="${statistics[0].g2K}">NA</td>
+					<td th:text="${statistics[0].g2M}">NA</td>
+					<td th:text="${statistics[0].g2F}">NA</td>
+					<td th:text="${statistics[0].g2P}">NA</td>
+					<td th:text="${statistics[0].g2S}">NA</td>
+					<td th:text="${statistics[0].g2T}">NA</td>
+					<td th:text="${statistics[0].g2W}">NA</td>
+					<td th:text="${statistics[0].g2Y}">NA</td>
+					<td th:text="${statistics[0].g2V}">NA</td>
+				</tr>
+				<tr>
+					<td>H</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].h2I}">NA</td>
+					<td th:text="${statistics[0].h2L}">NA</td>
+					<td th:text="${statistics[0].h2K}">NA</td>
+					<td th:text="${statistics[0].h2M}">NA</td>
+					<td th:text="${statistics[0].h2F}">NA</td>
+					<td th:text="${statistics[0].h2P}">NA</td>
+					<td th:text="${statistics[0].h2S}">NA</td>
+					<td th:text="${statistics[0].h2T}">NA</td>
+					<td th:text="${statistics[0].h2W}">NA</td>
+					<td th:text="${statistics[0].h2Y}">NA</td>
+					<td th:text="${statistics[0].h2V}">NA</td>
+				</tr>
+				<tr>
+					<td>I</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].i2L}">NA</td>
+					<td th:text="${statistics[0].i2K}">NA</td>
+					<td th:text="${statistics[0].i2M}">NA</td>
+					<td th:text="${statistics[0].i2F}">NA</td>
+					<td th:text="${statistics[0].i2P}">NA</td>
+					<td th:text="${statistics[0].i2S}">NA</td>
+					<td th:text="${statistics[0].i2T}">NA</td>
+					<td th:text="${statistics[0].i2W}">NA</td>
+					<td th:text="${statistics[0].i2Y}">NA</td>
+					<td th:text="${statistics[0].i2V}">NA</td>
+				</tr>
+				<tr>
+					<td>L</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].l2K}">NA</td>
+					<td th:text="${statistics[0].l2M}">NA</td>
+					<td th:text="${statistics[0].l2F}">NA</td>
+					<td th:text="${statistics[0].l2P}">NA</td>
+					<td th:text="${statistics[0].l2S}">NA</td>
+					<td th:text="${statistics[0].l2T}">NA</td>
+					<td th:text="${statistics[0].l2W}">NA</td>
+					<td th:text="${statistics[0].l2Y}">NA</td>
+					<td th:text="${statistics[0].l2V}">NA</td>
+				</tr>
+				<tr>
+					<td>K</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].k2M}">NA</td>
+					<td th:text="${statistics[0].k2F}">NA</td>
+					<td th:text="${statistics[0].k2P}">NA</td>
+					<td th:text="${statistics[0].k2S}">NA</td>
+					<td th:text="${statistics[0].k2T}">NA</td>
+					<td th:text="${statistics[0].k2W}">NA</td>
+					<td th:text="${statistics[0].k2Y}">NA</td>
+					<td th:text="${statistics[0].k2V}">NA</td>
+				</tr>
+				<tr>
+					<td>M</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].m2F}">NA</td>
+					<td th:text="${statistics[0].m2P}">NA</td>
+					<td th:text="${statistics[0].m2S}">NA</td>
+					<td th:text="${statistics[0].m2T}">NA</td>
+					<td th:text="${statistics[0].m2W}">NA</td>
+					<td th:text="${statistics[0].m2Y}">NA</td>
+					<td th:text="${statistics[0].m2V}">NA</td>
+				</tr>
+				<tr>
+					<td>F</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].f2P}">NA</td>
+					<td th:text="${statistics[0].f2S}">NA</td>
+					<td th:text="${statistics[0].f2T}">NA</td>
+					<td th:text="${statistics[0].f2W}">NA</td>
+					<td th:text="${statistics[0].f2Y}">NA</td>
+					<td th:text="${statistics[0].f2V}">NA</td>
+				</tr>
+				<tr>
+					<td>P</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].p2S}">NA</td>
+					<td th:text="${statistics[0].p2T}">NA</td>
+					<td th:text="${statistics[0].p2W}">NA</td>
+					<td th:text="${statistics[0].p2Y}">NA</td>
+					<td th:text="${statistics[0].p2V}">NA</td>
+				</tr>
+				<tr>
+					<td>S</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].s2T}">NA</td>
+					<td th:text="${statistics[0].s2W}">NA</td>
+					<td th:text="${statistics[0].s2Y}">NA</td>
+					<td th:text="${statistics[0].s2V}">NA</td>
+				</tr>
+				<tr>
+					<td>T</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].t2W}">NA</td>
+					<td th:text="${statistics[0].t2Y}">NA</td>
+					<td th:text="${statistics[0].t2V}">NA</td>
+				</tr>
+				<tr>
+					<td>W</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].w2Y}">NA</td>
+					<td th:text="${statistics[0].w2V}">NA</td>
+				</tr>
+				<tr>
+					<td>Y</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td th:text="${statistics[0].w2V}">NA</td>
+				</tr>
+				<tr>
+					<td>V</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		
+	</div>
+	
+	<div>
+		<footer>
+		<p>© 2019 Variant3D</p>
+		</footer>
 	</div>
 	</div>
 </body>

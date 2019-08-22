@@ -24,8 +24,8 @@ public class Dbsnp {
     @Column(name = "CHR_POS")
     private String chrPos;
     
-    @Column(name = "MUTATION_ID")
-    private int mutationId;
+    @Column(name = "MUTATION_NO")
+    private String mutationNo;
     
     @Column(name = "RS_ID")
     private int rsId;
@@ -44,17 +44,17 @@ public class Dbsnp {
 
     public void setChrPos(String chrPos) {
         this.chrPos = chrPos;
-    }
+    }    
 
-    public int getMutationId() {
-        return mutationId;
-    }
+    public String getMutationNo() {
+		return mutationNo;
+	}
 
-    public void setMutationId(int mutationId) {
-        this.mutationId = mutationId;
-    }
+	public void setMutationNo(String mutationNo) {
+		this.mutationNo = mutationNo;
+	}
 
-    public int getRsId() {
+	public int getRsId() {
         return rsId;
     }
 

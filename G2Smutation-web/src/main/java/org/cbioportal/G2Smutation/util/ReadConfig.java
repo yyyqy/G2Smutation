@@ -31,6 +31,7 @@ public class ReadConfig {
     public static String gnApiEnsemblUrl;
     public static String gnApiGnUrl;
     public static String gnApiGnSNPUrl;
+    public static String resourceDir;
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -75,6 +76,7 @@ public class ReadConfig {
             ReadConfig.gnApiEnsemblUrl = prop.getProperty("gn.api.ensembl.url").trim();
             ReadConfig.gnApiGnUrl = prop.getProperty("gn.api.genomenexus.url").trim();
             ReadConfig.gnApiGnSNPUrl = prop.getProperty("gn.api.genomenexus.dbsnp.url").trim();
+            ReadConfig.resourceDir = prop.getProperty("resource_dir").trim();
 
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
@@ -224,5 +226,15 @@ public class ReadConfig {
     public static void setBlastWindowsize(String blastWindowsize) {
         ReadConfig.blastWindowsize = blastWindowsize;
     }
+
+	public static String getResourceDir() {
+		return resourceDir;
+	}
+
+	public static void setResourceDir(String resourceDir) {
+		ReadConfig.resourceDir = resourceDir;
+	}
+    
+    
 
 }

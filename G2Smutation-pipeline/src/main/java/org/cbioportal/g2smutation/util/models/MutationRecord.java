@@ -31,11 +31,12 @@ public class MutationRecord {
      * getter and setter methods
      */
 
+    
     public int getSeqId() {
         return seqId;
     }
 
-    public void setSeqId(int seqId) {
+	public void setSeqId(int seqId) {
         this.seqId = seqId;
     }
 
