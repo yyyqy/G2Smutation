@@ -315,6 +315,34 @@ public class MainController {
     	return new ModelAndView("/tutorial");
     }
     
+    
+    @RequestMapping(
+        	value = "/mutantpdb", 
+        	params = { "pdb1" }, 
+        	method = RequestMethod.GET)
+        @ResponseBody
+        public ModelAndView mutantpdbInfo() {
+        	return new ModelAndView("/mutantpdb");
+        }
+    
+    @RequestMapping(
+    	value = "/mutantpdb2", 
+    	params = { "pdb1", "pdb2" }, 
+    	method = RequestMethod.GET)
+    @ResponseBody
+    public ModelAndView mutantpdbInfo2() {
+    	return new ModelAndView("/mutantpdb2");
+    }
+    
+    @RequestMapping(
+        value = "/mutantpdb2_mod", 
+        params = { "ensembl", "position" }, 
+        method = RequestMethod.GET)
+    @ResponseBody
+    public ModelAndView mutantpdbInfo3() {
+        return new ModelAndView("/mutantpdb2_mod");
+    }
+    
     /**
      * provide download file link
      * @param param
